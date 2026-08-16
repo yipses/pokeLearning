@@ -801,7 +801,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 12;
+const APP_BUILD = 13;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -820,269 +820,77 @@ function renderAbout(){
 }
 
 /* ---------------- Pokémon data (name + national dex id for artwork) ---------------- */
-const POKEMON = [
-  {n:"bulbasaur",id:1,t:["grass","poison"],bst:318},{n:"ivysaur",id:2,t:["grass","poison"],bst:405},{n:"venusaur",id:3,t:["grass","poison"],bst:525},{n:"charmander",id:4,t:["fire"],bst:309},
-  {n:"charmeleon",id:5,t:["fire"],bst:405},{n:"charizard",id:6,t:["fire","flying"],bst:534},{n:"squirtle",id:7,t:["water"],bst:314},{n:"wartortle",id:8,t:["water"],bst:405},
-  {n:"blastoise",id:9,t:["water"],bst:530},{n:"caterpie",id:10,t:["bug"],bst:195},{n:"metapod",id:11,t:["bug"],bst:205},{n:"butterfree",id:12,t:["bug","flying"],bst:395},
-  {n:"weedle",id:13,t:["bug","poison"],bst:195},{n:"kakuna",id:14,t:["bug","poison"],bst:205},{n:"beedrill",id:15,t:["bug","poison"],bst:395},{n:"pidgey",id:16,t:["normal","flying"],bst:251},
-  {n:"pidgeotto",id:17,t:["normal","flying"],bst:349},{n:"pidgeot",id:18,t:["normal","flying"],bst:479},{n:"rattata",id:19,t:["normal"],bst:253},{n:"raticate",id:20,t:["normal"],bst:413},
-  {n:"spearow",id:21,t:["normal","flying"],bst:262},{n:"fearow",id:22,t:["normal","flying"],bst:442},{n:"ekans",id:23,t:["poison"],bst:288},{n:"arbok",id:24,t:["poison"],bst:448},
-  {n:"pikachu",id:25,t:["electric"],bst:320},{n:"raichu",id:26,t:["electric"],bst:485},{n:"sandshrew",id:27,t:["ground"],bst:300},{n:"sandslash",id:28,t:["ground"],bst:450},
-  {n:"nidorina",id:30,t:["poison"],bst:365},{n:"nidoqueen",id:31,t:["poison","ground"],bst:505},
-  {n:"nidorino",id:33,t:["poison"],bst:365},{n:"nidoking",id:34,t:["poison","ground"],bst:505},{n:"clefairy",id:35,t:["fairy"],bst:323},{n:"clefable",id:36,t:["fairy"],bst:483},
-  {n:"vulpix",id:37,t:["fire"],bst:299},{n:"ninetales",id:38,t:["fire"],bst:505},{n:"jigglypuff",id:39,t:["normal","fairy"],bst:270},{n:"wigglytuff",id:40,t:["normal","fairy"],bst:435},
-  {n:"zubat",id:41,t:["poison","flying"],bst:245},{n:"golbat",id:42,t:["poison","flying"],bst:455},{n:"oddish",id:43,t:["grass","poison"],bst:320},{n:"gloom",id:44,t:["grass","poison"],bst:395},
-  {n:"vileplume",id:45,t:["grass","poison"],bst:490},{n:"paras",id:46,t:["bug","grass"],bst:285},{n:"parasect",id:47,t:["bug","grass"],bst:405},{n:"venonat",id:48,t:["bug","poison"],bst:305},
-  {n:"venomoth",id:49,t:["bug","poison"],bst:450},{n:"diglett",id:50,t:["ground"],bst:265},{n:"dugtrio",id:51,t:["ground"],bst:425},{n:"meowth",id:52,t:["normal"],bst:290},
-  {n:"persian",id:53,t:["normal"],bst:440},{n:"psyduck",id:54,t:["water"],bst:320},{n:"golduck",id:55,t:["water"],bst:500},{n:"mankey",id:56,t:["fighting"],bst:305},
-  {n:"primeape",id:57,t:["fighting"],bst:455},{n:"growlithe",id:58,t:["fire"],bst:350},{n:"arcanine",id:59,t:["fire"],bst:555},{n:"poliwag",id:60,t:["water"],bst:300},
-  {n:"poliwhirl",id:61,t:["water"],bst:385},{n:"poliwrath",id:62,t:["water","fighting"],bst:510},{n:"abra",id:63,t:["psychic"],bst:310},{n:"kadabra",id:64,t:["psychic"],bst:400},
-  {n:"alakazam",id:65,t:["psychic"],bst:500},{n:"machop",id:66,t:["fighting"],bst:305},{n:"machoke",id:67,t:["fighting"],bst:405},{n:"machamp",id:68,t:["fighting"],bst:505},
-  {n:"bellsprout",id:69,t:["grass","poison"],bst:300},{n:"weepinbell",id:70,t:["grass","poison"],bst:390},{n:"victreebel",id:71,t:["grass","poison"],bst:490},{n:"tentacool",id:72,t:["water","poison"],bst:335},
-  {n:"tentacruel",id:73,t:["water","poison"],bst:515},{n:"geodude",id:74,t:["rock","ground"],bst:300},{n:"graveler",id:75,t:["rock","ground"],bst:390},{n:"golem",id:76,t:["rock","ground"],bst:495},
-  {n:"ponyta",id:77,t:["fire"],bst:410},{n:"rapidash",id:78,t:["fire"],bst:500},{n:"slowpoke",id:79,t:["water","psychic"],bst:315},{n:"slowbro",id:80,t:["water","psychic"],bst:490},
-  {n:"magnemite",id:81,t:["electric","steel"],bst:325},{n:"magneton",id:82,t:["electric","steel"],bst:465},{n:"doduo",id:84,t:["normal","flying"],bst:310},
-  {n:"dodrio",id:85,t:["normal","flying"],bst:470},{n:"seel",id:86,t:["water"],bst:325},{n:"dewgong",id:87,t:["water","ice"],bst:475},{n:"grimer",id:88,t:["poison"],bst:325},
-  {n:"muk",id:89,t:["poison"],bst:500},{n:"shellder",id:90,t:["water"],bst:305},{n:"cloyster",id:91,t:["water","ice"],bst:525},{n:"gastly",id:92,t:["ghost","poison"],bst:310},
-  {n:"haunter",id:93,t:["ghost","poison"],bst:405},{n:"gengar",id:94,t:["ghost","poison"],bst:500},{n:"onix",id:95,t:["rock","ground"],bst:385},{n:"drowzee",id:96,t:["psychic"],bst:328},
-  {n:"hypno",id:97,t:["psychic"],bst:483},{n:"krabby",id:98,t:["water"],bst:325},{n:"kingler",id:99,t:["water"],bst:475},{n:"voltorb",id:100,t:["electric"],bst:330},
-  {n:"electrode",id:101,t:["electric"],bst:490},{n:"exeggcute",id:102,t:["grass","psychic"],bst:325},{n:"exeggutor",id:103,t:["grass","psychic"],bst:530},{n:"cubone",id:104,t:["ground"],bst:320},
-  {n:"marowak",id:105,t:["ground"],bst:425},{n:"hitmonlee",id:106,t:["fighting"],bst:455},{n:"hitmonchan",id:107,t:["fighting"],bst:455},{n:"lickitung",id:108,t:["normal"],bst:385},
-  {n:"koffing",id:109,t:["poison"],bst:340},{n:"weezing",id:110,t:["poison"],bst:490},{n:"rhyhorn",id:111,t:["ground","rock"],bst:345},{n:"rhydon",id:112,t:["ground","rock"],bst:485},
-  {n:"chansey",id:113,t:["normal"],bst:450},{n:"tangela",id:114,t:["grass"],bst:435},{n:"kangaskhan",id:115,t:["normal"],bst:490},{n:"horsea",id:116,t:["water"],bst:295},
-  {n:"seadra",id:117,t:["water"],bst:440},{n:"goldeen",id:118,t:["water"],bst:320},{n:"seaking",id:119,t:["water"],bst:450},{n:"staryu",id:120,t:["water"],bst:340},
-  {n:"starmie",id:121,t:["water","psychic"],bst:520},{n:"scyther",id:123,t:["bug","flying"],bst:500},{n:"jynx",id:124,t:["ice","psychic"],bst:455},
-  {n:"electabuzz",id:125,t:["electric"],bst:490},{n:"magmar",id:126,t:["fire"],bst:495},{n:"pinsir",id:127,t:["bug"],bst:500},{n:"tauros",id:128,t:["normal"],bst:490},
-  {n:"magikarp",id:129,t:["water"],bst:200},{n:"gyarados",id:130,t:["water","flying"],bst:540},{n:"lapras",id:131,t:["water","ice"],bst:535},{n:"ditto",id:132,t:["normal"],bst:288},
-  {n:"eevee",id:133,t:["normal"],bst:325},{n:"vaporeon",id:134,t:["water"],bst:525},{n:"jolteon",id:135,t:["electric"],bst:525},{n:"flareon",id:136,t:["fire"],bst:525},
-  {n:"porygon",id:137,t:["normal"],bst:395},{n:"omanyte",id:138,t:["rock","water"],bst:355},{n:"omastar",id:139,t:["rock","water"],bst:495},{n:"kabuto",id:140,t:["rock","water"],bst:355},
-  {n:"kabutops",id:141,t:["rock","water"],bst:495},{n:"aerodactyl",id:142,t:["rock","flying"],bst:515},{n:"snorlax",id:143,t:["normal"],bst:540},{n:"articuno",id:144,t:["ice","flying"],bst:580},
-  {n:"zapdos",id:145,t:["electric","flying"],bst:580},{n:"moltres",id:146,t:["fire","flying"],bst:580},{n:"dratini",id:147,t:["dragon"],bst:300},{n:"dragonair",id:148,t:["dragon"],bst:420},
-  {n:"dragonite",id:149,t:["dragon","flying"],bst:600},{n:"mewtwo",id:150,t:["psychic"],bst:680},{n:"mew",id:151,t:["psychic"],bst:600},
-  {n:"chikorita",id:152,t:["grass"],bst:318},{n:"bayleef",id:153,t:["grass"],bst:405},{n:"meganium",id:154,t:["grass"],bst:525},{n:"cyndaquil",id:155,t:["fire"],bst:309},
-  {n:"quilava",id:156,t:["fire"],bst:405},{n:"typhlosion",id:157,t:["fire"],bst:534},{n:"totodile",id:158,t:["water"],bst:314},{n:"croconaw",id:159,t:["water"],bst:405},
-  {n:"feraligatr",id:160,t:["water"],bst:530},{n:"sentret",id:161,t:["normal"],bst:215},{n:"furret",id:162,t:["normal"],bst:415},{n:"hoothoot",id:163,t:["normal","flying"],bst:262},
-  {n:"noctowl",id:164,t:["normal","flying"],bst:452},{n:"ledyba",id:165,t:["bug","flying"],bst:265},{n:"ledian",id:166,t:["bug","flying"],bst:390},{n:"spinarak",id:167,t:["bug","poison"],bst:250},
-  {n:"ariados",id:168,t:["bug","poison"],bst:400},{n:"crobat",id:169,t:["poison","flying"],bst:535},{n:"chinchou",id:170,t:["water","electric"],bst:330},{n:"lanturn",id:171,t:["water","electric"],bst:460},
-  {n:"pichu",id:172,t:["electric"],bst:205},{n:"cleffa",id:173,t:["fairy"],bst:218},{n:"igglybuff",id:174,t:["normal","fairy"],bst:210},{n:"togepi",id:175,t:["fairy"],bst:245},
-  {n:"togetic",id:176,t:["fairy","flying"],bst:405},{n:"natu",id:177,t:["psychic","flying"],bst:320},{n:"xatu",id:178,t:["psychic","flying"],bst:470},{n:"mareep",id:179,t:["electric"],bst:280},
-  {n:"flaaffy",id:180,t:["electric"],bst:365},{n:"ampharos",id:181,t:["electric"],bst:510},{n:"bellossom",id:182,t:["grass"],bst:490},{n:"marill",id:183,t:["water","fairy"],bst:250},
-  {n:"azumarill",id:184,t:["water","fairy"],bst:420},{n:"sudowoodo",id:185,t:["rock"],bst:410},{n:"politoed",id:186,t:["water"],bst:500},{n:"hoppip",id:187,t:["grass","flying"],bst:250},
-  {n:"skiploom",id:188,t:["grass","flying"],bst:340},{n:"jumpluff",id:189,t:["grass","flying"],bst:460},{n:"aipom",id:190,t:["normal"],bst:360},{n:"sunkern",id:191,t:["grass"],bst:180},
-  {n:"sunflora",id:192,t:["grass"],bst:425},{n:"yanma",id:193,t:["bug","flying"],bst:390},{n:"wooper",id:194,t:["water","ground"],bst:210},{n:"quagsire",id:195,t:["water","ground"],bst:430},
-  {n:"espeon",id:196,t:["psychic"],bst:525},{n:"umbreon",id:197,t:["dark"],bst:525},{n:"murkrow",id:198,t:["dark","flying"],bst:405},{n:"slowking",id:199,t:["water","psychic"],bst:490},
-  {n:"misdreavus",id:200,t:["ghost"],bst:435},{n:"unown",id:201,t:["psychic"],bst:336},{n:"wobbuffet",id:202,t:["psychic"],bst:405},{n:"girafarig",id:203,t:["normal","psychic"],bst:455},
-  {n:"pineco",id:204,t:["bug"],bst:290},{n:"forretress",id:205,t:["bug","steel"],bst:465},{n:"dunsparce",id:206,t:["normal"],bst:415},{n:"gligar",id:207,t:["ground","flying"],bst:430},
-  {n:"steelix",id:208,t:["steel","ground"],bst:510},{n:"snubbull",id:209,t:["fairy"],bst:300},{n:"granbull",id:210,t:["fairy"],bst:450},{n:"qwilfish",id:211,t:["water","poison"],bst:440},
-  {n:"scizor",id:212,t:["bug","steel"],bst:500},{n:"shuckle",id:213,t:["bug","rock"],bst:505},{n:"heracross",id:214,t:["bug","fighting"],bst:500},{n:"sneasel",id:215,t:["dark","ice"],bst:430},
-  {n:"teddiursa",id:216,t:["normal"],bst:330},{n:"ursaring",id:217,t:["normal"],bst:500},{n:"slugma",id:218,t:["fire"],bst:250},{n:"magcargo",id:219,t:["fire","rock"],bst:430},
-  {n:"swinub",id:220,t:["ice","ground"],bst:250},{n:"piloswine",id:221,t:["ice","ground"],bst:450},{n:"corsola",id:222,t:["water","rock"],bst:410},{n:"remoraid",id:223,t:["water"],bst:300},
-  {n:"octillery",id:224,t:["water"],bst:480},{n:"delibird",id:225,t:["ice","flying"],bst:330},{n:"mantine",id:226,t:["water","flying"],bst:485},{n:"skarmory",id:227,t:["steel","flying"],bst:465},
-  {n:"houndour",id:228,t:["dark","fire"],bst:330},{n:"houndoom",id:229,t:["dark","fire"],bst:500},{n:"kingdra",id:230,t:["water","dragon"],bst:540},{n:"phanpy",id:231,t:["ground"],bst:330},
-  {n:"donphan",id:232,t:["ground"],bst:500},{n:"porygon2",id:233,t:["normal"],bst:515},{n:"stantler",id:234,t:["normal"],bst:465},{n:"smeargle",id:235,t:["normal"],bst:250},
-  {n:"tyrogue",id:236,t:["fighting"],bst:210},{n:"hitmontop",id:237,t:["fighting"],bst:455},{n:"smoochum",id:238,t:["ice","psychic"],bst:305},{n:"elekid",id:239,t:["electric"],bst:360},
-  {n:"magby",id:240,t:["fire"],bst:365},{n:"miltank",id:241,t:["normal"],bst:490},{n:"blissey",id:242,t:["normal"],bst:540},{n:"raikou",id:243,t:["electric"],bst:580},
-  {n:"entei",id:244,t:["fire"],bst:580},{n:"suicune",id:245,t:["water"],bst:580},{n:"larvitar",id:246,t:["rock","ground"],bst:300},{n:"pupitar",id:247,t:["rock","ground"],bst:410},
-  {n:"tyranitar",id:248,t:["rock","dark"],bst:600},{n:"lugia",id:249,t:["psychic","flying"],bst:680},{n:"ho-oh",id:250,t:["fire","flying"],bst:680},{n:"celebi",id:251,t:["psychic","grass"],bst:600},
-  {n:"treecko",id:252,t:["grass"],bst:310},{n:"grovyle",id:253,t:["grass"],bst:405},{n:"sceptile",id:254,t:["grass"],bst:530},{n:"torchic",id:255,t:["fire"],bst:310},
-  {n:"combusken",id:256,t:["fire","fighting"],bst:405},{n:"blaziken",id:257,t:["fire","fighting"],bst:530},{n:"mudkip",id:258,t:["water"],bst:310},{n:"marshtomp",id:259,t:["water","ground"],bst:405},
-  {n:"swampert",id:260,t:["water","ground"],bst:535},{n:"poochyena",id:261,t:["dark"],bst:220},{n:"mightyena",id:262,t:["dark"],bst:420},{n:"zigzagoon",id:263,t:["normal"],bst:240},
-  {n:"linoone",id:264,t:["normal"],bst:420},{n:"wurmple",id:265,t:["bug"],bst:195},{n:"silcoon",id:266,t:["bug"],bst:205},{n:"beautifly",id:267,t:["bug","flying"],bst:395},
-  {n:"cascoon",id:268,t:["bug"],bst:205},{n:"dustox",id:269,t:["bug","poison"],bst:385},{n:"lotad",id:270,t:["water","grass"],bst:220},{n:"lombre",id:271,t:["water","grass"],bst:340},
-  {n:"ludicolo",id:272,t:["water","grass"],bst:480},{n:"seedot",id:273,t:["grass"],bst:220},{n:"nuzleaf",id:274,t:["grass","dark"],bst:340},{n:"shiftry",id:275,t:["grass","dark"],bst:480},
-  {n:"taillow",id:276,t:["normal","flying"],bst:270},{n:"swellow",id:277,t:["normal","flying"],bst:455},{n:"wingull",id:278,t:["water","flying"],bst:270},{n:"pelipper",id:279,t:["water","flying"],bst:440},
-  {n:"ralts",id:280,t:["psychic","fairy"],bst:198},{n:"kirlia",id:281,t:["psychic","fairy"],bst:278},{n:"gardevoir",id:282,t:["psychic","fairy"],bst:518},{n:"surskit",id:283,t:["bug","water"],bst:269},
-  {n:"masquerain",id:284,t:["bug","flying"],bst:454},{n:"shroomish",id:285,t:["grass"],bst:295},{n:"breloom",id:286,t:["grass","fighting"],bst:460},{n:"slakoth",id:287,t:["normal"],bst:280},
-  {n:"vigoroth",id:288,t:["normal"],bst:440},{n:"slaking",id:289,t:["normal"],bst:670},{n:"nincada",id:290,t:["bug","ground"],bst:266},{n:"ninjask",id:291,t:["bug","flying"],bst:456},
-  {n:"shedinja",id:292,t:["bug","ghost"],bst:236},{n:"whismur",id:293,t:["normal"],bst:240},{n:"loudred",id:294,t:["normal"],bst:360},{n:"exploud",id:295,t:["normal"],bst:490},
-  {n:"makuhita",id:296,t:["fighting"],bst:237},{n:"hariyama",id:297,t:["fighting"],bst:474},{n:"azurill",id:298,t:["normal","fairy"],bst:190},{n:"nosepass",id:299,t:["rock"],bst:375},
-  {n:"skitty",id:300,t:["normal"],bst:260},{n:"delcatty",id:301,t:["normal"],bst:400},{n:"sableye",id:302,t:["dark","ghost"],bst:380},{n:"mawile",id:303,t:["steel","fairy"],bst:380},
-  {n:"aron",id:304,t:["steel","rock"],bst:330},{n:"lairon",id:305,t:["steel","rock"],bst:430},{n:"aggron",id:306,t:["steel","rock"],bst:530},{n:"meditite",id:307,t:["fighting","psychic"],bst:280},
-  {n:"medicham",id:308,t:["fighting","psychic"],bst:410},{n:"electrike",id:309,t:["electric"],bst:295},{n:"manectric",id:310,t:["electric"],bst:475},{n:"plusle",id:311,t:["electric"],bst:405},
-  {n:"minun",id:312,t:["electric"],bst:405},{n:"volbeat",id:313,t:["bug"],bst:430},{n:"illumise",id:314,t:["bug"],bst:430},{n:"roselia",id:315,t:["grass","poison"],bst:400},
-  {n:"gulpin",id:316,t:["poison"],bst:302},{n:"swalot",id:317,t:["poison"],bst:467},{n:"carvanha",id:318,t:["water","dark"],bst:305},{n:"sharpedo",id:319,t:["water","dark"],bst:460},
-  {n:"wailmer",id:320,t:["water"],bst:400},{n:"wailord",id:321,t:["water"],bst:500},{n:"numel",id:322,t:["fire","ground"],bst:305},{n:"camerupt",id:323,t:["fire","ground"],bst:460},
-  {n:"torkoal",id:324,t:["fire"],bst:470},{n:"spoink",id:325,t:["psychic"],bst:330},{n:"grumpig",id:326,t:["psychic"],bst:470},{n:"spinda",id:327,t:["normal"],bst:360},
-  {n:"trapinch",id:328,t:["ground"],bst:290},{n:"vibrava",id:329,t:["ground","dragon"],bst:340},{n:"flygon",id:330,t:["ground","dragon"],bst:520},{n:"cacnea",id:331,t:["grass"],bst:335},
-  {n:"cacturne",id:332,t:["grass","dark"],bst:475},{n:"swablu",id:333,t:["normal","flying"],bst:310},{n:"altaria",id:334,t:["dragon","flying"],bst:490},{n:"zangoose",id:335,t:["normal"],bst:458},
-  {n:"seviper",id:336,t:["poison"],bst:458},{n:"lunatone",id:337,t:["rock","psychic"],bst:460},{n:"solrock",id:338,t:["rock","psychic"],bst:460},{n:"barboach",id:339,t:["water","ground"],bst:288},
-  {n:"whiscash",id:340,t:["water","ground"],bst:468},{n:"corphish",id:341,t:["water"],bst:308},{n:"crawdaunt",id:342,t:["water","dark"],bst:468},{n:"baltoy",id:343,t:["ground","psychic"],bst:300},
-  {n:"claydol",id:344,t:["ground","psychic"],bst:500},{n:"lileep",id:345,t:["rock","grass"],bst:355},{n:"cradily",id:346,t:["rock","grass"],bst:495},{n:"anorith",id:347,t:["rock","bug"],bst:355},
-  {n:"armaldo",id:348,t:["rock","bug"],bst:495},{n:"feebas",id:349,t:["water"],bst:200},{n:"milotic",id:350,t:["water"],bst:540},{n:"castform",id:351,t:["normal"],bst:420},
-  {n:"kecleon",id:352,t:["normal"],bst:440},{n:"shuppet",id:353,t:["ghost"],bst:295},{n:"banette",id:354,t:["ghost"],bst:455},{n:"duskull",id:355,t:["ghost"],bst:295},
-  {n:"dusclops",id:356,t:["ghost"],bst:455},{n:"tropius",id:357,t:["grass","flying"],bst:460},{n:"chimecho",id:358,t:["psychic"],bst:455},{n:"absol",id:359,t:["dark"],bst:465},
-  {n:"wynaut",id:360,t:["psychic"],bst:260},{n:"snorunt",id:361,t:["ice"],bst:300},{n:"glalie",id:362,t:["ice"],bst:480},{n:"spheal",id:363,t:["ice","water"],bst:290},
-  {n:"sealeo",id:364,t:["ice","water"],bst:410},{n:"walrein",id:365,t:["ice","water"],bst:530},{n:"clamperl",id:366,t:["water"],bst:345},{n:"huntail",id:367,t:["water"],bst:485},
-  {n:"gorebyss",id:368,t:["water"],bst:485},{n:"relicanth",id:369,t:["water","rock"],bst:485},{n:"luvdisc",id:370,t:["water"],bst:330},{n:"bagon",id:371,t:["dragon"],bst:300},
-  {n:"shelgon",id:372,t:["dragon"],bst:420},{n:"salamence",id:373,t:["dragon","flying"],bst:600},{n:"beldum",id:374,t:["steel","psychic"],bst:300},{n:"metang",id:375,t:["steel","psychic"],bst:420},
-  {n:"metagross",id:376,t:["steel","psychic"],bst:600},{n:"regirock",id:377,t:["rock"],bst:580},{n:"regice",id:378,t:["ice"],bst:580},{n:"registeel",id:379,t:["steel"],bst:580},
-  {n:"latias",id:380,t:["dragon","psychic"],bst:600},{n:"latios",id:381,t:["dragon","psychic"],bst:600},{n:"kyogre",id:382,t:["water"],bst:670},{n:"groudon",id:383,t:["ground"],bst:670},
-  {n:"rayquaza",id:384,t:["dragon","flying"],bst:680},{n:"jirachi",id:385,t:["steel","psychic"],bst:600},{n:"deoxys",id:386,t:["psychic"],bst:600},{n:"turtwig",id:387,t:["grass"],bst:318},
-  {n:"grotle",id:388,t:["grass"],bst:405},{n:"torterra",id:389,t:["grass","ground"],bst:525},{n:"chimchar",id:390,t:["fire"],bst:309},{n:"monferno",id:391,t:["fire","fighting"],bst:405},
-  {n:"infernape",id:392,t:["fire","fighting"],bst:534},{n:"piplup",id:393,t:["water"],bst:314},{n:"prinplup",id:394,t:["water"],bst:405},{n:"empoleon",id:395,t:["water","steel"],bst:530},
-  {n:"starly",id:396,t:["normal","flying"],bst:245},{n:"staravia",id:397,t:["normal","flying"],bst:340},{n:"staraptor",id:398,t:["normal","flying"],bst:485},{n:"bidoof",id:399,t:["normal"],bst:250},
-  {n:"bibarel",id:400,t:["normal","water"],bst:410},{n:"kricketot",id:401,t:["bug"],bst:194},{n:"kricketune",id:402,t:["bug"],bst:384},{n:"shinx",id:403,t:["electric"],bst:263},
-  {n:"luxio",id:404,t:["electric"],bst:363},{n:"luxray",id:405,t:["electric"],bst:523},{n:"budew",id:406,t:["grass","poison"],bst:280},{n:"roserade",id:407,t:["grass","poison"],bst:515},
-  {n:"cranidos",id:408,t:["rock"],bst:350},{n:"rampardos",id:409,t:["rock"],bst:495},{n:"shieldon",id:410,t:["rock","steel"],bst:350},{n:"bastiodon",id:411,t:["rock","steel"],bst:495},
-  {n:"burmy",id:412,t:["bug"],bst:224},{n:"wormadam",id:413,t:["bug","grass"],bst:424},{n:"mothim",id:414,t:["bug","flying"],bst:424},{n:"combee",id:415,t:["bug","flying"],bst:244},
-  {n:"vespiquen",id:416,t:["bug","flying"],bst:474},{n:"pachirisu",id:417,t:["electric"],bst:405},{n:"buizel",id:418,t:["water"],bst:330},{n:"floatzel",id:419,t:["water"],bst:495},
-  {n:"cherubi",id:420,t:["grass"],bst:275},{n:"cherrim",id:421,t:["grass"],bst:450},{n:"shellos",id:422,t:["water"],bst:325},{n:"gastrodon",id:423,t:["water","ground"],bst:475},
-  {n:"ambipom",id:424,t:["normal"],bst:482},{n:"drifloon",id:425,t:["ghost","flying"],bst:348},{n:"drifblim",id:426,t:["ghost","flying"],bst:498},{n:"buneary",id:427,t:["normal"],bst:350},
-  {n:"lopunny",id:428,t:["normal"],bst:480},{n:"mismagius",id:429,t:["ghost"],bst:495},{n:"honchkrow",id:430,t:["dark","flying"],bst:505},{n:"glameow",id:431,t:["normal"],bst:310},
-  {n:"purugly",id:432,t:["normal"],bst:452},{n:"chingling",id:433,t:["psychic"],bst:285},{n:"stunky",id:434,t:["poison","dark"],bst:329},{n:"skuntank",id:435,t:["poison","dark"],bst:479},
-  {n:"bronzor",id:436,t:["steel","psychic"],bst:300},{n:"bronzong",id:437,t:["steel","psychic"],bst:500},{n:"bonsly",id:438,t:["rock"],bst:290},{n:"mime-jr",id:439,t:["psychic","fairy"],bst:310},
-  {n:"happiny",id:440,t:["normal"],bst:220},{n:"chatot",id:441,t:["normal","flying"],bst:411},{n:"spiritomb",id:442,t:["ghost","dark"],bst:485},{n:"gible",id:443,t:["dragon","ground"],bst:300},
-  {n:"gabite",id:444,t:["dragon","ground"],bst:410},{n:"garchomp",id:445,t:["dragon","ground"],bst:600},{n:"munchlax",id:446,t:["normal"],bst:390},{n:"riolu",id:447,t:["fighting"],bst:285},
-  {n:"lucario",id:448,t:["fighting","steel"],bst:525},{n:"hippopotas",id:449,t:["ground"],bst:330},{n:"hippowdon",id:450,t:["ground"],bst:525},{n:"skorupi",id:451,t:["poison","bug"],bst:330},
-  {n:"drapion",id:452,t:["poison","dark"],bst:500},{n:"croagunk",id:453,t:["poison","fighting"],bst:300},{n:"toxicroak",id:454,t:["poison","fighting"],bst:490},{n:"carnivine",id:455,t:["grass"],bst:454},
-  {n:"finneon",id:456,t:["water"],bst:330},{n:"lumineon",id:457,t:["water"],bst:460},{n:"mantyke",id:458,t:["water","flying"],bst:345},{n:"snover",id:459,t:["grass","ice"],bst:334},
-  {n:"abomasnow",id:460,t:["grass","ice"],bst:494},{n:"weavile",id:461,t:["dark","ice"],bst:510},{n:"magnezone",id:462,t:["electric","steel"],bst:535},{n:"lickilicky",id:463,t:["normal"],bst:515},
-  {n:"rhyperior",id:464,t:["ground","rock"],bst:535},{n:"tangrowth",id:465,t:["grass"],bst:535},{n:"electivire",id:466,t:["electric"],bst:540},{n:"magmortar",id:467,t:["fire"],bst:540},
-  {n:"togekiss",id:468,t:["fairy","flying"],bst:545},{n:"yanmega",id:469,t:["bug","flying"],bst:515},{n:"leafeon",id:470,t:["grass"],bst:525},{n:"glaceon",id:471,t:["ice"],bst:525},
-  {n:"gliscor",id:472,t:["ground","flying"],bst:510},{n:"mamoswine",id:473,t:["ice","ground"],bst:530},{n:"porygon-z",id:474,t:["normal"],bst:535},{n:"gallade",id:475,t:["psychic","fighting"],bst:518},
-  {n:"probopass",id:476,t:["rock","steel"],bst:525},{n:"dusknoir",id:477,t:["ghost"],bst:525},{n:"froslass",id:478,t:["ice","ghost"],bst:480},{n:"rotom",id:479,t:["electric","ghost"],bst:440},
-  {n:"uxie",id:480,t:["psychic"],bst:580},{n:"mesprit",id:481,t:["psychic"],bst:580},{n:"azelf",id:482,t:["psychic"],bst:580},{n:"dialga",id:483,t:["steel","dragon"],bst:680},
-  {n:"palkia",id:484,t:["water","dragon"],bst:680},{n:"heatran",id:485,t:["fire","steel"],bst:600},{n:"regigigas",id:486,t:["normal"],bst:670},{n:"giratina",id:487,t:["ghost","dragon"],bst:680},
-  {n:"cresselia",id:488,t:["psychic"],bst:580},{n:"phione",id:489,t:["water"],bst:480},{n:"manaphy",id:490,t:["water"],bst:600},{n:"darkrai",id:491,t:["dark"],bst:600},
-  {n:"shaymin",id:492,t:["grass"],bst:600},{n:"arceus",id:493,t:["normal"],bst:720},{n:"victini",id:494,t:["psychic","fire"],bst:600},{n:"snivy",id:495,t:["grass"],bst:308},
-  {n:"servine",id:496,t:["grass"],bst:413},{n:"serperior",id:497,t:["grass"],bst:528},{n:"tepig",id:498,t:["fire"],bst:308},{n:"pignite",id:499,t:["fire","fighting"],bst:418},
-  {n:"emboar",id:500,t:["fire","fighting"],bst:528},{n:"oshawott",id:501,t:["water"],bst:308},{n:"dewott",id:502,t:["water"],bst:413},{n:"samurott",id:503,t:["water"],bst:528},
-  {n:"patrat",id:504,t:["normal"],bst:255},{n:"watchog",id:505,t:["normal"],bst:420},{n:"lillipup",id:506,t:["normal"],bst:275},{n:"herdier",id:507,t:["normal"],bst:370},
-  {n:"stoutland",id:508,t:["normal"],bst:500},{n:"purrloin",id:509,t:["dark"],bst:281},{n:"liepard",id:510,t:["dark"],bst:446},{n:"pansage",id:511,t:["grass"],bst:316},
-  {n:"simisage",id:512,t:["grass"],bst:498},{n:"pansear",id:513,t:["fire"],bst:316},{n:"simisear",id:514,t:["fire"],bst:498},{n:"panpour",id:515,t:["water"],bst:316},
-  {n:"simipour",id:516,t:["water"],bst:498},{n:"munna",id:517,t:["psychic"],bst:292},{n:"musharna",id:518,t:["psychic"],bst:487},{n:"pidove",id:519,t:["normal","flying"],bst:264},
-  {n:"tranquill",id:520,t:["normal","flying"],bst:358},{n:"unfezant",id:521,t:["normal","flying"],bst:488},{n:"blitzle",id:522,t:["electric"],bst:295},{n:"zebstrika",id:523,t:["electric"],bst:497},
-  {n:"roggenrola",id:524,t:["rock"],bst:280},{n:"boldore",id:525,t:["rock"],bst:390},{n:"gigalith",id:526,t:["rock"],bst:515},{n:"woobat",id:527,t:["psychic","flying"],bst:323},
-  {n:"swoobat",id:528,t:["psychic","flying"],bst:425},{n:"drilbur",id:529,t:["ground"],bst:328},{n:"excadrill",id:530,t:["ground","steel"],bst:508},{n:"audino",id:531,t:["normal"],bst:445},
-  {n:"timburr",id:532,t:["fighting"],bst:305},{n:"gurdurr",id:533,t:["fighting"],bst:405},{n:"conkeldurr",id:534,t:["fighting"],bst:505},{n:"tympole",id:535,t:["water"],bst:294},
-  {n:"palpitoad",id:536,t:["water","ground"],bst:384},{n:"seismitoad",id:537,t:["water","ground"],bst:509},{n:"throh",id:538,t:["fighting"],bst:465},{n:"sawk",id:539,t:["fighting"],bst:465},
-  {n:"sewaddle",id:540,t:["bug","grass"],bst:310},{n:"swadloon",id:541,t:["bug","grass"],bst:380},{n:"leavanny",id:542,t:["bug","grass"],bst:500},{n:"venipede",id:543,t:["bug","poison"],bst:260},
-  {n:"whirlipede",id:544,t:["bug","poison"],bst:360},{n:"scolipede",id:545,t:["bug","poison"],bst:485},{n:"cottonee",id:546,t:["grass","fairy"],bst:280},{n:"whimsicott",id:547,t:["grass","fairy"],bst:480},
-  {n:"petilil",id:548,t:["grass"],bst:280},{n:"lilligant",id:549,t:["grass"],bst:480},{n:"basculin",id:550,t:["water"],bst:460},{n:"sandile",id:551,t:["ground","dark"],bst:292},
-  {n:"krokorok",id:552,t:["ground","dark"],bst:351},{n:"krookodile",id:553,t:["ground","dark"],bst:519},{n:"darumaka",id:554,t:["fire"],bst:315},{n:"darmanitan",id:555,t:["fire"],bst:480},
-  {n:"maractus",id:556,t:["grass"],bst:461},{n:"dwebble",id:557,t:["bug","rock"],bst:325},{n:"crustle",id:558,t:["bug","rock"],bst:485},{n:"scraggy",id:559,t:["dark","fighting"],bst:348},
-  {n:"scrafty",id:560,t:["dark","fighting"],bst:488},{n:"sigilyph",id:561,t:["psychic","flying"],bst:490},{n:"yamask",id:562,t:["ghost"],bst:303},{n:"cofagrigus",id:563,t:["ghost"],bst:483},
-  {n:"tirtouga",id:564,t:["water","rock"],bst:355},{n:"carracosta",id:565,t:["water","rock"],bst:495},{n:"archen",id:566,t:["rock","flying"],bst:401},{n:"archeops",id:567,t:["rock","flying"],bst:567},
-  {n:"trubbish",id:568,t:["poison"],bst:329},{n:"garbodor",id:569,t:["poison"],bst:474},{n:"zorua",id:570,t:["dark"],bst:330},{n:"zoroark",id:571,t:["dark"],bst:510},
-  {n:"minccino",id:572,t:["normal"],bst:300},{n:"cinccino",id:573,t:["normal"],bst:470},{n:"gothita",id:574,t:["psychic"],bst:290},{n:"gothorita",id:575,t:["psychic"],bst:390},
-  {n:"gothitelle",id:576,t:["psychic"],bst:490},{n:"solosis",id:577,t:["psychic"],bst:290},{n:"duosion",id:578,t:["psychic"],bst:370},{n:"reuniclus",id:579,t:["psychic"],bst:490},
-  {n:"ducklett",id:580,t:["water","flying"],bst:305},{n:"swanna",id:581,t:["water","flying"],bst:473},{n:"vanillite",id:582,t:["ice"],bst:305},{n:"vanillish",id:583,t:["ice"],bst:395},
-  {n:"vanilluxe",id:584,t:["ice"],bst:535},{n:"deerling",id:585,t:["normal","grass"],bst:335},{n:"sawsbuck",id:586,t:["normal","grass"],bst:475},{n:"emolga",id:587,t:["electric","flying"],bst:428},
-  {n:"karrablast",id:588,t:["bug"],bst:315},{n:"escavalier",id:589,t:["bug","steel"],bst:495},{n:"foongus",id:590,t:["grass","poison"],bst:294},{n:"amoonguss",id:591,t:["grass","poison"],bst:464},
-  {n:"frillish",id:592,t:["water","ghost"],bst:335},{n:"jellicent",id:593,t:["water","ghost"],bst:480},{n:"alomomola",id:594,t:["water"],bst:470},{n:"joltik",id:595,t:["bug","electric"],bst:319},
-  {n:"galvantula",id:596,t:["bug","electric"],bst:472},{n:"ferroseed",id:597,t:["grass","steel"],bst:305},{n:"ferrothorn",id:598,t:["grass","steel"],bst:489},{n:"klink",id:599,t:["steel"],bst:300},
-  {n:"klang",id:600,t:["steel"],bst:440},{n:"klinklang",id:601,t:["steel"],bst:520},{n:"tynamo",id:602,t:["electric"],bst:275},{n:"eelektrik",id:603,t:["electric"],bst:405},
-  {n:"eelektross",id:604,t:["electric"],bst:515},{n:"elgyem",id:605,t:["psychic"],bst:335},{n:"beheeyem",id:606,t:["psychic"],bst:485},{n:"litwick",id:607,t:["ghost","fire"],bst:275},
-  {n:"lampent",id:608,t:["ghost","fire"],bst:370},{n:"chandelure",id:609,t:["ghost","fire"],bst:520},{n:"axew",id:610,t:["dragon"],bst:320},{n:"fraxure",id:611,t:["dragon"],bst:410},
-  {n:"haxorus",id:612,t:["dragon"],bst:540},{n:"cubchoo",id:613,t:["ice"],bst:305},{n:"beartic",id:614,t:["ice"],bst:505},{n:"cryogonal",id:615,t:["ice"],bst:515},
-  {n:"shelmet",id:616,t:["bug"],bst:305},{n:"accelgor",id:617,t:["bug"],bst:495},{n:"stunfisk",id:618,t:["ground","electric"],bst:471},{n:"mienfoo",id:619,t:["fighting"],bst:350},
-  {n:"mienshao",id:620,t:["fighting"],bst:510},{n:"druddigon",id:621,t:["dragon"],bst:485},{n:"golett",id:622,t:["ground","ghost"],bst:303},{n:"golurk",id:623,t:["ground","ghost"],bst:483},
-  {n:"pawniard",id:624,t:["dark","steel"],bst:340},{n:"bisharp",id:625,t:["dark","steel"],bst:490},{n:"bouffalant",id:626,t:["normal"],bst:490},{n:"rufflet",id:627,t:["normal","flying"],bst:350},
-  {n:"braviary",id:628,t:["normal","flying"],bst:510},{n:"vullaby",id:629,t:["dark","flying"],bst:370},{n:"mandibuzz",id:630,t:["dark","flying"],bst:510},{n:"heatmor",id:631,t:["fire"],bst:484},
-  {n:"durant",id:632,t:["bug","steel"],bst:484},{n:"deino",id:633,t:["dark","dragon"],bst:300},{n:"zweilous",id:634,t:["dark","dragon"],bst:420},{n:"hydreigon",id:635,t:["dark","dragon"],bst:600},
-  {n:"larvesta",id:636,t:["bug","fire"],bst:360},{n:"volcarona",id:637,t:["bug","fire"],bst:550},{n:"cobalion",id:638,t:["steel","fighting"],bst:580},{n:"terrakion",id:639,t:["rock","fighting"],bst:580},
-  {n:"virizion",id:640,t:["grass","fighting"],bst:580},{n:"tornadus",id:641,t:["flying"],bst:580},{n:"thundurus",id:642,t:["electric","flying"],bst:580},{n:"reshiram",id:643,t:["dragon","fire"],bst:680},
-  {n:"zekrom",id:644,t:["dragon","electric"],bst:680},{n:"landorus",id:645,t:["ground","flying"],bst:600},{n:"kyurem",id:646,t:["dragon","ice"],bst:660},{n:"keldeo",id:647,t:["water","fighting"],bst:580},
-  {n:"meloetta",id:648,t:["normal","psychic"],bst:600},{n:"genesect",id:649,t:["bug","steel"],bst:600},{n:"chespin",id:650,t:["grass"],bst:313},{n:"quilladin",id:651,t:["grass"],bst:405},
-  {n:"chesnaught",id:652,t:["grass","fighting"],bst:530},{n:"fennekin",id:653,t:["fire"],bst:307},{n:"braixen",id:654,t:["fire"],bst:409},{n:"delphox",id:655,t:["fire","psychic"],bst:534},
-  {n:"froakie",id:656,t:["water"],bst:314},{n:"frogadier",id:657,t:["water"],bst:405},{n:"greninja",id:658,t:["water","dark"],bst:530},{n:"bunnelby",id:659,t:["normal"],bst:237},
-  {n:"diggersby",id:660,t:["normal","ground"],bst:423},{n:"fletchling",id:661,t:["normal","flying"],bst:278},{n:"fletchinder",id:662,t:["fire","flying"],bst:382},{n:"talonflame",id:663,t:["fire","flying"],bst:499},
-  {n:"scatterbug",id:664,t:["bug"],bst:200},{n:"spewpa",id:665,t:["bug"],bst:213},{n:"vivillon",id:666,t:["bug","flying"],bst:411},{n:"litleo",id:667,t:["fire","normal"],bst:369},
-  {n:"pyroar",id:668,t:["fire","normal"],bst:507},{n:"flabebe",id:669,t:["fairy"],bst:303},{n:"floette",id:670,t:["fairy"],bst:371},{n:"florges",id:671,t:["fairy"],bst:552},
-  {n:"skiddo",id:672,t:["grass"],bst:350},{n:"gogoat",id:673,t:["grass"],bst:531},{n:"pancham",id:674,t:["fighting"],bst:348},{n:"pangoro",id:675,t:["fighting","dark"],bst:495},
-  {n:"furfrou",id:676,t:["normal"],bst:472},{n:"espurr",id:677,t:["psychic"],bst:355},{n:"meowstic",id:678,t:["psychic"],bst:466},{n:"honedge",id:679,t:["steel","ghost"],bst:325},
-  {n:"doublade",id:680,t:["steel","ghost"],bst:448},{n:"aegislash",id:681,t:["steel","ghost"],bst:500},{n:"spritzee",id:682,t:["fairy"],bst:341},{n:"aromatisse",id:683,t:["fairy"],bst:462},
-  {n:"swirlix",id:684,t:["fairy"],bst:341},{n:"slurpuff",id:685,t:["fairy"],bst:480},{n:"inkay",id:686,t:["dark","psychic"],bst:288},{n:"malamar",id:687,t:["dark","psychic"],bst:482},
-  {n:"binacle",id:688,t:["rock","water"],bst:306},{n:"barbaracle",id:689,t:["rock","water"],bst:500},{n:"skrelp",id:690,t:["poison","water"],bst:320},{n:"dragalge",id:691,t:["poison","dragon"],bst:494},
-  {n:"clauncher",id:692,t:["water"],bst:330},{n:"clawitzer",id:693,t:["water"],bst:500},{n:"helioptile",id:694,t:["electric","normal"],bst:289},{n:"heliolisk",id:695,t:["electric","normal"],bst:481},
-  {n:"tyrunt",id:696,t:["rock","dragon"],bst:362},{n:"tyrantrum",id:697,t:["rock","dragon"],bst:521},{n:"amaura",id:698,t:["rock","ice"],bst:362},{n:"aurorus",id:699,t:["rock","ice"],bst:521},
-  {n:"sylveon",id:700,t:["fairy"],bst:525},{n:"hawlucha",id:701,t:["fighting","flying"],bst:500},{n:"dedenne",id:702,t:["electric","fairy"],bst:431},{n:"carbink",id:703,t:["rock","fairy"],bst:500},
-  {n:"goomy",id:704,t:["dragon"],bst:300},{n:"sliggoo",id:705,t:["dragon"],bst:452},{n:"goodra",id:706,t:["dragon"],bst:600},{n:"klefki",id:707,t:["steel","fairy"],bst:470},
-  {n:"phantump",id:708,t:["ghost","grass"],bst:309},{n:"trevenant",id:709,t:["ghost","grass"],bst:474},{n:"pumpkaboo",id:710,t:["ghost","grass"],bst:335},{n:"gourgeist",id:711,t:["ghost","grass"],bst:494},
-  {n:"bergmite",id:712,t:["ice"],bst:304},{n:"avalugg",id:713,t:["ice"],bst:514},{n:"noibat",id:714,t:["flying","dragon"],bst:245},{n:"noivern",id:715,t:["flying","dragon"],bst:535},
-  {n:"xerneas",id:716,t:["fairy"],bst:680},{n:"yveltal",id:717,t:["dark","flying"],bst:680},{n:"zygarde",id:718,t:["dragon","ground"],bst:600},{n:"diancie",id:719,t:["rock","fairy"],bst:600},
-  {n:"hoopa",id:720,t:["psychic","ghost"],bst:600},{n:"volcanion",id:721,t:["fire","water"],bst:600},{n:"rowlet",id:722,t:["grass","flying"],bst:320},{n:"dartrix",id:723,t:["grass","flying"],bst:420},
-  {n:"decidueye",id:724,t:["grass","ghost"],bst:530},{n:"litten",id:725,t:["fire"],bst:320},{n:"torracat",id:726,t:["fire"],bst:420},{n:"incineroar",id:727,t:["fire","dark"],bst:530},
-  {n:"popplio",id:728,t:["water"],bst:320},{n:"brionne",id:729,t:["water"],bst:420},{n:"primarina",id:730,t:["water","fairy"],bst:530},{n:"pikipek",id:731,t:["normal","flying"],bst:265},
-  {n:"trumbeak",id:732,t:["normal","flying"],bst:355},{n:"toucannon",id:733,t:["normal","flying"],bst:485},{n:"yungoos",id:734,t:["normal"],bst:253},{n:"gumshoos",id:735,t:["normal"],bst:418},
-  {n:"grubbin",id:736,t:["bug"],bst:300},{n:"charjabug",id:737,t:["bug","electric"],bst:400},{n:"vikavolt",id:738,t:["bug","electric"],bst:500},{n:"crabrawler",id:739,t:["fighting"],bst:338},
-  {n:"crabominable",id:740,t:["fighting","ice"],bst:478},{n:"oricorio",id:741,t:["fire","flying"],bst:476},{n:"cutiefly",id:742,t:["bug","fairy"],bst:304},{n:"ribombee",id:743,t:["bug","fairy"],bst:464},
-  {n:"rockruff",id:744,t:["rock"],bst:280},{n:"lycanroc",id:745,t:["rock"],bst:487},{n:"wishiwashi",id:746,t:["water"],bst:175},{n:"mareanie",id:747,t:["poison","water"],bst:305},
-  {n:"toxapex",id:748,t:["poison","water"],bst:495},{n:"mudbray",id:749,t:["ground"],bst:385},{n:"mudsdale",id:750,t:["ground"],bst:500},{n:"dewpider",id:751,t:["water","bug"],bst:269},
-  {n:"araquanid",id:752,t:["water","bug"],bst:454},{n:"fomantis",id:753,t:["grass"],bst:250},{n:"lurantis",id:754,t:["grass"],bst:480},{n:"morelull",id:755,t:["grass","fairy"],bst:285},
-  {n:"shiinotic",id:756,t:["grass","fairy"],bst:405},{n:"salandit",id:757,t:["poison","fire"],bst:320},{n:"salazzle",id:758,t:["poison","fire"],bst:480},{n:"stufful",id:759,t:["normal","fighting"],bst:340},
-  {n:"bewear",id:760,t:["normal","fighting"],bst:500},{n:"bounsweet",id:761,t:["grass"],bst:210},{n:"steenee",id:762,t:["grass"],bst:290},{n:"tsareena",id:763,t:["grass"],bst:510},
-  {n:"comfey",id:764,t:["fairy"],bst:485},{n:"oranguru",id:765,t:["normal","psychic"],bst:490},{n:"passimian",id:766,t:["fighting"],bst:490},{n:"wimpod",id:767,t:["bug","water"],bst:230},
-  {n:"golisopod",id:768,t:["bug","water"],bst:530},{n:"sandygast",id:769,t:["ghost","ground"],bst:320},{n:"palossand",id:770,t:["ghost","ground"],bst:480},{n:"pyukumuku",id:771,t:["water"],bst:410},
-  {n:"type-null",id:772,t:["normal"],bst:534},{n:"silvally",id:773,t:["normal"],bst:570},{n:"minior",id:774,t:["rock","flying"],bst:440},{n:"komala",id:775,t:["normal"],bst:480},
-  {n:"turtonator",id:776,t:["fire","dragon"],bst:485},{n:"togedemaru",id:777,t:["electric","steel"],bst:435},{n:"mimikyu",id:778,t:["ghost","fairy"],bst:476},{n:"bruxish",id:779,t:["water","psychic"],bst:475},
-  {n:"drampa",id:780,t:["normal","dragon"],bst:485},{n:"dhelmise",id:781,t:["ghost","grass"],bst:517},{n:"jangmo-o",id:782,t:["dragon"],bst:300},{n:"hakamo-o",id:783,t:["dragon","fighting"],bst:420},
-  {n:"kommo-o",id:784,t:["dragon","fighting"],bst:600},{n:"tapu-koko",id:785,t:["electric","fairy"],bst:570},{n:"tapu-lele",id:786,t:["psychic","fairy"],bst:570},{n:"tapu-bulu",id:787,t:["grass","fairy"],bst:570},
-  {n:"tapu-fini",id:788,t:["water","fairy"],bst:570},{n:"cosmog",id:789,t:["psychic"],bst:200},{n:"cosmoem",id:790,t:["psychic"],bst:400},{n:"solgaleo",id:791,t:["psychic","steel"],bst:680},
-  {n:"lunala",id:792,t:["psychic","ghost"],bst:680},{n:"nihilego",id:793,t:["rock","poison"],bst:570},{n:"buzzwole",id:794,t:["bug","fighting"],bst:570},{n:"pheromosa",id:795,t:["bug","fighting"],bst:570},
-  {n:"xurkitree",id:796,t:["electric"],bst:570},{n:"celesteela",id:797,t:["steel","flying"],bst:570},{n:"kartana",id:798,t:["grass","steel"],bst:570},{n:"guzzlord",id:799,t:["dark","dragon"],bst:570},
-  {n:"necrozma",id:800,t:["psychic"],bst:600},{n:"magearna",id:801,t:["steel","fairy"],bst:600},{n:"marshadow",id:802,t:["fighting","ghost"],bst:600},{n:"poipole",id:803,t:["poison"],bst:420},
-  {n:"naganadel",id:804,t:["poison","dragon"],bst:540},{n:"stakataka",id:805,t:["rock","steel"],bst:570},{n:"blacephalon",id:806,t:["fire","ghost"],bst:570},{n:"zeraora",id:807,t:["electric"],bst:600},
-  {n:"meltan",id:808,t:["steel"],bst:300},{n:"melmetal",id:809,t:["steel"],bst:600},{n:"grookey",id:810,t:["grass"],bst:310},{n:"thwackey",id:811,t:["grass"],bst:420},
-  {n:"rillaboom",id:812,t:["grass"],bst:530},{n:"scorbunny",id:813,t:["fire"],bst:310},{n:"raboot",id:814,t:["fire"],bst:420},{n:"cinderace",id:815,t:["fire"],bst:530},
-  {n:"sobble",id:816,t:["water"],bst:310},{n:"drizzile",id:817,t:["water"],bst:420},{n:"inteleon",id:818,t:["water"],bst:530},{n:"skwovet",id:819,t:["normal"],bst:275},
-  {n:"greedent",id:820,t:["normal"],bst:460},{n:"rookidee",id:821,t:["flying"],bst:245},{n:"corvisquire",id:822,t:["flying"],bst:365},{n:"corviknight",id:823,t:["flying","steel"],bst:495},
-  {n:"blipbug",id:824,t:["bug"],bst:180},{n:"dottler",id:825,t:["bug","psychic"],bst:335},{n:"orbeetle",id:826,t:["bug","psychic"],bst:505},{n:"nickit",id:827,t:["dark"],bst:245},
-  {n:"thievul",id:828,t:["dark"],bst:455},{n:"gossifleur",id:829,t:["grass"],bst:250},{n:"eldegoss",id:830,t:["grass"],bst:460},{n:"wooloo",id:831,t:["normal"],bst:270},
-  {n:"dubwool",id:832,t:["normal"],bst:490},{n:"chewtle",id:833,t:["water"],bst:284},{n:"drednaw",id:834,t:["water","rock"],bst:485},{n:"yamper",id:835,t:["electric"],bst:270},
-  {n:"boltund",id:836,t:["electric"],bst:490},{n:"rolycoly",id:837,t:["rock"],bst:240},{n:"carkol",id:838,t:["rock","fire"],bst:410},{n:"coalossal",id:839,t:["rock","fire"],bst:510},
-  {n:"applin",id:840,t:["grass","dragon"],bst:260},{n:"flapple",id:841,t:["grass","dragon"],bst:485},{n:"appletun",id:842,t:["grass","dragon"],bst:485},{n:"silicobra",id:843,t:["ground"],bst:315},
-  {n:"sandaconda",id:844,t:["ground"],bst:510},{n:"cramorant",id:845,t:["flying","water"],bst:475},{n:"arrokuda",id:846,t:["water"],bst:280},{n:"barraskewda",id:847,t:["water"],bst:490},
-  {n:"toxel",id:848,t:["electric","poison"],bst:242},{n:"toxtricity",id:849,t:["electric","poison"],bst:502},{n:"sizzlipede",id:850,t:["fire","bug"],bst:305},{n:"centiskorch",id:851,t:["fire","bug"],bst:525},
-  {n:"clobbopus",id:852,t:["fighting"],bst:310},{n:"grapploct",id:853,t:["fighting"],bst:480},{n:"sinistea",id:854,t:["ghost"],bst:308},{n:"polteageist",id:855,t:["ghost"],bst:508},
-  {n:"hatenna",id:856,t:["psychic"],bst:265},{n:"hattrem",id:857,t:["psychic"],bst:370},{n:"hatterene",id:858,t:["psychic","fairy"],bst:510},{n:"impidimp",id:859,t:["dark","fairy"],bst:265},
-  {n:"morgrem",id:860,t:["dark","fairy"],bst:370},{n:"grimmsnarl",id:861,t:["dark","fairy"],bst:510},{n:"obstagoon",id:862,t:["dark","normal"],bst:520},{n:"perrserker",id:863,t:["steel"],bst:440},
-  {n:"cursola",id:864,t:["ghost"],bst:510},{n:"sirfetchd",id:865,t:["fighting"],bst:507},{n:"mr-rime",id:866,t:["ice","psychic"],bst:520},{n:"runerigus",id:867,t:["ground","ghost"],bst:483},
-  {n:"milcery",id:868,t:["fairy"],bst:270},{n:"alcremie",id:869,t:["fairy"],bst:495},{n:"falinks",id:870,t:["fighting"],bst:470},{n:"pincurchin",id:871,t:["electric"],bst:435},
-  {n:"snom",id:872,t:["ice","bug"],bst:185},{n:"frosmoth",id:873,t:["ice","bug"],bst:475},{n:"stonjourner",id:874,t:["rock"],bst:470},{n:"eiscue",id:875,t:["ice"],bst:470},
-  {n:"indeedee",id:876,t:["psychic","normal"],bst:475},{n:"morpeko",id:877,t:["electric","dark"],bst:436},{n:"cufant",id:878,t:["steel"],bst:330},{n:"copperajah",id:879,t:["steel"],bst:500},
-  {n:"dracozolt",id:880,t:["electric","dragon"],bst:505},{n:"arctozolt",id:881,t:["electric","ice"],bst:505},{n:"dracovish",id:882,t:["water","dragon"],bst:505},{n:"arctovish",id:883,t:["water","ice"],bst:505},
-  {n:"duraludon",id:884,t:["steel","dragon"],bst:535},{n:"dreepy",id:885,t:["dragon","ghost"],bst:270},{n:"drakloak",id:886,t:["dragon","ghost"],bst:410},{n:"dragapult",id:887,t:["dragon","ghost"],bst:600},
-  {n:"zacian",id:888,t:["fairy"],bst:660},{n:"zamazenta",id:889,t:["fighting"],bst:660},{n:"eternatus",id:890,t:["poison","dragon"],bst:690},{n:"kubfu",id:891,t:["fighting"],bst:385},
-  {n:"urshifu",id:892,t:["fighting","dark"],bst:550},{n:"zarude",id:893,t:["dark","grass"],bst:600},{n:"regieleki",id:894,t:["electric"],bst:580},{n:"regidrago",id:895,t:["dragon"],bst:580},
-  {n:"glastrier",id:896,t:["ice"],bst:580},{n:"spectrier",id:897,t:["ghost"],bst:580},{n:"calyrex",id:898,t:["psychic","grass"],bst:500},{n:"wyrdeer",id:899,t:["normal","psychic"],bst:525},
-  {n:"kleavor",id:900,t:["bug","rock"],bst:500},{n:"ursaluna",id:901,t:["ground","normal"],bst:550},{n:"basculegion",id:902,t:["water","ghost"],bst:530},{n:"sneasler",id:903,t:["fighting","poison"],bst:510},
-  {n:"overqwil",id:904,t:["dark","poison"],bst:510},{n:"enamorus",id:905,t:["fairy","flying"],bst:580},{n:"sprigatito",id:906,t:["grass"],bst:310},{n:"floragato",id:907,t:["grass"],bst:410},
-  {n:"meowscarada",id:908,t:["grass","dark"],bst:530},{n:"fuecoco",id:909,t:["fire"],bst:310},{n:"crocalor",id:910,t:["fire"],bst:411},{n:"skeledirge",id:911,t:["fire","ghost"],bst:530},
-  {n:"quaxly",id:912,t:["water"],bst:310},{n:"quaxwell",id:913,t:["water"],bst:410},{n:"quaquaval",id:914,t:["water","fighting"],bst:530},{n:"lechonk",id:915,t:["normal"],bst:254},
-  {n:"oinkologne",id:916,t:["normal"],bst:489},{n:"tarountula",id:917,t:["bug"],bst:210},{n:"spidops",id:918,t:["bug"],bst:404},{n:"nymble",id:919,t:["bug"],bst:210},
-  {n:"lokix",id:920,t:["bug","dark"],bst:450},{n:"pawmi",id:921,t:["electric"],bst:240},{n:"pawmo",id:922,t:["electric","fighting"],bst:350},{n:"pawmot",id:923,t:["electric","fighting"],bst:490},
-  {n:"tandemaus",id:924,t:["normal"],bst:305},{n:"maushold",id:925,t:["normal"],bst:470},{n:"fidough",id:926,t:["fairy"],bst:312},{n:"dachsbun",id:927,t:["fairy"],bst:477},
-  {n:"smoliv",id:928,t:["grass","normal"],bst:260},{n:"dolliv",id:929,t:["grass","normal"],bst:354},{n:"arboliva",id:930,t:["grass","normal"],bst:510},{n:"squawkabilly",id:931,t:["normal","flying"],bst:417},
-  {n:"nacli",id:932,t:["rock"],bst:280},{n:"naclstack",id:933,t:["rock"],bst:355},{n:"garganacl",id:934,t:["rock"],bst:500},{n:"charcadet",id:935,t:["fire"],bst:255},
-  {n:"armarouge",id:936,t:["fire","psychic"],bst:525},{n:"ceruledge",id:937,t:["fire","ghost"],bst:525},{n:"tadbulb",id:938,t:["electric"],bst:272},{n:"bellibolt",id:939,t:["electric"],bst:495},
-  {n:"wattrel",id:940,t:["electric","flying"],bst:280},{n:"kilowattrel",id:941,t:["electric","flying"],bst:490},{n:"maschiff",id:942,t:["dark"],bst:340},{n:"mabosstiff",id:943,t:["dark"],bst:505},
-  {n:"shroodle",id:944,t:["poison","normal"],bst:290},{n:"grafaiai",id:945,t:["poison","normal"],bst:485},{n:"bramblin",id:946,t:["grass","ghost"],bst:275},{n:"brambleghast",id:947,t:["grass","ghost"],bst:480},
-  {n:"toedscool",id:948,t:["ground","grass"],bst:335},{n:"toedscruel",id:949,t:["ground","grass"],bst:515},{n:"klawf",id:950,t:["rock"],bst:450},{n:"capsakid",id:951,t:["grass"],bst:304},
-  {n:"scovillain",id:952,t:["grass","fire"],bst:486},{n:"rellor",id:953,t:["bug"],bst:270},{n:"rabsca",id:954,t:["bug","psychic"],bst:470},{n:"flittle",id:955,t:["psychic"],bst:255},
-  {n:"espathra",id:956,t:["psychic"],bst:481},{n:"tinkatink",id:957,t:["fairy","steel"],bst:297},{n:"tinkatuff",id:958,t:["fairy","steel"],bst:380},{n:"tinkaton",id:959,t:["fairy","steel"],bst:506},
-  {n:"wiglett",id:960,t:["water"],bst:245},{n:"wugtrio",id:961,t:["water"],bst:425},{n:"bombirdier",id:962,t:["flying","dark"],bst:485},{n:"finizen",id:963,t:["water"],bst:315},
-  {n:"palafin",id:964,t:["water"],bst:457},{n:"varoom",id:965,t:["steel","poison"],bst:300},{n:"revavroom",id:966,t:["steel","poison"],bst:500},{n:"cyclizar",id:967,t:["dragon","normal"],bst:501},
-  {n:"orthworm",id:968,t:["steel"],bst:480},{n:"glimmet",id:969,t:["rock","poison"],bst:350},{n:"glimmora",id:970,t:["rock","poison"],bst:525},{n:"greavard",id:971,t:["ghost"],bst:290},
-  {n:"houndstone",id:972,t:["ghost"],bst:488},{n:"flamigo",id:973,t:["flying","fighting"],bst:500},{n:"cetoddle",id:974,t:["ice"],bst:334},{n:"cetitan",id:975,t:["ice"],bst:521},
-  {n:"veluza",id:976,t:["water","psychic"],bst:478},{n:"dondozo",id:977,t:["water"],bst:530},{n:"tatsugiri",id:978,t:["dragon","water"],bst:475},{n:"annihilape",id:979,t:["fighting","ghost"],bst:535},
-  {n:"clodsire",id:980,t:["poison","ground"],bst:430},{n:"farigiraf",id:981,t:["normal","psychic"],bst:520},{n:"dudunsparce",id:982,t:["normal"],bst:520},{n:"kingambit",id:983,t:["dark","steel"],bst:550},
-  {n:"great-tusk",id:984,t:["ground","fighting"],bst:570},{n:"scream-tail",id:985,t:["fairy","psychic"],bst:570},{n:"brute-bonnet",id:986,t:["grass","dark"],bst:570},{n:"flutter-mane",id:987,t:["ghost","fairy"],bst:570},
-  {n:"slither-wing",id:988,t:["bug","fighting"],bst:570},{n:"sandy-shocks",id:989,t:["electric","ground"],bst:570},{n:"iron-treads",id:990,t:["ground","steel"],bst:570},{n:"iron-bundle",id:991,t:["ice","water"],bst:570},
-  {n:"iron-hands",id:992,t:["fighting","electric"],bst:570},{n:"iron-jugulis",id:993,t:["dark","flying"],bst:570},{n:"iron-moth",id:994,t:["fire","poison"],bst:570},{n:"iron-thorns",id:995,t:["rock","electric"],bst:570},
-  {n:"frigibax",id:996,t:["dragon","ice"],bst:320},{n:"arctibax",id:997,t:["dragon","ice"],bst:423},{n:"baxcalibur",id:998,t:["dragon","ice"],bst:600},{n:"gimmighoul",id:999,t:["ghost"],bst:300},
-  {n:"gholdengo",id:1000,t:["steel","ghost"],bst:550},{n:"wo-chien",id:1001,t:["dark","grass"],bst:570},{n:"chien-pao",id:1002,t:["dark","ice"],bst:570},{n:"ting-lu",id:1003,t:["dark","ground"],bst:570},
-  {n:"chi-yu",id:1004,t:["dark","fire"],bst:570},{n:"roaring-moon",id:1005,t:["dragon","dark"],bst:590},{n:"iron-valiant",id:1006,t:["fairy","fighting"],bst:590},{n:"koraidon",id:1007,t:["fighting","dragon"],bst:670},
-  {n:"miraidon",id:1008,t:["electric","dragon"],bst:670},{n:"walking-wake",id:1009,t:["water","dragon"],bst:590},{n:"iron-leaves",id:1010,t:["grass","psychic"],bst:590},{n:"dipplin",id:1011,t:["grass","dragon"],bst:485},
-  {n:"poltchageist",id:1012,t:["grass","ghost"],bst:308},{n:"sinistcha",id:1013,t:["grass","ghost"],bst:508},{n:"okidogi",id:1014,t:["poison","fighting"],bst:555},{n:"munkidori",id:1015,t:["poison","psychic"],bst:555},
-  {n:"fezandipiti",id:1016,t:["poison","fairy"],bst:555},{n:"ogerpon",id:1017,t:["grass"],bst:550},{n:"archaludon",id:1018,t:["steel","dragon"],bst:600},{n:"hydrapple",id:1019,t:["grass","dragon"],bst:540},
-  {n:"gouging-fire",id:1020,t:["fire","dragon"],bst:590},{n:"raging-bolt",id:1021,t:["electric","dragon"],bst:590},{n:"iron-boulder",id:1022,t:["rock","psychic"],bst:590},{n:"iron-crown",id:1023,t:["steel","psychic"],bst:590},
-  {n:"terapagos",id:1024,t:["normal"],bst:450},{n:"pecharunt",id:1025,t:["poison","ghost"],bst:600}
-];
+/* ---------------- Data loading ----------------
+   Pokémon data and pronunciations live in data/*.csv rather than inline, so they
+   can be edited in a spreadsheet without touching code. The cost is that the app
+   now needs fetch(), which browsers block on file:// as a cross-origin request —
+   it must be served over http(s). GitHub Pages does that; opening index.html by
+   double-clicking it will not work. Once loaded everything is still local: no
+   third-party host is involved, and the browser cache covers repeat visits. */
+let POKEMON = [];
+let SPEECH_OVERRIDES = {};
+let SPELLABLE_POKEMON = [];
+
+// Minimal RFC-4180-ish parser: handles quoted fields and doubled quotes inside
+// them, which is all a spreadsheet export can realistically throw at us.
+function parseCsv(text){
+  const rows = [];
+  let row = [], field = "", quoted = false;
+  for(let i=0; i<text.length; i++){
+    const c = text[i];
+    if(quoted){
+      if(c === '"' && text[i+1] === '"'){ field += '"'; i++; }
+      else if(c === '"') quoted = false;
+      else field += c;
+    } else if(c === '"') quoted = true;
+    else if(c === ","){ row.push(field); field = ""; }
+    else if(c === "\n" || c === "\r"){
+      if(c === "\r" && text[i+1] === "\n") i++;
+      row.push(field); field = "";
+      if(row.some(v => v !== "")) rows.push(row);
+      row = [];
+    } else field += c;
+  }
+  row.push(field);
+  if(row.some(v => v !== "")) rows.push(row);
+  const header = rows.shift().map(h => h.trim());
+  return rows.map(r => Object.fromEntries(header.map((h,i) => [h, (r[i] ?? "").trim()])));
+}
+
+async function fetchCsv(path){
+  const res = await fetch(path);
+  if(!res.ok) throw new Error(path + " -> HTTP " + res.status);
+  return parseCsv(await res.text());
+}
+
+async function loadData(){
+  const [pokeRows, sayRows] = await Promise.all([
+    fetchCsv("data/pokemon.csv"),
+    fetchCsv("data/pronunciations.csv"),
+  ]);
+  POKEMON = pokeRows.map(r => ({
+    n: r.name,
+    id: Number(r.id),
+    t: [r.type1, r.type2].filter(Boolean),
+    bst: Number(r.base_stat_total),
+  }));
+  SPEECH_OVERRIDES = Object.fromEntries(sayRows.map(r => [r.name, r.say_as]));
+  SPELLABLE_POKEMON = POKEMON.filter(p => /^[A-Za-z]+$/.test(p.n));
+  if(!POKEMON.length) throw new Error("data/pokemon.csv is empty");
+}
+
+function showDataError(err){
+  document.body.innerHTML = '<div style="max-width:34rem;margin:12vh auto;padding:0 1.5rem;'
+    + 'font:16px/1.6 system-ui,sans-serif;color:#3f3d36;text-align:center">'
+    + '<h1 style="font-size:1.3rem">Couldn\'t load the Pok&eacute;mon data</h1>'
+    + '<p>The app reads <code>data/pokemon.csv</code> and <code>data/pronunciations.csv</code>, '
+    + 'which needs this page served over http rather than opened as a file.</p>'
+    + '<p style="color:#8a5a12"><code>' + String(err && err.message || err) + '</code></p></div>';
+}
+
 const artwork = id => `pokemon/${id}.png`;
 // Pokémon usable in Spelling: single plain-letter names only (no hyphens/spaces/colons),
 // same rule that already excludes Nidoran♀/♂, Farfetch'd, and Mr. Mime from the roster.
-const SPELLABLE_POKEMON = POKEMON.filter(p => /^[A-Za-z]+$/.test(p.n));
 
 /* ---------------- Pokopia item data (name + direct image URL) ---------------- */
 const ITEMS = [
@@ -2332,259 +2140,6 @@ function renderSpell(p){
 
    Use tools/pronounce.html to audit these by ear — it lists every name with a
    play button and collects the ones that sound wrong. */
-const SPEECH_OVERRIDES = {
-  accelgor:       "ak sel gore",   // checked
-  aegislash:      "ee jih slash",   // checked
-  aerodactyl:     "air oh dack tul",   // checked
-  araquanid:      "ar uh kwah nid",   // checked
-  arcanine:       "ar kuh nine",   // checked
-  arceus:         "ar kee us",   // checked
-  archaludon:     "ar kal oo don",   // unverified
-  archeops:       "ar kee ops",   // checked
-  armarouge:      "ar muh rooj",   // unverified
-  barboach:       "bar bohch",   // checked
-  barraskewda:    "bar uh skew duh",   // unverified
-  basculegion:    "bas kyoo lee jun",   // unverified
-  bellsprout:     "bell sprout",   // checked
-  blacephalon:    "bluh sef uh lon",   // unverified
-  blitzle:        "blit zul",   // checked
-  bouffalant:     "boo fuh lont",   // checked
-  buizel:         "bwee zul",   // checked
-  buzzwole:       "buzz wole",   // unverified
-  calyrex:        "kal ih rex",   // unverified
-  celebi:         "sell uh bee",   // unverified
-  celesteela:     "seh les tee luh",   // unverified
-  ceruledge:      "seh roo lej",   // unverified
-  cetitan:        "see tie tan",   // unverified
-  cetoddle:       "see toddle",   // unverified
-  chandelure:     "shan duh loor",   // unverified
-  chansey:        "chan see",   // checked
-  charcadet:      "char kuh det",   // unverified
-  charmeleon:     "char meal ee un",   // checked
-  chatot:         "cha tot",   // checked
-  cherrim:        "chair um",   // checked
-  cherubi:        "chuh roo bee",   // checked
-  chesnaught:     "chess nawt",   // checked
-  chespin:        "chess pin",   // checked
-  chewtle:        "chew tul",   // unverified
-  "chi-yu":       "chee yoo",   // checked
-  "chien-pao":    "chen pow",   // checked
-  chikorita:      "chik oh ree tah",   // checked
-  chimchar:       "chim char",   // checked
-  chimecho:       "chime ek oh",   // checked
-  chinchou:       "chin chow",   // checked
-  chingling:      "ching ling",   // checked
-  cinccino:       "chin chee noh",   // checked
-  corviknight:    "corvi nite",   // unverified
-  corvisquire:    "corvi skwire",   // unverified
-  cosmoem:        "koz mo em",   // unverified
-  crabominable:   "cruh bom in uh bul",   // unverified
-  cyclizar:       "sy cli zar",   // unverified
-  cyndaquil:      "sin duh kwil",   // checked
-  dachsbun:       "daks bun",   // unverified
-  decidueye:      "deh sid oo eye",   // checked
-  deino:          "dye no",   // checked
-  delcatty:       "del kat ee",   // checked
-  deoxys:         "dee ok sis",   // checked
-  diancie:        "dee an see",   // unverified
-  diggersby:      "dig urz bee",   // checked
-  doublade:       "doo blade",   // unverified
-  dragalge:       "druh gal jee",   // checked
-  dudunsparce:    "doo dun sparse",   // unverified
-  dunsparce:      "dun sparse",   // checked
-  eiscue:         "ice cue",   // unverified
-  electabuzz:     "uh leck tuh buzz",   // checked
-  elgyem:         "el jee em",   // checked
-  emboar:         "em bore",   // checked
-  entei:          "en tay",   // unverified
-  espathra:       "es pah thrah",   // unverified
-  eternatus:      "ee ter nay tus",   // unverified
-  exploud:        "eks plowd",   // checked
-  farigiraf:      "fair ih graf",   // unverified
-  fezandipiti:    "fez an dip ih tee",   // unverified
-  fidough:        "fy doh",   // unverified
-  flaaffy:        "fla fee",   // checked
-  fletchinder:    "fletch in der",   // checked
-  floette:        "flo et",   // checked
-  florges:        "flor jiss",   // checked
-  flygon:         "fly gon",   // checked
-  frigibax:       "frij ih bax",   // unverified
-  furfrou:        "fur froo",   // checked
-  garchomp:       "gar chomp",   // checked
-  genesect:       "jen uh sekt",   // unverified
-  gengar:         "gang gar",   // checked
-  geodude:        "jee oh dood",   // checked
-  gible:          "gib ul",   // checked
-  gigalith:       "gig uh lith",   // unverified
-  gimmighoul:     "gim ee gool",   // unverified
-  girafarig:      "jer af ah rig",   // checked
-  giratina:       "gee ruh tee nuh",   // unverified
-  glaceon:        "glay see on",   // checked
-  gorebyss:       "gor ih bis",   // checked
-  gourgeist:      "gor guyst",   // checked
-  groudon:        "grow don",   // checked
-  grovyle:        "grow vile",   // checked
-  gyarados:       "gair uh dose",   // checked
-  "hakamo-o":     "hah kah mo oh",   // checked
-  hawlucha:       "haw loo chuh",   // unverified
-  hitmonchan:     "hit mon chan",   // checked
-  "ho-oh":        "ho oh",   // checked
-  honchkrow:      "honch krow",   // checked
-  houndoom:       "hown doom",   // checked
-  houndour:       "hown dow er",   // checked
-  houndstone:     "hound stone",   // unverified
-  hydrapple:      "high drapple",   // unverified
-  hydreigon:      "hi dry gin",   // checked
-  hypno:          "hip no",   // checked
-  igglybuff:      "ig lee buff",   // checked
-  incineroar:     "in sin er roar",   // checked
-  ivysaur:        "eye vee sore",   // checked
-  "jangmo-o":     "jang mo oh",   // checked
-  jellicent:      "jel uh sent",   // checked
-  jirachi:        "jih rah chee",   // unverified
-  jynx:           "jinks",   // checked
-  kangaskhan:     "kang gus kahn",   // unverified
-  kilowattrel:    "kill oh wat rel",   // unverified
-  "kommo-o":      "koh mo oh",   // checked
-  koraidon:       "kuh rye don",   // unverified
-  kyogre:         "kai oh gur",   // checked
-  kyurem:         "kyoo rem",   // unverified
-  lechonk:        "leh chonk",   // unverified
-  ledyba:         "led ee bah",   // checked
-  loudred:        "low dred",   // checked
-  lucario:        "loo car ee oh",   // unverified
-  lugia:          "loo gee uh",   // checked
-  lycanroc:       "lie kan rok",   // checked
-  machoke:        "muh choke",   // checked
-  magearna:       "muh gear nuh",   // unverified
-  magikarp:       "mag ih karp",   // checked
-  mandibuzz:      "man dih buzz",   // checked
-  mantyke:        "man tike",   // checked
-  masquerain:     "mas kuh rain",   // checked
-  medicham:       "med ih cham",   // checked
-  meloetta:       "mel oh et uh",   // unverified
-  meowscarada:    "meow skuh rah duh",   // unverified
-  milcery:        "mil suh ree",   // unverified
-  milotic:        "my lot ik",   // unverified
-  "mime-jr":      "mime junior",   // checked
-  mimikyu:        "mim ih kyoo",   // unverified
-  minccino:       "min chee noh",   // checked
-  miraidon:       "muh rye don",   // unverified
-  mismagius:      "mis mag ee us",   // checked
-  "mr-rime":      "mister rime",   // checked
-  munchlax:       "munch laks",   // checked
-  munna:          "moon uh",   // checked
-  necrozma:       "neh kroz muh",   // unverified
-  nidoqueen:      "nee doe queen",   // checked
-  ninetales:      "nine tales",   // unverified
-  ogerpon:        "oh gur pon",   // unverified
-  okidogi:        "oh kee doh gee",   // unverified
-  omanyte:        "ahm uh nite",   // checked
-  pachirisu:      "pah chee ree soo",   // checked
-  panpour:        "pan poor",   // unverified
-  pecharunt:      "peh chuh runt",   // unverified
-  phanpy:         "fan pee",   // checked
-  pheromosa:      "fair uh moh suh",   // unverified
-  phione:         "fee oh nay",   // unverified
-  pichu:          "pee choo",   // checked
-  pidgeot:        "pidj it",   // checked
-  pidgeotto:      "pid jyo toe",   // checked
-  pidgey:         "pidj ee",   // checked
-  pincurchin:     "pin ur chin",   // unverified
-  politoed:       "pol ee towd",   // checked
-  poltchageist:   "pol chah guyst",   // unverified
-  polteageist:    "pole ter guyst",   // unverified
-  ponyta:         "po nee tuh",   // checked
-  poochyena:      "poo chee yen ah",   // checked
-  porygon:        "por ee gon",   // checked
-  "porygon-z":    "por ee gon zee",   // checked
-  porygon2:       "por ee gon two",   // checked
-  psyduck:        "sy duck",   // checked
-  pyroar:         "pie roar",   // checked
-  quagsire:       "kwag sire",   // checked
-  quaquaval:      "kwah kwah val",   // unverified
-  quilava:        "kwi lah vah",   // checked
-  quilladin:      "kwil uh din",   // checked
-  raichu:         "rye chew",   // checked
-  raikou:         "rye koo",   // unverified
-  rayquaza:       "ray kway zuh",   // checked
-  regice:         "rej ice",   // checked
-  regidrago:      "rej ee drah go",   // unverified
-  regieleki:      "rej ee eh lek ee",   // unverified
-  regigigas:      "rej ee guy gus",   // checked
-  regirock:       "rej ee rock",   // checked
-  registeel:      "rej ee steel",   // checked
-  rhydon:         "rye don",   // checked
-  rhyhorn:        "rye horn",   // checked
-  rhyperior:      "rye peer ee er",   // checked
-  roggenrola:     "rah gen roh luh",   // checked
-  salamence:      "sah lah mense",   // checked
-  sandshrew:      "sand shrew",   // checked
-  sceptile:       "sep tile",   // checked
-  scizor:         "siz or",   // checked
-  scyther:        "sy ther",   // checked
-  seismitoad:     "size mih toad",   // unverified
-  serperior:      "ser peer ee or",   // checked
-  shiinotic:      "shee noh tik",   // unverified
-  shroomish:      "shroom ish",   // checked
-  sigilyph:       "sij ih lif",   // unverified
-  simipour:       "sim ee poor",   // unverified
-  simisage:       "sim ee sayj",   // checked
-  simisear:       "sim ee seer",   // checked
-  sinistcha:      "sin ist chah",   // unverified
-  sirfetchd:      "sir fetched",   // checked
-  skeledirge:     "skel uh durj",   // unverified
-  smoochum:       "smoo chum",   // checked
-  sneasel:        "snee sel",   // checked
-  solgaleo:       "sol guh lay oh",   // unverified
-  squawkabilly:   "squawk uh bil ee",   // unverified
-  stonjourner:    "stone jur ner",   // unverified
-  suicune:        "swee koon",   // checked
-  sylveon:        "sil vee on",   // unverified
-  tangela:        "tang guh luh",   // checked
-  "tapu-bulu":    "tah poo boo loo",   // checked
-  "tapu-fini":    "tah poo fee nee",   // checked
-  "tapu-koko":    "tah poo koh koh",   // checked
-  "tapu-lele":    "tah poo lay lay",   // checked
-  tarountula:     "tuh roun chuh luh",   // unverified
-  tatsugiri:      "tot soo gee ree",   // unverified
-  throh:          "throw",   // unverified
-  "ting-lu":      "ting loo",   // checked
-  tirtouga:       "teer too guh",   // checked
-  toedscool:      "toads cool",   // unverified
-  toedscruel:     "toads cruel",   // unverified
-  togedemaru:     "toh geh deh mah roo",   // unverified
-  togekiss:       "toe guh kiss",   // checked
-  togepi:         "toe geh pee",   // checked
-  togetic:        "toe geh tik",   // checked
-  toxtricity:     "tox tris ih tee",   // unverified
-  trapinch:       "tra pinch",   // checked
-  tsareena:       "zar ree nuh",   // checked
-  tympole:        "tim pole",   // unverified
-  tynamo:         "tie nuh mo",   // unverified
-  typhlosion:     "tie flow shin",   // checked
-  tyranitar:      "tie ran ih tar",   // checked
-  tyrogue:        "tie rogue",   // checked
-  vespiquen:      "ves pih kwen",   // checked
-  volcarona:      "vol kuh roh nuh",   // unverified
-  walrein:        "wal rain",   // checked
-  watchog:        "watch og",   // unverified
-  whimsicott:     "whim zih cot",   // unverified
-  whiscash:       "wis cash",   // checked
-  whismur:        "wis mur",   // checked
-  wigglytuff:     "wig lee tuff",   // checked
-  "wo-chien":     "woh chen",   // checked
-  wynaut:         "why not",   // checked
-  wyrdeer:        "weer deer",   // unverified
-  xatu:           "zah too",   // checked
-  xerneas:        "zur nee us",   // checked
-  xurkitree:      "zur kih tree",   // unverified
-  yveltal:        "ee vel tahl",   // checked
-  zacian:         "zay shun",   // unverified
-  zoroark:        "zoh roh ark",   // unverified
-  zweilous:       "zvye lis",   // checked
-  zygarde:        "zye guard",   // checked
-};
 function sayAs(name){
   const key = String(name).toLowerCase();
   if(SPEECH_OVERRIDES[key]) return SPEECH_OVERRIDES[key];
@@ -3382,10 +2937,17 @@ function renderTrailSettings(){
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
 }
 
-/* ---------------- wire up ---------------- */
-loadSettings();
-renderStreak();
-renderTrailSettings();
+/* ---------------- wire up ----------------
+   Listeners bind immediately (they only fire on interaction), but anything that
+   reads the roster has to wait for the CSVs to arrive. */
+(async function boot(){
+  try{ await loadData(); }
+  catch(err){ console.error(err); showDataError(err); return; }
+  loadSettings();
+  renderStreak();
+  renderTrailSettings();
+  window.__dataReady = true;      // tools/pronounce.html waits on this
+})();
 
 $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });

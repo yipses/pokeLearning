@@ -258,23 +258,26 @@ $("#clear").addEventListener("click", () => {
   flags.clear(); edits = {}; save(); render(); refreshOut();
 });
 
-// Pull the roster and the override map straight out of the app.
-$("#app").addEventListener("load", () => {
+// Pull the roster and overrides out of the running app, and provenance out of
+// the CSV itself. The app loads its data asynchronously now, so wait for the
+// flag it sets rather than reading the moment the frame fires load.
+$("#app").addEventListener("load", async () => {
   const w = $("#app").contentWindow;
   try{
-    // POKEMON and SPEECH_OVERRIDES are top-level `const`s, so they live in the
-    // frame's lexical scope rather than on its window — eval reaches them.
+    for(let i = 0; i < 100 && !w.__dataReady; i++) await new Promise(r => setTimeout(r, 100));
+    if(!w.__dataReady) throw new Error("the app never finished loading its data");
+    // POKEMON and SPEECH_OVERRIDES are top-level bindings in the frame's own
+    // lexical scope rather than properties of its window — eval reaches them.
     POKE = w.eval("POKEMON");
     OVERRIDES = w.eval("SPEECH_OVERRIDES");
-    // Provenance lives in trailing comments on the map, which eval can't see —
-    // read it out of the frame's own source instead.
-    const src = w.document.documentElement.innerHTML;
-    const blk = src.match(/const SPEECH_OVERRIDES = \{([\s\S]*?)\n\};/);
-    if(blk) for(const m of blk[1].matchAll(/^\s*"?([a-z0-9-]+)"?:\s*"[^"]*",\s*\/\/\s*(\w+)/gm))
-      PROV[m[1]] = m[2];
+    const csv = await (await fetch("../data/pronunciations.csv")).text();
+    for(const line of csv.split(/\r?\n/).slice(1)){
+      const [name,, source] = line.split(",");
+      if(name) PROV[name.trim()] = (source || "unverified").trim();
+    }
   }catch(err){
     $("#warn").hidden = false;
-    $("#warn").textContent = "Couldn't read the roster from ../index.html — " + err.message
+    $("#warn").textContent = "Couldn't read the data — " + err.message
       + "  This page must be served over http:// rather than opened as a file.";
     return;
   }
