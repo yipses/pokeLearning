@@ -37,6 +37,13 @@
   li{ padding:10px 4px; border-bottom:1px solid var(--line); }
   li.flagged{ background:#fdecea; }
   li.edited{ background:#fff7e8; }
+  .help{ margin:8px 0 0; font-size:.85rem; color:var(--soft); max-width:70ch; }
+  .help b{ color:var(--ink); }
+  /* A row whose box still holds the plain name has nothing to compare against —
+     Before and After would speak identical text. Say so rather than letting the
+     buttons look live and produce the same sound twice. */
+  button:disabled{ opacity:.4; cursor:default; border-color:var(--line); }
+  .same{ font-size:.78rem; color:var(--soft); font-style:italic; }
   .top{ display:flex; align-items:center; gap:10px; margin-bottom:7px; }
   .id{ color:var(--soft); font-variant-numeric:tabular-nums; font-size:.8rem; min-width:50px; }
   .nm{ font-weight:700; text-transform:capitalize; font-size:1.02rem; }
@@ -59,13 +66,17 @@
 
 <header>
   <h1>Pronunciation audit <span class="count" id="progress"></span></h1>
+  <p class="help">The box is what the app says. <b>Type a respelling into it</b> to try a fix by ear — <b>▶ After</b> plays whatever is in the box, and it collects at the bottom for me. <b>A/B</b> only lights up once the box differs from the name; until then there is nothing to compare.</p>
   <div class="controls">
     <input type="search" id="q" placeholder="Filter by name…">
+    <!-- Defaults to the respelled set: those are the only rows with something to
+         compare, and scrolling 1,021 identical-sounding rows to find 29 is not a
+         reasonable opening move. -->
     <select id="show">
-      <option value="all">All names</option>
-      <option value="over">Has an override</option>
-      <option value="plain">No override</option>
+      <option value="over" selected>Respelled in the app</option>
       <option value="todo">Flagged or edited</option>
+      <option value="plain">Not respelled</option>
+      <option value="all">All names</option>
     </select>
     <select id="voice"><option>Loading voices…</option></select>
   </div>
@@ -101,6 +112,8 @@ const save = () => {
 // What the app would say today: an edit beats an override, an override beats the raw name.
 const shipped = n => OVERRIDES[n.toLowerCase()] || n;
 const current = n => (n in edits) ? edits[n] : shipped(n);
+// Only worth an A/B if the text to speak actually differs from the plain name.
+const comparable = n => current(n).trim().toLowerCase() !== n.trim().toLowerCase();
 
 function loadVoices(){
   voices = speechSynthesis.getVoices();
@@ -145,6 +158,17 @@ function refreshOut(){
   $("#out").value = lines.join("\n");
   const touched = new Set([...flags, ...Object.keys(edits).filter(n => edits[n] !== shipped(n))]);
   $("#progress").textContent = `${touched.size} to fix of ${POKE.length}`;
+
+  // Put the size of each set on its own option — knowing "29" up front is the
+  // difference between a short job and an open-ended one.
+  const over = POKE.filter(p => OVERRIDES[p.n.toLowerCase()]).length;
+  const label = {
+    over:  `Respelled in the app (${over})`,
+    todo:  `Flagged or edited (${touched.size})`,
+    plain: `Not respelled (${POKE.length - over})`,
+    all:   `All names (${POKE.length})`,
+  };
+  for(const opt of $("#show").options) opt.textContent = label[opt.value];
 }
 
 function render(){
@@ -172,11 +196,12 @@ function render(){
         <button class="flag ${flags.has(p.n) ? "on" : ""}">✗ Wrong</button>
       </div>
       <div class="row2">
-        <button class="before">▶ Before</button>
-        <button class="ab">A / B</button>
+        <button class="before">▶ ${comparable(p.n) ? "Before" : "Play"}</button>
+        <button class="ab" ${comparable(p.n) ? "" : "disabled"} title="Needs a respelling in the box to compare against">A / B</button>
         <input class="try" value="${String(current(p.n)).replace(/"/g,"&quot;")}" spellcheck="false">
-        <button class="after">▶ After</button>
+        <button class="after" ${comparable(p.n) ? "" : "disabled"}>▶ After</button>
         <button class="reset" title="Undo your edit">↺</button>
+        ${comparable(p.n) ? "" : `<span class="same">no respelling yet — type one to hear a difference</span>`}
       </div>
     </li>`;
   }).join("");
@@ -206,6 +231,13 @@ $("#list").addEventListener("input", e => {
   const val = e.target.value;
   if(val === shipped(name)) delete edits[name]; else edits[name] = val;
   li.classList.toggle("edited", name in edits);
+  // Light A/B and After up the moment the box says something other than the name.
+  const live = comparable(name);
+  li.querySelector(".ab").disabled = !live;
+  li.querySelector(".after").disabled = !live;
+  li.querySelector(".before").textContent = live ? "▶ Before" : "▶ Play";
+  const note = li.querySelector(".same");
+  if(note) note.hidden = live;
   save(); refreshOut();
 });
 
