@@ -47,6 +47,8 @@
   .top{ display:flex; align-items:center; gap:10px; margin-bottom:7px; }
   .id{ color:var(--soft); font-variant-numeric:tabular-nums; font-size:.8rem; min-width:50px; }
   .nm{ font-weight:700; text-transform:capitalize; font-size:1.02rem; }
+  .tag-unverified{ background:#fbe6c4; color:#8a5a12; }
+  .tag-checked{ background:#d9efdc; color:#2f6b40; }
   .tag{ font-size:.72rem; font-weight:700; padding:1px 7px; border-radius:999px; background:var(--line); color:var(--soft); }
   .spacer{ flex:1; }
   .row2{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
@@ -74,6 +76,7 @@
          reasonable opening move. -->
     <select id="show">
       <option value="over" selected>Respelled in the app</option>
+      <option value="unver">Unverified guesses</option>
       <option value="todo">Flagged or edited</option>
       <option value="plain">Not respelled</option>
       <option value="all">All names</option>
@@ -97,7 +100,7 @@
 
 <script>
 const FLAG_KEY = "pronounceAuditFlags", EDIT_KEY = "pronounceAuditEdits";
-let POKE = [], OVERRIDES = {}, voices = [], flags = new Set(), edits = {};
+let POKE = [], OVERRIDES = {}, PROV = {}, voices = [], flags = new Set(), edits = {};
 
 const $ = s => document.querySelector(s);
 try { flags = new Set(JSON.parse(localStorage.getItem(FLAG_KEY)) || []); } catch(e){}
@@ -165,6 +168,7 @@ function refreshOut(){
   const label = {
     over:  `Respelled in the app (${over})`,
     todo:  `Flagged or edited (${touched.size})`,
+    unver: `Unverified guesses (${POKE.filter(p => PROV[p.n] === "unverified").length})`,
     plain: `Not respelled (${POKE.length - over})`,
     all:   `All names (${POKE.length})`,
   };
@@ -180,6 +184,7 @@ function render(){
     const edited = (p.n in edits) && edits[p.n] !== shipped(p.n);
     if(mode === "over"  && !has) return false;
     if(mode === "plain" && has)  return false;
+    if(mode === "unver" && PROV[p.n] !== "unverified") return false;
     if(mode === "todo"  && !flags.has(p.n) && !edited) return false;
     return true;
   });
@@ -190,7 +195,7 @@ function render(){
       <div class="top">
         <span class="id">#${String(p.id).padStart(4,"0")}</span>
         <span class="nm">${p.n}</span>
-        ${has ? `<span class="tag">override</span>` : ""}
+        ${has ? `<span class="tag tag-${PROV[p.n]||"override"}">${PROV[p.n]||"override"}</span>` : ""}
         ${edited ? `<span class="tag">edited</span>` : ""}
         <span class="spacer"></span>
         <button class="flag ${flags.has(p.n) ? "on" : ""}">✗ Wrong</button>
@@ -261,6 +266,12 @@ $("#app").addEventListener("load", () => {
     // frame's lexical scope rather than on its window — eval reaches them.
     POKE = w.eval("POKEMON");
     OVERRIDES = w.eval("SPEECH_OVERRIDES");
+    // Provenance lives in trailing comments on the map, which eval can't see —
+    // read it out of the frame's own source instead.
+    const src = w.document.documentElement.innerHTML;
+    const blk = src.match(/const SPEECH_OVERRIDES = \{([\s\S]*?)\n\};/);
+    if(blk) for(const m of blk[1].matchAll(/^\s*"?([a-z0-9-]+)"?:\s*"[^"]*",\s*\/\/\s*(\w+)/gm))
+      PROV[m[1]] = m[2];
   }catch(err){
     $("#warn").hidden = false;
     $("#warn").textContent = "Couldn't read the roster from ../index.html — " + err.message

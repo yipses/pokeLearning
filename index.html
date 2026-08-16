@@ -801,7 +801,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 11;
+const APP_BUILD = 12;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -2310,178 +2310,289 @@ function renderSpell(p){
    - SPEECH ONLY. Spelling tiles, Reading options, the Pokédex and every other
      display keep using the real name; nothing here changes what's on screen.
 
-   Provenance matters here. Entries marked (checked) were verified against
-   published pronunciation guides; the rest were written from recall and are
-   unverified — treat them as guesses until someone hears them. Direct fetches to
-   Bulbapedia and the Pokémon wikis are blocked by this environment's egress
-   proxy, but web search reaches their content, which is how the checked ones got
-   confirmed and how two wrong ones (Rayquaza, Gyarados) were caught.
+   Provenance matters here, so every entry is marked:
+   - `// checked`     verified against a published pronunciation guide.
+   - `// unverified`  derived from the name's etymology — most are transparent
+                      puns a synthesiser cannot see (Polteageist is poltergeist
+                      + tea, Eiscue is ice + cue, Toedscool is toads + Tentacool)
+                      — but no guide was found to confirm them. Treat as guesses.
+
+   Coverage is deliberately partial. A respelling only does anything when it
+   differs from what the synthesiser already produces, so names with ordinary
+   English spellings (Pikachu, Charmander, Squirtle) are left alone: overriding
+   them is all risk and no gain. Only names scored as orthographically hazardous
+   are here.
+
+   Sourcing note for whoever picks this up: direct fetches to Bulbapedia,
+   Serebii, PokémonDB, Wikipedia and the Fandom wikis are all blocked by this
+   environment's egress proxy, and no published dataset pairs names with
+   pronunciations. Web *search* does reach their content, ~4-5 names a query,
+   which is how the checked ones were confirmed and how two wrong guesses
+   (Rayquaza, Gyarados) were caught. Coverage thins out sharply for Gen 8-9.
 
    Use tools/pronounce.html to audit these by ear — it lists every name with a
    play button and collects the ones that sound wrong. */
 const SPEECH_OVERRIDES = {
-  accelgor:      "ak sel gore",   // checked
-  aegislash:     "ee jih slash",   // checked
-  aerodactyl:    "air oh dack tul",   // checked
-  araquanid:     "ar uh kwah nid",   // checked
-  arcanine:      "ar kuh nine",   // checked
-  arceus:        "ar kee us",   // checked
-  archeops:      "ar kee ops",   // checked
-  barboach:      "bar bohch",   // checked
-  bellsprout:    "bell sprout",   // checked
-  blitzle:       "blit zul",   // checked
-  bouffalant:    "boo fuh lont",   // checked
-  buizel:        "bwee zul",   // checked
-  celebi:        "sell uh bee",
-  chandelure:    "shan duh loor",
-  chansey:       "chan see",   // checked
-  charmeleon:    "char meal ee un",   // checked
-  chatot:        "cha tot",   // checked
-  cherrim:       "chair um",   // checked
-  cherubi:       "chuh roo bee",   // checked
-  chesnaught:    "chess nawt",   // checked
-  chespin:       "chess pin",   // checked
-  chikorita:     "chik oh ree tah",   // checked
-  chimchar:      "chim char",   // checked
-  chimecho:      "chime ek oh",   // checked
-  chinchou:      "chin chow",   // checked
-  chingling:     "ching ling",   // checked
-  cinccino:      "chin chee noh",   // checked
-  cyndaquil:     "sin duh kwil",   // checked
-  decidueye:     "deh sid oo eye",   // checked
-  deino:         "dye no",   // checked
-  delcatty:      "del kat ee",   // checked
-  deoxys:        "dee ok sis",   // checked
-  diggersby:     "dig urz bee",   // checked
-  dragalge:      "druh gal jee",   // checked
-  dunsparce:     "dun sparse",   // checked
-  electabuzz:    "uh leck tuh buzz",   // checked
-  elgyem:        "el jee em",   // checked
-  emboar:        "em bore",   // checked
-  entei:         "en tay",
-  eternatus:     "ee ter nay tus",
-  exploud:       "eks plowd",   // checked
-  flaaffy:       "fla fee",   // checked
-  fletchinder:   "fletch in der",   // checked
-  floette:       "flo et",   // checked
-  florges:       "flor jiss",   // checked
-  flygon:        "fly gon",   // checked
-  furfrou:       "fur froo",   // checked
-  garchomp:      "gar chomp",   // checked
-  gengar:        "gang gar",   // checked
-  geodude:       "jee oh dood",   // checked
-  gible:         "gib ul",   // checked
-  girafarig:     "jer af ah rig",   // checked
-  giratina:      "gee ruh tee nuh",
-  glaceon:       "glay see on",   // checked
-  gorebyss:      "gor ih bis",   // checked
-  gourgeist:     "gor guyst",   // checked
-  groudon:       "grow don",   // checked
-  grovyle:       "grow vile",   // checked
-  gyarados:      "gair uh dose",   // checked
-  hitmonchan:    "hit mon chan",   // checked
-  honchkrow:     "honch krow",   // checked
-  houndoom:      "hown doom",   // checked
-  houndour:      "hown dow er",   // checked
-  hydreigon:     "hi dry gin",   // checked
-  hypno:         "hip no",   // checked
-  igglybuff:     "ig lee buff",   // checked
-  incineroar:    "in sin er roar",   // checked
-  ivysaur:       "eye vee sore",   // checked
-  jellicent:     "jel uh sent",   // checked
-  jirachi:       "jih rah chee",
-  jynx:          "jinks",   // checked
-  kangaskhan:    "kang gus kahn",
-  koraidon:      "kuh rye don",
-  kyogre:        "kai oh gur",   // checked
-  ledyba:        "led ee bah",   // checked
-  loudred:       "low dred",   // checked
-  lucario:       "loo car ee oh",
-  lugia:         "loo gee uh",   // checked
-  lycanroc:      "lie kan rok",   // checked
-  machoke:       "muh choke",   // checked
-  magikarp:      "mag ih karp",   // checked
-  mandibuzz:     "man dih buzz",   // checked
-  mantyke:       "man tike",   // checked
-  masquerain:    "mas kuh rain",   // checked
-  medicham:      "med ih cham",   // checked
-  milotic:       "my lot ik",
-  mimikyu:       "mim ih kyoo",
-  minccino:      "min chee noh",   // checked
-  miraidon:      "muh rye don",
-  mismagius:     "mis mag ee us",   // checked
-  munchlax:      "munch laks",   // checked
-  munna:         "moon uh",   // checked
-  necrozma:      "neh kroz muh",
-  nidoqueen:     "nee doe queen",   // checked
-  ninetales:     "nine tales",
-  omanyte:       "ahm uh nite",   // checked
-  pachirisu:     "pah chee ree soo",   // checked
-  phanpy:        "fan pee",   // checked
-  pichu:         "pee choo",   // checked
-  pidgeot:       "pidj it",   // checked
-  pidgeotto:     "pid jyo toe",   // checked
-  pidgey:        "pidj ee",   // checked
-  politoed:      "pol ee towd",   // checked
-  ponyta:        "po nee tuh",   // checked
-  poochyena:     "poo chee yen ah",   // checked
-  porygon:       "por ee gon",   // checked
-  porygon2:      "por ee gon two",   // checked
-  psyduck:       "sy duck",   // checked
-  pyroar:        "pie roar",   // checked
-  quagsire:      "kwag sire",   // checked
-  quilava:       "kwi lah vah",   // checked
-  quilladin:     "kwil uh din",   // checked
-  raichu:        "rye chew",   // checked
-  raikou:        "rye koo",
-  rayquaza:      "ray kway zuh",   // checked
-  regice:        "rej ice",   // checked
-  regigigas:     "rej ee guy gus",   // checked
-  regirock:      "rej ee rock",   // checked
-  registeel:     "rej ee steel",   // checked
-  rhydon:        "rye don",   // checked
-  rhyhorn:       "rye horn",   // checked
-  rhyperior:     "rye peer ee er",   // checked
-  roggenrola:    "rah gen roh luh",   // checked
-  salamence:     "sah lah mense",   // checked
-  sandshrew:     "sand shrew",   // checked
-  sceptile:      "sep tile",   // checked
-  scizor:        "siz or",   // checked
-  scyther:       "sy ther",   // checked
-  serperior:     "ser peer ee or",   // checked
-  shroomish:     "shroom ish",   // checked
-  simisage:      "sim ee sayj",   // checked
-  simisear:      "sim ee seer",   // checked
-  smoochum:      "smoo chum",   // checked
-  sneasel:       "snee sel",   // checked
-  solgaleo:      "sol guh lay oh",
-  suicune:       "swee koon",   // checked
-  tangela:       "tang guh luh",   // checked
-  tirtouga:      "teer too guh",   // checked
-  togekiss:      "toe guh kiss",   // checked
-  togepi:        "toe geh pee",   // checked
-  togetic:       "toe geh tik",   // checked
-  trapinch:      "tra pinch",   // checked
-  tsareena:      "zar ree nuh",   // checked
-  typhlosion:    "tie flow shin",   // checked
-  tyranitar:     "tie ran ih tar",   // checked
-  tyrogue:       "tie rogue",   // checked
-  vespiquen:     "ves pih kwen",   // checked
-  volcarona:     "vol kuh roh nuh",
-  walrein:       "wal rain",   // checked
-  whiscash:      "wis cash",   // checked
-  whismur:       "wis mur",   // checked
-  wigglytuff:    "wig lee tuff",   // checked
-  wynaut:        "why not",   // checked
-  xatu:          "zah too",   // checked
-  xerneas:       "zur nee us",   // checked
-  yveltal:       "ee vel tahl",   // checked
-  zoroark:       "zoh roh ark",
-  zweilous:      "zvye lis",   // checked
-  zygarde:       "zye guard",   // checked
+  accelgor:       "ak sel gore",   // checked
+  aegislash:      "ee jih slash",   // checked
+  aerodactyl:     "air oh dack tul",   // checked
+  araquanid:      "ar uh kwah nid",   // checked
+  arcanine:       "ar kuh nine",   // checked
+  arceus:         "ar kee us",   // checked
+  archaludon:     "ar kal oo don",   // unverified
+  archeops:       "ar kee ops",   // checked
+  armarouge:      "ar muh rooj",   // unverified
+  barboach:       "bar bohch",   // checked
+  barraskewda:    "bar uh skew duh",   // unverified
+  basculegion:    "bas kyoo lee jun",   // unverified
+  bellsprout:     "bell sprout",   // checked
+  blacephalon:    "bluh sef uh lon",   // unverified
+  blitzle:        "blit zul",   // checked
+  bouffalant:     "boo fuh lont",   // checked
+  buizel:         "bwee zul",   // checked
+  buzzwole:       "buzz wole",   // unverified
+  calyrex:        "kal ih rex",   // unverified
+  celebi:         "sell uh bee",   // unverified
+  celesteela:     "seh les tee luh",   // unverified
+  ceruledge:      "seh roo lej",   // unverified
+  cetitan:        "see tie tan",   // unverified
+  cetoddle:       "see toddle",   // unverified
+  chandelure:     "shan duh loor",   // unverified
+  chansey:        "chan see",   // checked
+  charcadet:      "char kuh det",   // unverified
+  charmeleon:     "char meal ee un",   // checked
+  chatot:         "cha tot",   // checked
+  cherrim:        "chair um",   // checked
+  cherubi:        "chuh roo bee",   // checked
+  chesnaught:     "chess nawt",   // checked
+  chespin:        "chess pin",   // checked
+  chewtle:        "chew tul",   // unverified
+  "chi-yu":       "chee yoo",   // checked
+  "chien-pao":    "chen pow",   // checked
+  chikorita:      "chik oh ree tah",   // checked
+  chimchar:       "chim char",   // checked
+  chimecho:       "chime ek oh",   // checked
+  chinchou:       "chin chow",   // checked
+  chingling:      "ching ling",   // checked
+  cinccino:       "chin chee noh",   // checked
+  corviknight:    "corvi nite",   // unverified
+  corvisquire:    "corvi skwire",   // unverified
+  cosmoem:        "koz mo em",   // unverified
+  crabominable:   "cruh bom in uh bul",   // unverified
+  cyclizar:       "sy cli zar",   // unverified
+  cyndaquil:      "sin duh kwil",   // checked
+  dachsbun:       "daks bun",   // unverified
+  decidueye:      "deh sid oo eye",   // checked
+  deino:          "dye no",   // checked
+  delcatty:       "del kat ee",   // checked
+  deoxys:         "dee ok sis",   // checked
+  diancie:        "dee an see",   // unverified
+  diggersby:      "dig urz bee",   // checked
+  doublade:       "doo blade",   // unverified
+  dragalge:       "druh gal jee",   // checked
+  dudunsparce:    "doo dun sparse",   // unverified
+  dunsparce:      "dun sparse",   // checked
+  eiscue:         "ice cue",   // unverified
+  electabuzz:     "uh leck tuh buzz",   // checked
+  elgyem:         "el jee em",   // checked
+  emboar:         "em bore",   // checked
+  entei:          "en tay",   // unverified
+  espathra:       "es pah thrah",   // unverified
+  eternatus:      "ee ter nay tus",   // unverified
+  exploud:        "eks plowd",   // checked
+  farigiraf:      "fair ih graf",   // unverified
+  fezandipiti:    "fez an dip ih tee",   // unverified
+  fidough:        "fy doh",   // unverified
+  flaaffy:        "fla fee",   // checked
+  fletchinder:    "fletch in der",   // checked
+  floette:        "flo et",   // checked
+  florges:        "flor jiss",   // checked
+  flygon:         "fly gon",   // checked
+  frigibax:       "frij ih bax",   // unverified
+  furfrou:        "fur froo",   // checked
+  garchomp:       "gar chomp",   // checked
+  genesect:       "jen uh sekt",   // unverified
+  gengar:         "gang gar",   // checked
+  geodude:        "jee oh dood",   // checked
+  gible:          "gib ul",   // checked
+  gigalith:       "gig uh lith",   // unverified
+  gimmighoul:     "gim ee gool",   // unverified
+  girafarig:      "jer af ah rig",   // checked
+  giratina:       "gee ruh tee nuh",   // unverified
+  glaceon:        "glay see on",   // checked
+  gorebyss:       "gor ih bis",   // checked
+  gourgeist:      "gor guyst",   // checked
+  groudon:        "grow don",   // checked
+  grovyle:        "grow vile",   // checked
+  gyarados:       "gair uh dose",   // checked
+  "hakamo-o":     "hah kah mo oh",   // checked
+  hawlucha:       "haw loo chuh",   // unverified
+  hitmonchan:     "hit mon chan",   // checked
+  "ho-oh":        "ho oh",   // checked
+  honchkrow:      "honch krow",   // checked
+  houndoom:       "hown doom",   // checked
+  houndour:       "hown dow er",   // checked
+  houndstone:     "hound stone",   // unverified
+  hydrapple:      "high drapple",   // unverified
+  hydreigon:      "hi dry gin",   // checked
+  hypno:          "hip no",   // checked
+  igglybuff:      "ig lee buff",   // checked
+  incineroar:     "in sin er roar",   // checked
+  ivysaur:        "eye vee sore",   // checked
+  "jangmo-o":     "jang mo oh",   // checked
+  jellicent:      "jel uh sent",   // checked
+  jirachi:        "jih rah chee",   // unverified
+  jynx:           "jinks",   // checked
+  kangaskhan:     "kang gus kahn",   // unverified
+  kilowattrel:    "kill oh wat rel",   // unverified
+  "kommo-o":      "koh mo oh",   // checked
+  koraidon:       "kuh rye don",   // unverified
+  kyogre:         "kai oh gur",   // checked
+  kyurem:         "kyoo rem",   // unverified
+  lechonk:        "leh chonk",   // unverified
+  ledyba:         "led ee bah",   // checked
+  loudred:        "low dred",   // checked
+  lucario:        "loo car ee oh",   // unverified
+  lugia:          "loo gee uh",   // checked
+  lycanroc:       "lie kan rok",   // checked
+  machoke:        "muh choke",   // checked
+  magearna:       "muh gear nuh",   // unverified
+  magikarp:       "mag ih karp",   // checked
+  mandibuzz:      "man dih buzz",   // checked
+  mantyke:        "man tike",   // checked
+  masquerain:     "mas kuh rain",   // checked
+  medicham:       "med ih cham",   // checked
+  meloetta:       "mel oh et uh",   // unverified
+  meowscarada:    "meow skuh rah duh",   // unverified
+  milcery:        "mil suh ree",   // unverified
+  milotic:        "my lot ik",   // unverified
+  "mime-jr":      "mime junior",   // checked
+  mimikyu:        "mim ih kyoo",   // unverified
+  minccino:       "min chee noh",   // checked
+  miraidon:       "muh rye don",   // unverified
+  mismagius:      "mis mag ee us",   // checked
+  "mr-rime":      "mister rime",   // checked
+  munchlax:       "munch laks",   // checked
+  munna:          "moon uh",   // checked
+  necrozma:       "neh kroz muh",   // unverified
+  nidoqueen:      "nee doe queen",   // checked
+  ninetales:      "nine tales",   // unverified
+  ogerpon:        "oh gur pon",   // unverified
+  okidogi:        "oh kee doh gee",   // unverified
+  omanyte:        "ahm uh nite",   // checked
+  pachirisu:      "pah chee ree soo",   // checked
+  panpour:        "pan poor",   // unverified
+  pecharunt:      "peh chuh runt",   // unverified
+  phanpy:         "fan pee",   // checked
+  pheromosa:      "fair uh moh suh",   // unverified
+  phione:         "fee oh nay",   // unverified
+  pichu:          "pee choo",   // checked
+  pidgeot:        "pidj it",   // checked
+  pidgeotto:      "pid jyo toe",   // checked
+  pidgey:         "pidj ee",   // checked
+  pincurchin:     "pin ur chin",   // unverified
+  politoed:       "pol ee towd",   // checked
+  poltchageist:   "pol chah guyst",   // unverified
+  polteageist:    "pole ter guyst",   // unverified
+  ponyta:         "po nee tuh",   // checked
+  poochyena:      "poo chee yen ah",   // checked
+  porygon:        "por ee gon",   // checked
+  "porygon-z":    "por ee gon zee",   // checked
+  porygon2:       "por ee gon two",   // checked
+  psyduck:        "sy duck",   // checked
+  pyroar:         "pie roar",   // checked
+  quagsire:       "kwag sire",   // checked
+  quaquaval:      "kwah kwah val",   // unverified
+  quilava:        "kwi lah vah",   // checked
+  quilladin:      "kwil uh din",   // checked
+  raichu:         "rye chew",   // checked
+  raikou:         "rye koo",   // unverified
+  rayquaza:       "ray kway zuh",   // checked
+  regice:         "rej ice",   // checked
+  regidrago:      "rej ee drah go",   // unverified
+  regieleki:      "rej ee eh lek ee",   // unverified
+  regigigas:      "rej ee guy gus",   // checked
+  regirock:       "rej ee rock",   // checked
+  registeel:      "rej ee steel",   // checked
+  rhydon:         "rye don",   // checked
+  rhyhorn:        "rye horn",   // checked
+  rhyperior:      "rye peer ee er",   // checked
+  roggenrola:     "rah gen roh luh",   // checked
+  salamence:      "sah lah mense",   // checked
+  sandshrew:      "sand shrew",   // checked
+  sceptile:       "sep tile",   // checked
+  scizor:         "siz or",   // checked
+  scyther:        "sy ther",   // checked
+  seismitoad:     "size mih toad",   // unverified
+  serperior:      "ser peer ee or",   // checked
+  shiinotic:      "shee noh tik",   // unverified
+  shroomish:      "shroom ish",   // checked
+  sigilyph:       "sij ih lif",   // unverified
+  simipour:       "sim ee poor",   // unverified
+  simisage:       "sim ee sayj",   // checked
+  simisear:       "sim ee seer",   // checked
+  sinistcha:      "sin ist chah",   // unverified
+  sirfetchd:      "sir fetched",   // checked
+  skeledirge:     "skel uh durj",   // unverified
+  smoochum:       "smoo chum",   // checked
+  sneasel:        "snee sel",   // checked
+  solgaleo:       "sol guh lay oh",   // unverified
+  squawkabilly:   "squawk uh bil ee",   // unverified
+  stonjourner:    "stone jur ner",   // unverified
+  suicune:        "swee koon",   // checked
+  sylveon:        "sil vee on",   // unverified
+  tangela:        "tang guh luh",   // checked
+  "tapu-bulu":    "tah poo boo loo",   // checked
+  "tapu-fini":    "tah poo fee nee",   // checked
+  "tapu-koko":    "tah poo koh koh",   // checked
+  "tapu-lele":    "tah poo lay lay",   // checked
+  tarountula:     "tuh roun chuh luh",   // unverified
+  tatsugiri:      "tot soo gee ree",   // unverified
+  throh:          "throw",   // unverified
+  "ting-lu":      "ting loo",   // checked
+  tirtouga:       "teer too guh",   // checked
+  toedscool:      "toads cool",   // unverified
+  toedscruel:     "toads cruel",   // unverified
+  togedemaru:     "toh geh deh mah roo",   // unverified
+  togekiss:       "toe guh kiss",   // checked
+  togepi:         "toe geh pee",   // checked
+  togetic:        "toe geh tik",   // checked
+  toxtricity:     "tox tris ih tee",   // unverified
+  trapinch:       "tra pinch",   // checked
+  tsareena:       "zar ree nuh",   // checked
+  tympole:        "tim pole",   // unverified
+  tynamo:         "tie nuh mo",   // unverified
+  typhlosion:     "tie flow shin",   // checked
+  tyranitar:      "tie ran ih tar",   // checked
+  tyrogue:        "tie rogue",   // checked
+  vespiquen:      "ves pih kwen",   // checked
+  volcarona:      "vol kuh roh nuh",   // unverified
+  walrein:        "wal rain",   // checked
+  watchog:        "watch og",   // unverified
+  whimsicott:     "whim zih cot",   // unverified
+  whiscash:       "wis cash",   // checked
+  whismur:        "wis mur",   // checked
+  wigglytuff:     "wig lee tuff",   // checked
+  "wo-chien":     "woh chen",   // checked
+  wynaut:         "why not",   // checked
+  wyrdeer:        "weer deer",   // unverified
+  xatu:           "zah too",   // checked
+  xerneas:        "zur nee us",   // checked
+  xurkitree:      "zur kih tree",   // unverified
+  yveltal:        "ee vel tahl",   // checked
+  zacian:         "zay shun",   // unverified
+  zoroark:        "zoh roh ark",   // unverified
+  zweilous:       "zvye lis",   // checked
+  zygarde:        "zye guard",   // checked
 };
 function sayAs(name){
-  return SPEECH_OVERRIDES[String(name).toLowerCase()] || name;
+  const key = String(name).toLowerCase();
+  if(SPEECH_OVERRIDES[key]) return SPEECH_OVERRIDES[key];
+  // Roster names are slugs, so multi-word species arrive hyphenated — "great-tusk",
+  // "roaring-moon", "iron-bundle". Those are ordinary English once the hyphen is a
+  // space, and a synthesiser handed the hyphen may spell it out or run the words
+  // together. Covers ~25 Gen 7–9 names at once, and any hyphenated name added later.
+  return key.includes("-") ? key.replace(/-+/g, " ") : name;
 }
 
 function speak(text){
