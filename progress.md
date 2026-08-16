@@ -1,0 +1,133 @@
+# Progress Log — Poké Learning
+
+A running summary of how this project got from a basic spelling/math quiz to where it is now. See `Overview.md` for the current feature spec (PRD); this file is about the journey.
+
+---
+
+## Phase 1 — Foundation
+
+- Started from an existing single-file app (`index.html`) with two challenge types: Pokémon spelling and basic math, drawing from a hardcoded list of **40 Pokémon**.
+- Expanded the roster to the full original **151 Pokémon**, then trimmed it to **147** by removing four species whose names don't work with the plain-letter spelling mechanic (Nidoran♀, Nidoran♂, Farfetch'd, Mr. Mime).
+
+## Phase 2 — New game modes
+
+- **Match Challenge** added: a picture-to-name matching round (tap one tile, then its pair), with instant feedback on right/wrong guesses.
+- **Math Patterns** added: instead of one equation at a time, present a set of 4 related problems that follow a numeric pattern (e.g. a fixed number with a steadily increasing partner), and check all four at once.
+  - Fixed a bug where clearing a wrong answer and leaving it blank re-triggered the "wrong" message instead of a "fill in the blanks" message.
+- **Visual Math** added: the same four operations, but shown as pictures of Pokémon instead of bare numbers — grouped boxes for addition/multiplication, crossed-out icons for subtraction, sliced groups for division.
+- Sessions were updated so the **same mode never repeats back-to-back** when more than one mode is active.
+
+## Phase 3 — UX and settings overhaul
+
+- Reworked how a session is put together: instead of each mode having its own separate challenge count, there's now **one total "Number of Challenges"** setting, and every challenge slot is randomly drawn from whichever modes are currently active.
+- Moved every mode's configuration off the main screen into a dedicated **Settings page**, so the Start screen only shows the challenge count plus Start / Battle / Settings buttons.
+- Math, Math Patterns, and Visual Math were all switched from "type an answer, press Check" to **auto-checking as you type** (waiting for enough digits before judging), with a **Next ▶** button that only activates once the answer is correct — replacing the old fixed-delay auto-advance.
+- Added **settings persistence**: every toggle, min/max, and count now saves to `localStorage` automatically and restores on the next visit.
+- Results screen got a pass: fixed a CSS bug that was silently left-aligning the "Champion" title, replaced the plain trophy emoji with an animated Pokéball + random legendary Pokémon reveal on a perfect run, and added an editable challenge-count field so **Play Again** doesn't require a trip back to Settings.
+- Match mode gained a configurable "Pokémon per round" setting and a 🔊 button per picture to hear the name spoken aloud (later simplified so tapping the whole tile both plays the sound and registers the match, rather than needing a separate tap on the icon).
+- Basic Math and Visual Math both gained independent **Min and Max** number settings per operation (not just Max), specifically to cut out trivially easy problems.
+
+## Phase 4 — Content expansion & offline support
+
+- Pulled a curated list of **150 items from Pokémon Pokopia** (materials, food, badges, fossils, classic held items) and added them as an optional pool that mixes into Match mode alongside Pokémon.
+- Built and published a standalone visual verification page to confirm all 150 item images actually load — useful for catching broken links before shipping.
+- Downloaded and locally cached **all 147 Pokémon artwork images and all 150 item images**, and rewired the app to reference the local copies instead of remote URLs — the app now works fully offline and doesn't depend on any external site staying up.
+
+## Phase 5 — Battle mode
+
+- Added a standalone **Battle mode**: pick two random Pokémon, predict a winner, watch a short old-school-style fight animation (shake effects, move-name flavor text), and see the result — with a 🔊 button to hear each name.
+- Upgraded the winner logic from a plain coin flip to a **stat- and type-weighted roll**: fetched real base stats and types for all 147 Pokémon once (cached locally, not a live lookup), built a full type-effectiveness chart, and now the stronger/type-advantaged Pokémon wins more often without it being a guaranteed outcome.
+- Added a spoken + banner **winner announcement** ("PIKACHU WINS!") and a running **session win/loss record** shown at the top of the Battle screen.
+
+## Phase 6 — Polish and documentation
+
+- Visual tweaks throughout: bigger, clearer crossed-out icons in Visual Math; hover states and alignment fixes on the matching grid; type badges shown on Battle fighters.
+- Wrote `Overview.md`, a PRD-style document covering the full current feature set.
+- Wrote this file.
+
+## Phase 7 — Daily engagement & collection
+
+- Added a **Play Streak** card to the home screen: one star per full session completed via Start Playing (Battle doesn't count), tracked per day for a rolling 7-day window in `localStorage`.
+- Added a **grass encounter** mechanic to every challenge screen: a decorative grass strip (built with layered CSS/SVG blade shapes, no external image assets) that shakes when a Pokémon is hiding nearby, at a drop rate configurable in Settings (default 10%). Answering the current question correctly catches it — no auto-dismiss timer, a proper "Caught!" popup shows the Pokémon's artwork, Dex number, name, and type badges, dismissed with an Okay button.
+- Added a **Pokédex** screen, organized by generation, showing every Pokémon either in full color (caught) or as a grey silhouette with its name hidden as "???" (uncaught) — the silhouette reuses the existing transparent-background artwork with a `brightness(0)` filter rather than needing a separate asset.
+- Catching is **generation-gated**: only the lowest generation not yet fully caught can appear in the grass, so a session can't skip ahead to a later region before finishing an earlier one. Spelling's word pool respects the same gate.
+- Fixed a rendering bug where extreme-aspect-ratio item images (e.g. a very tall "Rope" sprite) got cropped to just their top few pixels in the Spelling picture frame — `width/height:88%` doesn't reliably constrain both axes inside a CSS grid; switched to the standard `max-width/max-height` + `width/height:auto` pattern.
+
+## Phase 8 — Full National Dex & a much bigger item catalog
+
+- Pulled the remaining **874 Pokémon** (dex 152–1025, Gen 2 through Gen 9) from the same source as the original 147 — PokéAPI's sprites repository, confirmed by hashing an existing file against a fresh download before trusting it for a bulk pull. Roster is now **1,021** Pokémon.
+- Spelling's plain-letter-name filter now spans the full roster: 984 of 1,021 names are spellable; the other 37 (Ho-Oh, the Tapu guardians, most Gen 9 Paradox Pokémon, etc.) are excluded from Spelling specifically but still usable everywhere else.
+- Investigated the original 150-item Pokopia set and found it was a curated "resources" subset (materials/food/badges/held items), not the full in-game catalog. Pulled the rest from `pokopiahabitats.com` — checked against the existing set first (same artwork, meaningfully higher resolution) — with category data sourced from Bulbapedia's own item table. After removing 121 items with parenthetical variant names ("Antique wall (middle)", "Copper deposit (Beach)") that were mostly near-duplicate wallpaper/flooring swatches, the catalog landed at **922 items** across 12 categories.
+- Added a **per-category toggle grid** to Settings so Match and Spelling's item pools can be filtered (e.g. turning off Blocks, the most repetitive category).
+
+## Phase 9 — Lesson Trails: a real curriculum
+
+- Designed a **progressive curriculum** to replace ad-hoc difficulty settings — four independent tracks (Add/Subtract, Multiply↔Divide, Spelling, Reading), each with its own ordered sequence of levels and its own "frontier" (the level currently being worked on). Captured as a living design artifact, iterated extensively before any code was written.
+- Validated the math progression against actual Common Core K–3 standards (not assumed) and the phonics progression against real structured-literacy scope-and-sequence (Wilson Fundations / Words Their Way) — audited the existing item catalog word-by-word for which phonics patterns actually have enough real, image-backed examples, rather than inventing words.
+- Settled the daily mechanic: a **blend**, not one difficulty at a time — Review (20%, below frontier) / Current (60%, at frontier) / Stretch (20%, above frontier) — with promotion via **either** 10/10 "clean" answers in a row (instant) or 16/20 (80%) in a rolling window (standard pace). "Clean" means right on the first try with no hints; tracked invisibly alongside the existing retry-until-correct flow so answering a question doesn't feel any different than before.
+- **Built and shipped**: the shared progression engine (per-track frontier storage in `localStorage`, clean/labored tracking, Last-10/Last-20 rolling windows, the dual-threshold promotion rule, the review/current/stretch band picker), plus:
+  - **Add/Subtract**, 8 levels from "within 5" through "within 100 with regrouping," using rejection sampling to specifically control for carrying/borrowing rather than leaving it to chance.
+  - **Multiply↔Divide**, 12 interleaved steps — revised from an initial 10 after live testing showed jumping straight to 1–5×1–5 with division interleaved immediately was too much; multiplication now gets two full steps (1–3, then 1–5) before division is introduced at all, and division gets the same two-step ramp once it starts.
+- Replaced the old fixed min/max Math settings with two frontier dropdowns that double as manual override — moving one resets that track's rolling windows, in either direction.
+- Rolled the previously-standalone **Math Patterns** mode into both trails (~30% of questions become a 4-in-a-row skip-counting set) rather than dropping it, after reconsidering that it teaches something — actual counting-by-N — the single-equation format doesn't. Generalized the step size from a fixed small set to *any* value where 4 repetitions fit the level's range, so counting by 2s, 3s, up to 25s all become possible depending on the level.
+- Fixed two Visual Math issues surfaced while building this: multiplication could generate a degenerate single-group problem ("5×1" shown as one box with no repetition visible) — now always shows at least 2 groups, matching the guard division already had; and the equation rendered *after* the `+`-joined picture even for multiplication, visually contradicting the `×` symbol shown right below — reordered to equation-first across all four operations. Also removed all instructional caption text from Visual Math and Math Patterns screens, since a pre-reading child can't use text they can't read and the numbers/pictures already carry the meaning.
+
+## Phase 10 — Spelling Trail, and a settings cleanup pass
+
+- **Built and shipped the Spelling Trail**, replacing the old fixed-length/item-toggle Spelling settings entirely — one frontier, 14 levels:
+  - **Phase A, Phonics Ladder (9 levels)**: hand-audited real single-word Pokopia items, classified into CVC → floss-rule doubles → blends → digraphs → silent-e → vowel teams → r-controlled → compound words → multisyllabic. 101 of the catalog's 108 single-word items placed (7 dropped as unsuitable — irregular/foreign spellings or exact duplicates); verified by script against the live `ITEMS` array (no typos, no dupes, no orphans) before wiring in. Not generation-gated — a pattern's words are available the moment its level unlocks.
+  - **Phase B, Fluency (5 levels)**: Pokémon-name practice, still generation-gated like grass encounters, staggering two tasks per challenge — the existing tile-based Full Spelling, and a new **Missing Letter** mode. Missing Letter blanks whole phonics *chunks* (a `chunkWord()` tokenizer treats digraphs/blends/vowel-teams/r-controlled vowels as one atomic unit, so a blank never splits a sound), no hints, with its own per-level length ceiling and blank-count range from the design spec.
+  - Same promotion engine as the math trails (10/10 instant or 16/20 rolling, review/current/stretch blend) — `recordAttempt` now fires for spelling too, tracking clean = no wrong letters and no hints used.
+- **Tied Visual Math to the Math Trails frontiers** instead of its own independent per-operation on/off + min/max settings (removing that whole settings block) — ranges stay fixed and small for legibility, and division only joins the pool once the Multiply↔Divide trail has actually introduced it.
+- **Replaced "✅ Correct! Tap Next to continue." with just a bigger animated ✅** across Math, Visual Math, and Math Patterns — a pre-reading kid can't parse the text, and the Next button already implies what to do next.
+- **Fixed a corner-clipping bug** in the circular `.poke-frame`: `max-width/max-height:88%` let a near-square, low-padding image's bounding-box corners poke outside the circle's radius (found via the word "Bell," whose item art fills its canvas much tighter than official Pokémon sprites do). Dropped to 65%, which keeps even a worst-case zero-padding square image's corners inside the frame.
+- **Removed Match Challenge entirely** (settings card, render/click logic, CSS, and the Pokopia Item Categories filter grid that had no other consumer once Match was gone) — it wasn't being used, and unlike the math/spelling tracks it had no ladder to sit on; the still-unbuilt Reading Ladder is the actual fix for the flaw Match had (guessable-by-elimination as pairs clear).
+- No working headless/interactive browser tooling in the agent's sandbox this session — see the Tooling note below. Verification instead relied on: a script auditing every Phase A word against the live item catalog, syntax-checking the extracted `<script>` via `osascript -l JavaScript`, and running the real app code under a minimal in-memory DOM/localStorage shim to exercise actual logic (chunking, pool generation, promotion thresholds, `buildQueue()` blending).
+
+---
+
+## Phase 11 — Reading Ladder, and getting the project onto GitHub
+
+- **Built and shipped the Reading Trail**, the 4th and last speced Lesson Trails track — 6 levels, sharing the same generation-gated Pokémon pool as Spelling's Fluency phase (no new content curation needed):
+  - **Read & Choose** (see a picture, pick the matching word from 5) and **Reverse Read & Choose** (see a word, pick the matching picture from 5) — fixed-choice formats specifically so difficulty never shrinks over a round the way the old Match mode's pool did.
+  - Ramps on two independent axes: word length (3–6 letters for levels 1–4, 7–10 for levels 5–6) and distractor difficulty ("easy" = random, "tricky" = the 4 wrong options share the target's first letter or length, with a fallback to random if the gen-gated pool is too small to find 4 tricky matches).
+  - Levels 1–4 are single-mode (alternating Choose/Reverse level by level); levels 5–6 mix both modes randomly within the level.
+  - Deliberately **no hints and no read-aloud** on either mode — the whole point is confirming the child actually read the word, not shape- or sound-matching it.
+  - Same promotion engine as every other track. Verified with a script: every generated round has exactly 5 unique options including the target; the "tricky" distractor rule holds in 198/200 sampled rounds (the other 2 correctly hit the documented small-pool fallback); 10/10-clean promotion fires correctly; and directly exercised the click handler for three scenarios — correct-first-try (records clean), wrong-then-correct (records not-clean, doesn't double-advance), and clicking again after a round is already won (guarded, no double score).
+- **Started moving the project onto GitHub** at your request, so you can access it by URL and I can push updates directly instead of you copying files around:
+  - Committed everything that had built up uncommitted (both full asset folders, `Overview.md`, `progress.md`, and all of today's `index.html` work) as the real second commit — the original "initial commit" predates almost all of this.
+  - Added a `.gitignore` and untracked `.claude/settings.local.json` (local machine prefs, not project state — no secrets in it, just not something to keep committing).
+  - Installed `gh` (GitHub CLI) via Homebrew so I can create the remote repo and push directly once authenticated, rather than walking you through the web UI by hand.
+  - Decided: **public** repo (you're not worried about the Pokémon/item art being visible) + **GitHub Pages** for hosting, since it needs no third-party account beyond GitHub itself. Repo is ~182MB, comfortably under GitHub's 100MB-per-file hard limit and its ~1GB soft repo-size guidance — no Git LFS needed.
+  - **Paused here**: `gh auth login` needs an interactive browser step only you can do. Once that's done, still to do: `gh repo create` + push, then flip on Pages in the repo settings.
+
+## Phase 12 — Bug fixes from real play, and the Dashboard
+
+A batch of fixes surfaced by actually playing the app, plus the last speced piece:
+
+- **Fixed a real data bug**: the item named "Bill" was actually a picture of a music CD (a real Pokopia item category, just mislabeled during the original scrape) — renamed the file and catalog entry to "CD", removed it from the Spelling floss-pattern list since it was never a real decodable word to begin with (floss is down to 2 real words now: Bell, Moss).
+- **Fixed a real rendering bug**: Visual Math's division layout tried to show one shared box with an internal dashed divider between "slices," which broke down and collapsed into a confusing grid once the icons didn't fit one row (e.g. 9÷3). Rebuilt it to use separate bordered boxes per group, the same proven layout multiplication already used.
+- **Fixed a real gap**: Reading's word pool was Pokémon-only — missed that the spec calls for the same combined Pokémon+item pool Match mode used. Added items back in, and fixed a case-sensitivity bug in "tricky" distractor matching that the item/Pokémon name-casing mix surfaced (Pokémon names are lowercase, item names are Capitalized).
+- **Fixed a real repetition bug**: Phase A's phonics pools are tiny (2-4 words at the easiest patterns), so pure independent random sampling clustered hard — a 3-word pool has a ~34% chance of repeating the same word back-to-back. Added a "never repeat the immediately-previous word for this pattern" guard.
+- **Investigated a "still stuck on level 1" report** and confirmed it wasn't a bug: simulated 400 realistic multi-track sessions using the actual `buildQueue()` — under perfect play all 4 tracks promoted twice within 13 sessions, and progress correctly round-trips through a simulated page reload. The real cause is just volume dilution: a 10-question session splits across 4 tracks, and only 60% of a track's own questions are frontier-eligible, so any one track gets maybe 1.5 promotion-eligible attempts per session.
+- **Built the Dashboard** — the last unbuilt piece from the Lesson Trails artifact. One card per track (current level, days at that level, Last-10/Last-20 bars, and a live SVG trend chart with 80%/100% gate lines, a gold star marker for instant 10/10 promotions, and a dashed "Leveled up" line for 16/20 promotions) — reachable from a new "📊 My Progress" button on the home screen. Required extending the progress data model with two new per-track fields, `trend` (a capped rolling log of Last-10/Last-20 % at each frontier attempt) and `frontierSince` (a timestamp, for the days-at-level count) — verified old pre-Dashboard save data migrates cleanly, keeping existing frontier/history exactly and just backfilling the two new fields, so no one's real progress gets lost by this update.
+
+---
+
+**Where things stand:** All four Lesson Trails tracks are live and promoting, and the Dashboard now shows real progress for all of them — that's the complete Lesson Trails artifact, fully built. What's left:
+- Getting the repo actually pushed to GitHub and Pages turned on (see Phase 11 — blocked on your `gh auth login`).
+- An offered-but-not-yet-done audit of the ~820 remaining Pokopia items for other name/image mismatches like the CD/Bill one (only the 101 used in Spelling have been individually eyeballed).
+
+---
+
+## Tooling note — no working interactive browser access from the agent sandbox
+
+Tried to actually drive/screenshot the app in a real browser while building the Spelling Trail, and it didn't work — recording what was tried so we don't re-litigate it next time:
+
+- No headless browser toolchain is installed: no `node`, no `npm`, no `chromium-cli`, no Python `playwright`. Only `python3` is available.
+- `open index.html` / `open -a Safari ...` return success and Safari is confirmed running (`ps aux`) — but:
+- `osascript -e 'tell application "System Events" to ...'` times out (`AppleEvent timed out (-1712)`), and `tell application "Safari" to activate` runs with no error but never actually brings Safari forward — an immediate `screencapture` still shows Terminal as frontmost, no Safari window visible anywhere on screen.
+- Working theory: the process running Bash-tool commands isn't authorized under macOS's Automation/Accessibility privacy permissions to control other apps via Apple Events, so those calls silently no-op or hang rather than prompting for permission.
+- `screencapture` itself does work (returns a real screenshot of the actual desktop), so if the app is already open and frontmost on the real screen, a screenshot can confirm visual state — but the agent can't reliably bring a window forward or click/type into it on its own.
+
+**To get real interactive browser QA from the agent in a future session**, either: (a) grant Automation permission for Safari + System Events, and Accessibility permission, to whatever process hosts the Bash tool, via System Settings → Privacy & Security; or (b) install a headless toolchain (`npm i -g playwright && playwright install chromium`, or whatever `chromium-cli` tool the `run` skill expects) so testing doesn't depend on GUI automation at all. Until one of those is true, verification here has relied on: syntax-checking the extracted `<script>` contents via `osascript -l JavaScript` (JavaScriptCore, no browser needed), and running the real app code under a minimal in-memory DOM/localStorage shim to exercise actual logic (data pools, chunking, trail promotion, `buildQueue()`) — see the Spelling Trail build for the pattern.
