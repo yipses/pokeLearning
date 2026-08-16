@@ -19,6 +19,24 @@ back.
 Rows may be in any order; the app sorts by `id` where order matters. Adding a
 row makes that Pokémon appear — as long as `pokemon/<id>.png` exists.
 
+## items.csv — 922 rows
+
+The Pokopia item catalogue, used by Spelling's Phonics Ladder and by Reading.
+
+| Column | Notes |
+|---|---|
+| `name` | Capitalised, may contain spaces. Only single plain-letter words are usable for spelling |
+| `image` | Bare filename with no folder or extension: `honey` → `items/honey.png` |
+| `category` | One of 12 groupings (Materials, Food, Blocks, …) |
+
+The `items/` folder and `.png` extension are added by the loader, so the column
+stays short and the convention lives in exactly one place. An `image` value with
+no matching file gives a broken image in-game, not an error — check the file
+exists when adding a row.
+
+Some names are referenced by the phonics word lists in `index.html`; renaming
+one there without updating both will silently drop it from Spelling.
+
 ## pronunciations.csv — 251 rows
 
 Respellings handed to the speech synthesiser instead of the real name, because
