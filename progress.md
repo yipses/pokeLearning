@@ -121,14 +121,29 @@ A batch of fixes surfaced by actually playing the app, plus the last speced piec
   - **Reverse Read & Choose** (word → pick the picture) **loses** it. Here the prompt *is* the written word, so speaking it handed over the answer outright and left nothing to decode — the single worst version of this. Each of the five picture options now carries its own small speaker instead, so a child who can't identify the artwork can still hear it.
   - Net effect: in both modes the child still has to connect a spoken name to a written one, and nothing ever reads a *word* to them. Implemented with the speaker as a **sibling** of each option button rather than a child — a `<button>` inside a `<button>` is invalid HTML and browsers restructure it.
   - Verified in a real browser: Read & Choose renders 1 prompt speaker and 0 per-option speakers, Reverse renders 0 and 5, no nested buttons in either; tapping all five option speakers neither answers the question nor marks the attempt as non-clean; and picking the correct picture still records a clean attempt.
+- **Decided: Read & Choose's Say it does not break "clean."** Spelling counts a hint against a clean answer, so it was worth asking whether the picture speaker should count the same way. It doesn't, and shouldn't — identifying artwork isn't the skill Reading is testing, so the speaker is an accessibility affordance rather than a hint. A child can tap it on every question and still promote at 10/10.
+- **Confirmed GitHub Pages is live.** It couldn't be checked by URL (the sandbox proxy blocks outbound to both `github.com` and `github.io`), but the GitHub API shows a `pages build and deployment` run against `main` at `19eef77`, completed successfully. The site builds from **`main`**, so work on a feature branch isn't live until it's merged.
+- **Split the docs by role.** `Overview.md` had been carrying progress inside it — "planned," "not yet built," "Status: two of four tracks built," a Match-mode removal note, and a Possible Future Directions section — which meant every shipped feature left it quietly wrong. It's now strictly a description of what the app does today, with a header line saying so and pointing here. Everything time-bound lives in this file instead. Rewriting it against the actual code also caught several things it had wrong: it still described Spelling as configured by min/max name length (the Spelling Trail replaced that in Phase 10), still described Visual Math as having its own per-operation toggles and ranges (Phase 10 rewired it to render Math Trails questions), listed six screens rather than seven, and carried a broken cross-reference to a "§5.6" that didn't exist.
+
+### Ideas parked here, previously in `Overview.md`
+
+Not scheduled work — surfaced during development and kept for reference:
+
+- **Rhyme Match** (given a word, pick which of three others rhymes) — deferred because most Pokémon names are invented and don't reliably rhyme; it would need to draw from the Phase A real-word list instead.
+- **Clue Words** (a few descriptors shown at once — BIG, RED, METAL — pick the matching item) — deferred because it needs per-item attribute data (color, size, material) that doesn't exist yet.
+- Sentence-level reading comprehension, beyond single-word Read & Choose.
+- Per-session or historical stats beyond the in-memory Battle record and the Dashboard.
+- Difficulty presets that bundle several settings at once.
 
 ---
 
-**Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, and the app is confirmed running in a browser. What's left:
-- **`Overview.md` is stale** — it still describes Spelling, Reading, and the Dashboard as "planned" (§7) and says "two of four tracks built," all of which Phases 10–12 superseded. Its screen table is also missing the Dashboard. Worth a pass.
-- **An open question from the Reading change**: Spelling treats a hint as breaking a "clean" answer for promotion purposes, but Read & Choose's Say it doesn't — a child can tap it every time and still promote at 10/10. That may well be right (identifying artwork isn't the skill being tested, so the speaker is closer to accessibility than to a hint) but it was never actually decided.
-- **Pages status is unknown** — the web sandbox's proxy blocks outbound to `github.com` and `github.io` alike, so it can't be checked from here. Needs confirming from a normal browser.
+**Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the app is confirmed running in a browser, and it's published on GitHub Pages. What's left:
 - An offered-but-not-yet-done audit of the ~820 remaining Pokopia items for other name/image mismatches like the CD/Bill one (only the 101 used in Spelling have been individually eyeballed).
+
+**Doc roles, so this doesn't drift again:**
+- `Overview.md` — what the app does *today*. No history, no status, no plans.
+- `progress.md` — how it got here, what changed and why, what's still open, ideas parked.
+- `LessonTrails.md` — the curriculum design rationale behind the four trails.
 
 ---
 
