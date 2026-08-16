@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pronunciation audit — Poké Learning</title>
+<!--
+  Dev tool, not part of the app. Lists every Pokémon name with a play button so
+  the read-aloud can be checked by ear, and collects the ones that sound wrong
+  into a list to paste back.
+
+  It reads POKEMON and SPEECH_OVERRIDES out of ../index.html via a hidden iframe
+  rather than keeping its own copy, so it can never drift out of sync with the
+  real roster. That means it has to be opened over http:// — a file:// iframe is
+  treated as a different origin and blocked. From the repo root:
+
+      python3 -m http.server 8899
+      open http://localhost:8899/tools/pronounce.html
+
+  Flags are saved to localStorage, so a pass can be done across several sittings.
+-->
+<style>
+  :root{ --ink:#3f3d36; --soft:#7b776c; --line:#e6e2d6; --bg:#fbf9f3; --accent:#4e9d63; --bad:#d8574f; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); }
+  header{ position:sticky; top:0; background:var(--bg); border-bottom:2px solid var(--line); padding:14px 16px; z-index:2; }
+  h1{ margin:0 0 10px; font-size:1.15rem; }
+  .controls{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  input[type=search], select{ font:inherit; padding:7px 10px; border:2px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); }
+  input[type=search]{ flex:1; min-width:180px; }
+  .count{ color:var(--soft); font-size:.88rem; margin-left:auto; }
+  ul{ list-style:none; margin:0; padding:0 16px 240px; }
+  li{ display:flex; align-items:center; gap:12px; padding:9px 4px; border-bottom:1px solid var(--line); cursor:pointer; }
+  li:hover{ background:#fff; }
+  li.flagged{ background:#fdecea; }
+  .id{ color:var(--soft); font-variant-numeric:tabular-nums; font-size:.82rem; min-width:52px; }
+  .nm{ font-weight:700; text-transform:capitalize; }
+  .as{ color:var(--accent); font-size:.86rem; font-style:italic; }
+  .as::before{ content:"→ "; }
+  .spacer{ flex:1; }
+  button{ font:inherit; cursor:pointer; border-radius:9px; border:2px solid var(--line); background:#fff; color:var(--ink); padding:5px 11px; }
+  button.flag.on{ background:var(--bad); border-color:var(--bad); color:#fff; }
+  footer{
+    position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:2px solid var(--line);
+    padding:12px 16px; display:flex; gap:12px; align-items:flex-start;
+  }
+  textarea{ flex:1; height:104px; font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; padding:9px; border:2px solid var(--line); border-radius:9px; resize:vertical; }
+  .fcol{ display:flex; flex-direction:column; gap:7px; }
+  .warn{ padding:16px; color:var(--bad); font-weight:600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pronunciation audit <span class="count" id="progress"></span></h1>
+  <div class="controls">
+    <input type="search" id="q" placeholder="Filter by name…">
+    <select id="show">
+      <option value="all">All names</option>
+      <option value="over">Has an override</option>
+      <option value="plain">No override</option>
+      <option value="flag">Flagged only</option>
+    </select>
+    <select id="voice"><option>Loading voices…</option></select>
+  </div>
+</header>
+
+<div id="warn" class="warn" hidden></div>
+<ul id="list"></ul>
+
+<footer>
+  <div class="fcol">
+    <button id="copy">Copy list</button>
+    <button id="clear">Clear flags</button>
+  </div>
+  <textarea id="out" readonly placeholder="Names you flag as sounding wrong will collect here."></textarea>
+</footer>
+
+<iframe id="app" src="../index.html" hidden></iframe>
+
+<script>
+const FLAG_KEY = "pronounceAuditFlags";
+let POKE = [], OVERRIDES = {}, voices = [], flags = new Set();
+
+try { flags = new Set(JSON.parse(localStorage.getItem(FLAG_KEY)) || []); } catch(e){}
+
+const $ = s => document.querySelector(s);
+const saveFlags = () => { try{ localStorage.setItem(FLAG_KEY, JSON.stringify([...flags])); }catch(e){} };
+const spokenAs = n => OVERRIDES[n.toLowerCase()] || n;
+
+function loadVoices(){
+  voices = speechSynthesis.getVoices();
+  const sel = $("#voice");
+  if(!voices.length){ sel.innerHTML = "<option>No voices installed</option>"; return; }
+  // Default to an English voice if there is one, since that's what the app asks for.
+  const preferred = voices.findIndex(v => /^en[-_]US/i.test(v.lang));
+  sel.innerHTML = voices.map((v,i) => `<option value="${i}">${v.name} — ${v.lang}${v.localService ? "" : " (network)"}</option>`).join("");
+  sel.value = String(preferred === -1 ? 0 : preferred);
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function say(name){
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(spokenAs(name));
+  u.lang = "en-US";           // same settings the app uses, so this matches what a kid hears
+  u.rate = 0.8;
+  u.pitch = 1.1;
+  const v = voices[Number($("#voice").value)];
+  if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+function refreshOut(){
+  const flagged = POKE.filter(p => flags.has(p.n));
+  $("#out").value = flagged.length
+    ? flagged.map(p => `${p.n}${OVERRIDES[p.n] ? `   (currently: "${OVERRIDES[p.n]}")` : ""}`).join("\n")
+    : "";
+  $("#progress").textContent = `${flags.size} flagged of ${POKE.length}`;
+}
+
+function render(){
+  const q = $("#q").value.trim().toLowerCase();
+  const mode = $("#show").value;
+  const rows = POKE.filter(p => {
+    if(q && !p.n.toLowerCase().includes(q)) return false;
+    const has = !!OVERRIDES[p.n.toLowerCase()];
+    if(mode === "over"  && !has) return false;
+    if(mode === "plain" && has)  return false;
+    if(mode === "flag"  && !flags.has(p.n)) return false;
+    return true;
+  });
+  $("#list").innerHTML = rows.map(p => {
+    const over = OVERRIDES[p.n.toLowerCase()];
+    return `<li data-n="${p.n}" class="${flags.has(p.n) ? "flagged" : ""}">
+      <span class="id">#${String(p.id).padStart(4,"0")}</span>
+      <span class="nm">${p.n}</span>
+      ${over ? `<span class="as">${over}</span>` : ""}
+      <span class="spacer"></span>
+      <button class="play">▶ Play</button>
+      <button class="flag ${flags.has(p.n) ? "on" : ""}">✗ Wrong</button>
+    </li>`;
+  }).join("");
+}
+
+$("#list").addEventListener("click", e => {
+  const li = e.target.closest("li");
+  if(!li) return;
+  const name = li.dataset.n;
+  if(e.target.classList.contains("flag")){
+    flags.has(name) ? flags.delete(name) : flags.add(name);
+    saveFlags();
+    li.classList.toggle("flagged");
+    e.target.classList.toggle("on");
+    refreshOut();
+  } else {
+    say(name);                      // clicking anywhere else on the row plays it
+  }
+});
+
+$("#q").addEventListener("input", render);
+$("#show").addEventListener("change", render);
+$("#copy").addEventListener("click", async () => {
+  try{ await navigator.clipboard.writeText($("#out").value); $("#copy").textContent = "Copied"; }
+  catch(e){ $("#out").select(); $("#copy").textContent = "Select + copy"; }
+  setTimeout(()=> $("#copy").textContent = "Copy list", 1400);
+});
+$("#clear").addEventListener("click", () => {
+  if(!confirm("Clear every flag?")) return;
+  flags.clear(); saveFlags(); render(); refreshOut();
+});
+
+// Pull the roster and the override map straight out of the app.
+$("#app").addEventListener("load", () => {
+  const w = $("#app").contentWindow;
+  try{
+    // POKEMON and SPEECH_OVERRIDES are top-level `const`s, so they live in the
+    // frame's lexical scope rather than on its window — eval reaches them.
+    POKE = w.eval("POKEMON");
+    OVERRIDES = w.eval("SPEECH_OVERRIDES");
+  }catch(err){
+    $("#warn").hidden = false;
+    $("#warn").textContent = "Couldn't read the roster from ../index.html — " + err.message
+      + "  Serve the repo over http:// (python3 -m http.server) rather than opening this file directly.";
+    return;
+  }
+  render();
+  refreshOut();
+});
+</script>
+</body>
+</html>
