@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Poké Learning — Spelling &amp; Math</title>
+<!-- Pokéball favicon, inlined as an SVG data URI so it needs no extra file and
+     the app stays a single self-contained page. Same artwork as the header mark. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23ffffff' stroke='%232b2b2b' stroke-width='5'/%3E%3Cpath d='M4 50a46 46 0 0 1 92 0z' fill='%23ef5350' stroke='%232b2b2b' stroke-width='5'/%3E%3Cline x1='4' y1='50' x2='96' y2='50' stroke='%232b2b2b' stroke-width='5'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%23ffffff' stroke='%232b2b2b' stroke-width='5'/%3E%3C/svg%3E">
 <style>
   :root{
     /* Pokopia-inspired cozy pastel palette */
@@ -186,6 +189,26 @@
      official Pokémon sprites, which have generous built-in padding. */
   .poke-frame img{ max-width:65%; max-height:65%; width:auto; height:auto; object-fit:contain; image-rendering:auto; filter: drop-shadow(0 6px 8px rgba(0,0,0,.15)); }
 
+  /* Read-aloud sits on the picture itself rather than in the action row below
+     it, so the affordance reads the same everywhere it appears — Spelling,
+     Missing Letter, Read & Choose, and the Pokédex — and matches the per-option
+     speakers in Reverse Read & Choose. */
+  /* Block-level with max-content width, not inline-block — inline-block would let
+     the preceding kind-tag share its line instead of sitting above it. */
+  .frame-wrap{ position:relative; width:max-content; margin:0 auto; }
+  .frame-say{
+    position:absolute; right:4px; bottom:12px; z-index:1;
+    width:52px; height:52px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    font:inherit; font-size:22px; line-height:1; cursor:pointer;
+    border-radius:50%; border:3px solid var(--white); background:var(--sun);
+    box-shadow:var(--shadow-sm); transition: transform .06s, background .15s;
+  }
+  .frame-say:hover{ background:var(--sun-deep); }
+  .frame-say:active{ transform:translateY(2px); }
+  .frame-say:disabled{ opacity:.45; cursor:default; }
+  .catch-card .frame-say{ width:42px; height:42px; font-size:18px; right:0; bottom:10px; }
+
   /* spelling slots */
   .slots{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:14px 0 6px; }
   .slot{
@@ -345,7 +368,7 @@
 
   @media (prefers-reduced-motion: reduce){
     .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p{ animation:none; }
-    .grass-strip.shaking, .catch-frame, .modal-overlay{ animation:none; }
+    .grass-strip.shaking, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
   }
 
   /* visual math */
@@ -414,6 +437,9 @@
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
   .catch-name{ font-weight:800; font-size:1.4rem; color:var(--ink); text-transform:capitalize; margin:2px 0 8px; }
   .catch-types{ margin-bottom:4px; }
+  /* Needs to out-specify `.poke-frame img`, which sets its own drop-shadow filter. */
+  .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
+  #catchSay{ margin-top:6px; }
 
   /* ---------- Pokédex ---------- */
   .dex-gen-section{ margin:0 0 26px; }
@@ -425,9 +451,22 @@
   .dex-gen-count{ font-size:.85rem; font-weight:700; color:var(--ink-soft); }
   .dex-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(94px,1fr)); gap:12px; margin-top:14px; }
   .dex-cell{
+    position:relative; font:inherit; width:100%; display:block; cursor:pointer;
     background:linear-gradient(180deg,var(--white),var(--cream)); border-radius:var(--radius-sm);
     box-shadow:var(--shadow-sm); border:3px solid rgba(255,255,255,.9); padding:10px 6px; text-align:center;
+    transition: transform .06s, border-color .15s, box-shadow .15s;
   }
+  .dex-cell:hover{ border-color:var(--sun-deep); }
+  .dex-cell:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  .dex-new{
+    position:absolute; top:-7px; right:-5px; z-index:1;
+    padding:2px 7px; border-radius:999px;
+    background:var(--berry-deep); color:var(--white);
+    font-size:.6rem; font-weight:900; letter-spacing:.06em;
+    border:2px solid var(--white); box-shadow:var(--shadow-sm);
+    animation: newPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes newPulse{ 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.12) } }
   .dex-num{ font-size:.72rem; font-weight:800; color:var(--ink-soft); }
   .dex-img{ width:64px; height:64px; object-fit:contain; margin:4px auto; display:block; filter:drop-shadow(0 4px 6px rgba(0,0,0,.15)); }
   .dex-img.silhouette{ filter:brightness(0) opacity(.28); }
@@ -486,6 +525,7 @@
 
   @media (max-width:480px){
     .poke-frame{ width:180px; height:180px; }
+    .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
     .tile{ width:46px; height:52px; font-size:1.4rem; }
     .mw-letter{ width:28px; height:44px; font-size:1.3rem; }
@@ -721,8 +761,11 @@
 
   <div class="modal-overlay hidden" id="catchModal">
     <div class="catch-card">
-      <p class="catch-caption">🎉 Caught!</p>
-      <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
+      <p class="catch-caption" id="catchCaption">🎉 Caught!</p>
+      <div class="frame-wrap">
+        <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
+        <button class="frame-say" type="button" id="catchSay" aria-label="Say it">🔊</button>
+      </div>
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
       <div class="battle-types catch-types" id="catchTypes"></div>
@@ -1898,7 +1941,34 @@ function loadCollection(){
 }
 function addToCollection(id){
   const c = loadCollection();
-  if(!c.includes(id)){ c.push(id); try{ localStorage.setItem(COLLECTION_KEY, JSON.stringify(c)); }catch(e){} }
+  if(!c.includes(id)){
+    c.push(id);
+    try{ localStorage.setItem(COLLECTION_KEY, JSON.stringify(c)); }catch(e){}
+    markUnseen(id);
+  }
+}
+
+/* Catches stay flagged NEW in the Pokédex until they've actually been opened
+   there, so a kid can find what they picked up mid-session instead of hunting
+   for it among a thousand entries. Stored separately from the collection so an
+   existing save just starts with nothing flagged. */
+const UNSEEN_KEY = "pokeLearningUnseenCatches";
+function loadUnseen(){
+  try{ return JSON.parse(localStorage.getItem(UNSEEN_KEY)) || []; }catch(e){ return []; }
+}
+function saveUnseen(list){
+  try{ localStorage.setItem(UNSEEN_KEY, JSON.stringify(list)); }catch(e){}
+}
+function markUnseen(id){
+  const u = loadUnseen();
+  if(!u.includes(id)){ u.push(id); saveUnseen(u); }
+}
+function markSeen(id){
+  const u = loadUnseen();
+  const i = u.indexOf(id);
+  if(i === -1) return false;
+  u.splice(i,1); saveUnseen(u);
+  return true;
 }
 
 // dex-number ranges per generation — a generation only starts spawning once the previous one is fully caught
@@ -1948,14 +2018,29 @@ function maybeStartGrassEncounter(){
   if(strip) strip.classList.add("shaking");
 }
 
-function showCatchModal(poke){
+/* One modal serves two callers: the grass catch reveal, and tapping an entry in
+   the Pokédex. An uncaught entry keeps its secret — silhouette, "???", no types,
+   no read-aloud — so browsing the dex can't spoil what's still out there to
+   find. Backdrop-dismissal is opt-in: the catch reveal deliberately requires the
+   Okay button, but browsing the dex means opening and closing a lot of these. */
+function showPokeModal(poke, opts){
+  const { caption = "🎉 Caught!", revealed = true, dismissOnBackdrop = false } = opts || {};
+  $("#catchCaption").textContent = caption;
   $("#catchImg").src = artwork(poke.id);
-  $("#catchImg").alt = cap(poke.n);
+  $("#catchImg").alt = revealed ? cap(poke.n) : "Not caught yet";
+  $("#catchImg").classList.toggle("silhouette", !revealed);
   $("#catchNum").textContent = `#${String(poke.id).padStart(3,"0")}`;
-  $("#catchName").textContent = cap(poke.n);
-  $("#catchTypes").innerHTML = (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("");
-  $("#catchModal").classList.remove("hidden");
+  $("#catchName").textContent = revealed ? cap(poke.n) : "???";
+  $("#catchTypes").innerHTML = revealed
+    ? (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("")
+    : "";
+  $("#catchSay").classList.toggle("hidden", !revealed);
+  $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
+  const modal = $("#catchModal");
+  modal.classList.toggle("dismissable", dismissOnBackdrop);
+  modal.classList.remove("hidden");
 }
+function showCatchModal(poke){ showPokeModal(poke); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
 }
@@ -1972,6 +2057,7 @@ function revealGrassCatch(poke, callback){
 
 function renderPokedex(){
   const collected = loadCollection();
+  const unseen = loadUnseen();
   const sorted = [...POKEMON].sort((a,b)=> a.id-b.id);
   $("#dexCount").textContent = `${collected.length} / ${sorted.length} caught`;
   const container = $("#dexGrid");
@@ -1990,13 +2076,33 @@ function renderPokedex(){
     const grid = section.querySelector(".dex-grid");
     genPokes.forEach(poke=>{
       const got = collected.includes(poke.id);
-      const cell = document.createElement("div");
+      const isNew = got && unseen.includes(poke.id);
+      const cell = document.createElement("button");
+      cell.type = "button";
       cell.className = `dex-cell ${got ? "caught" : "uncaught"}`;
+      cell.setAttribute("aria-label", got
+        ? `${cap(poke.n)}, number ${poke.id}${isNew ? ", new" : ""}`
+        : `Number ${poke.id}, not caught yet`);
       cell.innerHTML = `
+        ${isNew ? `<span class="dex-new">NEW</span>` : ""}
         <div class="dex-num">#${String(poke.id).padStart(3,"0")}</div>
         <img class="dex-img${got ? "" : " silhouette"}" src="${artwork(poke.id)}" alt="${got ? cap(poke.n) : "???"}">
         <div class="dex-name">${got ? cap(poke.n) : "???"}</div>
       `;
+      cell.addEventListener("click", ()=>{
+        // Opening a NEW entry is what clears its badge — drop it straight from
+        // this cell rather than re-rendering the whole dex and losing scroll.
+        if(markSeen(poke.id)){
+          const badge = cell.querySelector(".dex-new");
+          if(badge) badge.remove();
+          cell.setAttribute("aria-label", `${cap(poke.n)}, number ${poke.id}`);
+        }
+        showPokeModal(poke, {
+          caption: got ? "📖 Pokédex" : "❔ Not Caught",
+          revealed: got,
+          dismissOnBackdrop: true
+        });
+      });
       grid.appendChild(cell);
     });
     container.appendChild(section);
@@ -2099,12 +2205,14 @@ function renderSpell(p){
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-spell">Spelling</div>
-    <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
+    <div class="frame-wrap">
+      <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
+      <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
+    </div>
     <div class="slots" id="slots"></div>
     <div class="tiles" id="tiles"></div>
     <div class="feedback" id="feedback"></div>
     <div class="actions">
-      <button class="btn" id="say">🔊 Say it</button>
       <button class="btn" id="hint">💡 Hint (${hintLimit} left)</button>
       <button class="btn ghost" id="backspace">⌫ Backspace</button>
       <button class="btn ghost" id="clear">Clear</button>
@@ -2307,12 +2415,12 @@ function renderMissingLetter(p){
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-spell">Missing Letter</div>
-    <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
+    <div class="frame-wrap">
+      <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
+      <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
+    </div>
     <div class="missing-word" id="missingWord"></div>
     <div class="feedback" id="feedback"></div>
-    <div class="actions">
-      <button class="btn" id="say">🔊 Say it</button>
-    </div>
   `;
   const wordEl = $("#missingWord");
   const blanks = [];
@@ -2524,8 +2632,10 @@ function renderReading(p){
     const img = p.target.img || artwork(p.target.id);
     stage.innerHTML = `
       <div class="kind-tag kind-reading">Read &amp; Choose</div>
-      <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
-      <div class="actions"><button class="btn" id="readingSay">🔊 Say it</button></div>
+      <div class="frame-wrap">
+        <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
+        <button class="frame-say" type="button" id="readingSay" aria-label="Say it">🔊</button>
+      </div>
       <div class="reading-options" id="readingOptions"></div>
       <div class="feedback" id="feedback"></div>
     `;
@@ -2947,6 +3057,11 @@ $("#catchOkBtn").addEventListener("click", ()=>{
   const cb = pendingCatchCallback;
   pendingCatchCallback = null;
   if(cb) cb();
+});
+// Tapping outside the card closes it, but only for callers that opted in — a
+// catch reveal still has to be acknowledged with Okay so its callback runs.
+$("#catchModal").addEventListener("click", (e)=>{
+  if(e.target === e.currentTarget && e.currentTarget.classList.contains("dismissable")) hideCatchModal();
 });
 $("#againBtn").addEventListener("click", ()=>{
   $("#totalCount").value = $("#totalCountResults").value;

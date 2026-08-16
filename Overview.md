@@ -83,7 +83,7 @@ The easiest patterns have genuinely small pools (a few real words each), so the 
 
 **Phase B — Fluency (5 levels)**, practicing Pokémon names the child already knows by ear, generation-gated the same way grass encounters are. Each level staggers two task types:
 
-- **Full Spelling** — the mystery Pokémon's artwork is shown and the player spells its name from shuffled letter tiles (tap) or the keyboard. Controls: 🔊 Say it (speaks the name), 💡 Hint (reveals the next correct letter — running out swaps in a new word from the same pool rather than leaving the player stuck), Backspace, Clear. Wrong letters are rejected immediately with a shake; correct letters lock into a slot.
+- **Full Spelling** — the mystery Pokémon's artwork is shown and the player spells its name from shuffled letter tiles (tap) or the keyboard. Controls: 🔊 (a speaker on the picture, speaks the name), 💡 Hint (reveals the next correct letter — running out swaps in a new word from the same pool rather than leaving the player stuck), Backspace, Clear. Wrong letters are rejected immediately with a shake; correct letters lock into a slot.
 - **Missing Letter** — the word is mostly shown with blanks to fill and no hints at all. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams, and r-controlled vowels as single atomic units, so a blank never splits a sound.
 
 Each Phase B level sets its own Full Spelling length ceiling, its own hint allowance, and its own Missing Letter length ceiling and blank count. Hints tighten as levels rise (3 → 3 → 2 → 2 → 1), and Missing Letter's length ceiling runs ahead of Full Spelling's at the earlier levels, since blanking part of a shown word is an easier task than spelling it from nothing.
@@ -173,6 +173,8 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer).
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. Spelling's Phase B pool and Reading's Pokémon pool respect the same gate.
 - The **Pokédex screen** shows every Pokémon organized by generation: caught ones in full color with their name, uncaught ones as a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with the name hidden as "???", plus a live X/Y caught count per generation.
+- **Every entry is tappable**, opening a detail popup with larger artwork, the Dex number, the name, type badges, and a 🔊 speaker. Uncaught entries open too, but keep their secret — silhouette, "???", no types and no read-aloud — so browsing can't spoil what's still out there to find.
+- A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
 
 ## 9. Dashboard
 
@@ -213,13 +215,15 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 - **Pokémon roster**: **1,021** Pokémon (the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic: Nidoran♀/♂, Farfetch'd, Mr. Mime). Each entry carries its name, National Dex ID, real type(s), and real Base Stat Total. 984 of the 1,021 names are plain single words suitable for the tile-spelling mechanic; the other 37 (Ho-Oh, the Tapu guardians, most Gen 9 Paradox Pokémon) are excluded from Spelling specifically but usable everywhere else.
 - **Pokopia items**: **922** items (name, image, category) across 12 categories. 108 are plain single words; 101 of those are placed across the Phonics Ladder's 9 patterns.
 - **Fully offline**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path. The app does not depend on PokéAPI, GitHub, Bulbapedia, or any fan site being reachable at runtime.
-- **Storage keys**: Lesson Trails progress, the Pokédex collection, the play streak, and general settings each persist under their own `localStorage` key.
+- **Storage keys**: Lesson Trails progress, the Pokédex collection, the set of caught-but-not-yet-viewed Pokémon, the play streak, and general settings each persist under their own `localStorage` key.
 
 ## 14. Design Notes
 
 - Warm, pastel, "cozy life-sim" visual style (leaf greens, sky blues, cream, sun yellow, berry pink) consistent across every mode.
 - Mobile-first responsive layout: touch targets sized for small screens, a dedicated `@media (max-width:480px)` breakpoint, no horizontal page scroll.
-- Speech synthesis (`speechSynthesis` API) is used for read-aloud in Spelling, Battle, and Reading — in Reading, only ever to name a picture (§7.2).
+- Speech synthesis (`speechSynthesis` API) is used for read-aloud in Spelling, Battle, Reading, and the Pokédex — in Reading, only ever to name a picture (§7.2).
+- Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letter, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
+- The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
 - Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius.
 - No external font/script/style dependencies; everything needed to render and run ships in the one HTML file plus the local image folders.
