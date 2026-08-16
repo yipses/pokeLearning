@@ -245,6 +245,19 @@
   .reading-opt.correct{ border-color:var(--leaf); box-shadow:0 0 0 4px rgba(124,196,127,.5); }
   .reading-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
   .reading-opt.shake{ animation: shake .42s; }
+  /* Reverse Read & Choose gives every picture option its own speaker, since the
+     written prompt deliberately has none. The speaker is a sibling of the option
+     button, not a child — nesting a button inside a button is invalid HTML. */
+  .reading-img-cell{ position:relative; display:flex; }
+  .reading-img-cell .reading-opt{ flex:1; }
+  .reading-say-mini{
+    position:absolute; top:-6px; right:-6px; width:30px; height:30px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    font:inherit; font-size:14px; line-height:1; cursor:pointer;
+    border-radius:50%; border:2px solid var(--sky-deep); background:var(--sun);
+    box-shadow:var(--shadow-sm);
+  }
+  .reading-say-mini:active{ transform:translateY(1px); }
 
   /* math input */
   .math-q{ font-size: clamp(40px, 11vw, 64px); font-weight:800; color:var(--ink); margin:6px 0 14px; }
@@ -478,6 +491,7 @@
     .mw-letter{ width:28px; height:44px; font-size:1.3rem; }
     .mw-blank{ height:44px; font-size:1.3rem; }
     .reading-opt-img img{ width:48px; height:48px; }
+    .reading-say-mini{ width:26px; height:26px; font-size:12px; }
     .reading-opt-word{ font-size:.95rem; }
     .pattern-eq{ min-width:110px; font-size:1.1rem; }
     .pattern-input{ width:70px; font-size:1.1rem; }
@@ -1581,8 +1595,13 @@ const SPELLING_LEVELS = [
    aren't part of the Pokédex collection loop), same combined pool the old Match
    mode used. Ramps on two independent axes: word length and distractor
    difficulty (obviously-different vs. same-first-letter/same-length "tricky"
-   distractors). A "Say it" button reads the target's name aloud as an optional
-   aid, same as Spelling's — no hints beyond that, though.
+   distractors). Read-aloud follows one rule: pictures may be named aloud, words
+   never are. Read & Choose prompts with a picture, so a "Say it" names it for a
+   child who doesn't recognize the artwork. Reverse Read & Choose prompts with
+   the written word, so it gets no button at all — speaking the prompt there
+   would hand over the answer — and each of the 5 picture options carries its own
+   speaker instead. Either way the child still has to connect a spoken name to a
+   written one; nothing ever reads a word to them.
    "Clean" (for promotion) means the first tap was the correct one. */
 const SPELLABLE_ITEMS = ITEMS.filter(it => /^[A-Za-z]+$/.test(it.n));
 function lenGatedReadingPool(maxLen, minLen=3){
@@ -2518,26 +2537,39 @@ function renderReading(p){
       btn.addEventListener("click", ()=> pickReading(opt, btn));
       wrap.appendChild(btn);
     });
+    // The prompt is a picture, so it may be unrecognizable artwork — naming it
+    // aloud resolves the picture, not the words the child still has to read.
+    $("#readingSay").addEventListener("click", ()=> speakName(p.target.n));
   } else {
-    // see the written word, pick the matching picture out of 5
+    // See the written word, pick the matching picture out of 5. The prompt gets
+    // NO speaker here — reading it aloud would hand over the answer and leave
+    // nothing to decode. Each picture option carries its own instead, so a child
+    // who can't identify the artwork can still hear what it is.
     stage.innerHTML = `
       <div class="kind-tag kind-reading">Reverse Read &amp; Choose</div>
       <div class="reading-word">${cap(p.target.n)}</div>
-      <div class="actions"><button class="btn" id="readingSay">🔊 Say it</button></div>
       <div class="reading-options reading-options-img" id="readingOptions"></div>
       <div class="feedback" id="feedback"></div>
     `;
     const wrap = $("#readingOptions");
     p.options.forEach(opt=>{
+      const cell = document.createElement("div");
+      cell.className = "reading-img-cell";
       const btn = document.createElement("button");
       btn.className = "reading-opt reading-opt-img";
       const src = opt.img || artwork(opt.id);
       btn.innerHTML = `<img alt="${cap(opt.n)}" src="${src}">`;
       btn.addEventListener("click", ()=> pickReading(opt, btn));
-      wrap.appendChild(btn);
+      const say = document.createElement("button");
+      say.className = "reading-say-mini";
+      say.type = "button";
+      say.textContent = "🔊";
+      say.setAttribute("aria-label", `Say ${cap(opt.n)}`);
+      say.addEventListener("click", ()=> speakName(opt.n));
+      cell.append(btn, say);
+      wrap.appendChild(cell);
     });
   }
-  $("#readingSay").addEventListener("click", ()=> speakName(p.target.n));
   readingState = { p, hadMistake:false, done:false };
 }
 

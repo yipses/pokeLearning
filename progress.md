@@ -92,14 +92,14 @@ A running summary of how this project got from a basic spelling/math quiz to whe
   - **Read & Choose** (see a picture, pick the matching word from 5) and **Reverse Read & Choose** (see a word, pick the matching picture from 5) — fixed-choice formats specifically so difficulty never shrinks over a round the way the old Match mode's pool did.
   - Ramps on two independent axes: word length (3–6 letters for levels 1–4, 7–10 for levels 5–6) and distractor difficulty ("easy" = random, "tricky" = the 4 wrong options share the target's first letter or length, with a fallback to random if the gen-gated pool is too small to find 4 tricky matches).
   - Levels 1–4 are single-mode (alternating Choose/Reverse level by level); levels 5–6 mix both modes randomly within the level.
-  - Deliberately **no hints and no read-aloud** on either mode — the whole point is confirming the child actually read the word, not shape- or sound-matching it.
+  - Deliberately **no hints and no read-aloud** on either mode — the whole point is confirming the child actually read the word, not shape- or sound-matching it. *(Superseded in Phase 13: the shipped code never actually matched this, and the rule is now "pictures may be named aloud, words never are" — Read & Choose keeps a speaker on its picture prompt, Reverse Read & Choose drops it from the word and gives one to each picture option.)*
   - Same promotion engine as every other track. Verified with a script: every generated round has exactly 5 unique options including the target; the "tricky" distractor rule holds in 198/200 sampled rounds (the other 2 correctly hit the documented small-pool fallback); 10/10-clean promotion fires correctly; and directly exercised the click handler for three scenarios — correct-first-try (records clean), wrong-then-correct (records not-clean, doesn't double-advance), and clicking again after a round is already won (guarded, no double score).
 - **Started moving the project onto GitHub** at your request, so you can access it by URL and I can push updates directly instead of you copying files around:
   - Committed everything that had built up uncommitted (both full asset folders, `Overview.md`, `progress.md`, and all of today's `index.html` work) as the real second commit — the original "initial commit" predates almost all of this.
   - Added a `.gitignore` and untracked `.claude/settings.local.json` (local machine prefs, not project state — no secrets in it, just not something to keep committing).
   - Installed `gh` (GitHub CLI) via Homebrew so I can create the remote repo and push directly once authenticated, rather than walking you through the web UI by hand.
   - Decided: **public** repo (you're not worried about the Pokémon/item art being visible) + **GitHub Pages** for hosting, since it needs no third-party account beyond GitHub itself. Repo is ~182MB, comfortably under GitHub's 100MB-per-file hard limit and its ~1GB soft repo-size guidance — no Git LFS needed.
-  - **Paused here**: `gh auth login` needs an interactive browser step only you can do. Once that's done, still to do: `gh repo create` + push, then flip on Pages in the repo settings.
+  - **Paused here**: `gh auth login` needs an interactive browser step only you can do. Once that's done, still to do: `gh repo create` + push, then flip on Pages in the repo settings. *(Resolved in Phase 13 — the repo is on GitHub and sessions now run against it directly, so `gh` was never needed. Pages is still unconfirmed.)*
 
 ## Phase 12 — Bug fixes from real play, and the Dashboard
 
@@ -112,22 +112,51 @@ A batch of fixes surfaced by actually playing the app, plus the last speced piec
 - **Investigated a "still stuck on level 1" report** and confirmed it wasn't a bug: simulated 400 realistic multi-track sessions using the actual `buildQueue()` — under perfect play all 4 tracks promoted twice within 13 sessions, and progress correctly round-trips through a simulated page reload. The real cause is just volume dilution: a 10-question session splits across 4 tracks, and only 60% of a track's own questions are frontier-eligible, so any one track gets maybe 1.5 promotion-eligible attempts per session.
 - **Built the Dashboard** — the last unbuilt piece from the Lesson Trails artifact. One card per track (current level, days at that level, Last-10/Last-20 bars, and a live SVG trend chart with 80%/100% gate lines, a gold star marker for instant 10/10 promotions, and a dashed "Leveled up" line for 16/20 promotions) — reachable from a new "📊 My Progress" button on the home screen. Required extending the progress data model with two new per-track fields, `trend` (a capped rolling log of Last-10/Last-20 % at each frontier attempt) and `frontierSince` (a timestamp, for the days-at-level count) — verified old pre-Dashboard save data migrates cleanly, keeping existing frontier/history exactly and just backfilling the two new fields, so no one's real progress gets lost by this update.
 
+## Phase 13 — Moved to Claude Code on the web, and the Reading read-aloud rule
+
+- **The repo is on GitHub and the session now runs there**, not on the Mac — which resolves Phase 11's blocker. `gh auth login` never happened and no longer needs to: the web environment clones the repo itself and pushes over its own credentials. Everything built through Phase 12 is on `origin/main`, squashed into the single `Initial Commit`.
+- **Real browser QA works now** — the long-standing blocker below is gone in this environment (see the rewritten Tooling note). Verified it by actually serving `index.html` and driving it in headless Chromium: home screen renders, `Start Playing` advances to a live challenge, clean console, no failed requests. This is the first time the app has been confirmed working by *running* it rather than by reasoning about the code under a DOM shim.
+- **Settled the Reading read-aloud question**, which the code and the docs disagreed on. Phase 11 recorded the decision as "deliberately no hints and no read-aloud on either mode," but the shipped code put a 🔊 Say it on *both* modes, and the code comment justified it as "an optional aid, same as Spelling's." Neither was quite right. The rule now is **pictures may be named aloud; words never are**:
+  - **Read & Choose** (picture → pick the word) **keeps** its Say it. The picture is the prompt, and a lot of the artwork — obscure Gen 8/9 species, unfamiliar Pokopia items — isn't reliably identifiable by a small child. Without a way to resolve *what the picture is*, the question isn't a reading test, it's a guess. Naming the picture resolves the prompt and leaves the five written options still to be read.
+  - **Reverse Read & Choose** (word → pick the picture) **loses** it. Here the prompt *is* the written word, so speaking it handed over the answer outright and left nothing to decode — the single worst version of this. Each of the five picture options now carries its own small speaker instead, so a child who can't identify the artwork can still hear it.
+  - Net effect: in both modes the child still has to connect a spoken name to a written one, and nothing ever reads a *word* to them. Implemented with the speaker as a **sibling** of each option button rather than a child — a `<button>` inside a `<button>` is invalid HTML and browsers restructure it.
+  - Verified in a real browser: Read & Choose renders 1 prompt speaker and 0 per-option speakers, Reverse renders 0 and 5, no nested buttons in either; tapping all five option speakers neither answers the question nor marks the attempt as non-clean; and picking the correct picture still records a clean attempt.
+- **Decided: Read & Choose's Say it does not break "clean."** Spelling counts a hint against a clean answer, so it was worth asking whether the picture speaker should count the same way. It doesn't, and shouldn't — identifying artwork isn't the skill Reading is testing, so the speaker is an accessibility affordance rather than a hint. A child can tap it on every question and still promote at 10/10.
+- **Confirmed GitHub Pages is live.** It couldn't be checked by URL (the sandbox proxy blocks outbound to both `github.com` and `github.io`), but the GitHub API shows a `pages build and deployment` run against `main` at `19eef77`, completed successfully. The site builds from **`main`**, so work on a feature branch isn't live until it's merged.
+- **Split the docs by role.** `Overview.md` had been carrying progress inside it — "planned," "not yet built," "Status: two of four tracks built," a Match-mode removal note, and a Possible Future Directions section — which meant every shipped feature left it quietly wrong. It's now strictly a description of what the app does today, with a header line saying so and pointing here. Everything time-bound lives in this file instead. Rewriting it against the actual code also caught several things it had wrong: it still described Spelling as configured by min/max name length (the Spelling Trail replaced that in Phase 10), still described Visual Math as having its own per-operation toggles and ranges (Phase 10 rewired it to render Math Trails questions), listed six screens rather than seven, and carried a broken cross-reference to a "§5.6" that didn't exist.
+
+### Ideas parked here, previously in `Overview.md`
+
+Not scheduled work — surfaced during development and kept for reference:
+
+- **Rhyme Match** (given a word, pick which of three others rhymes) — deferred because most Pokémon names are invented and don't reliably rhyme; it would need to draw from the Phase A real-word list instead.
+- **Clue Words** (a few descriptors shown at once — BIG, RED, METAL — pick the matching item) — deferred because it needs per-item attribute data (color, size, material) that doesn't exist yet.
+- Sentence-level reading comprehension, beyond single-word Read & Choose.
+- Per-session or historical stats beyond the in-memory Battle record and the Dashboard.
+- Difficulty presets that bundle several settings at once.
+
 ---
 
-**Where things stand:** All four Lesson Trails tracks are live and promoting, and the Dashboard now shows real progress for all of them — that's the complete Lesson Trails artifact, fully built. What's left:
-- Getting the repo actually pushed to GitHub and Pages turned on (see Phase 11 — blocked on your `gh auth login`).
+**Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the app is confirmed running in a browser, and it's published on GitHub Pages. What's left:
 - An offered-but-not-yet-done audit of the ~820 remaining Pokopia items for other name/image mismatches like the CD/Bill one (only the 101 used in Spelling have been individually eyeballed).
 
+**Doc roles, so this doesn't drift again:**
+- `Overview.md` — what the app does *today*. No history, no status, no plans.
+- `progress.md` — how it got here, what changed and why, what's still open, ideas parked.
+- `LessonTrails.md` — the curriculum design rationale behind the four trails.
+
 ---
 
-## Tooling note — no working interactive browser access from the agent sandbox
+## Tooling note — browser QA works in web sessions, not in the local Mac sandbox
 
-Tried to actually drive/screenshot the app in a real browser while building the Spelling Trail, and it didn't work — recording what was tried so we don't re-litigate it next time:
+**Current state (Claude Code on the web): real browser testing works.** Node 22, Playwright, and Chromium are all preinstalled. The working pattern is: serve the folder (`python3 -m http.server`) and drive it with Playwright, rather than opening a `file://` URL. One gotcha worth remembering — the preinstalled Chromium build (`chromium-1194`) is older than the one a fresh `npm i playwright` expects (1234), so a plain `chromium.launch()` fails with "Executable doesn't exist." Launch with an explicit path instead, and do **not** run `npx playwright install`:
 
-- No headless browser toolchain is installed: no `node`, no `npm`, no `chromium-cli`, no Python `playwright`. Only `python3` is available.
-- `open index.html` / `open -a Safari ...` return success and Safari is confirmed running (`ps aux`) — but:
-- `osascript -e 'tell application "System Events" to ...'` times out (`AppleEvent timed out (-1712)`), and `tell application "Safari" to activate` runs with no error but never actually brings Safari forward — an immediate `screencapture` still shows Terminal as frontmost, no Safari window visible anywhere on screen.
-- Working theory: the process running Bash-tool commands isn't authorized under macOS's Automation/Accessibility privacy permissions to control other apps via Apple Events, so those calls silently no-op or hang rather than prompting for permission.
-- `screencapture` itself does work (returns a real screenshot of the actual desktop), so if the app is already open and frontmost on the real screen, a screenshot can confirm visual state — but the agent can't reliably bring a window forward or click/type into it on its own.
+```js
+chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' })
+```
 
-**To get real interactive browser QA from the agent in a future session**, either: (a) grant Automation permission for Safari + System Events, and Accessibility permission, to whatever process hosts the Bash tool, via System Settings → Privacy & Security; or (b) install a headless toolchain (`npm i -g playwright && playwright install chromium`, or whatever `chromium-cli` tool the `run` skill expects) so testing doesn't depend on GUI automation at all. Until one of those is true, verification here has relied on: syntax-checking the extracted `<script>` contents via `osascript -l JavaScript` (JavaScriptCore, no browser needed), and running the real app code under a minimal in-memory DOM/localStorage shim to exercise actual logic (data pools, chunking, trail promotion, `buildQueue()`) — see the Spelling Trail build for the pattern.
+Being able to call the app's own functions through `page.evaluate()` — `mkReading()`, `renderReading()`, then assert on the resulting DOM — turned out to be more useful than clicking through the UI, since it reaches any mode or level directly without playing to it.
+
+**Historical (the local Mac sandbox), kept because it explains how Phases 9–12 were verified.** On the Mac there was no headless toolchain at all — no `node`, no `npm`, no Python `playwright`, only `python3` — and GUI automation didn't work either: `open -a Safari` reported success and Safari was confirmed running, but `osascript -e 'tell application "System Events" ...'` timed out (`AppleEvent timed out (-1712)`) and `tell application "Safari" to activate` never actually brought a window forward. The likely cause was that the process hosting the Bash tool lacked macOS Automation/Accessibility permission, so the calls silently no-opped rather than prompting. `screencapture` did work, so a screenshot could confirm visual state if the app was already frontmost — but the agent couldn't reliably focus a window or click into it.
+
+That's why everything through Phase 12 was verified indirectly: syntax-checking the extracted `<script>` via `osascript -l JavaScript` (JavaScriptCore, no browser), and running the real app code under a minimal in-memory DOM/localStorage shim to exercise actual logic — data pools, chunking, trail promotion, `buildQueue()`. Those shim harnesses are still useful for pure-logic checks, but visual and interaction bugs now have a real browser to catch them. To get the same on the Mac, either grant Automation + Accessibility permission via System Settings → Privacy & Security, or install a headless toolchain locally.
