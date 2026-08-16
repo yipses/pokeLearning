@@ -177,6 +177,10 @@ So the fix is local: hand `speechSynthesis` a phonetic respelling instead of the
 
 The division of labour from here: the flagged list comes back, each fix is a one-line addition. Guessing at respellings for names nobody has listened to risks making good ones worse.
 
+**Then reworked the tool around A/B comparison**, which turns out to be the more useful shape. Each row now plays **Before** (the raw spelling, unaided) and **After** (the respelling), plus **A/B** to hear them back to back with a beat between — without the pause the two utterances run together and can't be told apart. The respelling sits in an editable box, so a fix can be tried by ear on the spot; an edited value is collected in the output list ready to paste straight back.
+
+That changes the loop meaningfully. Flagging alone reports *that* something is wrong and leaves the fix to be guessed at blind, which is the same problem that seeded 29 unheard entries. An edited box reports what actually sounds *right* on the device the child uses — turning the person with ears from a reporter into the one who solves it, and removing the blind guess from the loop entirely.
+
 ---
 
 **Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the app is confirmed running in a browser, and it's published on GitHub Pages. What's left:
