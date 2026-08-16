@@ -158,6 +158,25 @@ The diagnosis took a round trip only because there was no way to tell from insid
 
 Worth recording for its own sake: this was the second time in two sessions that a problem was invisible to assertions and obvious in a screenshot (the first being the `inline-block` layout break in Phase 14). Structural checks confirm what's in the DOM; they don't confirm the user can see or reach it.
 
+## Phase 16 — Pronunciation overrides
+
+The read-aloud was mispronouncing a fair number of Pokémon names. Checked whether a web source of spoken names exists to fall back on, and there isn't one worth using:
+
+- **PokéAPI has a `cries` field**, which is the obvious near-miss — those are the games' electronic sound effects, not a voice saying the name.
+- **Forvo** has human recordings and an API, but coverage thins out badly across Gen 8/9, and its terms restrict redistributing or caching the audio — which is exactly what bundling it in the repo would be.
+- **Wiktionary/Commons** covers real words, essentially nothing invented. Official anime audio is copyrighted and not an API.
+
+So the fix is local: hand `speechSynthesis` a phonetic respelling instead of the real spelling. Chosen over pre-generating audio files because it keeps the app a single offline page with no new assets and no TTS account.
+
+- Added `SPEECH_OVERRIDES` (name → respelling) and `sayAs()`, routed through `speakName()` and the Battle winner line — the two places names reach the synthesiser. **Speech only**: every display still uses the real name, which a test asserts directly.
+- Also set `u.lang = "en-US"`, which was never set before. Without it the OS default voice is used, so a device configured for another language applies that language's phonetics to English spellings — and would make the respellings behave unpredictably. This was the "option A" quick win, folded in because the respellings depend on a predictable voice.
+- Conventions, recorded in a comment on the map: values stay lowercase, because some engines read an all-caps syllable as an initialism and spell it out letter by letter; syllables are space-separated, which is the only stress control available since the Web Speech API has no usable SSML.
+- Seeded 29 entries from documented pronunciations. **These are unverified by ear** — this sandbox has no speech voices installed at all (`getVoices()` returns empty), so they can't be heard here. Some may be wrong, or may be "fixing" names that were already fine.
+- Built **`tools/pronounce.html`** to close that gap: a dev-only page listing all 1,021 names with a play button, a voice picker, filters, and a "✗ Wrong" toggle that collects flagged names into a copyable list. Flags persist to `localStorage` so a pass can be done across several sittings. It reads the roster and the override map out of `index.html` via a hidden iframe rather than duplicating them, so it can't drift — at the cost of needing to be served over `http://`.
+- A test asserts every override key matches a real Pokémon name. A typo'd key is otherwise invisible: it just never fires, and the name keeps being mispronounced.
+
+The division of labour from here: the flagged list comes back, each fix is a one-line addition. Guessing at respellings for names nobody has listened to risks making good ones worse.
+
 ---
 
 **Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the app is confirmed running in a browser, and it's published on GitHub Pages. What's left:
