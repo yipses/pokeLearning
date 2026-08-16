@@ -801,7 +801,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 7;
+const APP_BUILD = 8;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -2310,38 +2310,45 @@ function renderSpell(p){
    - SPEECH ONLY. Spelling tiles, Reading options, the Pokédex and every other
      display keep using the real name; nothing here changes what's on screen.
 
+   Provenance matters here. Entries marked (checked) were verified against
+   published pronunciation guides; the rest were written from recall and are
+   unverified — treat them as guesses until someone hears them. Direct fetches to
+   Bulbapedia and the Pokémon wikis are blocked by this environment's egress
+   proxy, but web search reaches their content, which is how the checked ones got
+   confirmed and how two wrong ones (Rayquaza, Gyarados) were caught.
+
    Use tools/pronounce.html to audit these by ear — it lists every name with a
    play button and collects the ones that sound wrong. */
 const SPEECH_OVERRIDES = {
-  arcanine:   "ar kuh nine",
+  arcanine:   "ar kuh nine",   // checked
   celebi:     "sell uh bee",
   chandelure: "shan duh loor",
-  deoxys:     "dee ok sis",
+  deoxys:     "dee ok sis",   // checked
   entei:      "en tay",
   eternatus:  "ee ter nay tus",
   giratina:   "gee ruh tee nuh",
-  groudon:    "grow don",
-  gyarados:   "gyah ruh dose",
+  groudon:    "grow don",   // checked
+  gyarados:   "gair uh dose",   // checked
   jirachi:    "jih rah chee",
   kangaskhan: "kang gus kahn",
   koraidon:   "kuh rye don",
-  kyogre:     "kai oh gur",
+  kyogre:     "kai oh gur",   // checked
   lucario:    "loo car ee oh",
-  lugia:      "loo gee uh",
+  lugia:      "loo gee uh",   // checked
   milotic:    "my lot ik",
   mimikyu:    "mim ih kyoo",
   miraidon:   "muh rye don",
   necrozma:   "neh kroz muh",
   ninetales:  "nine tales",
   raikou:     "rye koo",
-  rayquaza:   "ray kwah zuh",
+  rayquaza:   "ray kway zuh",   // checked
   solgaleo:   "sol guh lay oh",
-  suicune:    "swee koon",
+  suicune:    "swee koon",   // checked
   volcarona:  "vol kuh roh nuh",
-  xerneas:    "zur nee us",
-  yveltal:    "ee vel tahl",
+  xerneas:    "zur nee us",   // checked
+  yveltal:    "ee vel tahl",   // checked
   zoroark:    "zoh roh ark",
-  zygarde:    "zye guard",
+  zygarde:    "zye guard",   // checked
 };
 function sayAs(name){
   return SPEECH_OVERRIDES[String(name).toLowerCase()] || name;
