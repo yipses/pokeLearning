@@ -208,6 +208,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 - **General**: Number of Challenges (governs session length across all active modes) and Wild Pokémon rate (grass encounter chance).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
 - **Per trail**: a frontier dropdown showing the current level in plain language ("Level 4a — Within 40, no regrouping"), which doubles as the manual placement control.
+- **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
 ## 13. Data & Offline Assets

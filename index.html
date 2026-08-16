@@ -441,6 +441,16 @@
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   #catchSay{ margin-top:6px; }
 
+  /* ---------- About / build identity ---------- */
+  .about-rows{ margin-top:4px; }
+  .about-row{
+    display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+    padding:8px 2px; border-bottom:1px dashed var(--cream-2);
+  }
+  .about-row:last-child{ border-bottom:0; }
+  .about-row span{ color:var(--ink-soft); font-weight:700; font-size:.9rem; }
+  .about-row b{ color:var(--ink); font-weight:800; font-variant-numeric:tabular-nums; }
+
   /* ---------- Pokédex ---------- */
   .dex-gen-section{ margin:0 0 26px; }
   .dex-gen-title{
@@ -679,6 +689,16 @@
       </div>
     </div>
 
+    <div class="card">
+      <h2><span class="chip">ℹ️</span> About</h2>
+      <p class="sub">Which version of the app this device is running. If the build here is older than the one you just published, this device is showing a cached copy — reload the page.</p>
+      <div class="about-rows">
+        <div class="about-row"><span>Build</span><b id="aboutBuild">—</b></div>
+        <div class="about-row"><span>Published</span><b id="aboutDate">—</b></div>
+        <div class="about-row"><span>This file</span><b id="aboutFile">—</b></div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ============ PLAY ============ -->
@@ -776,6 +796,29 @@
 </div>
 
 <script>
+/* ---------------- Build identity ----------------
+   There's no build step to stamp a version in, so these are bumped by hand.
+   BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
+   worse than none, because the whole point is telling a cached copy apart from
+   a fresh one. Build 1 was PR #1, build 2 was PR #2. */
+const APP_BUILD = 3;
+const APP_BUILD_DATE = "16 Aug 2026";
+
+function renderAbout(){
+  $("#aboutBuild").textContent = String(APP_BUILD);
+  $("#aboutDate").textContent = APP_BUILD_DATE;
+  // document.lastModified reflects the Last-Modified of the copy actually loaded,
+  // so a cached page reports the old file's date rather than today's — which is
+  // exactly the signal wanted here. Falls back to the raw string if unparseable.
+  // Rendered in the viewer's own timezone, with the zone named explicitly: a bare
+  // clock time invites "…in which timezone?" the moment it's compared to anything.
+  const raw = document.lastModified;
+  const d = new Date(raw);
+  $("#aboutFile").textContent = isNaN(d.getTime())
+    ? raw
+    : d.toLocaleString(undefined, {day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit", timeZoneName:"short"});
+}
+
 /* ---------------- Pokémon data (name + national dex id for artwork) ---------------- */
 const POKEMON = [
   {n:"bulbasaur",id:1,t:["grass","poison"],bst:318},{n:"ivysaur",id:2,t:["grass","poison"],bst:405},{n:"venusaur",id:3,t:["grass","poison"],bst:525},{n:"charmander",id:4,t:["fire"],bst:309},
@@ -3041,7 +3084,7 @@ renderTrailSettings();
 $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
 $("#battleBackBtn").addEventListener("click", ()=> show("setup"));
-$("#settingsBtn").addEventListener("click", ()=> show("settings"));
+$("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"); });
 $("#pokedexBtn").addEventListener("click", ()=>{ renderPokedex(); show("pokedex"); });
 $("#dexBackBtn").addEventListener("click", ()=> show("setup"));
 $("#dashboardBtn").addEventListener("click", ()=>{ renderDashboard(); show("dashboard"); });
