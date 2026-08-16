@@ -146,6 +146,18 @@ Not scheduled work — surfaced during development and kept for reference:
 - **Favicon is now the app's own Pokéball mark**, inlined as an SVG data URI — no extra file, and the app stays a single self-contained page. Also stops the `/favicon.ico` 404 that browsers were generating.
 - Verified in a real browser across all four speaker placements (present, inside the frame wrapper, none stranded in an action row, and geometrically overlapping the frame), plus the dex flows: badge count on load, badge cleared on open and persisting across a reload, a fresh catch re-flagging, caught vs. uncaught popup contents, and backdrop dismissal. No console errors, no failed requests.
 
+## Phase 15 — Build identity in Settings
+
+Prompted by a real incident: after merging the Pokédex work, tapping entries did nothing on the live site. Everything checked out — the code was on `main`, the deploy succeeded, and the exact user path reproduced fine locally on a fresh profile with an empty collection and a real touch tap. The cause was that the Pages deploy finished ~80 seconds *after* the merge, so an early check cached the old build. In that build dex cells were plain `<div>`s with no handler at all, which is precisely the "nothing happens" symptom.
+
+The diagnosis took a round trip only because there was no way to tell from inside the app which version was running. So:
+
+- Added an **About card** at the bottom of Settings with three rows: **Build** (a hand-maintained integer), **Published** (that build's date), and **This file** (`document.lastModified`).
+- The third row is the one that actually catches a stale cache: `document.lastModified` reports the Last-Modified of the copy the browser actually loaded, so a cached page shows the *old* file's date rather than today's. Comparing it against the published date is a self-service answer to "am I running the new version?" without needing a reference value.
+- **`APP_BUILD` must be bumped by hand on every change that ships.** There's no build step to stamp it automatically, and a stale number is worse than no number at all, since the whole point is distinguishing fresh from cached. The constant carries that warning in a comment. Build 1 = PR #1, build 2 = PR #2, build 3 = this change.
+
+Worth recording for its own sake: this was the second time in two sessions that a problem was invisible to assertions and obvious in a screenshot (the first being the `inline-block` layout break in Phase 14). Structural checks confirm what's in the DOM; they don't confirm the user can see or reach it.
+
 ---
 
 **Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the app is confirmed running in a browser, and it's published on GitHub Pages. What's left:
