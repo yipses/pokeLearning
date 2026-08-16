@@ -5,47 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pronunciation audit — Poké Learning</title>
 <!--
-  Dev tool, not part of the app. Lists every Pokémon name with a play button so
-  the read-aloud can be checked by ear, and collects the ones that sound wrong
-  into a list to paste back.
+  Dev tool, not part of the app.
+
+  For each name it can play "Before" (the real spelling, what the synthesiser
+  does unaided) and "After" (whatever respelling is in the box), plus A/B to
+  hear them back to back. The box is editable, so a fix can be tried by ear on
+  the spot rather than guessed at — an edited value is collected in the output
+  list at the bottom, ready to paste back and drop into SPEECH_OVERRIDES.
 
   It reads POKEMON and SPEECH_OVERRIDES out of ../index.html via a hidden iframe
   rather than keeping its own copy, so it can never drift out of sync with the
-  real roster. That means it has to be opened over http:// — a file:// iframe is
-  treated as a different origin and blocked. From the repo root:
+  real roster. That means it has to be served over http:// — a file:// iframe is
+  treated as a different origin and blocked. Either open it on the live site, or
+  from the repo root run `python3 -m http.server 8899` and visit
+  http://localhost:8899/tools/pronounce.html
 
-      python3 -m http.server 8899
-      open http://localhost:8899/tools/pronounce.html
-
-  Flags are saved to localStorage, so a pass can be done across several sittings.
+  Flags and edits are saved to localStorage, so a pass can be done in sittings.
+  Voices come from the device, not the app — audit on the device actually used.
 -->
 <style>
-  :root{ --ink:#3f3d36; --soft:#7b776c; --line:#e6e2d6; --bg:#fbf9f3; --accent:#4e9d63; --bad:#d8574f; }
+  :root{ --ink:#3f3d36; --soft:#7b776c; --line:#e6e2d6; --bg:#fbf9f3; --accent:#4e9d63; --bad:#d8574f; --edit:#c98a1e; }
   *{ box-sizing:border-box; }
   body{ margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); }
-  header{ position:sticky; top:0; background:var(--bg); border-bottom:2px solid var(--line); padding:14px 16px; z-index:2; }
-  h1{ margin:0 0 10px; font-size:1.15rem; }
+  header{ position:sticky; top:0; background:var(--bg); border-bottom:2px solid var(--line); padding:12px 14px; z-index:2; }
+  h1{ margin:0 0 9px; font-size:1.1rem; }
   .controls{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  input[type=search], select{ font:inherit; padding:7px 10px; border:2px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); }
-  input[type=search]{ flex:1; min-width:180px; }
-  .count{ color:var(--soft); font-size:.88rem; margin-left:auto; }
-  ul{ list-style:none; margin:0; padding:0 16px 240px; }
-  li{ display:flex; align-items:center; gap:12px; padding:9px 4px; border-bottom:1px solid var(--line); cursor:pointer; }
-  li:hover{ background:#fff; }
+  input[type=search], select, input.try{ font:inherit; padding:7px 10px; border:2px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); }
+  input[type=search]{ flex:1; min-width:150px; }
+  .count{ color:var(--soft); font-size:.86rem; font-weight:400; }
+  ul{ list-style:none; margin:0; padding:0 14px 250px; }
+  li{ padding:10px 4px; border-bottom:1px solid var(--line); }
   li.flagged{ background:#fdecea; }
-  .id{ color:var(--soft); font-variant-numeric:tabular-nums; font-size:.82rem; min-width:52px; }
-  .nm{ font-weight:700; text-transform:capitalize; }
-  .as{ color:var(--accent); font-size:.86rem; font-style:italic; }
-  .as::before{ content:"→ "; }
+  li.edited{ background:#fff7e8; }
+  .top{ display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+  .id{ color:var(--soft); font-variant-numeric:tabular-nums; font-size:.8rem; min-width:50px; }
+  .nm{ font-weight:700; text-transform:capitalize; font-size:1.02rem; }
+  .tag{ font-size:.72rem; font-weight:700; padding:1px 7px; border-radius:999px; background:var(--line); color:var(--soft); }
   .spacer{ flex:1; }
-  button{ font:inherit; cursor:pointer; border-radius:9px; border:2px solid var(--line); background:#fff; color:var(--ink); padding:5px 11px; }
+  .row2{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  input.try{ flex:1; min-width:150px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9rem; }
+  button{ font:inherit; cursor:pointer; border-radius:9px; border:2px solid var(--line); background:#fff; color:var(--ink); padding:6px 11px; white-space:nowrap; }
+  button:hover{ border-color:var(--accent); }
+  button.ab{ font-weight:700; }
   button.flag.on{ background:var(--bad); border-color:var(--bad); color:#fff; }
-  footer{
-    position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:2px solid var(--line);
-    padding:12px 16px; display:flex; gap:12px; align-items:flex-start;
-  }
-  textarea{ flex:1; height:104px; font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; padding:9px; border:2px solid var(--line); border-radius:9px; resize:vertical; }
-  .fcol{ display:flex; flex-direction:column; gap:7px; }
+  button.reset{ color:var(--soft); }
+  footer{ position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:2px solid var(--line); padding:11px 14px; display:flex; gap:11px; align-items:flex-start; }
+  textarea{ flex:1; height:112px; font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; padding:9px; border:2px solid var(--line); border-radius:9px; resize:vertical; }
+  .fcol{ display:flex; flex-direction:column; gap:6px; }
   .warn{ padding:16px; color:var(--bad); font-weight:600; }
 </style>
 </head>
@@ -59,7 +65,7 @@
       <option value="all">All names</option>
       <option value="over">Has an override</option>
       <option value="plain">No override</option>
-      <option value="flag">Flagged only</option>
+      <option value="todo">Flagged or edited</option>
     </select>
     <select id="voice"><option>Loading voices…</option></select>
   </div>
@@ -71,52 +77,74 @@
 <footer>
   <div class="fcol">
     <button id="copy">Copy list</button>
-    <button id="clear">Clear flags</button>
+    <button id="clear">Clear all</button>
   </div>
-  <textarea id="out" readonly placeholder="Names you flag as sounding wrong will collect here."></textarea>
+  <textarea id="out" readonly placeholder="Flag a name as wrong, or type a respelling you like, and it collects here."></textarea>
 </footer>
 
 <iframe id="app" src="../index.html" hidden></iframe>
 
 <script>
-const FLAG_KEY = "pronounceAuditFlags";
-let POKE = [], OVERRIDES = {}, voices = [], flags = new Set();
-
-try { flags = new Set(JSON.parse(localStorage.getItem(FLAG_KEY)) || []); } catch(e){}
+const FLAG_KEY = "pronounceAuditFlags", EDIT_KEY = "pronounceAuditEdits";
+let POKE = [], OVERRIDES = {}, voices = [], flags = new Set(), edits = {};
 
 const $ = s => document.querySelector(s);
-const saveFlags = () => { try{ localStorage.setItem(FLAG_KEY, JSON.stringify([...flags])); }catch(e){} };
-const spokenAs = n => OVERRIDES[n.toLowerCase()] || n;
+try { flags = new Set(JSON.parse(localStorage.getItem(FLAG_KEY)) || []); } catch(e){}
+try { edits = JSON.parse(localStorage.getItem(EDIT_KEY)) || {}; } catch(e){}
+const save = () => {
+  try{
+    localStorage.setItem(FLAG_KEY, JSON.stringify([...flags]));
+    localStorage.setItem(EDIT_KEY, JSON.stringify(edits));
+  }catch(e){}
+};
+
+// What the app would say today: an edit beats an override, an override beats the raw name.
+const shipped = n => OVERRIDES[n.toLowerCase()] || n;
+const current = n => (n in edits) ? edits[n] : shipped(n);
 
 function loadVoices(){
   voices = speechSynthesis.getVoices();
   const sel = $("#voice");
   if(!voices.length){ sel.innerHTML = "<option>No voices installed</option>"; return; }
-  // Default to an English voice if there is one, since that's what the app asks for.
+  const keep = sel.value;
   const preferred = voices.findIndex(v => /^en[-_]US/i.test(v.lang));
   sel.innerHTML = voices.map((v,i) => `<option value="${i}">${v.name} — ${v.lang}${v.localService ? "" : " (network)"}</option>`).join("");
-  sel.value = String(preferred === -1 ? 0 : preferred);
+  sel.value = (keep && voices[keep]) ? keep : String(preferred === -1 ? 0 : preferred);
 }
 speechSynthesis.onvoiceschanged = loadVoices;
 loadVoices();
 
-function say(name){
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(spokenAs(name));
+function utter(text){
+  const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";           // same settings the app uses, so this matches what a kid hears
   u.rate = 0.8;
   u.pitch = 1.1;
   const v = voices[Number($("#voice").value)];
   if(v) u.voice = v;
-  speechSynthesis.speak(u);
+  return u;
+}
+function say(text){
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter(text));
+}
+// Before, a beat, then after — the pause matters, the two run together otherwise.
+function sayAB(before, after){
+  speechSynthesis.cancel();
+  const a = utter(before);
+  a.onend = () => setTimeout(() => speechSynthesis.speak(utter(after)), 420);
+  speechSynthesis.speak(a);
 }
 
 function refreshOut(){
-  const flagged = POKE.filter(p => flags.has(p.n));
-  $("#out").value = flagged.length
-    ? flagged.map(p => `${p.n}${OVERRIDES[p.n] ? `   (currently: "${OVERRIDES[p.n]}")` : ""}`).join("\n")
-    : "";
-  $("#progress").textContent = `${flags.size} flagged of ${POKE.length}`;
+  const lines = [];
+  for(const p of POKE){
+    const edited = (p.n in edits) && edits[p.n] !== shipped(p.n);
+    if(edited)            lines.push(`${p.n}: "${edits[p.n]}"`);
+    else if(flags.has(p.n)) lines.push(`${p.n}: ?   (currently says "${shipped(p.n)}")`);
+  }
+  $("#out").value = lines.join("\n");
+  const touched = new Set([...flags, ...Object.keys(edits).filter(n => edits[n] !== shipped(n))]);
+  $("#progress").textContent = `${touched.size} to fix of ${POKE.length}`;
 }
 
 function render(){
@@ -125,20 +153,31 @@ function render(){
   const rows = POKE.filter(p => {
     if(q && !p.n.toLowerCase().includes(q)) return false;
     const has = !!OVERRIDES[p.n.toLowerCase()];
+    const edited = (p.n in edits) && edits[p.n] !== shipped(p.n);
     if(mode === "over"  && !has) return false;
     if(mode === "plain" && has)  return false;
-    if(mode === "flag"  && !flags.has(p.n)) return false;
+    if(mode === "todo"  && !flags.has(p.n) && !edited) return false;
     return true;
   });
   $("#list").innerHTML = rows.map(p => {
-    const over = OVERRIDES[p.n.toLowerCase()];
-    return `<li data-n="${p.n}" class="${flags.has(p.n) ? "flagged" : ""}">
-      <span class="id">#${String(p.id).padStart(4,"0")}</span>
-      <span class="nm">${p.n}</span>
-      ${over ? `<span class="as">${over}</span>` : ""}
-      <span class="spacer"></span>
-      <button class="play">▶ Play</button>
-      <button class="flag ${flags.has(p.n) ? "on" : ""}">✗ Wrong</button>
+    const has = !!OVERRIDES[p.n.toLowerCase()];
+    const edited = (p.n in edits) && edits[p.n] !== shipped(p.n);
+    return `<li data-n="${p.n}" class="${flags.has(p.n) ? "flagged " : ""}${edited ? "edited" : ""}">
+      <div class="top">
+        <span class="id">#${String(p.id).padStart(4,"0")}</span>
+        <span class="nm">${p.n}</span>
+        ${has ? `<span class="tag">override</span>` : ""}
+        ${edited ? `<span class="tag">edited</span>` : ""}
+        <span class="spacer"></span>
+        <button class="flag ${flags.has(p.n) ? "on" : ""}">✗ Wrong</button>
+      </div>
+      <div class="row2">
+        <button class="before">▶ Before</button>
+        <button class="ab">A / B</button>
+        <input class="try" value="${String(current(p.n)).replace(/"/g,"&quot;")}" spellcheck="false">
+        <button class="after">▶ After</button>
+        <button class="reset" title="Undo your edit">↺</button>
+      </div>
     </li>`;
   }).join("");
 }
@@ -147,15 +186,27 @@ $("#list").addEventListener("click", e => {
   const li = e.target.closest("li");
   if(!li) return;
   const name = li.dataset.n;
-  if(e.target.classList.contains("flag")){
+  const box = li.querySelector(".try");
+  if(e.target.classList.contains("before"))      say(name);              // the raw spelling, unaided
+  else if(e.target.classList.contains("after"))  say(box.value);
+  else if(e.target.classList.contains("ab"))     sayAB(name, box.value);
+  else if(e.target.classList.contains("flag")){
     flags.has(name) ? flags.delete(name) : flags.add(name);
-    saveFlags();
-    li.classList.toggle("flagged");
-    e.target.classList.toggle("on");
-    refreshOut();
-  } else {
-    say(name);                      // clicking anywhere else on the row plays it
+    save(); render(); refreshOut();
   }
+  else if(e.target.classList.contains("reset")){
+    delete edits[name];
+    save(); render(); refreshOut();
+  }
+});
+
+$("#list").addEventListener("input", e => {
+  if(!e.target.classList.contains("try")) return;
+  const li = e.target.closest("li"), name = li.dataset.n;
+  const val = e.target.value;
+  if(val === shipped(name)) delete edits[name]; else edits[name] = val;
+  li.classList.toggle("edited", name in edits);
+  save(); refreshOut();
 });
 
 $("#q").addEventListener("input", render);
@@ -166,8 +217,8 @@ $("#copy").addEventListener("click", async () => {
   setTimeout(()=> $("#copy").textContent = "Copy list", 1400);
 });
 $("#clear").addEventListener("click", () => {
-  if(!confirm("Clear every flag?")) return;
-  flags.clear(); saveFlags(); render(); refreshOut();
+  if(!confirm("Clear every flag and edit?")) return;
+  flags.clear(); edits = {}; save(); render(); refreshOut();
 });
 
 // Pull the roster and the override map straight out of the app.
@@ -181,7 +232,7 @@ $("#app").addEventListener("load", () => {
   }catch(err){
     $("#warn").hidden = false;
     $("#warn").textContent = "Couldn't read the roster from ../index.html — " + err.message
-      + "  Serve the repo over http:// (python3 -m http.server) rather than opening this file directly.";
+      + "  This page must be served over http:// rather than opened as a file.";
     return;
   }
   render();
