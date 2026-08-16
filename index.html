@@ -801,7 +801,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 8;
+const APP_BUILD = 9;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -2320,30 +2320,49 @@ function renderSpell(p){
    Use tools/pronounce.html to audit these by ear — it lists every name with a
    play button and collects the ones that sound wrong. */
 const SPEECH_OVERRIDES = {
+  aerodactyl: "air oh dack tul",   // checked
   arcanine:   "ar kuh nine",   // checked
+  bellsprout: "bell sprout",   // checked
   celebi:     "sell uh bee",
   chandelure: "shan duh loor",
+  chansey:    "chan see",   // checked
   deoxys:     "dee ok sis",   // checked
+  electabuzz: "uh leck tuh buzz",   // checked
   entei:      "en tay",
   eternatus:  "ee ter nay tus",
+  gengar:     "gang gar",   // checked
+  geodude:    "jee oh dood",   // checked
   giratina:   "gee ruh tee nuh",
   groudon:    "grow don",   // checked
   gyarados:   "gair uh dose",   // checked
+  hypno:      "hip no",   // checked
   jirachi:    "jih rah chee",
+  jynx:       "jinks",   // checked
   kangaskhan: "kang gus kahn",
   koraidon:   "kuh rye don",
   kyogre:     "kai oh gur",   // checked
   lucario:    "loo car ee oh",
   lugia:      "loo gee uh",   // checked
+  machoke:    "muh choke",   // checked
   milotic:    "my lot ik",
   mimikyu:    "mim ih kyoo",
   miraidon:   "muh rye don",
   necrozma:   "neh kroz muh",
   ninetales:  "nine tales",
+  omanyte:    "ahm uh nite",   // checked
+  pidgeotto:  "pid jyo toe",   // checked
+  pidgey:     "pidj ee",   // checked
+  ponyta:     "po nee tuh",   // checked
+  porygon:    "por ee gon",   // checked
+  psyduck:    "sy duck",   // checked
+  raichu:     "rye chew",   // checked
   raikou:     "rye koo",
   rayquaza:   "ray kway zuh",   // checked
+  rhyhorn:    "rye horn",   // checked
+  scyther:    "sy ther",   // checked
   solgaleo:   "sol guh lay oh",
   suicune:    "swee koon",   // checked
+  tangela:    "tang guh luh",   // checked
   volcarona:  "vol kuh roh nuh",
   xerneas:    "zur nee us",   // checked
   yveltal:    "ee vel tahl",   // checked
