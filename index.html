@@ -810,11 +810,13 @@ function renderAbout(){
   // document.lastModified reflects the Last-Modified of the copy actually loaded,
   // so a cached page reports the old file's date rather than today's — which is
   // exactly the signal wanted here. Falls back to the raw string if unparseable.
+  // Rendered in the viewer's own timezone, with the zone named explicitly: a bare
+  // clock time invites "…in which timezone?" the moment it's compared to anything.
   const raw = document.lastModified;
   const d = new Date(raw);
   $("#aboutFile").textContent = isNaN(d.getTime())
     ? raw
-    : d.toLocaleString(undefined, {day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit"});
+    : d.toLocaleString(undefined, {day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit", timeZoneName:"short"});
 }
 
 /* ---------------- Pokémon data (name + national dex id for artwork) ---------------- */
