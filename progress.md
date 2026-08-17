@@ -228,6 +228,19 @@ That changes the loop meaningfully. Flagging alone reports *that* something is w
 - Catching one changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - **The marker deliberately shows on uncaught slots.** It reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name, types and the rarity chip stay hidden until it's caught.
 
+## Phase 19 — A broken Pokédex tile, and why
+
+Reported as a single broken image at #295 on the live site. The obvious suspects all came back clean: the file exists, is a valid 475×475 PNG, is tracked in git, matches its blob byte for byte, and there is no `.gitattributes` that might have mangled a binary. Render-testing all 1,021 artwork files in a browser found nothing broken. It never reproduced locally.
+
+What the investigation *did* surface is the likely mechanism. The Pokédex renders every entry at once and fires **1,021 image requests simultaneously**. Locally, against a server on the same machine, they all succeed — which is exactly why it never reproduced. Over a real network a burst that size runs into browser connection limits and CDN throttling, and a dropped request leaves a **permanently** broken tile, because an `<img>` never retries on its own. One failure out of 1,021 is likely rather than exceptional.
+
+Two fixes, neither of which needed the bug confirmed to be worth making:
+
+- **`loading="lazy"` on dex images.** Opening the Pokédex now fires **39** requests instead of 1,021, with the rest arriving as you scroll. Verified by counting requests. A large win for a phone regardless of the bug.
+- **A single retry per image**, with a cache-busting query, on the `error` event. Verified by aborting a specific request in the browser and confirming exactly two attempts and a rendered image.
+
+Honest status: this is a fix for the most probable cause, not a confirmed diagnosis. If a tile still breaks after this, the retry means it took two consecutive failures, which points somewhere else entirely.
+
 ---
 
 **Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the Pokédex has entry detail and legendary call-outs, all game data is in editable CSVs, and it's published on GitHub Pages. What's left:
