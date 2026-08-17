@@ -193,6 +193,10 @@ The pattern in the corrections is worth recording: nearly every rejected entry w
 
 Map is now 225 entries: 138 checked, 87 unverified.
 
+**Then applied that lesson to the unaudited tail.** The ear-audit stopped around #725, so the 64 unverified entries beyond it were all written with the same over-eager instinct and none of them heard. Rather than leave them to be discovered one by one, re-judged every one against a single test: does the respelling change actual *sounds* — a silent letter, a decoded pun, a foreign vowel — or does it merely space out syllables the synthesiser already gets right? **41 failed that test and were dropped**; three more were kept but blunted (`polteageist` "pole ter guyst" → "polter guyst"). 23 survive, all of them genuine misreads: `toedscool` → "toads cool", `eiscue` → "ice cue", `fidough` → "fy doh", `dachsbun` → "daks bun", `archaludon` → "ar kal oo don".
+
+Map is now **184 entries: 138 checked, 46 unverified** — down from a peak of 251. The map got better by shrinking, which is the whole lesson: an override is a liability unless it earns its place.
+
 The division of labour from here: the flagged list comes back, each fix is a one-line addition. Guessing at respellings for names nobody has listened to risks making good ones worse — which is exactly why the 94 are marked rather than presented as settled.
 
 **Then reworked the tool around A/B comparison**, which turns out to be the more useful shape. Each row now plays **Before** (the raw spelling, unaided) and **After** (the respelling), plus **A/B** to hear them back to back with a beat between — without the pause the two utterances run together and can't be told apart. The respelling sits in an editable box, so a fix can be tried by ear on the spot; an edited value is collected in the output list ready to paste straight back.
