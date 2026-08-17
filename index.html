@@ -468,6 +468,24 @@
   }
   .dex-cell:hover{ border-color:var(--sun-deep); }
   .dex-cell:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  /* Legendaries and mythicals get a gold treatment on the cell and a chip in the
+     detail popup, so the same signal reads the same way in both places. */
+  .dex-cell.legendary{ border-color:var(--sun); background:linear-gradient(180deg,#fffdf5,#fff4d9); }
+  .dex-cell.legendary:hover{ border-color:var(--sun-deep); }
+  .dex-rare{
+    position:absolute; top:-7px; left:-5px; z-index:1;
+    width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+    border-radius:50%; background:var(--sun); border:2px solid var(--white);
+    font-size:.66rem; box-shadow:var(--shadow-sm);
+  }
+  .dex-rare.mythical{ background:#d9b6f0; }
+  .rare-count{ color:var(--sun-deep); }
+  .rarity-chip{
+    display:inline-block; margin:0 0 6px; padding:3px 12px; border-radius:999px;
+    background:var(--sun); color:#7a5a12; font-weight:900; font-size:.78rem;
+    letter-spacing:.06em; text-transform:uppercase;
+  }
+  .rarity-chip.mythical{ background:#e3c9f5; color:#5f3a7a; }
   .dex-new{
     position:absolute; top:-7px; right:-5px; z-index:1;
     padding:2px 7px; border-radius:999px;
@@ -788,6 +806,7 @@
       </div>
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
+      <div class="rarity-chip hidden" id="catchRarity"></div>
       <div class="battle-types catch-types" id="catchTypes"></div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
     </div>
@@ -801,7 +820,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 14;
+const APP_BUILD = 17;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -876,6 +895,7 @@ async function loadData(){
     id: Number(r.id),
     t: [r.type1, r.type2].filter(Boolean),
     bst: Number(r.base_stat_total),
+    rarity: r.rarity || "",          // "legendary" | "mythical" | "" — see data/README.md
   }));
   SPEECH_OVERRIDES = Object.fromEntries(sayRows.map(r => [r.name, r.say_as]));
   // The CSV stores the bare slug; the items/ folder convention lives here only.
@@ -1581,13 +1601,23 @@ function showPokeModal(poke, opts){
   $("#catchTypes").innerHTML = revealed
     ? (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("")
     : "";
+  const rarity = revealed ? RARITY_LABEL[poke.rarity] : null;
+  $("#catchRarity").textContent = rarity ? `✨ ${rarity}` : "";
+  $("#catchRarity").classList.toggle("hidden", !rarity);
+  $("#catchRarity").classList.toggle("mythical", poke.rarity === "mythical");
   $("#catchSay").classList.toggle("hidden", !revealed);
   $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   modal.classList.remove("hidden");
 }
-function showCatchModal(poke){ showPokeModal(poke); }
+const RARITY_LABEL = { legendary: "Legendary", mythical: "Mythical" };
+function catchCaption(poke){
+  if(poke.rarity === "mythical")  return "✨ Mythical Catch!";
+  if(poke.rarity === "legendary") return "✨ Legendary Catch!";
+  return "🎉 Caught!";
+}
+function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke) }); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
 }
@@ -1613,11 +1643,15 @@ function renderPokedex(){
     const genPokes = sorted.filter(p => p.id>=g.from && p.id<=g.to);
     if(genPokes.length===0) return;             // that generation isn't in the roster yet
     const genCaught = genPokes.filter(p => collected.includes(p.id)).length;
+    const genRare = genPokes.filter(p => RARITY_LABEL[p.rarity]);
+    const genRareCaught = genRare.filter(p => collected.includes(p.id)).length;
 
     const section = document.createElement("div");
     section.className = "dex-gen-section";
     section.innerHTML = `
-      <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${genCaught} / ${genPokes.length}</span></h3>
+      <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
+        genRare.length ? `<b class="rare-count">✨ ${genRareCaught}/${genRare.length}</b> · ` : ""
+      }${genCaught} / ${genPokes.length}</span></h3>
       <div class="dex-grid"></div>
     `;
     const grid = section.querySelector(".dex-grid");
@@ -1627,10 +1661,19 @@ function renderPokedex(){
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `dex-cell ${got ? "caught" : "uncaught"}`;
-      cell.setAttribute("aria-label", got
-        ? `${cap(poke.n)}, number ${poke.id}${isNew ? ", new" : ""}`
-        : `Number ${poke.id}, not caught yet`);
+      // Rarity shows on uncaught entries too. It gives nothing away about which
+      // Pokémon it is, and marking the slot is the point — it says "something
+      // worth finding lives here" rather than rewarding you only after the fact.
+      const rare = RARITY_LABEL[poke.rarity];
+      if(rare) cell.classList.add("legendary");
+      cell.setAttribute("aria-label", [
+        got ? cap(poke.n) : "Not caught yet",
+        `number ${poke.id}`,
+        rare || "",
+        isNew ? "new" : "",
+      ].filter(Boolean).join(", "));
       cell.innerHTML = `
+        ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">✨</span>` : ""}
         ${isNew ? `<span class="dex-new">NEW</span>` : ""}
         <div class="dex-num">#${String(poke.id).padStart(3,"0")}</div>
         <img class="dex-img${got ? "" : " silhouette"}" src="${artwork(poke.id)}" alt="${got ? cap(poke.n) : "???"}">
