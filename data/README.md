@@ -15,6 +15,7 @@ back.
 | `type1` | Required. Drives Battle type effectiveness and the Pokédex badges |
 | `type2` | Blank for single-type species — leave the cell empty, don't write "none" |
 | `base_stat_total` | Integer. Weights the Battle winner roll |
+| `rarity` | `legendary`, `mythical`, or blank. Drives the ✨ marker in the Pokédex and the catch banner. Sourced from PokéAPI's `pokemon_species.csv` (`is_legendary` / `is_mythical`), joined on name with all 1,021 matching and no id mismatches |
 
 Rows may be in any order; the app sorts by `id` where order matters. Adding a
 row makes that Pokémon appear — as long as `pokemon/<id>.png` exists.
