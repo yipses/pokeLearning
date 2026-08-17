@@ -75,7 +75,7 @@ A single broken tile on the live site never reproduced locally — the file was 
 
 Reported as "the UI says 3 hints but you only get 2." True, and worse at higher levels: the bail-out fired when you **spent** your last hint rather than when you **asked for one you didn't have**, so the final hint was revealed and the same click locked the board and swapped the word. A 3-hint word gave 2 usable hints; Fluency 5, whose allowance is 1, gave **none** — its only hint voided the word every time.
 
-Fixed by moving the check into the guard. All hints are now usable, and the escape hatch survives as a deliberate extra press: at zero the button relabels to **New word** and stays live, so a stuck child still isn't stranded.
+Fixed by moving the check into the guard, so every hint in the allowance is usable. The word-swap escape hatch was then **removed** rather than rebound to an extra press: it existed to stop a stuck child stalling, but there is no stall to rescue — the tile rack holds exactly the word's letters and wrong ones are rejected, so any word can always be finished unaided. The button simply greys out at zero. `outOfHints()` and the now-unread `pool` field on spelling challenges went with it.
 
 ---
 
