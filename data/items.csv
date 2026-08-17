@@ -1,0 +1,923 @@
+name,image,category
+Honey,honey,Materials
+Sturdy stick,sturdystick,Materials
+Stone,stone,Materials
+Leaf,leaf,Materials
+Small log,smalllog,Materials
+Vine rope,vinerope,Materials
+Glowing mushrooms,glowingmushrooms,Materials
+Twine,twine,Materials
+Sea glass fragments,seaglassfragments,Materials
+Seashell,seashell,Materials
+Nonburnable garbage,nonburnablegarbage,Materials
+Squishy clay,squishyclay,Materials
+Fluff,fluff,Materials
+Wastepaper,wastepaper,Materials
+Copper ore,copperore,Materials
+Iron ore,ironore,Materials
+Gold ore,goldore,Materials
+Pokémetal fragment,pokemetalfragment,Materials
+Rare Pokémetal fragment,rarepokemetalfragment,Materials
+Crystal fragment,crystalfragment,Materials
+Lumber,lumber,Materials
+Brick,brick,Materials
+Copper ingot,copperingot,Materials
+Iron ingot,ironingot,Materials
+Gold ingot,goldingot,Materials
+Pokémetal,pokemetal,Materials
+Rare Pokémetal,rarepokemetal,Materials
+Glass,glass,Materials
+Concrete,concrete,Materials
+Paper,paper,Materials
+Tinkagear,tinkagear,Materials
+Strange strings,strangestrings,Materials
+Armor fragment,armorfragment,Materials
+Stardust,stardust,Materials
+Red paint,redpaint,Materials
+Blue paint,bluepaint,Materials
+Green paint,greenpaint,Materials
+Yellow paint,yellowpaint,Materials
+Pink paint,pinkpaint,Materials
+Cyan paint,cyanpaint,Materials
+White paint,whitepaint,Materials
+Black paint,blackpaint,Materials
+Mossy Stone,mossystone,Materials
+Cotton Spores,cottonspores,Materials
+Red crystal fragment,redcrystalfragment,Materials
+Leppa Berry,leppaberry,Food
+Chesto Berry,chestoberry,Food
+Rawst Berry,rawstberry,Food
+Aspear Berry,aspearberry,Food
+Pecha Berry,pechaberry,Food
+Lum Berry,lumberry,Food
+Bean,bean,Food
+Tomato,tomato,Food
+Wheat,wheat,Other
+Potato,potato,Other
+Fresh carrot,freshcarrot,Food
+Seaweed,seaweed,Food
+Cave mushrooms,cavemushrooms,Food
+Simple salad,simplesalad,Food
+Leppa salad,leppasalad,Food
+Seaweed salad,seaweedsalad,Food
+Shredded salad,shreddedsalad,Food
+Crushed-berry salad,crushed-berrysalad,Food
+Crouton salad,croutonsalad,Food
+Simple soup,simplesoup,Food
+Seaweed soup,seaweedsoup,Food
+Mushroom soup,mushroomsoup,Food
+Electrifying soup,electrifyingsoup,Food
+Healthy soup,healthysoup,Food
+Flavorful soup,flavorfulsoup,Food
+Simple bread,simplebread,Food
+Leppa bread,leppabread,Food
+Carrot bread,carrotbread,Food
+Recycled bread,recycledbread,Food
+Fluffy bread,fluffybread,Food
+Bread bowl,breadbowl,Food
+Simple hamburger steak,simplehamburgersteak,Food
+Mushroom hamburger steak,mushroomhamburgersteak,Food
+Tomato hamburger steak,tomatohamburgersteak,Food
+Potato hamburger steak,potatohamburgersteak,Food
+Bitter hamburger steak,bitterhamburgersteak,Food
+Vibrant hamburger steak,vibranthamburgersteak,Food
+Bruised berry,bruisedberry,Food
+Common candy,commoncandy,Food
+Rare Candy,rarecandy,Food
+Curry and rice,curryandrice,Food
+Fresh Water,freshwater,Food
+Soda Pop,sodapop,Food
+Moomoo Milk Coffee,moomoomilkcoffee,Food
+Roserade Tea,roseradetea,Food
+Chili sauce,chilisauce,Food
+Bouldery Badge,boulderybadge,Key Items
+Cascade-like Badge,cascade-likebadge,Key Items
+Thunderish Badge,thunderishbadge,Key Items
+Rainbowish Badge,rainbowishbadge,Key Items
+Soul-like Badge,soul-likebadge,Key Items
+Marshy Badge,marshybadge,Key Items
+Volcanoey Badge,volcanoeybadge,Key Items
+Earth Badge,earthbadge,Key Items
+Mysterious Goggles,mysteriousgoggles,Key Items
+Nugget,nugget,Other
+Silver Bottle Cap,silverbottlecap,Other
+Gold Bottle Cap,goldbottlecap,Other
+Rare Bone,rarebone,Other
+Heart Scale,heartscale,Other
+Miracle Seed,miracleseed,Other
+Hard Stone,hardstone,Other
+Mystic Water,mysticwater,Other
+Metal Coat,metalcoat,Other
+Twisted Spoon,twistedspoon,Other
+Silver Powder,silverpowder,Other
+Black Glasses,blackglasses,Other
+Black Belt,blackbelt,Other
+Silk Scarf,silkscarf,Other
+Sharp Beak,sharpbeak,Other
+Poison Barb,poisonbarb,Other
+Never-Melt Ice,never-meltice,Other
+Spell Tag,spelltag,Other
+Charcoal,charcoal,Other
+Soft Sand,softsand,Other
+Fairy Feather,fairyfeather,Other
+Dragon Fang,dragonfang,Other
+Leftovers,leftovers,Other
+Black Sludge,blacksludge,Other
+Lucky Egg,luckyegg,Other
+Destiny Knot,destinyknot,Other
+Life Orb,lifeorb,Other
+Iron Ball,ironball,Other
+Metal Powder,metalpowder,Other
+Big Root,bigroot,Other
+Adrenaline Orb,adrenalineorb,Other
+Weakness Policy,weaknesspolicy,Other
+Terrain Extender,terrainextender,Other
+Wide Lens,widelens,Other
+Throat Spray,throatspray,Other
+Light Clay,lightclay,Other
+Loaded Dice,loadeddice,Other
+Sticky Barb,stickybarb,Other
+Quick Claw,quickclaw,Other
+Lagging Tail,laggingtail,Other
+Flame Orb,flameorb,Other
+Ability Shield,abilityshield,Other
+Room Service,roomservice,Other
+Ring Target,ringtarget,Other
+Clear Amulet,clearamulet,Other
+Zoom Lens,zoomlens,Other
+Skull Fossil,skullfossil,Other
+Armor Fossil,armorfossil,Other
+Jaw Fossil,jawfossil,Other
+Sail Fossil,sailfossil,Other
+Abandoned Power Plant kit,abandonedpowerplantkit,Kits
+Acrylic poster,acrylicposter,Other
+Adorable hedge,adorablehedge,Nature
+Aether Paradise,aetherparadise,Other
+Afternoon tea set,afternoonteaset,Misc.
+Aged-stone wall,agedstonewall,Blocks
+Air conditioner,airconditioner,Misc.
+Alarm clock,alarmclock,Misc.
+Alpine grass,alpinegrass,Blocks
+Altar of Flame kit,altarofflamekit,Kits
+Antique bed,antiquebed,Furniture
+Antique chair,antiquechair,Furniture
+Antique chandelier,antiquechandelier,Utilities
+Antique chest,antiquechest,Furniture
+Antique clock,antiqueclock,Misc.
+Antique closet,antiquecloset,Furniture
+Antique dresser,antiquedresser,Furniture
+Antique sofa,antiquesofa,Furniture
+Antique table,antiquetable,Furniture
+Arcade machine,arcademachine,Misc.
+Arcanine doll,arcaninedoll,Misc.
+Arch bridge,archbridge,Buildings
+Arched barrier,archedbarrier,Buildings
+Arched tiling,archedtiling,Blocks
+Area Zero,areazero,Other
+Argyle print,argyleprint,Blocks
+Arrow sign,arrowsign,Outdoor
+Asphalt road,asphaltroad,Blocks
+Audio mixer,audiomixer,Misc.
+Auspicious Armor,auspiciousarmor,Misc.
+Automatic doors,automaticdoors,Buildings
+Avalugg table,avaluggtable,Furniture
+Balloon poster,balloonposter,Other
+Balloons,balloons,Misc.
+Barrel,barrel,Outdoor
+Barren ordinary soil,barrenordinarysoil,Other
+Barren striped soil,barrenstripedsoil,Other
+Bathtime set,bathtimeset,Misc.
+Bathtub,bathtub,Misc.
+Beach chair,beachchair,Furniture
+Beach parasol,beachparasol,Outdoor
+Beach sand,beachsand,Blocks
+Beautiful flower,beautifulflower,Nature
+Bell,bell,Outdoor
+Bell Tower,belltower,Other
+Berry basket,berrybasket,Misc.
+Berry bed,berrybed,Furniture
+Berry case,berrycase,Furniture
+Berry chair,berrychair,Furniture
+Berry clock,berryclock,Misc.
+Berry hanging lamp,berryhanginglamp,Utilities
+Berry print,berryprint,Blocks
+Berry table,berrytable,Furniture
+Berry table lamp,berrytablelamp,Utilities
+Berry wall decoration,berrywalldecoration,Misc.
+Big Nugget,bignugget,Misc.
+Big drum,bigdrum,Misc.
+Big storage box,bigstoragebox,Furniture
+Bike,bike,Outdoor
+CD,cd,Other
+Black cliff rock,blackcliffrock,Blocks
+Black rock,blackrock,Blocks
+Black spotted cliff rock,blackspottedcliffrock,Blocks
+Blank canvas,blankcanvas,Outdoor
+Blue meteor lamp,bluemeteorlamp,Utilities
+Blue-green shoots,bluegreenshoots,Nature
+Boat door,boatdoor,Buildings
+Boat railing,boatrailing,Buildings
+Bonfire,bonfire,Outdoor
+Boo-in-the-box,boointhebox,Misc.
+Book,book,Misc.
+Book pile,bookpile,Misc.
+Bookcase,bookcase,Misc.
+Bouncy blue bathtub,bouncybluebathtub,Misc.
+Boutique,boutique,Other
+Box sofa,boxsofa,Furniture
+Brainy door,brainydoor,Buildings
+Bread oven,breadoven,Utilities
+Brick flooring,brickflooring,Blocks
+Brick hipped roof,brickhippedroof,Buildings
+Brick roof decoration,brickroofdecoration,Buildings
+Brick roof valley,brickroofvalley,Buildings
+Brick steps,bricksteps,Buildings
+Brick wall,brickwall,Blocks
+Bridge planks,bridgeplanks,Buildings
+Broken iron steps,brokenironsteps,Other
+Broken window pane,brokenwindowpane,Other
+Bronze wall,bronzewall,Blocks
+Bubble print,bubbleprint,Blocks
+Bumpy beach sand,bumpybeachsand,Blocks
+CD player,cdplayer,Misc.
+CD rack,cdrack,Misc.
+Campfire,campfire,Outdoor
+Camping cooking pot,campingcookingpot,Utilities
+Cannon,cannon,Outdoor
+Canoe,canoe,Outdoor
+Card reader,cardreader,Utilities
+Cardboard boxes,cardboardboxes,Misc.
+Cart,cart,Outdoor
+Carved coarse rock,carvedcoarserock,Blocks
+Carved red rock,carvedredrock,Blocks
+Carved white rock,carvedwhiterock,Blocks
+Carved yellow rock,carvedyellowrock,Blocks
+Cash register,cashregister,Utilities
+Castform weather charm,castformweathercharm,Misc.
+Cave rock,caverock,Blocks
+Ceiling fan,ceilingfan,Misc.
+Cell phone,cellphone,Misc.
+Cerulean City,ceruleancity,Other
+Chansey plant,chanseyplant,Outdoor
+Charging station kit,chargingstationkit,Kits
+Charizard rug,charizardrug,Other
+Chic sofa,chicsofa,Furniture
+Chic streetlight,chicstreetlight,Utilities
+Chic table,chictable,Furniture
+Chocolate cookies,chocolatecookies,Misc.
+City cottage kit,citycottagekit,Kits
+City den kit,citydenkit,Kits
+City house kit,cityhousekit,Kits
+City hut kit,cityhutkit,Kits
+Clay,clay,Blocks
+Cleaning supplies,cleaningsupplies,Misc.
+Clear Bell,clearbell,Misc.
+Clefairy doll,clefairydoll,Misc.
+Cliff rock,cliffrock,Blocks
+Cloth wall,clothwall,Blocks
+Cloud cannon,cloudcannon,Outdoor
+Coarse rock,coarserock,Blocks
+Cobblestone wall,cobblestonewall,Blocks
+Community box,communitybox,Utilities
+Computer,computer,Misc.
+Concert stage kit,concertstagekit,Kits
+Concrete mixer,concretemixer,Utilities
+Concrete pipe,concretepipe,Outdoor
+Concrete slab,concreteslab,Buildings
+Concrete steps,concretesteps,Buildings
+Concrete wall,concretewall,Blocks
+Construction supplies,constructionsupplies,Outdoor
+Contest Spectacular,contestspectacular,Other
+Control unit,controlunit,Misc.
+Cooking pot,cookingpot,Utilities
+Cooking stove,cookingstove,Misc.
+Cool bass guitar,coolbassguitar,Misc.
+Cool electric guitar,coolelectricguitar,Misc.
+Cooled molten rock,cooledmoltenrock,Nature
+Corkboard,corkboard,Misc.
+Corrugated metal,corrugatedmetal,Buildings
+Counter,counter,Furniture
+Cracked sandstone,crackedsandstone,Blocks
+Crisscross wooden flooring,crisscrosswoodenflooring,Blocks
+Crystal ball,crystalball,Misc.
+Crystal cluster,crystalcluster,Nature
+Crystal wall,crystalwall,Blocks
+Cube light,cubelight,Blocks
+Curry print,curryprint,Blocks
+Curved eave,curvedeave,Buildings
+Cushy wall,cushywall,Blocks
+Cute bed,cutebed,Furniture
+Cute chair,cutechair,Furniture
+Cute dresser,cutedresser,Furniture
+Cute flowers,cuteflowers,Nature
+Cute lamp,cutelamp,Utilities
+Cute sofa,cutesofa,Furniture
+Cute table,cutetable,Furniture
+Cutting board,cuttingboard,Utilities
+Cyber flooring,cyberflooring,Blocks
+Damaged arched tiling,damagedarchedtiling,Other
+Damaged asphalt road,damagedasphaltroad,Other
+Damaged mosaic tiling,damagedmosaictiling,Other
+Damaged square tiling,damagedsquaretiling,Other
+Damaged wooden flooring,damagedwoodenflooring,Other
+Damp Rock,damprock,Outdoor
+Damp hedge,damphedge,Nature
+Dance poster,danceposter,Other
+Dandy flowers,dandyflowers,Nature
+Dark marble flooring,darkmarbleflooring,Blocks
+Deck chair,deckchair,Furniture
+Decorative bookshelf,decorativebookshelf,Misc.
+Demolition kit,demolitionkit,Kits
+Dense vines,densevines,Nature
+Desk light,desklight,Utilities
+Diagonal wooden flooring,diagonalwoodenflooring,Blocks
+Dining cabinet,diningcabinet,Misc.
+Diploma,diploma,Other
+Ditto doll,dittodoll,Misc.
+Ditto flag,dittoflag,Utilities
+Ditto rug,dittorug,Other
+Dormered brick roof,dormeredbrickroof,Buildings
+Double streetlight,doublestreetlight,Utilities
+Dowsing Machine,dowsingmachine,Other
+Dragonite doll,dragonitedoll,Misc.
+Driftveil City,driftveilcity,Other
+Driftwood,driftwood,Nature
+Drink poster,drinkposter,Other
+Dry alpine grass,dryalpinegrass,Other
+Dry blue-green shoots,drybluegreenshoots,Other
+Dry field grass,dryfieldgrass,Other
+Dry green shoots,drygreenshoots,Other
+Dry seashore grass,dryseashoregrass,Other
+Dry tall grass,drytallgrass,Other
+Dry verdant shoots,dryverdantshoots,Other
+Dry yellow-green shoots,dryyellowgreenshoots,Other
+Duckweed,duckweed,Nature
+Ecruteak City,ecruteakcity,Other
+Eerie candle,eeriecandle,Outdoor
+Eevee doll,eeveedoll,Misc.
+Elegant flower,elegantflower,Nature
+Elevator platform,elevatorplatform,Utilities
+Excavation tools,excavationtools,Outdoor
+Exhibition stand,exhibitionstand,Furniture
+Extravagant carpeting,extravagantcarpeting,Blocks
+Extravagant flowers,extravagantflowers,Misc.
+Fan,fan,Misc.
+Fancy chair,fancychair,Furniture
+Fancy pen,fancypen,Misc.
+Felt mat,feltmat,Blocks
+Fern,fern,Nature
+Field grass,fieldgrass,Blocks
+Fiery Magby statue,fierymagbystatue,Misc.
+Fire hydrant,firehydrant,Outdoor
+Firepit,firepit,Outdoor
+First aid kit,firstaidkit,Misc.
+Fishing rod,fishingrod,Outdoor
+Flat brick roof,flatbrickroof,Buildings
+Flat stone roof,flatstoneroof,Buildings
+Flat tent roof,flattentroof,Buildings
+Flat tiled roof,flattiledroof,Buildings
+Flat-leaf plant,flatleafplant,Misc.
+Floor switch,floorswitch,Utilities
+Flower backpack,flowerbackpack,Misc.
+Flower cushion,flowercushion,Furniture
+Flower garland,flowergarland,Misc.
+Flower print,flowerprint,Blocks
+Flower table,flowertable,Furniture
+Flowering duckweed,floweringduckweed,Nature
+Flowery table setting,flowerytablesetting,Misc.
+Fluffy flooring,fluffyflooring,Blocks
+Fluorescent light,fluorescentlight,Utilities
+Folding chair,foldingchair,Furniture
+Food counter,foodcounter,Furniture
+Food poster,foodposter,Other
+Fortree City,fortreecity,Other
+Foundation,foundation,Blocks
+Fountain plaza kit,fountainplazakit,Kits
+Frame,frame,Utilities
+Freezing Chambers kit,freezingchamberskit,Kits
+Fried potatoes,friedpotatoes,Misc.
+Frying pan,fryingpan,Utilities
+Fuchsia City,fuchsiacity,Other
+Funky diffuser,funkydiffuser,Misc.
+Furnace kit,furnacekit,Kits
+Game Boy system,gameboysystem,Misc.
+Game Corner,gamecorner,Other
+Gaming PC,gamingpc,Misc.
+Gaming bed,gamingbed,Furniture
+Gaming chair,gamingchair,Furniture
+Gaming fridge,gamingfridge,Furniture
+Gaming light,gaminglight,Utilities
+Garbage bags,garbagebags,Outdoor
+Garbage bin,garbagebin,Outdoor
+Garden bench,gardenbench,Furniture
+Garden chair,gardenchair,Furniture
+Garden flowers,gardenflowers,Outdoor
+Garden light,gardenlight,Utilities
+Garden ornament,gardenornament,Outdoor
+Garden table,gardentable,Furniture
+Gingham print,ginghamprint,Blocks
+Glass pane,glasspane,Buildings
+Glass window,glasswindow,Buildings
+Glossy awning,glossyawning,Buildings
+Glowing stone,glowingstone,Blocks
+Gold Teeth,goldteeth,Misc.
+Gold deposit,golddeposit,Blocks
+Gold wall,goldwall,Blocks
+Golden poster,goldenposter,Other
+Grass flooring,grassflooring,Blocks
+Grate fencing,gratefencing,Buildings
+Grate flooring,grateflooring,Buildings
+Gravel,gravel,Blocks
+Gravestone,gravestone,Outdoor
+Gray circle flooring,graycircleflooring,Blocks
+Gray cottage kit,graycottagekit,Kits
+Gray hut kit,grayhutkit,Kits
+Green meteor lamp,greenmeteorlamp,Utilities
+Green shoots,greenshoots,Nature
+Growth poster,growthposter,Other
+Grubby book,grubbybook,Misc.
+Grubby cell phone,grubbycellphone,Misc.
+Grubby letter,grubbyletter,Misc.
+Grubby newspaper,grubbynewspaper,Misc.
+Grubby notepad,grubbynotepad,Misc.
+Grubby papers,grubbypapers,Misc.
+Grubby rags,grubbyrags,Outdoor
+Grubby tablet,grubbytablet,Misc.
+Gym emblem statue,gymemblemstatue,Misc.
+Handcar,handcar,Utilities
+Handrail,handrail,Buildings
+Hanging banner,hangingbanner,Misc.
+Hanging scroll,hangingscroll,Misc.
+Harbor pole,harborpole,Buildings
+Harbor streetlight,harborstreetlight,Utilities
+Hardwood flooring,hardwoodflooring,Blocks
+Hatch window,hatchwindow,Buildings
+Hau'oli City,hauolicity,Other
+Hay pile,haypile,Blocks
+Healthy hedge,healthyhedge,Nature
+Heat Rock,heatrock,Outdoor
+Hexagonal flooring,hexagonalflooring,Blocks
+Hoppip water bottle,hoppipwaterbottle,Misc.
+Horsea fountain,horseafountain,Outdoor
+Hot-spring spout,hotspringspout,Outdoor
+Houndstooth print,houndstoothprint,Blocks
+Humidifier,humidifier,Misc.
+Ice,ice,Blocks
+Ice cream poster,icecreamposter,Other
+Icicles,icicles,Nature
+Icy Rock,icyrock,Outdoor
+Indigo meteor lamp,indigometeorlamp,Utilities
+Industrial bed,industrialbed,Furniture
+Industrial bench,industrialbench,Furniture
+Industrial chair,industrialchair,Furniture
+Industrial desk,industrialdesk,Furniture
+Inflatable Sudowoodo,inflatablesudowoodo,Outdoor
+Inflatable boat,inflatableboat,Outdoor
+Information board,informationboard,Outdoor
+Iron beam,ironbeam,Buildings
+Iron bed,ironbed,Furniture
+Iron bench,ironbench,Furniture
+Iron chair,ironchair,Furniture
+Iron column,ironcolumn,Buildings
+Iron deposit,irondeposit,Blocks
+Iron door,irondoor,Buildings
+Iron enclosure,ironenclosure,Buildings
+Iron gate,irongate,Buildings
+Iron ladder,ironladder,Buildings
+Iron pillar,ironpillar,Buildings
+Iron pipes,ironpipes,Outdoor
+Iron plating,ironplating,Blocks
+Iron rack,ironrack,Furniture
+Iron scaffold,ironscaffold,Buildings
+Iron stand,ironstand,Furniture
+Iron steps,ironsteps,Buildings
+Iron table,irontable,Furniture
+Iron tiling,irontiling,Blocks
+Iron wall,ironwall,Blocks
+Iron-plate flooring,ironplateflooring,Blocks
+Jubilife Village,jubilifevillage,Other
+Juice trio,juicetrio,Misc.
+Jumbled cords,jumbledcords,Misc.
+Jump rope trophy,jumpropetrophy,Other
+Kitchen table,kitchentable,Furniture
+Knitting supplies,knittingsupplies,Misc.
+Lace rug,lacerug,Other
+Lantern,lantern,Utilities
+Laptop,laptop,Misc.
+Large boulder,largeboulder,Nature
+Large lost relic,largelostrelic,Other
+Large mirror,largemirror,Furniture
+Large narrow rug,largenarrowrug,Other
+Large palm tree,largepalmtree,Nature
+Large round rug,largeroundrug,Other
+Large ventilation fan,largeventilationfan,Outdoor
+Large wooden door,largewoodendoor,Buildings
+Laser sensor,lasersensor,Utilities
+Lava rock,lavarock,Blocks
+Leaf cottage kit,leafcottagekit,Kits
+Leaf den kit,leafdenkit,Kits
+Leaf house kit,leafhousekit,Kits
+Leaf hut kit,leafhutkit,Kits
+Leaf print,leafprint,Blocks
+Leafy plant,leafyplant,Misc.
+Leppa tree,leppatree,Nature
+Leppa tree stump,leppatreestump,Nature
+Letter,letter,Misc.
+Levee,levee,Blocks
+Lift platform,liftplatform,Utilities
+Light brown rock,lightbrownrock,Blocks
+Light marble flooring,lightmarbleflooring,Blocks
+Light wooden wall,lightwoodenwall,Blocks
+Limestone,limestone,Blocks
+Log bed,logbed,Furniture
+Log cabin kit,logcabinkit,Kits
+Log chair,logchair,Furniture
+Log table,logtable,Furniture
+Lunch box,lunchbox,Misc.
+Luxury bed,luxurybed,Furniture
+Luxury chair,luxurychair,Furniture
+Luxury dresser,luxurydresser,Furniture
+Luxury lamp,luxurylamp,Utilities
+Luxury sofa,luxurysofa,Furniture
+Luxury table,luxurytable,Furniture
+Magazine rack,magazinerack,Misc.
+Magikarp decoration,magikarpdecoration,Buildings
+Mailbox,mailbox,Outdoor
+Malicious Armor,maliciousarmor,Misc.
+Marble,marble,Blocks
+Meadow poster,meadowposter,Other
+Menu board,menuboard,Outdoor
+Metal chain,metalchain,Buildings
+Metal drum,metaldrum,Outdoor
+Metal fencing,metalfencing,Buildings
+Metallic smelting furnace,metallicsmeltingfurnace,Utilities
+Microscope,microscope,Misc.
+Microwave oven,microwaveoven,Misc.
+Mini bookcase,minibookcase,Misc.
+Mini floodgate,minifloodgate,Utilities
+Mini generator,minigenerator,Utilities
+Mini plain bed,miniplainbed,Furniture
+Mirror ball,mirrorball,Utilities
+Model planet,modelplanet,Utilities
+Model space shuttle,modelspaceshuttle,Misc.
+Modern carpeting,moderncarpeting,Blocks
+Modern door,moderndoor,Buildings
+Modern sink,modernsink,Misc.
+Modern wall,modernwall,Blocks
+Molten rock,moltenrock,Nature
+Moonlight dance statue kit,moonlightdancestatuekit,Kits
+Moonlight poster,moonlightposter,Other
+Mosaic tiling,mosaictiling,Blocks
+Moss,moss,Nature
+Mossy boulder,mossyboulder,Nature
+Mossy soil,mossysoil,Blocks
+Mountain flowers,mountainflowers,Nature
+Mt. Coronet,mtcoronet,Other
+Mt. Moon,mtmoon,Other
+Mug,mug,Misc.
+Mushroom lamp,mushroomlamp,Utilities
+Mushroom streetlight,mushroomstreetlight,Utilities
+Mysterious pedestal,mysteriouspedestal,Furniture
+Mysterious slate,mysteriousslate,Other
+Mysterious statue,mysteriousstatue,Misc.
+Mysterious stone,mysteriousstone,Blocks
+Naptime bed,naptimebed,Furniture
+Neo-Dowsing Machine,neodowsingmachine,Other
+Neon flooring,neonflooring,Blocks
+Newspaper,newspaper,Misc.
+Ninja poster,ninjaposter,Other
+Notepad,notepad,Misc.
+Oblong rug,oblongrug,Other
+Ocean poster,oceanposter,Other
+Ocean rock,oceanrock,Blocks
+Offering dish,offeringdish,Misc.
+Office cabinet,officecabinet,Furniture
+Office chair,officechair,Furniture
+Office desk,officedesk,Furniture
+Office locker,officelocker,Furniture
+Office shelf,officeshelf,Furniture
+Office table,officetable,Furniture
+Oil lantern,oillantern,Utilities
+Oil painting poster,oilpaintingposter,Other
+Open book,openbook,Misc.
+Orange cottage kit,orangecottagekit,Kits
+Orange hut kit,orangehutkit,Kits
+Orange meteor lamp,orangemeteorlamp,Utilities
+Ordinary sand,ordinarysand,Blocks
+Ordinary soil,ordinarysoil,Blocks
+Painted wall,paintedwall,Blocks
+Pallet Town,pallettown,Other
+Palm tree stump,palmtreestump,Nature
+Paper party cups,paperpartycups,Misc.
+Papers,papers,Misc.
+Party bunting,partybunting,Misc.
+Party cooking pot,partycookingpot,Other
+Party platter,partyplatter,Misc.
+Party popper,partypopper,Other
+Passionate poster,passionateposter,Other
+Patterned aged-stone wall,patternedagedstonewall,Blocks
+Pencil holder,pencilholder,Misc.
+Perch,perch,Outdoor
+Pewter City,pewtercity,Other
+Photo cutout board,photocutoutboard,Outdoor
+Photo frame,photoframe,Misc.
+Picnic basket,picnicbasket,Misc.
+Picnic blanket,picnicblanket,Other
+Pikachu doll,pikachudoll,Misc.
+Pikachu fountain kit,pikachufountainkit,Kits
+Pikachu sofa,pikachusofa,Furniture
+Pink cottage kit,pinkcottagekit,Kits
+Pink hut kit,pinkhutkit,Kits
+Pink tall grass,pinktallgrass,Nature
+Pinwheels,pinwheels,Misc.
+Pitched brick roof,pitchedbrickroof,Buildings
+Pitcher-plant pot,pitcherplantpot,Misc.
+Pizza,pizza,Misc.
+Plain bed,plainbed,Furniture
+Plain chair,plainchair,Furniture
+Plain chest,plainchest,Furniture
+Plain closet,plaincloset,Furniture
+Plain sofa,plainsofa,Furniture
+Plain stand,plainstand,Furniture
+Plain stool,plainstool,Furniture
+Plain table,plaintable,Furniture
+Planter,planter,Outdoor
+Plaster wall,plasterwall,Blocks
+Plate,plate,Misc.
+Pointy tree,pointytree,Nature
+Pointy tree stump,pointytreestump,Nature
+Pokémon Center counter,pokmoncentercounter,Furniture
+Polygonal shelf,polygonalshelf,Furniture
+Pop art bed,popartbed,Furniture
+Pop art chair,popartchair,Furniture
+Pop art lamp,popartlamp,Utilities
+Pop art sofa,popartsofa,Furniture
+Pop art table,poparttable,Furniture
+Printer,printer,Misc.
+Professor's treasure trove,professorstreasuretrove,Other
+Protruding wall,protrudingwall,Buildings
+Public seat,publicseat,Furniture
+Pulley,pulley,Buildings
+Punching bag,punchingbag,Outdoor
+Punching game,punchinggame,Misc.
+Push cart,pushcart,Furniture
+Raichu sign,raichusign,Outdoor
+Railway track,railwaytrack,Utilities
+Rainbow Feather,rainbowfeather,Other
+Recycling bin,recyclingbin,Outdoor
+Red cliff rock,redcliffrock,Blocks
+Red crystal cluster,redcrystalcluster,Nature
+Red meteor lamp,redmeteorlamp,Utilities
+Red rock,redrock,Blocks
+Red spotted cliff rock,redspottedcliffrock,Blocks
+Red tall grass,redtallgrass,Nature
+Reddish-brown cave rock,reddishbrowncaverock,Blocks
+Refrigerator,refrigerator,Misc.
+Relaxing park kit,relaxingparkkit,Kits
+Repel,repel,Misc.
+Resort bed,resortbed,Furniture
+Resort chair,resortchair,Furniture
+Resort hammock,resorthammock,Furniture
+Resort light,resortlight,Utilities
+Resort sofa,resortsofa,Furniture
+Resort stool,resortstool,Furniture
+Resort table,resorttable,Furniture
+Ribbon cake,ribboncake,Misc.
+Robust flower,robustflower,Nature
+Rocket Hideout,rockethideout,Other
+Roof support,roofsupport,Buildings
+Rope,rope,Buildings
+Rose Tower,rosetower,Other
+Rough wall,roughwall,Blocks
+Route 209,route209,Other
+Rowlet clock,rowletclock,Misc.
+Rusted iron-plate flooring,rustedironplateflooring,Other
+Rustic door,rusticdoor,Buildings
+Sand cottage kit,sandcottagekit,Kits
+Sand den kit,sanddenkit,Kits
+Sand house kit,sandhousekit,Kits
+Sand hut kit,sandhutkit,Kits
+Sandbags,sandbags,Outdoor
+Sandbox,sandbox,Outdoor
+Sandstone,sandstone,Blocks
+Sandwiches,sandwiches,Misc.
+Sash window,sashwindow,Buildings
+Science experiment,scienceexperiment,Misc.
+Scrap cube,scrapcube,Blocks
+Seashell soil,seashellsoil,Blocks
+Seashore flowers,seashoreflowers,Nature
+Seashore grass,seashoregrass,Blocks
+Security camera,securitycamera,Utilities
+Seedot lamp,seedotlamp,Utilities
+Sewer-hole cover,sewerholecover,Outdoor
+Shaved ice,shavedice,Misc.
+Shell lamp,shelllamp,Utilities
+Ship’s wheel,shipswheel,Misc.
+Shop flooring,shopflooring,Blocks
+Shutter,shutter,Buildings
+Side table,sidetable,Furniture
+Sideways log,sidewayslog,Buildings
+Sign,sign,Outdoor
+Signpost,signpost,Outdoor
+Silph Co.,silphco,Other
+Silver Feather,silverfeather,Other
+Simple cushion,simplecushion,Furniture
+Simple door,simpledoor,Buildings
+Simple flooring,simpleflooring,Blocks
+Simple pillar quarter,simplepillarquarter,Buildings
+Simple square tiling,simplesquaretiling,Blocks
+Sink,sink,Misc.
+Skyland cliff rock,skylandcliffrock,Blocks
+Skyland flowers,skylandflowers,Nature
+Skyland sand,skylandsand,Blocks
+Skyland sandstone,skylandsandstone,Blocks
+Skyland spotted cliff rock,skylandspottedcliffrock,Blocks
+Skylight,skylight,Buildings
+Slender candle,slendercandle,Outdoor
+Slide,slide,Outdoor
+Sloped stone roof,slopedstoneroof,Buildings
+Sloped tent roof,slopedtentroof,Buildings
+Sloped tiled roof,slopedtiledroof,Buildings
+Slowpoke rug,slowpokerug,Other
+Small garbage can,smallgarbagecan,Misc.
+Small lost relic,smalllostrelic,Other
+Small narrow rug,smallnarrowrug,Other
+Small office kit,smallofficekit,Kits
+Small round rug,smallroundrug,Other
+Small square rug,smallsquarerug,Other
+Small stage,smallstage,Outdoor
+Small vase,smallvase,Misc.
+Smelting furnace,smeltingfurnace,Utilities
+Smooth Rock,smoothrock,Outdoor
+Snowbelle City,snowbellecity,Other
+Soda float,sodafloat,Misc.
+Soft carpeting,softcarpeting,Blocks
+Soft mat,softmat,Other
+Soft seat,softseat,Furniture
+Sootopolis City,sootopoliscity,Other
+South Province,southprovince,Other
+Spaceship,spaceship,Misc.
+Spacesuit,spacesuit,Misc.
+Speaker,speaker,Misc.
+Spectator chair,spectatorchair,Furniture
+Spotlight,spotlight,Utilities
+Spotted cliff rock,spottedcliffrock,Blocks
+Sprinkler,sprinkler,Utilities
+Square plant,squareplant,Nature
+Square tiling,squaretiling,Blocks
+Stalactites,stalactites,Nature
+Stalagmites,stalagmites,Nature
+Standing mic,standingmic,Misc.
+Star Piece,starpiece,Other
+Star print,starprint,Blocks
+Stepping stones,steppingstones,Buildings
+Sticky web,stickyweb,Nature
+Stone bench,stonebench,Furniture
+Stone brick wall,stonebrickwall,Blocks
+Stone cottage kit,stonecottagekit,Kits
+Stone debris,stonedebris,Other
+Stone den kit,stonedenkit,Kits
+Stone fencing,stonefencing,Buildings
+Stone fireplace,stonefireplace,Misc.
+Stone flooring,stoneflooring,Blocks
+Stone fragments,stonefragments,Other
+Stone hipped roof,stonehippedroof,Buildings
+Stone house kit,stonehousekit,Kits
+Stone hut kit,stonehutkit,Kits
+Stone roof decoration,stoneroofdecoration,Buildings
+Stone roof valley,stoneroofvalley,Buildings
+Stone steps,stonesteps,Buildings
+Stone table,stonetable,Furniture
+Stone tiling,stonetiling,Blocks
+Storage box,storagebox,Furniture
+Straw bed,strawbed,Furniture
+Straw stool,strawstool,Furniture
+Straw table,strawtable,Furniture
+Strength rock,strengthrock,Nature
+String lights,stringlights,Utilities
+Striped soil,stripedsoil,Blocks
+Striped wall,stripedwall,Blocks
+Study desk,studydesk,Furniture
+Stylish bronze wall,stylishbronzewall,Blocks
+Stylish café kit,stylishcafkit,Kits
+Stylish cooking pot,stylishcookingpot,Utilities
+Stylish door,stylishdoor,Buildings
+Stylish frying pan,stylishfryingpan,Utilities
+Stylish gold wall,stylishgoldwall,Blocks
+Stylish hedge,stylishhedge,Nature
+Stylish iron wall,stylishironwall,Blocks
+Stylish steps,stylishsteps,Buildings
+Stylish stone flooring,stylishstoneflooring,Blocks
+Stylish stool,stylishstool,Furniture
+Stylish tiling,stylishtiling,Blocks
+Substitute doll,substitutedoll,Misc.
+Sunny poster,sunnyposter,Other
+Super Training,supertraining,Other
+Surface light,surfacelight,Utilities
+Swirl print,swirlprint,Blocks
+Table setting,tablesetting,Misc.
+Tablet,tablet,Misc.
+Tabletop mic,tabletopmic,Misc.
+Tall grass,tallgrass,Nature
+Tall potted plant,tallpottedplant,Misc.
+Tartan print,tartanprint,Blocks
+Tatami mat,tatamimat,Blocks
+Tea set,teaset,Misc.
+Team Rocket wall hanging,teamrocketwallhanging,Other
+Technology poster,technologyposter,Other
+Television,television,Misc.
+Tent hipped roof,tenthippedroof,Buildings
+Tent roof valley,tentroofvalley,Buildings
+Tiled hipped roof,tiledhippedroof,Buildings
+Tiled roof decoration,tiledroofdecoration,Buildings
+Tiled roof valley,tiledroofvalley,Buildings
+Tire toy,tiretoy,Outdoor
+Tires,tires,Outdoor
+Toilet,toilet,Misc.
+Torch,torch,Outdoor
+Towel rack,towelrack,Misc.
+Town map,townmap,Other
+Town streetlight,townstreetlight,Utilities
+Townscape poster,townscapeposter,Other
+Toy blocks,toyblocks,Misc.
+Traffic cone,trafficcone,Outdoor
+Treasure,treasure,Outdoor
+Triangle-design flooring,triangledesignflooring,Blocks
+Twisted potted plant,twistedpottedplant,Misc.
+Ultra Ruin,ultraruin,Other
+Underground hatch,undergroundhatch,Buildings
+Union Cave,unioncave,Other
+Upright log,uprightlog,Buildings
+Utility pole,utilitypole,Utilities
+Vending machine,vendingmachine,Outdoor
+Verdant shoots,verdantshoots,Nature
+Vermilion City,vermilioncity,Other
+Vine print,vineprint,Blocks
+Vine wall decoration,vinewalldecoration,Misc.
+Vines,vines,Other
+Violet meteor lamp,violetmeteorlamp,Utilities
+Viridian City,viridiancity,Other
+Volcanic ash,volcanicash,Blocks
+Volcanic rock,volcanicrock,Blocks
+Walkway,walkway,Buildings
+Wall calendar,wallcalendar,Misc.
+Wall light,walllight,Utilities
+Wall mirror,wallmirror,Furniture
+Wall monitor,wallmonitor,Misc.
+Wall photo frame,wallphotoframe,Misc.
+Wall storage box,wallstoragebox,Furniture
+Wall switch,wallswitch,Utilities
+Wall torch,walltorch,Outdoor
+Warning wall,warningwall,Blocks
+Washing machine,washingmachine,Misc.
+Water basin,waterbasin,Outdoor
+Water pillar quarter,waterpillarquarter,Buildings
+Watercolor poster,watercolorposter,Other
+Waterproof seat,waterproofseat,Furniture
+Waterwheel kit,waterwheelkit,Kits
+Weather vane,weathervane,Outdoor
+Wheelbarrow,wheelbarrow,Outdoor
+White rock,whiterock,Blocks
+Wiggly mirror,wigglymirror,Furniture
+Wild Area,wildarea,Other
+Wildflower,wildflower,Nature
+Windmill kit,windmillkit,Kits
+Windmill poster,windmillposter,Other
+Window pane,windowpane,Buildings
+Winter print,winterprint,Blocks
+Wire,wire,Buildings
+Wireless power transmitter,wirelesspowertransmitter,Utilities
+Wireless power-transmitter switch,wirelesspowertransmitterswitch,Utilities
+Wobbuffet wobbler,wobbuffetwobbler,Misc.
+Wooden bed,woodenbed,Furniture
+Wooden bench,woodenbench,Furniture
+Wooden birdhouse,woodenbirdhouse,Outdoor
+Wooden crate,woodencrate,Outdoor
+Wooden enclosure,woodenenclosure,Buildings
+Wooden fencing,woodenfencing,Buildings
+Wooden flooring,woodenflooring,Blocks
+Wooden gate,woodengate,Buildings
+Wooden handrail,woodenhandrail,Buildings
+Wooden ladder,woodenladder,Buildings
+Wooden partition,woodenpartition,Buildings
+Wooden path,woodenpath,Buildings
+Wooden plate,woodenplate,Misc.
+Wooden posts,woodenposts,Buildings
+Wooden steps,woodensteps,Buildings
+Wooden table,woodentable,Furniture
+Wooden wall,woodenwall,Blocks
+Workbench,workbench,Utilities
+Worn lumber,wornlumber,Other
+Worn wooden crate,wornwoodencrate,Outdoor
+Woven carpeting,wovencarpeting,Blocks
+Wyndon,wyndon,Other
+Yellow cottage kit,yellowcottagekit,Kits
+Yellow hut kit,yellowhutkit,Kits
+Yellow meteor lamp,yellowmeteorlamp,Utilities
+Yellow rock,yellowrock,Blocks
+Yellow tall grass,yellowtallgrass,Nature
+Yellow-green shoots,yellowgreenshoots,Nature
+bean plant,beanplant,Other
+potato plant,potatoplant,Other
+tomato plant,tomatoplant,Other
+wheat plant,wheatplant,Other

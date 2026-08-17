@@ -801,7 +801,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 7;
+const APP_BUILD = 14;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -820,581 +820,86 @@ function renderAbout(){
 }
 
 /* ---------------- Pokémon data (name + national dex id for artwork) ---------------- */
-const POKEMON = [
-  {n:"bulbasaur",id:1,t:["grass","poison"],bst:318},{n:"ivysaur",id:2,t:["grass","poison"],bst:405},{n:"venusaur",id:3,t:["grass","poison"],bst:525},{n:"charmander",id:4,t:["fire"],bst:309},
-  {n:"charmeleon",id:5,t:["fire"],bst:405},{n:"charizard",id:6,t:["fire","flying"],bst:534},{n:"squirtle",id:7,t:["water"],bst:314},{n:"wartortle",id:8,t:["water"],bst:405},
-  {n:"blastoise",id:9,t:["water"],bst:530},{n:"caterpie",id:10,t:["bug"],bst:195},{n:"metapod",id:11,t:["bug"],bst:205},{n:"butterfree",id:12,t:["bug","flying"],bst:395},
-  {n:"weedle",id:13,t:["bug","poison"],bst:195},{n:"kakuna",id:14,t:["bug","poison"],bst:205},{n:"beedrill",id:15,t:["bug","poison"],bst:395},{n:"pidgey",id:16,t:["normal","flying"],bst:251},
-  {n:"pidgeotto",id:17,t:["normal","flying"],bst:349},{n:"pidgeot",id:18,t:["normal","flying"],bst:479},{n:"rattata",id:19,t:["normal"],bst:253},{n:"raticate",id:20,t:["normal"],bst:413},
-  {n:"spearow",id:21,t:["normal","flying"],bst:262},{n:"fearow",id:22,t:["normal","flying"],bst:442},{n:"ekans",id:23,t:["poison"],bst:288},{n:"arbok",id:24,t:["poison"],bst:448},
-  {n:"pikachu",id:25,t:["electric"],bst:320},{n:"raichu",id:26,t:["electric"],bst:485},{n:"sandshrew",id:27,t:["ground"],bst:300},{n:"sandslash",id:28,t:["ground"],bst:450},
-  {n:"nidorina",id:30,t:["poison"],bst:365},{n:"nidoqueen",id:31,t:["poison","ground"],bst:505},
-  {n:"nidorino",id:33,t:["poison"],bst:365},{n:"nidoking",id:34,t:["poison","ground"],bst:505},{n:"clefairy",id:35,t:["fairy"],bst:323},{n:"clefable",id:36,t:["fairy"],bst:483},
-  {n:"vulpix",id:37,t:["fire"],bst:299},{n:"ninetales",id:38,t:["fire"],bst:505},{n:"jigglypuff",id:39,t:["normal","fairy"],bst:270},{n:"wigglytuff",id:40,t:["normal","fairy"],bst:435},
-  {n:"zubat",id:41,t:["poison","flying"],bst:245},{n:"golbat",id:42,t:["poison","flying"],bst:455},{n:"oddish",id:43,t:["grass","poison"],bst:320},{n:"gloom",id:44,t:["grass","poison"],bst:395},
-  {n:"vileplume",id:45,t:["grass","poison"],bst:490},{n:"paras",id:46,t:["bug","grass"],bst:285},{n:"parasect",id:47,t:["bug","grass"],bst:405},{n:"venonat",id:48,t:["bug","poison"],bst:305},
-  {n:"venomoth",id:49,t:["bug","poison"],bst:450},{n:"diglett",id:50,t:["ground"],bst:265},{n:"dugtrio",id:51,t:["ground"],bst:425},{n:"meowth",id:52,t:["normal"],bst:290},
-  {n:"persian",id:53,t:["normal"],bst:440},{n:"psyduck",id:54,t:["water"],bst:320},{n:"golduck",id:55,t:["water"],bst:500},{n:"mankey",id:56,t:["fighting"],bst:305},
-  {n:"primeape",id:57,t:["fighting"],bst:455},{n:"growlithe",id:58,t:["fire"],bst:350},{n:"arcanine",id:59,t:["fire"],bst:555},{n:"poliwag",id:60,t:["water"],bst:300},
-  {n:"poliwhirl",id:61,t:["water"],bst:385},{n:"poliwrath",id:62,t:["water","fighting"],bst:510},{n:"abra",id:63,t:["psychic"],bst:310},{n:"kadabra",id:64,t:["psychic"],bst:400},
-  {n:"alakazam",id:65,t:["psychic"],bst:500},{n:"machop",id:66,t:["fighting"],bst:305},{n:"machoke",id:67,t:["fighting"],bst:405},{n:"machamp",id:68,t:["fighting"],bst:505},
-  {n:"bellsprout",id:69,t:["grass","poison"],bst:300},{n:"weepinbell",id:70,t:["grass","poison"],bst:390},{n:"victreebel",id:71,t:["grass","poison"],bst:490},{n:"tentacool",id:72,t:["water","poison"],bst:335},
-  {n:"tentacruel",id:73,t:["water","poison"],bst:515},{n:"geodude",id:74,t:["rock","ground"],bst:300},{n:"graveler",id:75,t:["rock","ground"],bst:390},{n:"golem",id:76,t:["rock","ground"],bst:495},
-  {n:"ponyta",id:77,t:["fire"],bst:410},{n:"rapidash",id:78,t:["fire"],bst:500},{n:"slowpoke",id:79,t:["water","psychic"],bst:315},{n:"slowbro",id:80,t:["water","psychic"],bst:490},
-  {n:"magnemite",id:81,t:["electric","steel"],bst:325},{n:"magneton",id:82,t:["electric","steel"],bst:465},{n:"doduo",id:84,t:["normal","flying"],bst:310},
-  {n:"dodrio",id:85,t:["normal","flying"],bst:470},{n:"seel",id:86,t:["water"],bst:325},{n:"dewgong",id:87,t:["water","ice"],bst:475},{n:"grimer",id:88,t:["poison"],bst:325},
-  {n:"muk",id:89,t:["poison"],bst:500},{n:"shellder",id:90,t:["water"],bst:305},{n:"cloyster",id:91,t:["water","ice"],bst:525},{n:"gastly",id:92,t:["ghost","poison"],bst:310},
-  {n:"haunter",id:93,t:["ghost","poison"],bst:405},{n:"gengar",id:94,t:["ghost","poison"],bst:500},{n:"onix",id:95,t:["rock","ground"],bst:385},{n:"drowzee",id:96,t:["psychic"],bst:328},
-  {n:"hypno",id:97,t:["psychic"],bst:483},{n:"krabby",id:98,t:["water"],bst:325},{n:"kingler",id:99,t:["water"],bst:475},{n:"voltorb",id:100,t:["electric"],bst:330},
-  {n:"electrode",id:101,t:["electric"],bst:490},{n:"exeggcute",id:102,t:["grass","psychic"],bst:325},{n:"exeggutor",id:103,t:["grass","psychic"],bst:530},{n:"cubone",id:104,t:["ground"],bst:320},
-  {n:"marowak",id:105,t:["ground"],bst:425},{n:"hitmonlee",id:106,t:["fighting"],bst:455},{n:"hitmonchan",id:107,t:["fighting"],bst:455},{n:"lickitung",id:108,t:["normal"],bst:385},
-  {n:"koffing",id:109,t:["poison"],bst:340},{n:"weezing",id:110,t:["poison"],bst:490},{n:"rhyhorn",id:111,t:["ground","rock"],bst:345},{n:"rhydon",id:112,t:["ground","rock"],bst:485},
-  {n:"chansey",id:113,t:["normal"],bst:450},{n:"tangela",id:114,t:["grass"],bst:435},{n:"kangaskhan",id:115,t:["normal"],bst:490},{n:"horsea",id:116,t:["water"],bst:295},
-  {n:"seadra",id:117,t:["water"],bst:440},{n:"goldeen",id:118,t:["water"],bst:320},{n:"seaking",id:119,t:["water"],bst:450},{n:"staryu",id:120,t:["water"],bst:340},
-  {n:"starmie",id:121,t:["water","psychic"],bst:520},{n:"scyther",id:123,t:["bug","flying"],bst:500},{n:"jynx",id:124,t:["ice","psychic"],bst:455},
-  {n:"electabuzz",id:125,t:["electric"],bst:490},{n:"magmar",id:126,t:["fire"],bst:495},{n:"pinsir",id:127,t:["bug"],bst:500},{n:"tauros",id:128,t:["normal"],bst:490},
-  {n:"magikarp",id:129,t:["water"],bst:200},{n:"gyarados",id:130,t:["water","flying"],bst:540},{n:"lapras",id:131,t:["water","ice"],bst:535},{n:"ditto",id:132,t:["normal"],bst:288},
-  {n:"eevee",id:133,t:["normal"],bst:325},{n:"vaporeon",id:134,t:["water"],bst:525},{n:"jolteon",id:135,t:["electric"],bst:525},{n:"flareon",id:136,t:["fire"],bst:525},
-  {n:"porygon",id:137,t:["normal"],bst:395},{n:"omanyte",id:138,t:["rock","water"],bst:355},{n:"omastar",id:139,t:["rock","water"],bst:495},{n:"kabuto",id:140,t:["rock","water"],bst:355},
-  {n:"kabutops",id:141,t:["rock","water"],bst:495},{n:"aerodactyl",id:142,t:["rock","flying"],bst:515},{n:"snorlax",id:143,t:["normal"],bst:540},{n:"articuno",id:144,t:["ice","flying"],bst:580},
-  {n:"zapdos",id:145,t:["electric","flying"],bst:580},{n:"moltres",id:146,t:["fire","flying"],bst:580},{n:"dratini",id:147,t:["dragon"],bst:300},{n:"dragonair",id:148,t:["dragon"],bst:420},
-  {n:"dragonite",id:149,t:["dragon","flying"],bst:600},{n:"mewtwo",id:150,t:["psychic"],bst:680},{n:"mew",id:151,t:["psychic"],bst:600},
-  {n:"chikorita",id:152,t:["grass"],bst:318},{n:"bayleef",id:153,t:["grass"],bst:405},{n:"meganium",id:154,t:["grass"],bst:525},{n:"cyndaquil",id:155,t:["fire"],bst:309},
-  {n:"quilava",id:156,t:["fire"],bst:405},{n:"typhlosion",id:157,t:["fire"],bst:534},{n:"totodile",id:158,t:["water"],bst:314},{n:"croconaw",id:159,t:["water"],bst:405},
-  {n:"feraligatr",id:160,t:["water"],bst:530},{n:"sentret",id:161,t:["normal"],bst:215},{n:"furret",id:162,t:["normal"],bst:415},{n:"hoothoot",id:163,t:["normal","flying"],bst:262},
-  {n:"noctowl",id:164,t:["normal","flying"],bst:452},{n:"ledyba",id:165,t:["bug","flying"],bst:265},{n:"ledian",id:166,t:["bug","flying"],bst:390},{n:"spinarak",id:167,t:["bug","poison"],bst:250},
-  {n:"ariados",id:168,t:["bug","poison"],bst:400},{n:"crobat",id:169,t:["poison","flying"],bst:535},{n:"chinchou",id:170,t:["water","electric"],bst:330},{n:"lanturn",id:171,t:["water","electric"],bst:460},
-  {n:"pichu",id:172,t:["electric"],bst:205},{n:"cleffa",id:173,t:["fairy"],bst:218},{n:"igglybuff",id:174,t:["normal","fairy"],bst:210},{n:"togepi",id:175,t:["fairy"],bst:245},
-  {n:"togetic",id:176,t:["fairy","flying"],bst:405},{n:"natu",id:177,t:["psychic","flying"],bst:320},{n:"xatu",id:178,t:["psychic","flying"],bst:470},{n:"mareep",id:179,t:["electric"],bst:280},
-  {n:"flaaffy",id:180,t:["electric"],bst:365},{n:"ampharos",id:181,t:["electric"],bst:510},{n:"bellossom",id:182,t:["grass"],bst:490},{n:"marill",id:183,t:["water","fairy"],bst:250},
-  {n:"azumarill",id:184,t:["water","fairy"],bst:420},{n:"sudowoodo",id:185,t:["rock"],bst:410},{n:"politoed",id:186,t:["water"],bst:500},{n:"hoppip",id:187,t:["grass","flying"],bst:250},
-  {n:"skiploom",id:188,t:["grass","flying"],bst:340},{n:"jumpluff",id:189,t:["grass","flying"],bst:460},{n:"aipom",id:190,t:["normal"],bst:360},{n:"sunkern",id:191,t:["grass"],bst:180},
-  {n:"sunflora",id:192,t:["grass"],bst:425},{n:"yanma",id:193,t:["bug","flying"],bst:390},{n:"wooper",id:194,t:["water","ground"],bst:210},{n:"quagsire",id:195,t:["water","ground"],bst:430},
-  {n:"espeon",id:196,t:["psychic"],bst:525},{n:"umbreon",id:197,t:["dark"],bst:525},{n:"murkrow",id:198,t:["dark","flying"],bst:405},{n:"slowking",id:199,t:["water","psychic"],bst:490},
-  {n:"misdreavus",id:200,t:["ghost"],bst:435},{n:"unown",id:201,t:["psychic"],bst:336},{n:"wobbuffet",id:202,t:["psychic"],bst:405},{n:"girafarig",id:203,t:["normal","psychic"],bst:455},
-  {n:"pineco",id:204,t:["bug"],bst:290},{n:"forretress",id:205,t:["bug","steel"],bst:465},{n:"dunsparce",id:206,t:["normal"],bst:415},{n:"gligar",id:207,t:["ground","flying"],bst:430},
-  {n:"steelix",id:208,t:["steel","ground"],bst:510},{n:"snubbull",id:209,t:["fairy"],bst:300},{n:"granbull",id:210,t:["fairy"],bst:450},{n:"qwilfish",id:211,t:["water","poison"],bst:440},
-  {n:"scizor",id:212,t:["bug","steel"],bst:500},{n:"shuckle",id:213,t:["bug","rock"],bst:505},{n:"heracross",id:214,t:["bug","fighting"],bst:500},{n:"sneasel",id:215,t:["dark","ice"],bst:430},
-  {n:"teddiursa",id:216,t:["normal"],bst:330},{n:"ursaring",id:217,t:["normal"],bst:500},{n:"slugma",id:218,t:["fire"],bst:250},{n:"magcargo",id:219,t:["fire","rock"],bst:430},
-  {n:"swinub",id:220,t:["ice","ground"],bst:250},{n:"piloswine",id:221,t:["ice","ground"],bst:450},{n:"corsola",id:222,t:["water","rock"],bst:410},{n:"remoraid",id:223,t:["water"],bst:300},
-  {n:"octillery",id:224,t:["water"],bst:480},{n:"delibird",id:225,t:["ice","flying"],bst:330},{n:"mantine",id:226,t:["water","flying"],bst:485},{n:"skarmory",id:227,t:["steel","flying"],bst:465},
-  {n:"houndour",id:228,t:["dark","fire"],bst:330},{n:"houndoom",id:229,t:["dark","fire"],bst:500},{n:"kingdra",id:230,t:["water","dragon"],bst:540},{n:"phanpy",id:231,t:["ground"],bst:330},
-  {n:"donphan",id:232,t:["ground"],bst:500},{n:"porygon2",id:233,t:["normal"],bst:515},{n:"stantler",id:234,t:["normal"],bst:465},{n:"smeargle",id:235,t:["normal"],bst:250},
-  {n:"tyrogue",id:236,t:["fighting"],bst:210},{n:"hitmontop",id:237,t:["fighting"],bst:455},{n:"smoochum",id:238,t:["ice","psychic"],bst:305},{n:"elekid",id:239,t:["electric"],bst:360},
-  {n:"magby",id:240,t:["fire"],bst:365},{n:"miltank",id:241,t:["normal"],bst:490},{n:"blissey",id:242,t:["normal"],bst:540},{n:"raikou",id:243,t:["electric"],bst:580},
-  {n:"entei",id:244,t:["fire"],bst:580},{n:"suicune",id:245,t:["water"],bst:580},{n:"larvitar",id:246,t:["rock","ground"],bst:300},{n:"pupitar",id:247,t:["rock","ground"],bst:410},
-  {n:"tyranitar",id:248,t:["rock","dark"],bst:600},{n:"lugia",id:249,t:["psychic","flying"],bst:680},{n:"ho-oh",id:250,t:["fire","flying"],bst:680},{n:"celebi",id:251,t:["psychic","grass"],bst:600},
-  {n:"treecko",id:252,t:["grass"],bst:310},{n:"grovyle",id:253,t:["grass"],bst:405},{n:"sceptile",id:254,t:["grass"],bst:530},{n:"torchic",id:255,t:["fire"],bst:310},
-  {n:"combusken",id:256,t:["fire","fighting"],bst:405},{n:"blaziken",id:257,t:["fire","fighting"],bst:530},{n:"mudkip",id:258,t:["water"],bst:310},{n:"marshtomp",id:259,t:["water","ground"],bst:405},
-  {n:"swampert",id:260,t:["water","ground"],bst:535},{n:"poochyena",id:261,t:["dark"],bst:220},{n:"mightyena",id:262,t:["dark"],bst:420},{n:"zigzagoon",id:263,t:["normal"],bst:240},
-  {n:"linoone",id:264,t:["normal"],bst:420},{n:"wurmple",id:265,t:["bug"],bst:195},{n:"silcoon",id:266,t:["bug"],bst:205},{n:"beautifly",id:267,t:["bug","flying"],bst:395},
-  {n:"cascoon",id:268,t:["bug"],bst:205},{n:"dustox",id:269,t:["bug","poison"],bst:385},{n:"lotad",id:270,t:["water","grass"],bst:220},{n:"lombre",id:271,t:["water","grass"],bst:340},
-  {n:"ludicolo",id:272,t:["water","grass"],bst:480},{n:"seedot",id:273,t:["grass"],bst:220},{n:"nuzleaf",id:274,t:["grass","dark"],bst:340},{n:"shiftry",id:275,t:["grass","dark"],bst:480},
-  {n:"taillow",id:276,t:["normal","flying"],bst:270},{n:"swellow",id:277,t:["normal","flying"],bst:455},{n:"wingull",id:278,t:["water","flying"],bst:270},{n:"pelipper",id:279,t:["water","flying"],bst:440},
-  {n:"ralts",id:280,t:["psychic","fairy"],bst:198},{n:"kirlia",id:281,t:["psychic","fairy"],bst:278},{n:"gardevoir",id:282,t:["psychic","fairy"],bst:518},{n:"surskit",id:283,t:["bug","water"],bst:269},
-  {n:"masquerain",id:284,t:["bug","flying"],bst:454},{n:"shroomish",id:285,t:["grass"],bst:295},{n:"breloom",id:286,t:["grass","fighting"],bst:460},{n:"slakoth",id:287,t:["normal"],bst:280},
-  {n:"vigoroth",id:288,t:["normal"],bst:440},{n:"slaking",id:289,t:["normal"],bst:670},{n:"nincada",id:290,t:["bug","ground"],bst:266},{n:"ninjask",id:291,t:["bug","flying"],bst:456},
-  {n:"shedinja",id:292,t:["bug","ghost"],bst:236},{n:"whismur",id:293,t:["normal"],bst:240},{n:"loudred",id:294,t:["normal"],bst:360},{n:"exploud",id:295,t:["normal"],bst:490},
-  {n:"makuhita",id:296,t:["fighting"],bst:237},{n:"hariyama",id:297,t:["fighting"],bst:474},{n:"azurill",id:298,t:["normal","fairy"],bst:190},{n:"nosepass",id:299,t:["rock"],bst:375},
-  {n:"skitty",id:300,t:["normal"],bst:260},{n:"delcatty",id:301,t:["normal"],bst:400},{n:"sableye",id:302,t:["dark","ghost"],bst:380},{n:"mawile",id:303,t:["steel","fairy"],bst:380},
-  {n:"aron",id:304,t:["steel","rock"],bst:330},{n:"lairon",id:305,t:["steel","rock"],bst:430},{n:"aggron",id:306,t:["steel","rock"],bst:530},{n:"meditite",id:307,t:["fighting","psychic"],bst:280},
-  {n:"medicham",id:308,t:["fighting","psychic"],bst:410},{n:"electrike",id:309,t:["electric"],bst:295},{n:"manectric",id:310,t:["electric"],bst:475},{n:"plusle",id:311,t:["electric"],bst:405},
-  {n:"minun",id:312,t:["electric"],bst:405},{n:"volbeat",id:313,t:["bug"],bst:430},{n:"illumise",id:314,t:["bug"],bst:430},{n:"roselia",id:315,t:["grass","poison"],bst:400},
-  {n:"gulpin",id:316,t:["poison"],bst:302},{n:"swalot",id:317,t:["poison"],bst:467},{n:"carvanha",id:318,t:["water","dark"],bst:305},{n:"sharpedo",id:319,t:["water","dark"],bst:460},
-  {n:"wailmer",id:320,t:["water"],bst:400},{n:"wailord",id:321,t:["water"],bst:500},{n:"numel",id:322,t:["fire","ground"],bst:305},{n:"camerupt",id:323,t:["fire","ground"],bst:460},
-  {n:"torkoal",id:324,t:["fire"],bst:470},{n:"spoink",id:325,t:["psychic"],bst:330},{n:"grumpig",id:326,t:["psychic"],bst:470},{n:"spinda",id:327,t:["normal"],bst:360},
-  {n:"trapinch",id:328,t:["ground"],bst:290},{n:"vibrava",id:329,t:["ground","dragon"],bst:340},{n:"flygon",id:330,t:["ground","dragon"],bst:520},{n:"cacnea",id:331,t:["grass"],bst:335},
-  {n:"cacturne",id:332,t:["grass","dark"],bst:475},{n:"swablu",id:333,t:["normal","flying"],bst:310},{n:"altaria",id:334,t:["dragon","flying"],bst:490},{n:"zangoose",id:335,t:["normal"],bst:458},
-  {n:"seviper",id:336,t:["poison"],bst:458},{n:"lunatone",id:337,t:["rock","psychic"],bst:460},{n:"solrock",id:338,t:["rock","psychic"],bst:460},{n:"barboach",id:339,t:["water","ground"],bst:288},
-  {n:"whiscash",id:340,t:["water","ground"],bst:468},{n:"corphish",id:341,t:["water"],bst:308},{n:"crawdaunt",id:342,t:["water","dark"],bst:468},{n:"baltoy",id:343,t:["ground","psychic"],bst:300},
-  {n:"claydol",id:344,t:["ground","psychic"],bst:500},{n:"lileep",id:345,t:["rock","grass"],bst:355},{n:"cradily",id:346,t:["rock","grass"],bst:495},{n:"anorith",id:347,t:["rock","bug"],bst:355},
-  {n:"armaldo",id:348,t:["rock","bug"],bst:495},{n:"feebas",id:349,t:["water"],bst:200},{n:"milotic",id:350,t:["water"],bst:540},{n:"castform",id:351,t:["normal"],bst:420},
-  {n:"kecleon",id:352,t:["normal"],bst:440},{n:"shuppet",id:353,t:["ghost"],bst:295},{n:"banette",id:354,t:["ghost"],bst:455},{n:"duskull",id:355,t:["ghost"],bst:295},
-  {n:"dusclops",id:356,t:["ghost"],bst:455},{n:"tropius",id:357,t:["grass","flying"],bst:460},{n:"chimecho",id:358,t:["psychic"],bst:455},{n:"absol",id:359,t:["dark"],bst:465},
-  {n:"wynaut",id:360,t:["psychic"],bst:260},{n:"snorunt",id:361,t:["ice"],bst:300},{n:"glalie",id:362,t:["ice"],bst:480},{n:"spheal",id:363,t:["ice","water"],bst:290},
-  {n:"sealeo",id:364,t:["ice","water"],bst:410},{n:"walrein",id:365,t:["ice","water"],bst:530},{n:"clamperl",id:366,t:["water"],bst:345},{n:"huntail",id:367,t:["water"],bst:485},
-  {n:"gorebyss",id:368,t:["water"],bst:485},{n:"relicanth",id:369,t:["water","rock"],bst:485},{n:"luvdisc",id:370,t:["water"],bst:330},{n:"bagon",id:371,t:["dragon"],bst:300},
-  {n:"shelgon",id:372,t:["dragon"],bst:420},{n:"salamence",id:373,t:["dragon","flying"],bst:600},{n:"beldum",id:374,t:["steel","psychic"],bst:300},{n:"metang",id:375,t:["steel","psychic"],bst:420},
-  {n:"metagross",id:376,t:["steel","psychic"],bst:600},{n:"regirock",id:377,t:["rock"],bst:580},{n:"regice",id:378,t:["ice"],bst:580},{n:"registeel",id:379,t:["steel"],bst:580},
-  {n:"latias",id:380,t:["dragon","psychic"],bst:600},{n:"latios",id:381,t:["dragon","psychic"],bst:600},{n:"kyogre",id:382,t:["water"],bst:670},{n:"groudon",id:383,t:["ground"],bst:670},
-  {n:"rayquaza",id:384,t:["dragon","flying"],bst:680},{n:"jirachi",id:385,t:["steel","psychic"],bst:600},{n:"deoxys",id:386,t:["psychic"],bst:600},{n:"turtwig",id:387,t:["grass"],bst:318},
-  {n:"grotle",id:388,t:["grass"],bst:405},{n:"torterra",id:389,t:["grass","ground"],bst:525},{n:"chimchar",id:390,t:["fire"],bst:309},{n:"monferno",id:391,t:["fire","fighting"],bst:405},
-  {n:"infernape",id:392,t:["fire","fighting"],bst:534},{n:"piplup",id:393,t:["water"],bst:314},{n:"prinplup",id:394,t:["water"],bst:405},{n:"empoleon",id:395,t:["water","steel"],bst:530},
-  {n:"starly",id:396,t:["normal","flying"],bst:245},{n:"staravia",id:397,t:["normal","flying"],bst:340},{n:"staraptor",id:398,t:["normal","flying"],bst:485},{n:"bidoof",id:399,t:["normal"],bst:250},
-  {n:"bibarel",id:400,t:["normal","water"],bst:410},{n:"kricketot",id:401,t:["bug"],bst:194},{n:"kricketune",id:402,t:["bug"],bst:384},{n:"shinx",id:403,t:["electric"],bst:263},
-  {n:"luxio",id:404,t:["electric"],bst:363},{n:"luxray",id:405,t:["electric"],bst:523},{n:"budew",id:406,t:["grass","poison"],bst:280},{n:"roserade",id:407,t:["grass","poison"],bst:515},
-  {n:"cranidos",id:408,t:["rock"],bst:350},{n:"rampardos",id:409,t:["rock"],bst:495},{n:"shieldon",id:410,t:["rock","steel"],bst:350},{n:"bastiodon",id:411,t:["rock","steel"],bst:495},
-  {n:"burmy",id:412,t:["bug"],bst:224},{n:"wormadam",id:413,t:["bug","grass"],bst:424},{n:"mothim",id:414,t:["bug","flying"],bst:424},{n:"combee",id:415,t:["bug","flying"],bst:244},
-  {n:"vespiquen",id:416,t:["bug","flying"],bst:474},{n:"pachirisu",id:417,t:["electric"],bst:405},{n:"buizel",id:418,t:["water"],bst:330},{n:"floatzel",id:419,t:["water"],bst:495},
-  {n:"cherubi",id:420,t:["grass"],bst:275},{n:"cherrim",id:421,t:["grass"],bst:450},{n:"shellos",id:422,t:["water"],bst:325},{n:"gastrodon",id:423,t:["water","ground"],bst:475},
-  {n:"ambipom",id:424,t:["normal"],bst:482},{n:"drifloon",id:425,t:["ghost","flying"],bst:348},{n:"drifblim",id:426,t:["ghost","flying"],bst:498},{n:"buneary",id:427,t:["normal"],bst:350},
-  {n:"lopunny",id:428,t:["normal"],bst:480},{n:"mismagius",id:429,t:["ghost"],bst:495},{n:"honchkrow",id:430,t:["dark","flying"],bst:505},{n:"glameow",id:431,t:["normal"],bst:310},
-  {n:"purugly",id:432,t:["normal"],bst:452},{n:"chingling",id:433,t:["psychic"],bst:285},{n:"stunky",id:434,t:["poison","dark"],bst:329},{n:"skuntank",id:435,t:["poison","dark"],bst:479},
-  {n:"bronzor",id:436,t:["steel","psychic"],bst:300},{n:"bronzong",id:437,t:["steel","psychic"],bst:500},{n:"bonsly",id:438,t:["rock"],bst:290},{n:"mime-jr",id:439,t:["psychic","fairy"],bst:310},
-  {n:"happiny",id:440,t:["normal"],bst:220},{n:"chatot",id:441,t:["normal","flying"],bst:411},{n:"spiritomb",id:442,t:["ghost","dark"],bst:485},{n:"gible",id:443,t:["dragon","ground"],bst:300},
-  {n:"gabite",id:444,t:["dragon","ground"],bst:410},{n:"garchomp",id:445,t:["dragon","ground"],bst:600},{n:"munchlax",id:446,t:["normal"],bst:390},{n:"riolu",id:447,t:["fighting"],bst:285},
-  {n:"lucario",id:448,t:["fighting","steel"],bst:525},{n:"hippopotas",id:449,t:["ground"],bst:330},{n:"hippowdon",id:450,t:["ground"],bst:525},{n:"skorupi",id:451,t:["poison","bug"],bst:330},
-  {n:"drapion",id:452,t:["poison","dark"],bst:500},{n:"croagunk",id:453,t:["poison","fighting"],bst:300},{n:"toxicroak",id:454,t:["poison","fighting"],bst:490},{n:"carnivine",id:455,t:["grass"],bst:454},
-  {n:"finneon",id:456,t:["water"],bst:330},{n:"lumineon",id:457,t:["water"],bst:460},{n:"mantyke",id:458,t:["water","flying"],bst:345},{n:"snover",id:459,t:["grass","ice"],bst:334},
-  {n:"abomasnow",id:460,t:["grass","ice"],bst:494},{n:"weavile",id:461,t:["dark","ice"],bst:510},{n:"magnezone",id:462,t:["electric","steel"],bst:535},{n:"lickilicky",id:463,t:["normal"],bst:515},
-  {n:"rhyperior",id:464,t:["ground","rock"],bst:535},{n:"tangrowth",id:465,t:["grass"],bst:535},{n:"electivire",id:466,t:["electric"],bst:540},{n:"magmortar",id:467,t:["fire"],bst:540},
-  {n:"togekiss",id:468,t:["fairy","flying"],bst:545},{n:"yanmega",id:469,t:["bug","flying"],bst:515},{n:"leafeon",id:470,t:["grass"],bst:525},{n:"glaceon",id:471,t:["ice"],bst:525},
-  {n:"gliscor",id:472,t:["ground","flying"],bst:510},{n:"mamoswine",id:473,t:["ice","ground"],bst:530},{n:"porygon-z",id:474,t:["normal"],bst:535},{n:"gallade",id:475,t:["psychic","fighting"],bst:518},
-  {n:"probopass",id:476,t:["rock","steel"],bst:525},{n:"dusknoir",id:477,t:["ghost"],bst:525},{n:"froslass",id:478,t:["ice","ghost"],bst:480},{n:"rotom",id:479,t:["electric","ghost"],bst:440},
-  {n:"uxie",id:480,t:["psychic"],bst:580},{n:"mesprit",id:481,t:["psychic"],bst:580},{n:"azelf",id:482,t:["psychic"],bst:580},{n:"dialga",id:483,t:["steel","dragon"],bst:680},
-  {n:"palkia",id:484,t:["water","dragon"],bst:680},{n:"heatran",id:485,t:["fire","steel"],bst:600},{n:"regigigas",id:486,t:["normal"],bst:670},{n:"giratina",id:487,t:["ghost","dragon"],bst:680},
-  {n:"cresselia",id:488,t:["psychic"],bst:580},{n:"phione",id:489,t:["water"],bst:480},{n:"manaphy",id:490,t:["water"],bst:600},{n:"darkrai",id:491,t:["dark"],bst:600},
-  {n:"shaymin",id:492,t:["grass"],bst:600},{n:"arceus",id:493,t:["normal"],bst:720},{n:"victini",id:494,t:["psychic","fire"],bst:600},{n:"snivy",id:495,t:["grass"],bst:308},
-  {n:"servine",id:496,t:["grass"],bst:413},{n:"serperior",id:497,t:["grass"],bst:528},{n:"tepig",id:498,t:["fire"],bst:308},{n:"pignite",id:499,t:["fire","fighting"],bst:418},
-  {n:"emboar",id:500,t:["fire","fighting"],bst:528},{n:"oshawott",id:501,t:["water"],bst:308},{n:"dewott",id:502,t:["water"],bst:413},{n:"samurott",id:503,t:["water"],bst:528},
-  {n:"patrat",id:504,t:["normal"],bst:255},{n:"watchog",id:505,t:["normal"],bst:420},{n:"lillipup",id:506,t:["normal"],bst:275},{n:"herdier",id:507,t:["normal"],bst:370},
-  {n:"stoutland",id:508,t:["normal"],bst:500},{n:"purrloin",id:509,t:["dark"],bst:281},{n:"liepard",id:510,t:["dark"],bst:446},{n:"pansage",id:511,t:["grass"],bst:316},
-  {n:"simisage",id:512,t:["grass"],bst:498},{n:"pansear",id:513,t:["fire"],bst:316},{n:"simisear",id:514,t:["fire"],bst:498},{n:"panpour",id:515,t:["water"],bst:316},
-  {n:"simipour",id:516,t:["water"],bst:498},{n:"munna",id:517,t:["psychic"],bst:292},{n:"musharna",id:518,t:["psychic"],bst:487},{n:"pidove",id:519,t:["normal","flying"],bst:264},
-  {n:"tranquill",id:520,t:["normal","flying"],bst:358},{n:"unfezant",id:521,t:["normal","flying"],bst:488},{n:"blitzle",id:522,t:["electric"],bst:295},{n:"zebstrika",id:523,t:["electric"],bst:497},
-  {n:"roggenrola",id:524,t:["rock"],bst:280},{n:"boldore",id:525,t:["rock"],bst:390},{n:"gigalith",id:526,t:["rock"],bst:515},{n:"woobat",id:527,t:["psychic","flying"],bst:323},
-  {n:"swoobat",id:528,t:["psychic","flying"],bst:425},{n:"drilbur",id:529,t:["ground"],bst:328},{n:"excadrill",id:530,t:["ground","steel"],bst:508},{n:"audino",id:531,t:["normal"],bst:445},
-  {n:"timburr",id:532,t:["fighting"],bst:305},{n:"gurdurr",id:533,t:["fighting"],bst:405},{n:"conkeldurr",id:534,t:["fighting"],bst:505},{n:"tympole",id:535,t:["water"],bst:294},
-  {n:"palpitoad",id:536,t:["water","ground"],bst:384},{n:"seismitoad",id:537,t:["water","ground"],bst:509},{n:"throh",id:538,t:["fighting"],bst:465},{n:"sawk",id:539,t:["fighting"],bst:465},
-  {n:"sewaddle",id:540,t:["bug","grass"],bst:310},{n:"swadloon",id:541,t:["bug","grass"],bst:380},{n:"leavanny",id:542,t:["bug","grass"],bst:500},{n:"venipede",id:543,t:["bug","poison"],bst:260},
-  {n:"whirlipede",id:544,t:["bug","poison"],bst:360},{n:"scolipede",id:545,t:["bug","poison"],bst:485},{n:"cottonee",id:546,t:["grass","fairy"],bst:280},{n:"whimsicott",id:547,t:["grass","fairy"],bst:480},
-  {n:"petilil",id:548,t:["grass"],bst:280},{n:"lilligant",id:549,t:["grass"],bst:480},{n:"basculin",id:550,t:["water"],bst:460},{n:"sandile",id:551,t:["ground","dark"],bst:292},
-  {n:"krokorok",id:552,t:["ground","dark"],bst:351},{n:"krookodile",id:553,t:["ground","dark"],bst:519},{n:"darumaka",id:554,t:["fire"],bst:315},{n:"darmanitan",id:555,t:["fire"],bst:480},
-  {n:"maractus",id:556,t:["grass"],bst:461},{n:"dwebble",id:557,t:["bug","rock"],bst:325},{n:"crustle",id:558,t:["bug","rock"],bst:485},{n:"scraggy",id:559,t:["dark","fighting"],bst:348},
-  {n:"scrafty",id:560,t:["dark","fighting"],bst:488},{n:"sigilyph",id:561,t:["psychic","flying"],bst:490},{n:"yamask",id:562,t:["ghost"],bst:303},{n:"cofagrigus",id:563,t:["ghost"],bst:483},
-  {n:"tirtouga",id:564,t:["water","rock"],bst:355},{n:"carracosta",id:565,t:["water","rock"],bst:495},{n:"archen",id:566,t:["rock","flying"],bst:401},{n:"archeops",id:567,t:["rock","flying"],bst:567},
-  {n:"trubbish",id:568,t:["poison"],bst:329},{n:"garbodor",id:569,t:["poison"],bst:474},{n:"zorua",id:570,t:["dark"],bst:330},{n:"zoroark",id:571,t:["dark"],bst:510},
-  {n:"minccino",id:572,t:["normal"],bst:300},{n:"cinccino",id:573,t:["normal"],bst:470},{n:"gothita",id:574,t:["psychic"],bst:290},{n:"gothorita",id:575,t:["psychic"],bst:390},
-  {n:"gothitelle",id:576,t:["psychic"],bst:490},{n:"solosis",id:577,t:["psychic"],bst:290},{n:"duosion",id:578,t:["psychic"],bst:370},{n:"reuniclus",id:579,t:["psychic"],bst:490},
-  {n:"ducklett",id:580,t:["water","flying"],bst:305},{n:"swanna",id:581,t:["water","flying"],bst:473},{n:"vanillite",id:582,t:["ice"],bst:305},{n:"vanillish",id:583,t:["ice"],bst:395},
-  {n:"vanilluxe",id:584,t:["ice"],bst:535},{n:"deerling",id:585,t:["normal","grass"],bst:335},{n:"sawsbuck",id:586,t:["normal","grass"],bst:475},{n:"emolga",id:587,t:["electric","flying"],bst:428},
-  {n:"karrablast",id:588,t:["bug"],bst:315},{n:"escavalier",id:589,t:["bug","steel"],bst:495},{n:"foongus",id:590,t:["grass","poison"],bst:294},{n:"amoonguss",id:591,t:["grass","poison"],bst:464},
-  {n:"frillish",id:592,t:["water","ghost"],bst:335},{n:"jellicent",id:593,t:["water","ghost"],bst:480},{n:"alomomola",id:594,t:["water"],bst:470},{n:"joltik",id:595,t:["bug","electric"],bst:319},
-  {n:"galvantula",id:596,t:["bug","electric"],bst:472},{n:"ferroseed",id:597,t:["grass","steel"],bst:305},{n:"ferrothorn",id:598,t:["grass","steel"],bst:489},{n:"klink",id:599,t:["steel"],bst:300},
-  {n:"klang",id:600,t:["steel"],bst:440},{n:"klinklang",id:601,t:["steel"],bst:520},{n:"tynamo",id:602,t:["electric"],bst:275},{n:"eelektrik",id:603,t:["electric"],bst:405},
-  {n:"eelektross",id:604,t:["electric"],bst:515},{n:"elgyem",id:605,t:["psychic"],bst:335},{n:"beheeyem",id:606,t:["psychic"],bst:485},{n:"litwick",id:607,t:["ghost","fire"],bst:275},
-  {n:"lampent",id:608,t:["ghost","fire"],bst:370},{n:"chandelure",id:609,t:["ghost","fire"],bst:520},{n:"axew",id:610,t:["dragon"],bst:320},{n:"fraxure",id:611,t:["dragon"],bst:410},
-  {n:"haxorus",id:612,t:["dragon"],bst:540},{n:"cubchoo",id:613,t:["ice"],bst:305},{n:"beartic",id:614,t:["ice"],bst:505},{n:"cryogonal",id:615,t:["ice"],bst:515},
-  {n:"shelmet",id:616,t:["bug"],bst:305},{n:"accelgor",id:617,t:["bug"],bst:495},{n:"stunfisk",id:618,t:["ground","electric"],bst:471},{n:"mienfoo",id:619,t:["fighting"],bst:350},
-  {n:"mienshao",id:620,t:["fighting"],bst:510},{n:"druddigon",id:621,t:["dragon"],bst:485},{n:"golett",id:622,t:["ground","ghost"],bst:303},{n:"golurk",id:623,t:["ground","ghost"],bst:483},
-  {n:"pawniard",id:624,t:["dark","steel"],bst:340},{n:"bisharp",id:625,t:["dark","steel"],bst:490},{n:"bouffalant",id:626,t:["normal"],bst:490},{n:"rufflet",id:627,t:["normal","flying"],bst:350},
-  {n:"braviary",id:628,t:["normal","flying"],bst:510},{n:"vullaby",id:629,t:["dark","flying"],bst:370},{n:"mandibuzz",id:630,t:["dark","flying"],bst:510},{n:"heatmor",id:631,t:["fire"],bst:484},
-  {n:"durant",id:632,t:["bug","steel"],bst:484},{n:"deino",id:633,t:["dark","dragon"],bst:300},{n:"zweilous",id:634,t:["dark","dragon"],bst:420},{n:"hydreigon",id:635,t:["dark","dragon"],bst:600},
-  {n:"larvesta",id:636,t:["bug","fire"],bst:360},{n:"volcarona",id:637,t:["bug","fire"],bst:550},{n:"cobalion",id:638,t:["steel","fighting"],bst:580},{n:"terrakion",id:639,t:["rock","fighting"],bst:580},
-  {n:"virizion",id:640,t:["grass","fighting"],bst:580},{n:"tornadus",id:641,t:["flying"],bst:580},{n:"thundurus",id:642,t:["electric","flying"],bst:580},{n:"reshiram",id:643,t:["dragon","fire"],bst:680},
-  {n:"zekrom",id:644,t:["dragon","electric"],bst:680},{n:"landorus",id:645,t:["ground","flying"],bst:600},{n:"kyurem",id:646,t:["dragon","ice"],bst:660},{n:"keldeo",id:647,t:["water","fighting"],bst:580},
-  {n:"meloetta",id:648,t:["normal","psychic"],bst:600},{n:"genesect",id:649,t:["bug","steel"],bst:600},{n:"chespin",id:650,t:["grass"],bst:313},{n:"quilladin",id:651,t:["grass"],bst:405},
-  {n:"chesnaught",id:652,t:["grass","fighting"],bst:530},{n:"fennekin",id:653,t:["fire"],bst:307},{n:"braixen",id:654,t:["fire"],bst:409},{n:"delphox",id:655,t:["fire","psychic"],bst:534},
-  {n:"froakie",id:656,t:["water"],bst:314},{n:"frogadier",id:657,t:["water"],bst:405},{n:"greninja",id:658,t:["water","dark"],bst:530},{n:"bunnelby",id:659,t:["normal"],bst:237},
-  {n:"diggersby",id:660,t:["normal","ground"],bst:423},{n:"fletchling",id:661,t:["normal","flying"],bst:278},{n:"fletchinder",id:662,t:["fire","flying"],bst:382},{n:"talonflame",id:663,t:["fire","flying"],bst:499},
-  {n:"scatterbug",id:664,t:["bug"],bst:200},{n:"spewpa",id:665,t:["bug"],bst:213},{n:"vivillon",id:666,t:["bug","flying"],bst:411},{n:"litleo",id:667,t:["fire","normal"],bst:369},
-  {n:"pyroar",id:668,t:["fire","normal"],bst:507},{n:"flabebe",id:669,t:["fairy"],bst:303},{n:"floette",id:670,t:["fairy"],bst:371},{n:"florges",id:671,t:["fairy"],bst:552},
-  {n:"skiddo",id:672,t:["grass"],bst:350},{n:"gogoat",id:673,t:["grass"],bst:531},{n:"pancham",id:674,t:["fighting"],bst:348},{n:"pangoro",id:675,t:["fighting","dark"],bst:495},
-  {n:"furfrou",id:676,t:["normal"],bst:472},{n:"espurr",id:677,t:["psychic"],bst:355},{n:"meowstic",id:678,t:["psychic"],bst:466},{n:"honedge",id:679,t:["steel","ghost"],bst:325},
-  {n:"doublade",id:680,t:["steel","ghost"],bst:448},{n:"aegislash",id:681,t:["steel","ghost"],bst:500},{n:"spritzee",id:682,t:["fairy"],bst:341},{n:"aromatisse",id:683,t:["fairy"],bst:462},
-  {n:"swirlix",id:684,t:["fairy"],bst:341},{n:"slurpuff",id:685,t:["fairy"],bst:480},{n:"inkay",id:686,t:["dark","psychic"],bst:288},{n:"malamar",id:687,t:["dark","psychic"],bst:482},
-  {n:"binacle",id:688,t:["rock","water"],bst:306},{n:"barbaracle",id:689,t:["rock","water"],bst:500},{n:"skrelp",id:690,t:["poison","water"],bst:320},{n:"dragalge",id:691,t:["poison","dragon"],bst:494},
-  {n:"clauncher",id:692,t:["water"],bst:330},{n:"clawitzer",id:693,t:["water"],bst:500},{n:"helioptile",id:694,t:["electric","normal"],bst:289},{n:"heliolisk",id:695,t:["electric","normal"],bst:481},
-  {n:"tyrunt",id:696,t:["rock","dragon"],bst:362},{n:"tyrantrum",id:697,t:["rock","dragon"],bst:521},{n:"amaura",id:698,t:["rock","ice"],bst:362},{n:"aurorus",id:699,t:["rock","ice"],bst:521},
-  {n:"sylveon",id:700,t:["fairy"],bst:525},{n:"hawlucha",id:701,t:["fighting","flying"],bst:500},{n:"dedenne",id:702,t:["electric","fairy"],bst:431},{n:"carbink",id:703,t:["rock","fairy"],bst:500},
-  {n:"goomy",id:704,t:["dragon"],bst:300},{n:"sliggoo",id:705,t:["dragon"],bst:452},{n:"goodra",id:706,t:["dragon"],bst:600},{n:"klefki",id:707,t:["steel","fairy"],bst:470},
-  {n:"phantump",id:708,t:["ghost","grass"],bst:309},{n:"trevenant",id:709,t:["ghost","grass"],bst:474},{n:"pumpkaboo",id:710,t:["ghost","grass"],bst:335},{n:"gourgeist",id:711,t:["ghost","grass"],bst:494},
-  {n:"bergmite",id:712,t:["ice"],bst:304},{n:"avalugg",id:713,t:["ice"],bst:514},{n:"noibat",id:714,t:["flying","dragon"],bst:245},{n:"noivern",id:715,t:["flying","dragon"],bst:535},
-  {n:"xerneas",id:716,t:["fairy"],bst:680},{n:"yveltal",id:717,t:["dark","flying"],bst:680},{n:"zygarde",id:718,t:["dragon","ground"],bst:600},{n:"diancie",id:719,t:["rock","fairy"],bst:600},
-  {n:"hoopa",id:720,t:["psychic","ghost"],bst:600},{n:"volcanion",id:721,t:["fire","water"],bst:600},{n:"rowlet",id:722,t:["grass","flying"],bst:320},{n:"dartrix",id:723,t:["grass","flying"],bst:420},
-  {n:"decidueye",id:724,t:["grass","ghost"],bst:530},{n:"litten",id:725,t:["fire"],bst:320},{n:"torracat",id:726,t:["fire"],bst:420},{n:"incineroar",id:727,t:["fire","dark"],bst:530},
-  {n:"popplio",id:728,t:["water"],bst:320},{n:"brionne",id:729,t:["water"],bst:420},{n:"primarina",id:730,t:["water","fairy"],bst:530},{n:"pikipek",id:731,t:["normal","flying"],bst:265},
-  {n:"trumbeak",id:732,t:["normal","flying"],bst:355},{n:"toucannon",id:733,t:["normal","flying"],bst:485},{n:"yungoos",id:734,t:["normal"],bst:253},{n:"gumshoos",id:735,t:["normal"],bst:418},
-  {n:"grubbin",id:736,t:["bug"],bst:300},{n:"charjabug",id:737,t:["bug","electric"],bst:400},{n:"vikavolt",id:738,t:["bug","electric"],bst:500},{n:"crabrawler",id:739,t:["fighting"],bst:338},
-  {n:"crabominable",id:740,t:["fighting","ice"],bst:478},{n:"oricorio",id:741,t:["fire","flying"],bst:476},{n:"cutiefly",id:742,t:["bug","fairy"],bst:304},{n:"ribombee",id:743,t:["bug","fairy"],bst:464},
-  {n:"rockruff",id:744,t:["rock"],bst:280},{n:"lycanroc",id:745,t:["rock"],bst:487},{n:"wishiwashi",id:746,t:["water"],bst:175},{n:"mareanie",id:747,t:["poison","water"],bst:305},
-  {n:"toxapex",id:748,t:["poison","water"],bst:495},{n:"mudbray",id:749,t:["ground"],bst:385},{n:"mudsdale",id:750,t:["ground"],bst:500},{n:"dewpider",id:751,t:["water","bug"],bst:269},
-  {n:"araquanid",id:752,t:["water","bug"],bst:454},{n:"fomantis",id:753,t:["grass"],bst:250},{n:"lurantis",id:754,t:["grass"],bst:480},{n:"morelull",id:755,t:["grass","fairy"],bst:285},
-  {n:"shiinotic",id:756,t:["grass","fairy"],bst:405},{n:"salandit",id:757,t:["poison","fire"],bst:320},{n:"salazzle",id:758,t:["poison","fire"],bst:480},{n:"stufful",id:759,t:["normal","fighting"],bst:340},
-  {n:"bewear",id:760,t:["normal","fighting"],bst:500},{n:"bounsweet",id:761,t:["grass"],bst:210},{n:"steenee",id:762,t:["grass"],bst:290},{n:"tsareena",id:763,t:["grass"],bst:510},
-  {n:"comfey",id:764,t:["fairy"],bst:485},{n:"oranguru",id:765,t:["normal","psychic"],bst:490},{n:"passimian",id:766,t:["fighting"],bst:490},{n:"wimpod",id:767,t:["bug","water"],bst:230},
-  {n:"golisopod",id:768,t:["bug","water"],bst:530},{n:"sandygast",id:769,t:["ghost","ground"],bst:320},{n:"palossand",id:770,t:["ghost","ground"],bst:480},{n:"pyukumuku",id:771,t:["water"],bst:410},
-  {n:"type-null",id:772,t:["normal"],bst:534},{n:"silvally",id:773,t:["normal"],bst:570},{n:"minior",id:774,t:["rock","flying"],bst:440},{n:"komala",id:775,t:["normal"],bst:480},
-  {n:"turtonator",id:776,t:["fire","dragon"],bst:485},{n:"togedemaru",id:777,t:["electric","steel"],bst:435},{n:"mimikyu",id:778,t:["ghost","fairy"],bst:476},{n:"bruxish",id:779,t:["water","psychic"],bst:475},
-  {n:"drampa",id:780,t:["normal","dragon"],bst:485},{n:"dhelmise",id:781,t:["ghost","grass"],bst:517},{n:"jangmo-o",id:782,t:["dragon"],bst:300},{n:"hakamo-o",id:783,t:["dragon","fighting"],bst:420},
-  {n:"kommo-o",id:784,t:["dragon","fighting"],bst:600},{n:"tapu-koko",id:785,t:["electric","fairy"],bst:570},{n:"tapu-lele",id:786,t:["psychic","fairy"],bst:570},{n:"tapu-bulu",id:787,t:["grass","fairy"],bst:570},
-  {n:"tapu-fini",id:788,t:["water","fairy"],bst:570},{n:"cosmog",id:789,t:["psychic"],bst:200},{n:"cosmoem",id:790,t:["psychic"],bst:400},{n:"solgaleo",id:791,t:["psychic","steel"],bst:680},
-  {n:"lunala",id:792,t:["psychic","ghost"],bst:680},{n:"nihilego",id:793,t:["rock","poison"],bst:570},{n:"buzzwole",id:794,t:["bug","fighting"],bst:570},{n:"pheromosa",id:795,t:["bug","fighting"],bst:570},
-  {n:"xurkitree",id:796,t:["electric"],bst:570},{n:"celesteela",id:797,t:["steel","flying"],bst:570},{n:"kartana",id:798,t:["grass","steel"],bst:570},{n:"guzzlord",id:799,t:["dark","dragon"],bst:570},
-  {n:"necrozma",id:800,t:["psychic"],bst:600},{n:"magearna",id:801,t:["steel","fairy"],bst:600},{n:"marshadow",id:802,t:["fighting","ghost"],bst:600},{n:"poipole",id:803,t:["poison"],bst:420},
-  {n:"naganadel",id:804,t:["poison","dragon"],bst:540},{n:"stakataka",id:805,t:["rock","steel"],bst:570},{n:"blacephalon",id:806,t:["fire","ghost"],bst:570},{n:"zeraora",id:807,t:["electric"],bst:600},
-  {n:"meltan",id:808,t:["steel"],bst:300},{n:"melmetal",id:809,t:["steel"],bst:600},{n:"grookey",id:810,t:["grass"],bst:310},{n:"thwackey",id:811,t:["grass"],bst:420},
-  {n:"rillaboom",id:812,t:["grass"],bst:530},{n:"scorbunny",id:813,t:["fire"],bst:310},{n:"raboot",id:814,t:["fire"],bst:420},{n:"cinderace",id:815,t:["fire"],bst:530},
-  {n:"sobble",id:816,t:["water"],bst:310},{n:"drizzile",id:817,t:["water"],bst:420},{n:"inteleon",id:818,t:["water"],bst:530},{n:"skwovet",id:819,t:["normal"],bst:275},
-  {n:"greedent",id:820,t:["normal"],bst:460},{n:"rookidee",id:821,t:["flying"],bst:245},{n:"corvisquire",id:822,t:["flying"],bst:365},{n:"corviknight",id:823,t:["flying","steel"],bst:495},
-  {n:"blipbug",id:824,t:["bug"],bst:180},{n:"dottler",id:825,t:["bug","psychic"],bst:335},{n:"orbeetle",id:826,t:["bug","psychic"],bst:505},{n:"nickit",id:827,t:["dark"],bst:245},
-  {n:"thievul",id:828,t:["dark"],bst:455},{n:"gossifleur",id:829,t:["grass"],bst:250},{n:"eldegoss",id:830,t:["grass"],bst:460},{n:"wooloo",id:831,t:["normal"],bst:270},
-  {n:"dubwool",id:832,t:["normal"],bst:490},{n:"chewtle",id:833,t:["water"],bst:284},{n:"drednaw",id:834,t:["water","rock"],bst:485},{n:"yamper",id:835,t:["electric"],bst:270},
-  {n:"boltund",id:836,t:["electric"],bst:490},{n:"rolycoly",id:837,t:["rock"],bst:240},{n:"carkol",id:838,t:["rock","fire"],bst:410},{n:"coalossal",id:839,t:["rock","fire"],bst:510},
-  {n:"applin",id:840,t:["grass","dragon"],bst:260},{n:"flapple",id:841,t:["grass","dragon"],bst:485},{n:"appletun",id:842,t:["grass","dragon"],bst:485},{n:"silicobra",id:843,t:["ground"],bst:315},
-  {n:"sandaconda",id:844,t:["ground"],bst:510},{n:"cramorant",id:845,t:["flying","water"],bst:475},{n:"arrokuda",id:846,t:["water"],bst:280},{n:"barraskewda",id:847,t:["water"],bst:490},
-  {n:"toxel",id:848,t:["electric","poison"],bst:242},{n:"toxtricity",id:849,t:["electric","poison"],bst:502},{n:"sizzlipede",id:850,t:["fire","bug"],bst:305},{n:"centiskorch",id:851,t:["fire","bug"],bst:525},
-  {n:"clobbopus",id:852,t:["fighting"],bst:310},{n:"grapploct",id:853,t:["fighting"],bst:480},{n:"sinistea",id:854,t:["ghost"],bst:308},{n:"polteageist",id:855,t:["ghost"],bst:508},
-  {n:"hatenna",id:856,t:["psychic"],bst:265},{n:"hattrem",id:857,t:["psychic"],bst:370},{n:"hatterene",id:858,t:["psychic","fairy"],bst:510},{n:"impidimp",id:859,t:["dark","fairy"],bst:265},
-  {n:"morgrem",id:860,t:["dark","fairy"],bst:370},{n:"grimmsnarl",id:861,t:["dark","fairy"],bst:510},{n:"obstagoon",id:862,t:["dark","normal"],bst:520},{n:"perrserker",id:863,t:["steel"],bst:440},
-  {n:"cursola",id:864,t:["ghost"],bst:510},{n:"sirfetchd",id:865,t:["fighting"],bst:507},{n:"mr-rime",id:866,t:["ice","psychic"],bst:520},{n:"runerigus",id:867,t:["ground","ghost"],bst:483},
-  {n:"milcery",id:868,t:["fairy"],bst:270},{n:"alcremie",id:869,t:["fairy"],bst:495},{n:"falinks",id:870,t:["fighting"],bst:470},{n:"pincurchin",id:871,t:["electric"],bst:435},
-  {n:"snom",id:872,t:["ice","bug"],bst:185},{n:"frosmoth",id:873,t:["ice","bug"],bst:475},{n:"stonjourner",id:874,t:["rock"],bst:470},{n:"eiscue",id:875,t:["ice"],bst:470},
-  {n:"indeedee",id:876,t:["psychic","normal"],bst:475},{n:"morpeko",id:877,t:["electric","dark"],bst:436},{n:"cufant",id:878,t:["steel"],bst:330},{n:"copperajah",id:879,t:["steel"],bst:500},
-  {n:"dracozolt",id:880,t:["electric","dragon"],bst:505},{n:"arctozolt",id:881,t:["electric","ice"],bst:505},{n:"dracovish",id:882,t:["water","dragon"],bst:505},{n:"arctovish",id:883,t:["water","ice"],bst:505},
-  {n:"duraludon",id:884,t:["steel","dragon"],bst:535},{n:"dreepy",id:885,t:["dragon","ghost"],bst:270},{n:"drakloak",id:886,t:["dragon","ghost"],bst:410},{n:"dragapult",id:887,t:["dragon","ghost"],bst:600},
-  {n:"zacian",id:888,t:["fairy"],bst:660},{n:"zamazenta",id:889,t:["fighting"],bst:660},{n:"eternatus",id:890,t:["poison","dragon"],bst:690},{n:"kubfu",id:891,t:["fighting"],bst:385},
-  {n:"urshifu",id:892,t:["fighting","dark"],bst:550},{n:"zarude",id:893,t:["dark","grass"],bst:600},{n:"regieleki",id:894,t:["electric"],bst:580},{n:"regidrago",id:895,t:["dragon"],bst:580},
-  {n:"glastrier",id:896,t:["ice"],bst:580},{n:"spectrier",id:897,t:["ghost"],bst:580},{n:"calyrex",id:898,t:["psychic","grass"],bst:500},{n:"wyrdeer",id:899,t:["normal","psychic"],bst:525},
-  {n:"kleavor",id:900,t:["bug","rock"],bst:500},{n:"ursaluna",id:901,t:["ground","normal"],bst:550},{n:"basculegion",id:902,t:["water","ghost"],bst:530},{n:"sneasler",id:903,t:["fighting","poison"],bst:510},
-  {n:"overqwil",id:904,t:["dark","poison"],bst:510},{n:"enamorus",id:905,t:["fairy","flying"],bst:580},{n:"sprigatito",id:906,t:["grass"],bst:310},{n:"floragato",id:907,t:["grass"],bst:410},
-  {n:"meowscarada",id:908,t:["grass","dark"],bst:530},{n:"fuecoco",id:909,t:["fire"],bst:310},{n:"crocalor",id:910,t:["fire"],bst:411},{n:"skeledirge",id:911,t:["fire","ghost"],bst:530},
-  {n:"quaxly",id:912,t:["water"],bst:310},{n:"quaxwell",id:913,t:["water"],bst:410},{n:"quaquaval",id:914,t:["water","fighting"],bst:530},{n:"lechonk",id:915,t:["normal"],bst:254},
-  {n:"oinkologne",id:916,t:["normal"],bst:489},{n:"tarountula",id:917,t:["bug"],bst:210},{n:"spidops",id:918,t:["bug"],bst:404},{n:"nymble",id:919,t:["bug"],bst:210},
-  {n:"lokix",id:920,t:["bug","dark"],bst:450},{n:"pawmi",id:921,t:["electric"],bst:240},{n:"pawmo",id:922,t:["electric","fighting"],bst:350},{n:"pawmot",id:923,t:["electric","fighting"],bst:490},
-  {n:"tandemaus",id:924,t:["normal"],bst:305},{n:"maushold",id:925,t:["normal"],bst:470},{n:"fidough",id:926,t:["fairy"],bst:312},{n:"dachsbun",id:927,t:["fairy"],bst:477},
-  {n:"smoliv",id:928,t:["grass","normal"],bst:260},{n:"dolliv",id:929,t:["grass","normal"],bst:354},{n:"arboliva",id:930,t:["grass","normal"],bst:510},{n:"squawkabilly",id:931,t:["normal","flying"],bst:417},
-  {n:"nacli",id:932,t:["rock"],bst:280},{n:"naclstack",id:933,t:["rock"],bst:355},{n:"garganacl",id:934,t:["rock"],bst:500},{n:"charcadet",id:935,t:["fire"],bst:255},
-  {n:"armarouge",id:936,t:["fire","psychic"],bst:525},{n:"ceruledge",id:937,t:["fire","ghost"],bst:525},{n:"tadbulb",id:938,t:["electric"],bst:272},{n:"bellibolt",id:939,t:["electric"],bst:495},
-  {n:"wattrel",id:940,t:["electric","flying"],bst:280},{n:"kilowattrel",id:941,t:["electric","flying"],bst:490},{n:"maschiff",id:942,t:["dark"],bst:340},{n:"mabosstiff",id:943,t:["dark"],bst:505},
-  {n:"shroodle",id:944,t:["poison","normal"],bst:290},{n:"grafaiai",id:945,t:["poison","normal"],bst:485},{n:"bramblin",id:946,t:["grass","ghost"],bst:275},{n:"brambleghast",id:947,t:["grass","ghost"],bst:480},
-  {n:"toedscool",id:948,t:["ground","grass"],bst:335},{n:"toedscruel",id:949,t:["ground","grass"],bst:515},{n:"klawf",id:950,t:["rock"],bst:450},{n:"capsakid",id:951,t:["grass"],bst:304},
-  {n:"scovillain",id:952,t:["grass","fire"],bst:486},{n:"rellor",id:953,t:["bug"],bst:270},{n:"rabsca",id:954,t:["bug","psychic"],bst:470},{n:"flittle",id:955,t:["psychic"],bst:255},
-  {n:"espathra",id:956,t:["psychic"],bst:481},{n:"tinkatink",id:957,t:["fairy","steel"],bst:297},{n:"tinkatuff",id:958,t:["fairy","steel"],bst:380},{n:"tinkaton",id:959,t:["fairy","steel"],bst:506},
-  {n:"wiglett",id:960,t:["water"],bst:245},{n:"wugtrio",id:961,t:["water"],bst:425},{n:"bombirdier",id:962,t:["flying","dark"],bst:485},{n:"finizen",id:963,t:["water"],bst:315},
-  {n:"palafin",id:964,t:["water"],bst:457},{n:"varoom",id:965,t:["steel","poison"],bst:300},{n:"revavroom",id:966,t:["steel","poison"],bst:500},{n:"cyclizar",id:967,t:["dragon","normal"],bst:501},
-  {n:"orthworm",id:968,t:["steel"],bst:480},{n:"glimmet",id:969,t:["rock","poison"],bst:350},{n:"glimmora",id:970,t:["rock","poison"],bst:525},{n:"greavard",id:971,t:["ghost"],bst:290},
-  {n:"houndstone",id:972,t:["ghost"],bst:488},{n:"flamigo",id:973,t:["flying","fighting"],bst:500},{n:"cetoddle",id:974,t:["ice"],bst:334},{n:"cetitan",id:975,t:["ice"],bst:521},
-  {n:"veluza",id:976,t:["water","psychic"],bst:478},{n:"dondozo",id:977,t:["water"],bst:530},{n:"tatsugiri",id:978,t:["dragon","water"],bst:475},{n:"annihilape",id:979,t:["fighting","ghost"],bst:535},
-  {n:"clodsire",id:980,t:["poison","ground"],bst:430},{n:"farigiraf",id:981,t:["normal","psychic"],bst:520},{n:"dudunsparce",id:982,t:["normal"],bst:520},{n:"kingambit",id:983,t:["dark","steel"],bst:550},
-  {n:"great-tusk",id:984,t:["ground","fighting"],bst:570},{n:"scream-tail",id:985,t:["fairy","psychic"],bst:570},{n:"brute-bonnet",id:986,t:["grass","dark"],bst:570},{n:"flutter-mane",id:987,t:["ghost","fairy"],bst:570},
-  {n:"slither-wing",id:988,t:["bug","fighting"],bst:570},{n:"sandy-shocks",id:989,t:["electric","ground"],bst:570},{n:"iron-treads",id:990,t:["ground","steel"],bst:570},{n:"iron-bundle",id:991,t:["ice","water"],bst:570},
-  {n:"iron-hands",id:992,t:["fighting","electric"],bst:570},{n:"iron-jugulis",id:993,t:["dark","flying"],bst:570},{n:"iron-moth",id:994,t:["fire","poison"],bst:570},{n:"iron-thorns",id:995,t:["rock","electric"],bst:570},
-  {n:"frigibax",id:996,t:["dragon","ice"],bst:320},{n:"arctibax",id:997,t:["dragon","ice"],bst:423},{n:"baxcalibur",id:998,t:["dragon","ice"],bst:600},{n:"gimmighoul",id:999,t:["ghost"],bst:300},
-  {n:"gholdengo",id:1000,t:["steel","ghost"],bst:550},{n:"wo-chien",id:1001,t:["dark","grass"],bst:570},{n:"chien-pao",id:1002,t:["dark","ice"],bst:570},{n:"ting-lu",id:1003,t:["dark","ground"],bst:570},
-  {n:"chi-yu",id:1004,t:["dark","fire"],bst:570},{n:"roaring-moon",id:1005,t:["dragon","dark"],bst:590},{n:"iron-valiant",id:1006,t:["fairy","fighting"],bst:590},{n:"koraidon",id:1007,t:["fighting","dragon"],bst:670},
-  {n:"miraidon",id:1008,t:["electric","dragon"],bst:670},{n:"walking-wake",id:1009,t:["water","dragon"],bst:590},{n:"iron-leaves",id:1010,t:["grass","psychic"],bst:590},{n:"dipplin",id:1011,t:["grass","dragon"],bst:485},
-  {n:"poltchageist",id:1012,t:["grass","ghost"],bst:308},{n:"sinistcha",id:1013,t:["grass","ghost"],bst:508},{n:"okidogi",id:1014,t:["poison","fighting"],bst:555},{n:"munkidori",id:1015,t:["poison","psychic"],bst:555},
-  {n:"fezandipiti",id:1016,t:["poison","fairy"],bst:555},{n:"ogerpon",id:1017,t:["grass"],bst:550},{n:"archaludon",id:1018,t:["steel","dragon"],bst:600},{n:"hydrapple",id:1019,t:["grass","dragon"],bst:540},
-  {n:"gouging-fire",id:1020,t:["fire","dragon"],bst:590},{n:"raging-bolt",id:1021,t:["electric","dragon"],bst:590},{n:"iron-boulder",id:1022,t:["rock","psychic"],bst:590},{n:"iron-crown",id:1023,t:["steel","psychic"],bst:590},
-  {n:"terapagos",id:1024,t:["normal"],bst:450},{n:"pecharunt",id:1025,t:["poison","ghost"],bst:600}
-];
+/* ---------------- Data loading ----------------
+   Pokémon, item and pronunciation data live in data/*.csv rather than inline, so
+   they can be edited in a spreadsheet without touching code. The cost is that it
+   now needs fetch(), which browsers block on file:// as a cross-origin request —
+   it must be served over http(s). GitHub Pages does that; opening index.html by
+   double-clicking it will not work. Once loaded everything is still local: no
+   third-party host is involved, and the browser cache covers repeat visits. */
+let POKEMON = [];
+let SPEECH_OVERRIDES = {};
+let SPELLABLE_POKEMON = [];
+let ITEMS = [];
+let SPELLABLE_ITEMS = [];
+
+// Minimal RFC-4180-ish parser: handles quoted fields and doubled quotes inside
+// them, which is all a spreadsheet export can realistically throw at us.
+function parseCsv(text){
+  const rows = [];
+  let row = [], field = "", quoted = false;
+  for(let i=0; i<text.length; i++){
+    const c = text[i];
+    if(quoted){
+      if(c === '"' && text[i+1] === '"'){ field += '"'; i++; }
+      else if(c === '"') quoted = false;
+      else field += c;
+    } else if(c === '"') quoted = true;
+    else if(c === ","){ row.push(field); field = ""; }
+    else if(c === "\n" || c === "\r"){
+      if(c === "\r" && text[i+1] === "\n") i++;
+      row.push(field); field = "";
+      if(row.some(v => v !== "")) rows.push(row);
+      row = [];
+    } else field += c;
+  }
+  row.push(field);
+  if(row.some(v => v !== "")) rows.push(row);
+  const header = rows.shift().map(h => h.trim());
+  return rows.map(r => Object.fromEntries(header.map((h,i) => [h, (r[i] ?? "").trim()])));
+}
+
+async function fetchCsv(path){
+  const res = await fetch(path);
+  if(!res.ok) throw new Error(path + " -> HTTP " + res.status);
+  return parseCsv(await res.text());
+}
+
+async function loadData(){
+  const [pokeRows, sayRows, itemRows] = await Promise.all([
+    fetchCsv("data/pokemon.csv"),
+    fetchCsv("data/pronunciations.csv"),
+    fetchCsv("data/items.csv"),
+  ]);
+  POKEMON = pokeRows.map(r => ({
+    n: r.name,
+    id: Number(r.id),
+    t: [r.type1, r.type2].filter(Boolean),
+    bst: Number(r.base_stat_total),
+  }));
+  SPEECH_OVERRIDES = Object.fromEntries(sayRows.map(r => [r.name, r.say_as]));
+  // The CSV stores the bare slug; the items/ folder convention lives here only.
+  ITEMS = itemRows.map(r => ({ n: r.name, img: `items/${r.image}.png`, cat: r.category }));
+  SPELLABLE_POKEMON = POKEMON.filter(p => /^[A-Za-z]+$/.test(p.n));
+  SPELLABLE_ITEMS = ITEMS.filter(it => /^[A-Za-z]+$/.test(it.n));
+  if(!POKEMON.length) throw new Error("data/pokemon.csv is empty");
+  if(!ITEMS.length) throw new Error("data/items.csv is empty");
+}
+
+function showDataError(err){
+  document.body.innerHTML = '<div style="max-width:34rem;margin:12vh auto;padding:0 1.5rem;'
+    + 'font:16px/1.6 system-ui,sans-serif;color:#3f3d36;text-align:center">'
+    + '<h1 style="font-size:1.3rem">Couldn\'t load the Pok&eacute;mon data</h1>'
+    + '<p>The app reads its data from <code>data/*.csv</code>, '
+    + 'which needs this page served over http rather than opened as a file.</p>'
+    + '<p style="color:#8a5a12"><code>' + String(err && err.message || err) + '</code></p></div>';
+}
+
 const artwork = id => `pokemon/${id}.png`;
 // Pokémon usable in Spelling: single plain-letter names only (no hyphens/spaces/colons),
 // same rule that already excludes Nidoran♀/♂, Farfetch'd, and Mr. Mime from the roster.
-const SPELLABLE_POKEMON = POKEMON.filter(p => /^[A-Za-z]+$/.test(p.n));
 
 /* ---------------- Pokopia item data (name + direct image URL) ---------------- */
-const ITEMS = [
-  {n:"Honey",img:"items/honey.png",cat:"Materials"},{n:"Sturdy stick",img:"items/sturdystick.png",cat:"Materials"},{n:"Stone",img:"items/stone.png",cat:"Materials"},
-  {n:"Leaf",img:"items/leaf.png",cat:"Materials"},{n:"Small log",img:"items/smalllog.png",cat:"Materials"},{n:"Vine rope",img:"items/vinerope.png",cat:"Materials"},
-  {n:"Glowing mushrooms",img:"items/glowingmushrooms.png",cat:"Materials"},{n:"Twine",img:"items/twine.png",cat:"Materials"},{n:"Sea glass fragments",img:"items/seaglassfragments.png",cat:"Materials"},
-  {n:"Seashell",img:"items/seashell.png",cat:"Materials"},{n:"Nonburnable garbage",img:"items/nonburnablegarbage.png",cat:"Materials"},{n:"Squishy clay",img:"items/squishyclay.png",cat:"Materials"},
-  {n:"Fluff",img:"items/fluff.png",cat:"Materials"},{n:"Wastepaper",img:"items/wastepaper.png",cat:"Materials"},{n:"Copper ore",img:"items/copperore.png",cat:"Materials"},
-  {n:"Iron ore",img:"items/ironore.png",cat:"Materials"},{n:"Gold ore",img:"items/goldore.png",cat:"Materials"},{n:"Pokémetal fragment",img:"items/pokemetalfragment.png",cat:"Materials"},
-  {n:"Rare Pokémetal fragment",img:"items/rarepokemetalfragment.png",cat:"Materials"},{n:"Crystal fragment",img:"items/crystalfragment.png",cat:"Materials"},{n:"Lumber",img:"items/lumber.png",cat:"Materials"},
-  {n:"Brick",img:"items/brick.png",cat:"Materials"},{n:"Copper ingot",img:"items/copperingot.png",cat:"Materials"},{n:"Iron ingot",img:"items/ironingot.png",cat:"Materials"},
-  {n:"Gold ingot",img:"items/goldingot.png",cat:"Materials"},{n:"Pokémetal",img:"items/pokemetal.png",cat:"Materials"},{n:"Rare Pokémetal",img:"items/rarepokemetal.png",cat:"Materials"},
-  {n:"Glass",img:"items/glass.png",cat:"Materials"},{n:"Concrete",img:"items/concrete.png",cat:"Materials"},{n:"Paper",img:"items/paper.png",cat:"Materials"},
-  {n:"Tinkagear",img:"items/tinkagear.png",cat:"Materials"},{n:"Strange strings",img:"items/strangestrings.png",cat:"Materials"},{n:"Armor fragment",img:"items/armorfragment.png",cat:"Materials"},
-  {n:"Stardust",img:"items/stardust.png",cat:"Materials"},{n:"Red paint",img:"items/redpaint.png",cat:"Materials"},{n:"Blue paint",img:"items/bluepaint.png",cat:"Materials"},
-  {n:"Green paint",img:"items/greenpaint.png",cat:"Materials"},{n:"Yellow paint",img:"items/yellowpaint.png",cat:"Materials"},{n:"Pink paint",img:"items/pinkpaint.png",cat:"Materials"},
-  {n:"Cyan paint",img:"items/cyanpaint.png",cat:"Materials"},{n:"White paint",img:"items/whitepaint.png",cat:"Materials"},{n:"Black paint",img:"items/blackpaint.png",cat:"Materials"},
-  {n:"Mossy Stone",img:"items/mossystone.png",cat:"Materials"},{n:"Cotton Spores",img:"items/cottonspores.png",cat:"Materials"},{n:"Red crystal fragment",img:"items/redcrystalfragment.png",cat:"Materials"},
-  {n:"Leppa Berry",img:"items/leppaberry.png",cat:"Food"},{n:"Chesto Berry",img:"items/chestoberry.png",cat:"Food"},{n:"Rawst Berry",img:"items/rawstberry.png",cat:"Food"},
-  {n:"Aspear Berry",img:"items/aspearberry.png",cat:"Food"},{n:"Pecha Berry",img:"items/pechaberry.png",cat:"Food"},{n:"Lum Berry",img:"items/lumberry.png",cat:"Food"},
-  {n:"Bean",img:"items/bean.png",cat:"Food"},{n:"Tomato",img:"items/tomato.png",cat:"Food"},{n:"Wheat",img:"items/wheat.png",cat:"Other"},
-  {n:"Potato",img:"items/potato.png",cat:"Other"},{n:"Fresh carrot",img:"items/freshcarrot.png",cat:"Food"},{n:"Seaweed",img:"items/seaweed.png",cat:"Food"},
-  {n:"Cave mushrooms",img:"items/cavemushrooms.png",cat:"Food"},{n:"Simple salad",img:"items/simplesalad.png",cat:"Food"},{n:"Leppa salad",img:"items/leppasalad.png",cat:"Food"},
-  {n:"Seaweed salad",img:"items/seaweedsalad.png",cat:"Food"},{n:"Shredded salad",img:"items/shreddedsalad.png",cat:"Food"},{n:"Crushed-berry salad",img:"items/crushed-berrysalad.png",cat:"Food"},
-  {n:"Crouton salad",img:"items/croutonsalad.png",cat:"Food"},{n:"Simple soup",img:"items/simplesoup.png",cat:"Food"},{n:"Seaweed soup",img:"items/seaweedsoup.png",cat:"Food"},
-  {n:"Mushroom soup",img:"items/mushroomsoup.png",cat:"Food"},{n:"Electrifying soup",img:"items/electrifyingsoup.png",cat:"Food"},{n:"Healthy soup",img:"items/healthysoup.png",cat:"Food"},
-  {n:"Flavorful soup",img:"items/flavorfulsoup.png",cat:"Food"},{n:"Simple bread",img:"items/simplebread.png",cat:"Food"},{n:"Leppa bread",img:"items/leppabread.png",cat:"Food"},
-  {n:"Carrot bread",img:"items/carrotbread.png",cat:"Food"},{n:"Recycled bread",img:"items/recycledbread.png",cat:"Food"},{n:"Fluffy bread",img:"items/fluffybread.png",cat:"Food"},
-  {n:"Bread bowl",img:"items/breadbowl.png",cat:"Food"},{n:"Simple hamburger steak",img:"items/simplehamburgersteak.png",cat:"Food"},{n:"Mushroom hamburger steak",img:"items/mushroomhamburgersteak.png",cat:"Food"},
-  {n:"Tomato hamburger steak",img:"items/tomatohamburgersteak.png",cat:"Food"},{n:"Potato hamburger steak",img:"items/potatohamburgersteak.png",cat:"Food"},{n:"Bitter hamburger steak",img:"items/bitterhamburgersteak.png",cat:"Food"},
-  {n:"Vibrant hamburger steak",img:"items/vibranthamburgersteak.png",cat:"Food"},{n:"Bruised berry",img:"items/bruisedberry.png",cat:"Food"},{n:"Common candy",img:"items/commoncandy.png",cat:"Food"},
-  {n:"Rare Candy",img:"items/rarecandy.png",cat:"Food"},{n:"Curry and rice",img:"items/curryandrice.png",cat:"Food"},{n:"Fresh Water",img:"items/freshwater.png",cat:"Food"},
-  {n:"Soda Pop",img:"items/sodapop.png",cat:"Food"},{n:"Moomoo Milk Coffee",img:"items/moomoomilkcoffee.png",cat:"Food"},{n:"Roserade Tea",img:"items/roseradetea.png",cat:"Food"},
-  {n:"Chili sauce",img:"items/chilisauce.png",cat:"Food"},{n:"Bouldery Badge",img:"items/boulderybadge.png",cat:"Key Items"},{n:"Cascade-like Badge",img:"items/cascade-likebadge.png",cat:"Key Items"},
-  {n:"Thunderish Badge",img:"items/thunderishbadge.png",cat:"Key Items"},{n:"Rainbowish Badge",img:"items/rainbowishbadge.png",cat:"Key Items"},{n:"Soul-like Badge",img:"items/soul-likebadge.png",cat:"Key Items"},
-  {n:"Marshy Badge",img:"items/marshybadge.png",cat:"Key Items"},{n:"Volcanoey Badge",img:"items/volcanoeybadge.png",cat:"Key Items"},{n:"Earth Badge",img:"items/earthbadge.png",cat:"Key Items"},
-  {n:"Mysterious Goggles",img:"items/mysteriousgoggles.png",cat:"Key Items"},{n:"Nugget",img:"items/nugget.png",cat:"Other"},{n:"Silver Bottle Cap",img:"items/silverbottlecap.png",cat:"Other"},
-  {n:"Gold Bottle Cap",img:"items/goldbottlecap.png",cat:"Other"},{n:"Rare Bone",img:"items/rarebone.png",cat:"Other"},{n:"Heart Scale",img:"items/heartscale.png",cat:"Other"},
-  {n:"Miracle Seed",img:"items/miracleseed.png",cat:"Other"},{n:"Hard Stone",img:"items/hardstone.png",cat:"Other"},{n:"Mystic Water",img:"items/mysticwater.png",cat:"Other"},
-  {n:"Metal Coat",img:"items/metalcoat.png",cat:"Other"},{n:"Twisted Spoon",img:"items/twistedspoon.png",cat:"Other"},{n:"Silver Powder",img:"items/silverpowder.png",cat:"Other"},
-  {n:"Black Glasses",img:"items/blackglasses.png",cat:"Other"},{n:"Black Belt",img:"items/blackbelt.png",cat:"Other"},{n:"Silk Scarf",img:"items/silkscarf.png",cat:"Other"},
-  {n:"Sharp Beak",img:"items/sharpbeak.png",cat:"Other"},{n:"Poison Barb",img:"items/poisonbarb.png",cat:"Other"},{n:"Never-Melt Ice",img:"items/never-meltice.png",cat:"Other"},
-  {n:"Spell Tag",img:"items/spelltag.png",cat:"Other"},{n:"Charcoal",img:"items/charcoal.png",cat:"Other"},{n:"Soft Sand",img:"items/softsand.png",cat:"Other"},
-  {n:"Fairy Feather",img:"items/fairyfeather.png",cat:"Other"},{n:"Dragon Fang",img:"items/dragonfang.png",cat:"Other"},{n:"Leftovers",img:"items/leftovers.png",cat:"Other"},
-  {n:"Black Sludge",img:"items/blacksludge.png",cat:"Other"},{n:"Lucky Egg",img:"items/luckyegg.png",cat:"Other"},{n:"Destiny Knot",img:"items/destinyknot.png",cat:"Other"},
-  {n:"Life Orb",img:"items/lifeorb.png",cat:"Other"},{n:"Iron Ball",img:"items/ironball.png",cat:"Other"},{n:"Metal Powder",img:"items/metalpowder.png",cat:"Other"},
-  {n:"Big Root",img:"items/bigroot.png",cat:"Other"},{n:"Adrenaline Orb",img:"items/adrenalineorb.png",cat:"Other"},{n:"Weakness Policy",img:"items/weaknesspolicy.png",cat:"Other"},
-  {n:"Terrain Extender",img:"items/terrainextender.png",cat:"Other"},{n:"Wide Lens",img:"items/widelens.png",cat:"Other"},{n:"Throat Spray",img:"items/throatspray.png",cat:"Other"},
-  {n:"Light Clay",img:"items/lightclay.png",cat:"Other"},{n:"Loaded Dice",img:"items/loadeddice.png",cat:"Other"},{n:"Sticky Barb",img:"items/stickybarb.png",cat:"Other"},
-  {n:"Quick Claw",img:"items/quickclaw.png",cat:"Other"},{n:"Lagging Tail",img:"items/laggingtail.png",cat:"Other"},{n:"Flame Orb",img:"items/flameorb.png",cat:"Other"},
-  {n:"Ability Shield",img:"items/abilityshield.png",cat:"Other"},{n:"Room Service",img:"items/roomservice.png",cat:"Other"},{n:"Ring Target",img:"items/ringtarget.png",cat:"Other"},
-  {n:"Clear Amulet",img:"items/clearamulet.png",cat:"Other"},{n:"Zoom Lens",img:"items/zoomlens.png",cat:"Other"},{n:"Skull Fossil",img:"items/skullfossil.png",cat:"Other"},
-  {n:"Armor Fossil",img:"items/armorfossil.png",cat:"Other"},{n:"Jaw Fossil",img:"items/jawfossil.png",cat:"Other"},{n:"Sail Fossil",img:"items/sailfossil.png",cat:"Other"},
-  {n:"Abandoned Power Plant kit",img:"items/abandonedpowerplantkit.png",cat:"Kits"},{n:"Acrylic poster",img:"items/acrylicposter.png",cat:"Other"},{n:"Adorable hedge",img:"items/adorablehedge.png",cat:"Nature"},
-  {n:"Aether Paradise",img:"items/aetherparadise.png",cat:"Other"},{n:"Afternoon tea set",img:"items/afternoonteaset.png",cat:"Misc."},{n:"Aged-stone wall",img:"items/agedstonewall.png",cat:"Blocks"},
-  {n:"Air conditioner",img:"items/airconditioner.png",cat:"Misc."},{n:"Alarm clock",img:"items/alarmclock.png",cat:"Misc."},{n:"Alpine grass",img:"items/alpinegrass.png",cat:"Blocks"},
-  {n:"Altar of Flame kit",img:"items/altarofflamekit.png",cat:"Kits"},{n:"Antique bed",img:"items/antiquebed.png",cat:"Furniture"},{n:"Antique chair",img:"items/antiquechair.png",cat:"Furniture"},
-  {n:"Antique chandelier",img:"items/antiquechandelier.png",cat:"Utilities"},{n:"Antique chest",img:"items/antiquechest.png",cat:"Furniture"},{n:"Antique clock",img:"items/antiqueclock.png",cat:"Misc."},
-  {n:"Antique closet",img:"items/antiquecloset.png",cat:"Furniture"},{n:"Antique dresser",img:"items/antiquedresser.png",cat:"Furniture"},{n:"Antique sofa",img:"items/antiquesofa.png",cat:"Furniture"},
-  {n:"Antique table",img:"items/antiquetable.png",cat:"Furniture"},{n:"Arcade machine",img:"items/arcademachine.png",cat:"Misc."},{n:"Arcanine doll",img:"items/arcaninedoll.png",cat:"Misc."},
-  {n:"Arch bridge",img:"items/archbridge.png",cat:"Buildings"},{n:"Arched barrier",img:"items/archedbarrier.png",cat:"Buildings"},{n:"Arched tiling",img:"items/archedtiling.png",cat:"Blocks"},
-  {n:"Area Zero",img:"items/areazero.png",cat:"Other"},{n:"Argyle print",img:"items/argyleprint.png",cat:"Blocks"},{n:"Arrow sign",img:"items/arrowsign.png",cat:"Outdoor"},
-  {n:"Asphalt road",img:"items/asphaltroad.png",cat:"Blocks"},{n:"Audio mixer",img:"items/audiomixer.png",cat:"Misc."},{n:"Auspicious Armor",img:"items/auspiciousarmor.png",cat:"Misc."},
-  {n:"Automatic doors",img:"items/automaticdoors.png",cat:"Buildings"},{n:"Avalugg table",img:"items/avaluggtable.png",cat:"Furniture"},{n:"Balloon poster",img:"items/balloonposter.png",cat:"Other"},
-  {n:"Balloons",img:"items/balloons.png",cat:"Misc."},{n:"Barrel",img:"items/barrel.png",cat:"Outdoor"},{n:"Barren ordinary soil",img:"items/barrenordinarysoil.png",cat:"Other"},
-  {n:"Barren striped soil",img:"items/barrenstripedsoil.png",cat:"Other"},{n:"Bathtime set",img:"items/bathtimeset.png",cat:"Misc."},{n:"Bathtub",img:"items/bathtub.png",cat:"Misc."},
-  {n:"Beach chair",img:"items/beachchair.png",cat:"Furniture"},{n:"Beach parasol",img:"items/beachparasol.png",cat:"Outdoor"},{n:"Beach sand",img:"items/beachsand.png",cat:"Blocks"},
-  {n:"Beautiful flower",img:"items/beautifulflower.png",cat:"Nature"},{n:"Bell",img:"items/bell.png",cat:"Outdoor"},{n:"Bell Tower",img:"items/belltower.png",cat:"Other"},
-  {n:"Berry basket",img:"items/berrybasket.png",cat:"Misc."},{n:"Berry bed",img:"items/berrybed.png",cat:"Furniture"},{n:"Berry case",img:"items/berrycase.png",cat:"Furniture"},
-  {n:"Berry chair",img:"items/berrychair.png",cat:"Furniture"},{n:"Berry clock",img:"items/berryclock.png",cat:"Misc."},{n:"Berry hanging lamp",img:"items/berryhanginglamp.png",cat:"Utilities"},
-  {n:"Berry print",img:"items/berryprint.png",cat:"Blocks"},{n:"Berry table",img:"items/berrytable.png",cat:"Furniture"},{n:"Berry table lamp",img:"items/berrytablelamp.png",cat:"Utilities"},
-  {n:"Berry wall decoration",img:"items/berrywalldecoration.png",cat:"Misc."},{n:"Big Nugget",img:"items/bignugget.png",cat:"Misc."},{n:"Big drum",img:"items/bigdrum.png",cat:"Misc."},
-  {n:"Big storage box",img:"items/bigstoragebox.png",cat:"Furniture"},{n:"Bike",img:"items/bike.png",cat:"Outdoor"},{n:"CD",img:"items/cd.png",cat:"Other"},
-  {n:"Black cliff rock",img:"items/blackcliffrock.png",cat:"Blocks"},{n:"Black rock",img:"items/blackrock.png",cat:"Blocks"},{n:"Black spotted cliff rock",img:"items/blackspottedcliffrock.png",cat:"Blocks"},
-  {n:"Blank canvas",img:"items/blankcanvas.png",cat:"Outdoor"},{n:"Blue meteor lamp",img:"items/bluemeteorlamp.png",cat:"Utilities"},{n:"Blue-green shoots",img:"items/bluegreenshoots.png",cat:"Nature"},
-  {n:"Boat door",img:"items/boatdoor.png",cat:"Buildings"},{n:"Boat railing",img:"items/boatrailing.png",cat:"Buildings"},{n:"Bonfire",img:"items/bonfire.png",cat:"Outdoor"},
-  {n:"Boo-in-the-box",img:"items/boointhebox.png",cat:"Misc."},{n:"Book",img:"items/book.png",cat:"Misc."},{n:"Book pile",img:"items/bookpile.png",cat:"Misc."},
-  {n:"Bookcase",img:"items/bookcase.png",cat:"Misc."},{n:"Bouncy blue bathtub",img:"items/bouncybluebathtub.png",cat:"Misc."},{n:"Boutique",img:"items/boutique.png",cat:"Other"},
-  {n:"Box sofa",img:"items/boxsofa.png",cat:"Furniture"},{n:"Brainy door",img:"items/brainydoor.png",cat:"Buildings"},{n:"Bread oven",img:"items/breadoven.png",cat:"Utilities"},
-  {n:"Brick flooring",img:"items/brickflooring.png",cat:"Blocks"},{n:"Brick hipped roof",img:"items/brickhippedroof.png",cat:"Buildings"},{n:"Brick roof decoration",img:"items/brickroofdecoration.png",cat:"Buildings"},
-  {n:"Brick roof valley",img:"items/brickroofvalley.png",cat:"Buildings"},{n:"Brick steps",img:"items/bricksteps.png",cat:"Buildings"},{n:"Brick wall",img:"items/brickwall.png",cat:"Blocks"},
-  {n:"Bridge planks",img:"items/bridgeplanks.png",cat:"Buildings"},{n:"Broken iron steps",img:"items/brokenironsteps.png",cat:"Other"},{n:"Broken window pane",img:"items/brokenwindowpane.png",cat:"Other"},
-  {n:"Bronze wall",img:"items/bronzewall.png",cat:"Blocks"},{n:"Bubble print",img:"items/bubbleprint.png",cat:"Blocks"},{n:"Bumpy beach sand",img:"items/bumpybeachsand.png",cat:"Blocks"},
-  {n:"CD player",img:"items/cdplayer.png",cat:"Misc."},{n:"CD rack",img:"items/cdrack.png",cat:"Misc."},{n:"Campfire",img:"items/campfire.png",cat:"Outdoor"},
-  {n:"Camping cooking pot",img:"items/campingcookingpot.png",cat:"Utilities"},{n:"Cannon",img:"items/cannon.png",cat:"Outdoor"},{n:"Canoe",img:"items/canoe.png",cat:"Outdoor"},
-  {n:"Card reader",img:"items/cardreader.png",cat:"Utilities"},{n:"Cardboard boxes",img:"items/cardboardboxes.png",cat:"Misc."},{n:"Cart",img:"items/cart.png",cat:"Outdoor"},
-  {n:"Carved coarse rock",img:"items/carvedcoarserock.png",cat:"Blocks"},{n:"Carved red rock",img:"items/carvedredrock.png",cat:"Blocks"},{n:"Carved white rock",img:"items/carvedwhiterock.png",cat:"Blocks"},
-  {n:"Carved yellow rock",img:"items/carvedyellowrock.png",cat:"Blocks"},{n:"Cash register",img:"items/cashregister.png",cat:"Utilities"},{n:"Castform weather charm",img:"items/castformweathercharm.png",cat:"Misc."},
-  {n:"Cave rock",img:"items/caverock.png",cat:"Blocks"},{n:"Ceiling fan",img:"items/ceilingfan.png",cat:"Misc."},{n:"Cell phone",img:"items/cellphone.png",cat:"Misc."},
-  {n:"Cerulean City",img:"items/ceruleancity.png",cat:"Other"},{n:"Chansey plant",img:"items/chanseyplant.png",cat:"Outdoor"},{n:"Charging station kit",img:"items/chargingstationkit.png",cat:"Kits"},
-  {n:"Charizard rug",img:"items/charizardrug.png",cat:"Other"},{n:"Chic sofa",img:"items/chicsofa.png",cat:"Furniture"},{n:"Chic streetlight",img:"items/chicstreetlight.png",cat:"Utilities"},
-  {n:"Chic table",img:"items/chictable.png",cat:"Furniture"},{n:"Chocolate cookies",img:"items/chocolatecookies.png",cat:"Misc."},{n:"City cottage kit",img:"items/citycottagekit.png",cat:"Kits"},
-  {n:"City den kit",img:"items/citydenkit.png",cat:"Kits"},{n:"City house kit",img:"items/cityhousekit.png",cat:"Kits"},{n:"City hut kit",img:"items/cityhutkit.png",cat:"Kits"},
-  {n:"Clay",img:"items/clay.png",cat:"Blocks"},{n:"Cleaning supplies",img:"items/cleaningsupplies.png",cat:"Misc."},{n:"Clear Bell",img:"items/clearbell.png",cat:"Misc."},
-  {n:"Clefairy doll",img:"items/clefairydoll.png",cat:"Misc."},{n:"Cliff rock",img:"items/cliffrock.png",cat:"Blocks"},{n:"Cloth wall",img:"items/clothwall.png",cat:"Blocks"},
-  {n:"Cloud cannon",img:"items/cloudcannon.png",cat:"Outdoor"},{n:"Coarse rock",img:"items/coarserock.png",cat:"Blocks"},{n:"Cobblestone wall",img:"items/cobblestonewall.png",cat:"Blocks"},
-  {n:"Community box",img:"items/communitybox.png",cat:"Utilities"},{n:"Computer",img:"items/computer.png",cat:"Misc."},{n:"Concert stage kit",img:"items/concertstagekit.png",cat:"Kits"},
-  {n:"Concrete mixer",img:"items/concretemixer.png",cat:"Utilities"},{n:"Concrete pipe",img:"items/concretepipe.png",cat:"Outdoor"},{n:"Concrete slab",img:"items/concreteslab.png",cat:"Buildings"},
-  {n:"Concrete steps",img:"items/concretesteps.png",cat:"Buildings"},{n:"Concrete wall",img:"items/concretewall.png",cat:"Blocks"},{n:"Construction supplies",img:"items/constructionsupplies.png",cat:"Outdoor"},
-  {n:"Contest Spectacular",img:"items/contestspectacular.png",cat:"Other"},{n:"Control unit",img:"items/controlunit.png",cat:"Misc."},{n:"Cooking pot",img:"items/cookingpot.png",cat:"Utilities"},
-  {n:"Cooking stove",img:"items/cookingstove.png",cat:"Misc."},{n:"Cool bass guitar",img:"items/coolbassguitar.png",cat:"Misc."},{n:"Cool electric guitar",img:"items/coolelectricguitar.png",cat:"Misc."},
-  {n:"Cooled molten rock",img:"items/cooledmoltenrock.png",cat:"Nature"},{n:"Corkboard",img:"items/corkboard.png",cat:"Misc."},{n:"Corrugated metal",img:"items/corrugatedmetal.png",cat:"Buildings"},
-  {n:"Counter",img:"items/counter.png",cat:"Furniture"},{n:"Cracked sandstone",img:"items/crackedsandstone.png",cat:"Blocks"},{n:"Crisscross wooden flooring",img:"items/crisscrosswoodenflooring.png",cat:"Blocks"},
-  {n:"Crystal ball",img:"items/crystalball.png",cat:"Misc."},{n:"Crystal cluster",img:"items/crystalcluster.png",cat:"Nature"},{n:"Crystal wall",img:"items/crystalwall.png",cat:"Blocks"},
-  {n:"Cube light",img:"items/cubelight.png",cat:"Blocks"},{n:"Curry print",img:"items/curryprint.png",cat:"Blocks"},{n:"Curved eave",img:"items/curvedeave.png",cat:"Buildings"},
-  {n:"Cushy wall",img:"items/cushywall.png",cat:"Blocks"},{n:"Cute bed",img:"items/cutebed.png",cat:"Furniture"},{n:"Cute chair",img:"items/cutechair.png",cat:"Furniture"},
-  {n:"Cute dresser",img:"items/cutedresser.png",cat:"Furniture"},{n:"Cute flowers",img:"items/cuteflowers.png",cat:"Nature"},{n:"Cute lamp",img:"items/cutelamp.png",cat:"Utilities"},
-  {n:"Cute sofa",img:"items/cutesofa.png",cat:"Furniture"},{n:"Cute table",img:"items/cutetable.png",cat:"Furniture"},{n:"Cutting board",img:"items/cuttingboard.png",cat:"Utilities"},
-  {n:"Cyber flooring",img:"items/cyberflooring.png",cat:"Blocks"},{n:"Damaged arched tiling",img:"items/damagedarchedtiling.png",cat:"Other"},{n:"Damaged asphalt road",img:"items/damagedasphaltroad.png",cat:"Other"},
-  {n:"Damaged mosaic tiling",img:"items/damagedmosaictiling.png",cat:"Other"},{n:"Damaged square tiling",img:"items/damagedsquaretiling.png",cat:"Other"},{n:"Damaged wooden flooring",img:"items/damagedwoodenflooring.png",cat:"Other"},
-  {n:"Damp Rock",img:"items/damprock.png",cat:"Outdoor"},{n:"Damp hedge",img:"items/damphedge.png",cat:"Nature"},{n:"Dance poster",img:"items/danceposter.png",cat:"Other"},
-  {n:"Dandy flowers",img:"items/dandyflowers.png",cat:"Nature"},{n:"Dark marble flooring",img:"items/darkmarbleflooring.png",cat:"Blocks"},{n:"Deck chair",img:"items/deckchair.png",cat:"Furniture"},
-  {n:"Decorative bookshelf",img:"items/decorativebookshelf.png",cat:"Misc."},{n:"Demolition kit",img:"items/demolitionkit.png",cat:"Kits"},{n:"Dense vines",img:"items/densevines.png",cat:"Nature"},
-  {n:"Desk light",img:"items/desklight.png",cat:"Utilities"},{n:"Diagonal wooden flooring",img:"items/diagonalwoodenflooring.png",cat:"Blocks"},{n:"Dining cabinet",img:"items/diningcabinet.png",cat:"Misc."},
-  {n:"Diploma",img:"items/diploma.png",cat:"Other"},{n:"Ditto doll",img:"items/dittodoll.png",cat:"Misc."},{n:"Ditto flag",img:"items/dittoflag.png",cat:"Utilities"},
-  {n:"Ditto rug",img:"items/dittorug.png",cat:"Other"},{n:"Dormered brick roof",img:"items/dormeredbrickroof.png",cat:"Buildings"},{n:"Double streetlight",img:"items/doublestreetlight.png",cat:"Utilities"},
-  {n:"Dowsing Machine",img:"items/dowsingmachine.png",cat:"Other"},{n:"Dragonite doll",img:"items/dragonitedoll.png",cat:"Misc."},{n:"Driftveil City",img:"items/driftveilcity.png",cat:"Other"},
-  {n:"Driftwood",img:"items/driftwood.png",cat:"Nature"},{n:"Drink poster",img:"items/drinkposter.png",cat:"Other"},{n:"Dry alpine grass",img:"items/dryalpinegrass.png",cat:"Other"},
-  {n:"Dry blue-green shoots",img:"items/drybluegreenshoots.png",cat:"Other"},{n:"Dry field grass",img:"items/dryfieldgrass.png",cat:"Other"},{n:"Dry green shoots",img:"items/drygreenshoots.png",cat:"Other"},
-  {n:"Dry seashore grass",img:"items/dryseashoregrass.png",cat:"Other"},{n:"Dry tall grass",img:"items/drytallgrass.png",cat:"Other"},{n:"Dry verdant shoots",img:"items/dryverdantshoots.png",cat:"Other"},
-  {n:"Dry yellow-green shoots",img:"items/dryyellowgreenshoots.png",cat:"Other"},{n:"Duckweed",img:"items/duckweed.png",cat:"Nature"},{n:"Ecruteak City",img:"items/ecruteakcity.png",cat:"Other"},
-  {n:"Eerie candle",img:"items/eeriecandle.png",cat:"Outdoor"},{n:"Eevee doll",img:"items/eeveedoll.png",cat:"Misc."},{n:"Elegant flower",img:"items/elegantflower.png",cat:"Nature"},
-  {n:"Elevator platform",img:"items/elevatorplatform.png",cat:"Utilities"},{n:"Excavation tools",img:"items/excavationtools.png",cat:"Outdoor"},{n:"Exhibition stand",img:"items/exhibitionstand.png",cat:"Furniture"},
-  {n:"Extravagant carpeting",img:"items/extravagantcarpeting.png",cat:"Blocks"},{n:"Extravagant flowers",img:"items/extravagantflowers.png",cat:"Misc."},{n:"Fan",img:"items/fan.png",cat:"Misc."},
-  {n:"Fancy chair",img:"items/fancychair.png",cat:"Furniture"},{n:"Fancy pen",img:"items/fancypen.png",cat:"Misc."},{n:"Felt mat",img:"items/feltmat.png",cat:"Blocks"},
-  {n:"Fern",img:"items/fern.png",cat:"Nature"},{n:"Field grass",img:"items/fieldgrass.png",cat:"Blocks"},{n:"Fiery Magby statue",img:"items/fierymagbystatue.png",cat:"Misc."},
-  {n:"Fire hydrant",img:"items/firehydrant.png",cat:"Outdoor"},{n:"Firepit",img:"items/firepit.png",cat:"Outdoor"},{n:"First aid kit",img:"items/firstaidkit.png",cat:"Misc."},
-  {n:"Fishing rod",img:"items/fishingrod.png",cat:"Outdoor"},{n:"Flat brick roof",img:"items/flatbrickroof.png",cat:"Buildings"},{n:"Flat stone roof",img:"items/flatstoneroof.png",cat:"Buildings"},
-  {n:"Flat tent roof",img:"items/flattentroof.png",cat:"Buildings"},{n:"Flat tiled roof",img:"items/flattiledroof.png",cat:"Buildings"},{n:"Flat-leaf plant",img:"items/flatleafplant.png",cat:"Misc."},
-  {n:"Floor switch",img:"items/floorswitch.png",cat:"Utilities"},{n:"Flower backpack",img:"items/flowerbackpack.png",cat:"Misc."},{n:"Flower cushion",img:"items/flowercushion.png",cat:"Furniture"},
-  {n:"Flower garland",img:"items/flowergarland.png",cat:"Misc."},{n:"Flower print",img:"items/flowerprint.png",cat:"Blocks"},{n:"Flower table",img:"items/flowertable.png",cat:"Furniture"},
-  {n:"Flowering duckweed",img:"items/floweringduckweed.png",cat:"Nature"},{n:"Flowery table setting",img:"items/flowerytablesetting.png",cat:"Misc."},{n:"Fluffy flooring",img:"items/fluffyflooring.png",cat:"Blocks"},
-  {n:"Fluorescent light",img:"items/fluorescentlight.png",cat:"Utilities"},{n:"Folding chair",img:"items/foldingchair.png",cat:"Furniture"},{n:"Food counter",img:"items/foodcounter.png",cat:"Furniture"},
-  {n:"Food poster",img:"items/foodposter.png",cat:"Other"},{n:"Fortree City",img:"items/fortreecity.png",cat:"Other"},{n:"Foundation",img:"items/foundation.png",cat:"Blocks"},
-  {n:"Fountain plaza kit",img:"items/fountainplazakit.png",cat:"Kits"},{n:"Frame",img:"items/frame.png",cat:"Utilities"},{n:"Freezing Chambers kit",img:"items/freezingchamberskit.png",cat:"Kits"},
-  {n:"Fried potatoes",img:"items/friedpotatoes.png",cat:"Misc."},{n:"Frying pan",img:"items/fryingpan.png",cat:"Utilities"},{n:"Fuchsia City",img:"items/fuchsiacity.png",cat:"Other"},
-  {n:"Funky diffuser",img:"items/funkydiffuser.png",cat:"Misc."},{n:"Furnace kit",img:"items/furnacekit.png",cat:"Kits"},{n:"Game Boy system",img:"items/gameboysystem.png",cat:"Misc."},
-  {n:"Game Corner",img:"items/gamecorner.png",cat:"Other"},{n:"Gaming PC",img:"items/gamingpc.png",cat:"Misc."},{n:"Gaming bed",img:"items/gamingbed.png",cat:"Furniture"},
-  {n:"Gaming chair",img:"items/gamingchair.png",cat:"Furniture"},{n:"Gaming fridge",img:"items/gamingfridge.png",cat:"Furniture"},{n:"Gaming light",img:"items/gaminglight.png",cat:"Utilities"},
-  {n:"Garbage bags",img:"items/garbagebags.png",cat:"Outdoor"},{n:"Garbage bin",img:"items/garbagebin.png",cat:"Outdoor"},{n:"Garden bench",img:"items/gardenbench.png",cat:"Furniture"},
-  {n:"Garden chair",img:"items/gardenchair.png",cat:"Furniture"},{n:"Garden flowers",img:"items/gardenflowers.png",cat:"Outdoor"},{n:"Garden light",img:"items/gardenlight.png",cat:"Utilities"},
-  {n:"Garden ornament",img:"items/gardenornament.png",cat:"Outdoor"},{n:"Garden table",img:"items/gardentable.png",cat:"Furniture"},{n:"Gingham print",img:"items/ginghamprint.png",cat:"Blocks"},
-  {n:"Glass pane",img:"items/glasspane.png",cat:"Buildings"},{n:"Glass window",img:"items/glasswindow.png",cat:"Buildings"},{n:"Glossy awning",img:"items/glossyawning.png",cat:"Buildings"},
-  {n:"Glowing stone",img:"items/glowingstone.png",cat:"Blocks"},{n:"Gold Teeth",img:"items/goldteeth.png",cat:"Misc."},{n:"Gold deposit",img:"items/golddeposit.png",cat:"Blocks"},
-  {n:"Gold wall",img:"items/goldwall.png",cat:"Blocks"},{n:"Golden poster",img:"items/goldenposter.png",cat:"Other"},{n:"Grass flooring",img:"items/grassflooring.png",cat:"Blocks"},
-  {n:"Grate fencing",img:"items/gratefencing.png",cat:"Buildings"},{n:"Grate flooring",img:"items/grateflooring.png",cat:"Buildings"},{n:"Gravel",img:"items/gravel.png",cat:"Blocks"},
-  {n:"Gravestone",img:"items/gravestone.png",cat:"Outdoor"},{n:"Gray circle flooring",img:"items/graycircleflooring.png",cat:"Blocks"},{n:"Gray cottage kit",img:"items/graycottagekit.png",cat:"Kits"},
-  {n:"Gray hut kit",img:"items/grayhutkit.png",cat:"Kits"},{n:"Green meteor lamp",img:"items/greenmeteorlamp.png",cat:"Utilities"},{n:"Green shoots",img:"items/greenshoots.png",cat:"Nature"},
-  {n:"Growth poster",img:"items/growthposter.png",cat:"Other"},{n:"Grubby book",img:"items/grubbybook.png",cat:"Misc."},{n:"Grubby cell phone",img:"items/grubbycellphone.png",cat:"Misc."},
-  {n:"Grubby letter",img:"items/grubbyletter.png",cat:"Misc."},{n:"Grubby newspaper",img:"items/grubbynewspaper.png",cat:"Misc."},{n:"Grubby notepad",img:"items/grubbynotepad.png",cat:"Misc."},
-  {n:"Grubby papers",img:"items/grubbypapers.png",cat:"Misc."},{n:"Grubby rags",img:"items/grubbyrags.png",cat:"Outdoor"},{n:"Grubby tablet",img:"items/grubbytablet.png",cat:"Misc."},
-  {n:"Gym emblem statue",img:"items/gymemblemstatue.png",cat:"Misc."},{n:"Handcar",img:"items/handcar.png",cat:"Utilities"},{n:"Handrail",img:"items/handrail.png",cat:"Buildings"},
-  {n:"Hanging banner",img:"items/hangingbanner.png",cat:"Misc."},{n:"Hanging scroll",img:"items/hangingscroll.png",cat:"Misc."},{n:"Harbor pole",img:"items/harborpole.png",cat:"Buildings"},
-  {n:"Harbor streetlight",img:"items/harborstreetlight.png",cat:"Utilities"},{n:"Hardwood flooring",img:"items/hardwoodflooring.png",cat:"Blocks"},{n:"Hatch window",img:"items/hatchwindow.png",cat:"Buildings"},
-  {n:"Hau'oli City",img:"items/hauolicity.png",cat:"Other"},{n:"Hay pile",img:"items/haypile.png",cat:"Blocks"},{n:"Healthy hedge",img:"items/healthyhedge.png",cat:"Nature"},
-  {n:"Heat Rock",img:"items/heatrock.png",cat:"Outdoor"},{n:"Hexagonal flooring",img:"items/hexagonalflooring.png",cat:"Blocks"},{n:"Hoppip water bottle",img:"items/hoppipwaterbottle.png",cat:"Misc."},
-  {n:"Horsea fountain",img:"items/horseafountain.png",cat:"Outdoor"},{n:"Hot-spring spout",img:"items/hotspringspout.png",cat:"Outdoor"},{n:"Houndstooth print",img:"items/houndstoothprint.png",cat:"Blocks"},
-  {n:"Humidifier",img:"items/humidifier.png",cat:"Misc."},{n:"Ice",img:"items/ice.png",cat:"Blocks"},{n:"Ice cream poster",img:"items/icecreamposter.png",cat:"Other"},
-  {n:"Icicles",img:"items/icicles.png",cat:"Nature"},{n:"Icy Rock",img:"items/icyrock.png",cat:"Outdoor"},{n:"Indigo meteor lamp",img:"items/indigometeorlamp.png",cat:"Utilities"},
-  {n:"Industrial bed",img:"items/industrialbed.png",cat:"Furniture"},{n:"Industrial bench",img:"items/industrialbench.png",cat:"Furniture"},{n:"Industrial chair",img:"items/industrialchair.png",cat:"Furniture"},
-  {n:"Industrial desk",img:"items/industrialdesk.png",cat:"Furniture"},{n:"Inflatable Sudowoodo",img:"items/inflatablesudowoodo.png",cat:"Outdoor"},{n:"Inflatable boat",img:"items/inflatableboat.png",cat:"Outdoor"},
-  {n:"Information board",img:"items/informationboard.png",cat:"Outdoor"},{n:"Iron beam",img:"items/ironbeam.png",cat:"Buildings"},{n:"Iron bed",img:"items/ironbed.png",cat:"Furniture"},
-  {n:"Iron bench",img:"items/ironbench.png",cat:"Furniture"},{n:"Iron chair",img:"items/ironchair.png",cat:"Furniture"},{n:"Iron column",img:"items/ironcolumn.png",cat:"Buildings"},
-  {n:"Iron deposit",img:"items/irondeposit.png",cat:"Blocks"},{n:"Iron door",img:"items/irondoor.png",cat:"Buildings"},{n:"Iron enclosure",img:"items/ironenclosure.png",cat:"Buildings"},
-  {n:"Iron gate",img:"items/irongate.png",cat:"Buildings"},{n:"Iron ladder",img:"items/ironladder.png",cat:"Buildings"},{n:"Iron pillar",img:"items/ironpillar.png",cat:"Buildings"},
-  {n:"Iron pipes",img:"items/ironpipes.png",cat:"Outdoor"},{n:"Iron plating",img:"items/ironplating.png",cat:"Blocks"},{n:"Iron rack",img:"items/ironrack.png",cat:"Furniture"},
-  {n:"Iron scaffold",img:"items/ironscaffold.png",cat:"Buildings"},{n:"Iron stand",img:"items/ironstand.png",cat:"Furniture"},{n:"Iron steps",img:"items/ironsteps.png",cat:"Buildings"},
-  {n:"Iron table",img:"items/irontable.png",cat:"Furniture"},{n:"Iron tiling",img:"items/irontiling.png",cat:"Blocks"},{n:"Iron wall",img:"items/ironwall.png",cat:"Blocks"},
-  {n:"Iron-plate flooring",img:"items/ironplateflooring.png",cat:"Blocks"},{n:"Jubilife Village",img:"items/jubilifevillage.png",cat:"Other"},{n:"Juice trio",img:"items/juicetrio.png",cat:"Misc."},
-  {n:"Jumbled cords",img:"items/jumbledcords.png",cat:"Misc."},{n:"Jump rope trophy",img:"items/jumpropetrophy.png",cat:"Other"},{n:"Kitchen table",img:"items/kitchentable.png",cat:"Furniture"},
-  {n:"Knitting supplies",img:"items/knittingsupplies.png",cat:"Misc."},{n:"Lace rug",img:"items/lacerug.png",cat:"Other"},{n:"Lantern",img:"items/lantern.png",cat:"Utilities"},
-  {n:"Laptop",img:"items/laptop.png",cat:"Misc."},{n:"Large boulder",img:"items/largeboulder.png",cat:"Nature"},{n:"Large lost relic",img:"items/largelostrelic.png",cat:"Other"},
-  {n:"Large mirror",img:"items/largemirror.png",cat:"Furniture"},{n:"Large narrow rug",img:"items/largenarrowrug.png",cat:"Other"},{n:"Large palm tree",img:"items/largepalmtree.png",cat:"Nature"},
-  {n:"Large round rug",img:"items/largeroundrug.png",cat:"Other"},{n:"Large ventilation fan",img:"items/largeventilationfan.png",cat:"Outdoor"},{n:"Large wooden door",img:"items/largewoodendoor.png",cat:"Buildings"},
-  {n:"Laser sensor",img:"items/lasersensor.png",cat:"Utilities"},{n:"Lava rock",img:"items/lavarock.png",cat:"Blocks"},{n:"Leaf cottage kit",img:"items/leafcottagekit.png",cat:"Kits"},
-  {n:"Leaf den kit",img:"items/leafdenkit.png",cat:"Kits"},{n:"Leaf house kit",img:"items/leafhousekit.png",cat:"Kits"},{n:"Leaf hut kit",img:"items/leafhutkit.png",cat:"Kits"},
-  {n:"Leaf print",img:"items/leafprint.png",cat:"Blocks"},{n:"Leafy plant",img:"items/leafyplant.png",cat:"Misc."},{n:"Leppa tree",img:"items/leppatree.png",cat:"Nature"},
-  {n:"Leppa tree stump",img:"items/leppatreestump.png",cat:"Nature"},{n:"Letter",img:"items/letter.png",cat:"Misc."},{n:"Levee",img:"items/levee.png",cat:"Blocks"},
-  {n:"Lift platform",img:"items/liftplatform.png",cat:"Utilities"},{n:"Light brown rock",img:"items/lightbrownrock.png",cat:"Blocks"},{n:"Light marble flooring",img:"items/lightmarbleflooring.png",cat:"Blocks"},
-  {n:"Light wooden wall",img:"items/lightwoodenwall.png",cat:"Blocks"},{n:"Limestone",img:"items/limestone.png",cat:"Blocks"},{n:"Log bed",img:"items/logbed.png",cat:"Furniture"},
-  {n:"Log cabin kit",img:"items/logcabinkit.png",cat:"Kits"},{n:"Log chair",img:"items/logchair.png",cat:"Furniture"},{n:"Log table",img:"items/logtable.png",cat:"Furniture"},
-  {n:"Lunch box",img:"items/lunchbox.png",cat:"Misc."},{n:"Luxury bed",img:"items/luxurybed.png",cat:"Furniture"},{n:"Luxury chair",img:"items/luxurychair.png",cat:"Furniture"},
-  {n:"Luxury dresser",img:"items/luxurydresser.png",cat:"Furniture"},{n:"Luxury lamp",img:"items/luxurylamp.png",cat:"Utilities"},{n:"Luxury sofa",img:"items/luxurysofa.png",cat:"Furniture"},
-  {n:"Luxury table",img:"items/luxurytable.png",cat:"Furniture"},{n:"Magazine rack",img:"items/magazinerack.png",cat:"Misc."},{n:"Magikarp decoration",img:"items/magikarpdecoration.png",cat:"Buildings"},
-  {n:"Mailbox",img:"items/mailbox.png",cat:"Outdoor"},{n:"Malicious Armor",img:"items/maliciousarmor.png",cat:"Misc."},{n:"Marble",img:"items/marble.png",cat:"Blocks"},
-  {n:"Meadow poster",img:"items/meadowposter.png",cat:"Other"},{n:"Menu board",img:"items/menuboard.png",cat:"Outdoor"},{n:"Metal chain",img:"items/metalchain.png",cat:"Buildings"},
-  {n:"Metal drum",img:"items/metaldrum.png",cat:"Outdoor"},{n:"Metal fencing",img:"items/metalfencing.png",cat:"Buildings"},{n:"Metallic smelting furnace",img:"items/metallicsmeltingfurnace.png",cat:"Utilities"},
-  {n:"Microscope",img:"items/microscope.png",cat:"Misc."},{n:"Microwave oven",img:"items/microwaveoven.png",cat:"Misc."},{n:"Mini bookcase",img:"items/minibookcase.png",cat:"Misc."},
-  {n:"Mini floodgate",img:"items/minifloodgate.png",cat:"Utilities"},{n:"Mini generator",img:"items/minigenerator.png",cat:"Utilities"},{n:"Mini plain bed",img:"items/miniplainbed.png",cat:"Furniture"},
-  {n:"Mirror ball",img:"items/mirrorball.png",cat:"Utilities"},{n:"Model planet",img:"items/modelplanet.png",cat:"Utilities"},{n:"Model space shuttle",img:"items/modelspaceshuttle.png",cat:"Misc."},
-  {n:"Modern carpeting",img:"items/moderncarpeting.png",cat:"Blocks"},{n:"Modern door",img:"items/moderndoor.png",cat:"Buildings"},{n:"Modern sink",img:"items/modernsink.png",cat:"Misc."},
-  {n:"Modern wall",img:"items/modernwall.png",cat:"Blocks"},{n:"Molten rock",img:"items/moltenrock.png",cat:"Nature"},{n:"Moonlight dance statue kit",img:"items/moonlightdancestatuekit.png",cat:"Kits"},
-  {n:"Moonlight poster",img:"items/moonlightposter.png",cat:"Other"},{n:"Mosaic tiling",img:"items/mosaictiling.png",cat:"Blocks"},{n:"Moss",img:"items/moss.png",cat:"Nature"},
-  {n:"Mossy boulder",img:"items/mossyboulder.png",cat:"Nature"},{n:"Mossy soil",img:"items/mossysoil.png",cat:"Blocks"},{n:"Mountain flowers",img:"items/mountainflowers.png",cat:"Nature"},
-  {n:"Mt. Coronet",img:"items/mtcoronet.png",cat:"Other"},{n:"Mt. Moon",img:"items/mtmoon.png",cat:"Other"},{n:"Mug",img:"items/mug.png",cat:"Misc."},
-  {n:"Mushroom lamp",img:"items/mushroomlamp.png",cat:"Utilities"},{n:"Mushroom streetlight",img:"items/mushroomstreetlight.png",cat:"Utilities"},{n:"Mysterious pedestal",img:"items/mysteriouspedestal.png",cat:"Furniture"},
-  {n:"Mysterious slate",img:"items/mysteriousslate.png",cat:"Other"},{n:"Mysterious statue",img:"items/mysteriousstatue.png",cat:"Misc."},{n:"Mysterious stone",img:"items/mysteriousstone.png",cat:"Blocks"},
-  {n:"Naptime bed",img:"items/naptimebed.png",cat:"Furniture"},{n:"Neo-Dowsing Machine",img:"items/neodowsingmachine.png",cat:"Other"},{n:"Neon flooring",img:"items/neonflooring.png",cat:"Blocks"},
-  {n:"Newspaper",img:"items/newspaper.png",cat:"Misc."},{n:"Ninja poster",img:"items/ninjaposter.png",cat:"Other"},{n:"Notepad",img:"items/notepad.png",cat:"Misc."},
-  {n:"Oblong rug",img:"items/oblongrug.png",cat:"Other"},{n:"Ocean poster",img:"items/oceanposter.png",cat:"Other"},{n:"Ocean rock",img:"items/oceanrock.png",cat:"Blocks"},
-  {n:"Offering dish",img:"items/offeringdish.png",cat:"Misc."},{n:"Office cabinet",img:"items/officecabinet.png",cat:"Furniture"},{n:"Office chair",img:"items/officechair.png",cat:"Furniture"},
-  {n:"Office desk",img:"items/officedesk.png",cat:"Furniture"},{n:"Office locker",img:"items/officelocker.png",cat:"Furniture"},{n:"Office shelf",img:"items/officeshelf.png",cat:"Furniture"},
-  {n:"Office table",img:"items/officetable.png",cat:"Furniture"},{n:"Oil lantern",img:"items/oillantern.png",cat:"Utilities"},{n:"Oil painting poster",img:"items/oilpaintingposter.png",cat:"Other"},
-  {n:"Open book",img:"items/openbook.png",cat:"Misc."},{n:"Orange cottage kit",img:"items/orangecottagekit.png",cat:"Kits"},{n:"Orange hut kit",img:"items/orangehutkit.png",cat:"Kits"},
-  {n:"Orange meteor lamp",img:"items/orangemeteorlamp.png",cat:"Utilities"},{n:"Ordinary sand",img:"items/ordinarysand.png",cat:"Blocks"},{n:"Ordinary soil",img:"items/ordinarysoil.png",cat:"Blocks"},
-  {n:"Painted wall",img:"items/paintedwall.png",cat:"Blocks"},{n:"Pallet Town",img:"items/pallettown.png",cat:"Other"},{n:"Palm tree stump",img:"items/palmtreestump.png",cat:"Nature"},
-  {n:"Paper party cups",img:"items/paperpartycups.png",cat:"Misc."},{n:"Papers",img:"items/papers.png",cat:"Misc."},{n:"Party bunting",img:"items/partybunting.png",cat:"Misc."},
-  {n:"Party cooking pot",img:"items/partycookingpot.png",cat:"Other"},{n:"Party platter",img:"items/partyplatter.png",cat:"Misc."},{n:"Party popper",img:"items/partypopper.png",cat:"Other"},
-  {n:"Passionate poster",img:"items/passionateposter.png",cat:"Other"},{n:"Patterned aged-stone wall",img:"items/patternedagedstonewall.png",cat:"Blocks"},{n:"Pencil holder",img:"items/pencilholder.png",cat:"Misc."},
-  {n:"Perch",img:"items/perch.png",cat:"Outdoor"},{n:"Pewter City",img:"items/pewtercity.png",cat:"Other"},{n:"Photo cutout board",img:"items/photocutoutboard.png",cat:"Outdoor"},
-  {n:"Photo frame",img:"items/photoframe.png",cat:"Misc."},{n:"Picnic basket",img:"items/picnicbasket.png",cat:"Misc."},{n:"Picnic blanket",img:"items/picnicblanket.png",cat:"Other"},
-  {n:"Pikachu doll",img:"items/pikachudoll.png",cat:"Misc."},{n:"Pikachu fountain kit",img:"items/pikachufountainkit.png",cat:"Kits"},{n:"Pikachu sofa",img:"items/pikachusofa.png",cat:"Furniture"},
-  {n:"Pink cottage kit",img:"items/pinkcottagekit.png",cat:"Kits"},{n:"Pink hut kit",img:"items/pinkhutkit.png",cat:"Kits"},{n:"Pink tall grass",img:"items/pinktallgrass.png",cat:"Nature"},
-  {n:"Pinwheels",img:"items/pinwheels.png",cat:"Misc."},{n:"Pitched brick roof",img:"items/pitchedbrickroof.png",cat:"Buildings"},{n:"Pitcher-plant pot",img:"items/pitcherplantpot.png",cat:"Misc."},
-  {n:"Pizza",img:"items/pizza.png",cat:"Misc."},{n:"Plain bed",img:"items/plainbed.png",cat:"Furniture"},{n:"Plain chair",img:"items/plainchair.png",cat:"Furniture"},
-  {n:"Plain chest",img:"items/plainchest.png",cat:"Furniture"},{n:"Plain closet",img:"items/plaincloset.png",cat:"Furniture"},{n:"Plain sofa",img:"items/plainsofa.png",cat:"Furniture"},
-  {n:"Plain stand",img:"items/plainstand.png",cat:"Furniture"},{n:"Plain stool",img:"items/plainstool.png",cat:"Furniture"},{n:"Plain table",img:"items/plaintable.png",cat:"Furniture"},
-  {n:"Planter",img:"items/planter.png",cat:"Outdoor"},{n:"Plaster wall",img:"items/plasterwall.png",cat:"Blocks"},{n:"Plate",img:"items/plate.png",cat:"Misc."},
-  {n:"Pointy tree",img:"items/pointytree.png",cat:"Nature"},{n:"Pointy tree stump",img:"items/pointytreestump.png",cat:"Nature"},{n:"Pokémon Center counter",img:"items/pokmoncentercounter.png",cat:"Furniture"},
-  {n:"Polygonal shelf",img:"items/polygonalshelf.png",cat:"Furniture"},{n:"Pop art bed",img:"items/popartbed.png",cat:"Furniture"},{n:"Pop art chair",img:"items/popartchair.png",cat:"Furniture"},
-  {n:"Pop art lamp",img:"items/popartlamp.png",cat:"Utilities"},{n:"Pop art sofa",img:"items/popartsofa.png",cat:"Furniture"},{n:"Pop art table",img:"items/poparttable.png",cat:"Furniture"},
-  {n:"Printer",img:"items/printer.png",cat:"Misc."},{n:"Professor's treasure trove",img:"items/professorstreasuretrove.png",cat:"Other"},{n:"Protruding wall",img:"items/protrudingwall.png",cat:"Buildings"},
-  {n:"Public seat",img:"items/publicseat.png",cat:"Furniture"},{n:"Pulley",img:"items/pulley.png",cat:"Buildings"},{n:"Punching bag",img:"items/punchingbag.png",cat:"Outdoor"},
-  {n:"Punching game",img:"items/punchinggame.png",cat:"Misc."},{n:"Push cart",img:"items/pushcart.png",cat:"Furniture"},{n:"Raichu sign",img:"items/raichusign.png",cat:"Outdoor"},
-  {n:"Railway track",img:"items/railwaytrack.png",cat:"Utilities"},{n:"Rainbow Feather",img:"items/rainbowfeather.png",cat:"Other"},{n:"Recycling bin",img:"items/recyclingbin.png",cat:"Outdoor"},
-  {n:"Red cliff rock",img:"items/redcliffrock.png",cat:"Blocks"},{n:"Red crystal cluster",img:"items/redcrystalcluster.png",cat:"Nature"},{n:"Red meteor lamp",img:"items/redmeteorlamp.png",cat:"Utilities"},
-  {n:"Red rock",img:"items/redrock.png",cat:"Blocks"},{n:"Red spotted cliff rock",img:"items/redspottedcliffrock.png",cat:"Blocks"},{n:"Red tall grass",img:"items/redtallgrass.png",cat:"Nature"},
-  {n:"Reddish-brown cave rock",img:"items/reddishbrowncaverock.png",cat:"Blocks"},{n:"Refrigerator",img:"items/refrigerator.png",cat:"Misc."},{n:"Relaxing park kit",img:"items/relaxingparkkit.png",cat:"Kits"},
-  {n:"Repel",img:"items/repel.png",cat:"Misc."},{n:"Resort bed",img:"items/resortbed.png",cat:"Furniture"},{n:"Resort chair",img:"items/resortchair.png",cat:"Furniture"},
-  {n:"Resort hammock",img:"items/resorthammock.png",cat:"Furniture"},{n:"Resort light",img:"items/resortlight.png",cat:"Utilities"},{n:"Resort sofa",img:"items/resortsofa.png",cat:"Furniture"},
-  {n:"Resort stool",img:"items/resortstool.png",cat:"Furniture"},{n:"Resort table",img:"items/resorttable.png",cat:"Furniture"},{n:"Ribbon cake",img:"items/ribboncake.png",cat:"Misc."},
-  {n:"Robust flower",img:"items/robustflower.png",cat:"Nature"},{n:"Rocket Hideout",img:"items/rockethideout.png",cat:"Other"},{n:"Roof support",img:"items/roofsupport.png",cat:"Buildings"},
-  {n:"Rope",img:"items/rope.png",cat:"Buildings"},{n:"Rose Tower",img:"items/rosetower.png",cat:"Other"},{n:"Rough wall",img:"items/roughwall.png",cat:"Blocks"},
-  {n:"Route 209",img:"items/route209.png",cat:"Other"},{n:"Rowlet clock",img:"items/rowletclock.png",cat:"Misc."},{n:"Rusted iron-plate flooring",img:"items/rustedironplateflooring.png",cat:"Other"},
-  {n:"Rustic door",img:"items/rusticdoor.png",cat:"Buildings"},{n:"Sand cottage kit",img:"items/sandcottagekit.png",cat:"Kits"},{n:"Sand den kit",img:"items/sanddenkit.png",cat:"Kits"},
-  {n:"Sand house kit",img:"items/sandhousekit.png",cat:"Kits"},{n:"Sand hut kit",img:"items/sandhutkit.png",cat:"Kits"},{n:"Sandbags",img:"items/sandbags.png",cat:"Outdoor"},
-  {n:"Sandbox",img:"items/sandbox.png",cat:"Outdoor"},{n:"Sandstone",img:"items/sandstone.png",cat:"Blocks"},{n:"Sandwiches",img:"items/sandwiches.png",cat:"Misc."},
-  {n:"Sash window",img:"items/sashwindow.png",cat:"Buildings"},{n:"Science experiment",img:"items/scienceexperiment.png",cat:"Misc."},{n:"Scrap cube",img:"items/scrapcube.png",cat:"Blocks"},
-  {n:"Seashell soil",img:"items/seashellsoil.png",cat:"Blocks"},{n:"Seashore flowers",img:"items/seashoreflowers.png",cat:"Nature"},{n:"Seashore grass",img:"items/seashoregrass.png",cat:"Blocks"},
-  {n:"Security camera",img:"items/securitycamera.png",cat:"Utilities"},{n:"Seedot lamp",img:"items/seedotlamp.png",cat:"Utilities"},{n:"Sewer-hole cover",img:"items/sewerholecover.png",cat:"Outdoor"},
-  {n:"Shaved ice",img:"items/shavedice.png",cat:"Misc."},{n:"Shell lamp",img:"items/shelllamp.png",cat:"Utilities"},{n:"Ship’s wheel",img:"items/shipswheel.png",cat:"Misc."},
-  {n:"Shop flooring",img:"items/shopflooring.png",cat:"Blocks"},{n:"Shutter",img:"items/shutter.png",cat:"Buildings"},{n:"Side table",img:"items/sidetable.png",cat:"Furniture"},
-  {n:"Sideways log",img:"items/sidewayslog.png",cat:"Buildings"},{n:"Sign",img:"items/sign.png",cat:"Outdoor"},{n:"Signpost",img:"items/signpost.png",cat:"Outdoor"},
-  {n:"Silph Co.",img:"items/silphco.png",cat:"Other"},{n:"Silver Feather",img:"items/silverfeather.png",cat:"Other"},{n:"Simple cushion",img:"items/simplecushion.png",cat:"Furniture"},
-  {n:"Simple door",img:"items/simpledoor.png",cat:"Buildings"},{n:"Simple flooring",img:"items/simpleflooring.png",cat:"Blocks"},{n:"Simple pillar quarter",img:"items/simplepillarquarter.png",cat:"Buildings"},
-  {n:"Simple square tiling",img:"items/simplesquaretiling.png",cat:"Blocks"},{n:"Sink",img:"items/sink.png",cat:"Misc."},{n:"Skyland cliff rock",img:"items/skylandcliffrock.png",cat:"Blocks"},
-  {n:"Skyland flowers",img:"items/skylandflowers.png",cat:"Nature"},{n:"Skyland sand",img:"items/skylandsand.png",cat:"Blocks"},{n:"Skyland sandstone",img:"items/skylandsandstone.png",cat:"Blocks"},
-  {n:"Skyland spotted cliff rock",img:"items/skylandspottedcliffrock.png",cat:"Blocks"},{n:"Skylight",img:"items/skylight.png",cat:"Buildings"},{n:"Slender candle",img:"items/slendercandle.png",cat:"Outdoor"},
-  {n:"Slide",img:"items/slide.png",cat:"Outdoor"},{n:"Sloped stone roof",img:"items/slopedstoneroof.png",cat:"Buildings"},{n:"Sloped tent roof",img:"items/slopedtentroof.png",cat:"Buildings"},
-  {n:"Sloped tiled roof",img:"items/slopedtiledroof.png",cat:"Buildings"},{n:"Slowpoke rug",img:"items/slowpokerug.png",cat:"Other"},{n:"Small garbage can",img:"items/smallgarbagecan.png",cat:"Misc."},
-  {n:"Small lost relic",img:"items/smalllostrelic.png",cat:"Other"},{n:"Small narrow rug",img:"items/smallnarrowrug.png",cat:"Other"},{n:"Small office kit",img:"items/smallofficekit.png",cat:"Kits"},
-  {n:"Small round rug",img:"items/smallroundrug.png",cat:"Other"},{n:"Small square rug",img:"items/smallsquarerug.png",cat:"Other"},{n:"Small stage",img:"items/smallstage.png",cat:"Outdoor"},
-  {n:"Small vase",img:"items/smallvase.png",cat:"Misc."},{n:"Smelting furnace",img:"items/smeltingfurnace.png",cat:"Utilities"},{n:"Smooth Rock",img:"items/smoothrock.png",cat:"Outdoor"},
-  {n:"Snowbelle City",img:"items/snowbellecity.png",cat:"Other"},{n:"Soda float",img:"items/sodafloat.png",cat:"Misc."},{n:"Soft carpeting",img:"items/softcarpeting.png",cat:"Blocks"},
-  {n:"Soft mat",img:"items/softmat.png",cat:"Other"},{n:"Soft seat",img:"items/softseat.png",cat:"Furniture"},{n:"Sootopolis City",img:"items/sootopoliscity.png",cat:"Other"},
-  {n:"South Province",img:"items/southprovince.png",cat:"Other"},{n:"Spaceship",img:"items/spaceship.png",cat:"Misc."},{n:"Spacesuit",img:"items/spacesuit.png",cat:"Misc."},
-  {n:"Speaker",img:"items/speaker.png",cat:"Misc."},{n:"Spectator chair",img:"items/spectatorchair.png",cat:"Furniture"},{n:"Spotlight",img:"items/spotlight.png",cat:"Utilities"},
-  {n:"Spotted cliff rock",img:"items/spottedcliffrock.png",cat:"Blocks"},{n:"Sprinkler",img:"items/sprinkler.png",cat:"Utilities"},{n:"Square plant",img:"items/squareplant.png",cat:"Nature"},
-  {n:"Square tiling",img:"items/squaretiling.png",cat:"Blocks"},{n:"Stalactites",img:"items/stalactites.png",cat:"Nature"},{n:"Stalagmites",img:"items/stalagmites.png",cat:"Nature"},
-  {n:"Standing mic",img:"items/standingmic.png",cat:"Misc."},{n:"Star Piece",img:"items/starpiece.png",cat:"Other"},{n:"Star print",img:"items/starprint.png",cat:"Blocks"},
-  {n:"Stepping stones",img:"items/steppingstones.png",cat:"Buildings"},{n:"Sticky web",img:"items/stickyweb.png",cat:"Nature"},{n:"Stone bench",img:"items/stonebench.png",cat:"Furniture"},
-  {n:"Stone brick wall",img:"items/stonebrickwall.png",cat:"Blocks"},{n:"Stone cottage kit",img:"items/stonecottagekit.png",cat:"Kits"},{n:"Stone debris",img:"items/stonedebris.png",cat:"Other"},
-  {n:"Stone den kit",img:"items/stonedenkit.png",cat:"Kits"},{n:"Stone fencing",img:"items/stonefencing.png",cat:"Buildings"},{n:"Stone fireplace",img:"items/stonefireplace.png",cat:"Misc."},
-  {n:"Stone flooring",img:"items/stoneflooring.png",cat:"Blocks"},{n:"Stone fragments",img:"items/stonefragments.png",cat:"Other"},{n:"Stone hipped roof",img:"items/stonehippedroof.png",cat:"Buildings"},
-  {n:"Stone house kit",img:"items/stonehousekit.png",cat:"Kits"},{n:"Stone hut kit",img:"items/stonehutkit.png",cat:"Kits"},{n:"Stone roof decoration",img:"items/stoneroofdecoration.png",cat:"Buildings"},
-  {n:"Stone roof valley",img:"items/stoneroofvalley.png",cat:"Buildings"},{n:"Stone steps",img:"items/stonesteps.png",cat:"Buildings"},{n:"Stone table",img:"items/stonetable.png",cat:"Furniture"},
-  {n:"Stone tiling",img:"items/stonetiling.png",cat:"Blocks"},{n:"Storage box",img:"items/storagebox.png",cat:"Furniture"},{n:"Straw bed",img:"items/strawbed.png",cat:"Furniture"},
-  {n:"Straw stool",img:"items/strawstool.png",cat:"Furniture"},{n:"Straw table",img:"items/strawtable.png",cat:"Furniture"},{n:"Strength rock",img:"items/strengthrock.png",cat:"Nature"},
-  {n:"String lights",img:"items/stringlights.png",cat:"Utilities"},{n:"Striped soil",img:"items/stripedsoil.png",cat:"Blocks"},{n:"Striped wall",img:"items/stripedwall.png",cat:"Blocks"},
-  {n:"Study desk",img:"items/studydesk.png",cat:"Furniture"},{n:"Stylish bronze wall",img:"items/stylishbronzewall.png",cat:"Blocks"},{n:"Stylish café kit",img:"items/stylishcafkit.png",cat:"Kits"},
-  {n:"Stylish cooking pot",img:"items/stylishcookingpot.png",cat:"Utilities"},{n:"Stylish door",img:"items/stylishdoor.png",cat:"Buildings"},{n:"Stylish frying pan",img:"items/stylishfryingpan.png",cat:"Utilities"},
-  {n:"Stylish gold wall",img:"items/stylishgoldwall.png",cat:"Blocks"},{n:"Stylish hedge",img:"items/stylishhedge.png",cat:"Nature"},{n:"Stylish iron wall",img:"items/stylishironwall.png",cat:"Blocks"},
-  {n:"Stylish steps",img:"items/stylishsteps.png",cat:"Buildings"},{n:"Stylish stone flooring",img:"items/stylishstoneflooring.png",cat:"Blocks"},{n:"Stylish stool",img:"items/stylishstool.png",cat:"Furniture"},
-  {n:"Stylish tiling",img:"items/stylishtiling.png",cat:"Blocks"},{n:"Substitute doll",img:"items/substitutedoll.png",cat:"Misc."},{n:"Sunny poster",img:"items/sunnyposter.png",cat:"Other"},
-  {n:"Super Training",img:"items/supertraining.png",cat:"Other"},{n:"Surface light",img:"items/surfacelight.png",cat:"Utilities"},{n:"Swirl print",img:"items/swirlprint.png",cat:"Blocks"},
-  {n:"Table setting",img:"items/tablesetting.png",cat:"Misc."},{n:"Tablet",img:"items/tablet.png",cat:"Misc."},{n:"Tabletop mic",img:"items/tabletopmic.png",cat:"Misc."},
-  {n:"Tall grass",img:"items/tallgrass.png",cat:"Nature"},{n:"Tall potted plant",img:"items/tallpottedplant.png",cat:"Misc."},{n:"Tartan print",img:"items/tartanprint.png",cat:"Blocks"},
-  {n:"Tatami mat",img:"items/tatamimat.png",cat:"Blocks"},{n:"Tea set",img:"items/teaset.png",cat:"Misc."},{n:"Team Rocket wall hanging",img:"items/teamrocketwallhanging.png",cat:"Other"},
-  {n:"Technology poster",img:"items/technologyposter.png",cat:"Other"},{n:"Television",img:"items/television.png",cat:"Misc."},{n:"Tent hipped roof",img:"items/tenthippedroof.png",cat:"Buildings"},
-  {n:"Tent roof valley",img:"items/tentroofvalley.png",cat:"Buildings"},{n:"Tiled hipped roof",img:"items/tiledhippedroof.png",cat:"Buildings"},{n:"Tiled roof decoration",img:"items/tiledroofdecoration.png",cat:"Buildings"},
-  {n:"Tiled roof valley",img:"items/tiledroofvalley.png",cat:"Buildings"},{n:"Tire toy",img:"items/tiretoy.png",cat:"Outdoor"},{n:"Tires",img:"items/tires.png",cat:"Outdoor"},
-  {n:"Toilet",img:"items/toilet.png",cat:"Misc."},{n:"Torch",img:"items/torch.png",cat:"Outdoor"},{n:"Towel rack",img:"items/towelrack.png",cat:"Misc."},
-  {n:"Town map",img:"items/townmap.png",cat:"Other"},{n:"Town streetlight",img:"items/townstreetlight.png",cat:"Utilities"},{n:"Townscape poster",img:"items/townscapeposter.png",cat:"Other"},
-  {n:"Toy blocks",img:"items/toyblocks.png",cat:"Misc."},{n:"Traffic cone",img:"items/trafficcone.png",cat:"Outdoor"},{n:"Treasure",img:"items/treasure.png",cat:"Outdoor"},
-  {n:"Triangle-design flooring",img:"items/triangledesignflooring.png",cat:"Blocks"},{n:"Twisted potted plant",img:"items/twistedpottedplant.png",cat:"Misc."},{n:"Ultra Ruin",img:"items/ultraruin.png",cat:"Other"},
-  {n:"Underground hatch",img:"items/undergroundhatch.png",cat:"Buildings"},{n:"Union Cave",img:"items/unioncave.png",cat:"Other"},{n:"Upright log",img:"items/uprightlog.png",cat:"Buildings"},
-  {n:"Utility pole",img:"items/utilitypole.png",cat:"Utilities"},{n:"Vending machine",img:"items/vendingmachine.png",cat:"Outdoor"},{n:"Verdant shoots",img:"items/verdantshoots.png",cat:"Nature"},
-  {n:"Vermilion City",img:"items/vermilioncity.png",cat:"Other"},{n:"Vine print",img:"items/vineprint.png",cat:"Blocks"},{n:"Vine wall decoration",img:"items/vinewalldecoration.png",cat:"Misc."},
-  {n:"Vines",img:"items/vines.png",cat:"Other"},{n:"Violet meteor lamp",img:"items/violetmeteorlamp.png",cat:"Utilities"},{n:"Viridian City",img:"items/viridiancity.png",cat:"Other"},
-  {n:"Volcanic ash",img:"items/volcanicash.png",cat:"Blocks"},{n:"Volcanic rock",img:"items/volcanicrock.png",cat:"Blocks"},{n:"Walkway",img:"items/walkway.png",cat:"Buildings"},
-  {n:"Wall calendar",img:"items/wallcalendar.png",cat:"Misc."},{n:"Wall light",img:"items/walllight.png",cat:"Utilities"},{n:"Wall mirror",img:"items/wallmirror.png",cat:"Furniture"},
-  {n:"Wall monitor",img:"items/wallmonitor.png",cat:"Misc."},{n:"Wall photo frame",img:"items/wallphotoframe.png",cat:"Misc."},{n:"Wall storage box",img:"items/wallstoragebox.png",cat:"Furniture"},
-  {n:"Wall switch",img:"items/wallswitch.png",cat:"Utilities"},{n:"Wall torch",img:"items/walltorch.png",cat:"Outdoor"},{n:"Warning wall",img:"items/warningwall.png",cat:"Blocks"},
-  {n:"Washing machine",img:"items/washingmachine.png",cat:"Misc."},{n:"Water basin",img:"items/waterbasin.png",cat:"Outdoor"},{n:"Water pillar quarter",img:"items/waterpillarquarter.png",cat:"Buildings"},
-  {n:"Watercolor poster",img:"items/watercolorposter.png",cat:"Other"},{n:"Waterproof seat",img:"items/waterproofseat.png",cat:"Furniture"},{n:"Waterwheel kit",img:"items/waterwheelkit.png",cat:"Kits"},
-  {n:"Weather vane",img:"items/weathervane.png",cat:"Outdoor"},{n:"Wheelbarrow",img:"items/wheelbarrow.png",cat:"Outdoor"},{n:"White rock",img:"items/whiterock.png",cat:"Blocks"},
-  {n:"Wiggly mirror",img:"items/wigglymirror.png",cat:"Furniture"},{n:"Wild Area",img:"items/wildarea.png",cat:"Other"},{n:"Wildflower",img:"items/wildflower.png",cat:"Nature"},
-  {n:"Windmill kit",img:"items/windmillkit.png",cat:"Kits"},{n:"Windmill poster",img:"items/windmillposter.png",cat:"Other"},{n:"Window pane",img:"items/windowpane.png",cat:"Buildings"},
-  {n:"Winter print",img:"items/winterprint.png",cat:"Blocks"},{n:"Wire",img:"items/wire.png",cat:"Buildings"},{n:"Wireless power transmitter",img:"items/wirelesspowertransmitter.png",cat:"Utilities"},
-  {n:"Wireless power-transmitter switch",img:"items/wirelesspowertransmitterswitch.png",cat:"Utilities"},{n:"Wobbuffet wobbler",img:"items/wobbuffetwobbler.png",cat:"Misc."},{n:"Wooden bed",img:"items/woodenbed.png",cat:"Furniture"},
-  {n:"Wooden bench",img:"items/woodenbench.png",cat:"Furniture"},{n:"Wooden birdhouse",img:"items/woodenbirdhouse.png",cat:"Outdoor"},{n:"Wooden crate",img:"items/woodencrate.png",cat:"Outdoor"},
-  {n:"Wooden enclosure",img:"items/woodenenclosure.png",cat:"Buildings"},{n:"Wooden fencing",img:"items/woodenfencing.png",cat:"Buildings"},{n:"Wooden flooring",img:"items/woodenflooring.png",cat:"Blocks"},
-  {n:"Wooden gate",img:"items/woodengate.png",cat:"Buildings"},{n:"Wooden handrail",img:"items/woodenhandrail.png",cat:"Buildings"},{n:"Wooden ladder",img:"items/woodenladder.png",cat:"Buildings"},
-  {n:"Wooden partition",img:"items/woodenpartition.png",cat:"Buildings"},{n:"Wooden path",img:"items/woodenpath.png",cat:"Buildings"},{n:"Wooden plate",img:"items/woodenplate.png",cat:"Misc."},
-  {n:"Wooden posts",img:"items/woodenposts.png",cat:"Buildings"},{n:"Wooden steps",img:"items/woodensteps.png",cat:"Buildings"},{n:"Wooden table",img:"items/woodentable.png",cat:"Furniture"},
-  {n:"Wooden wall",img:"items/woodenwall.png",cat:"Blocks"},{n:"Workbench",img:"items/workbench.png",cat:"Utilities"},{n:"Worn lumber",img:"items/wornlumber.png",cat:"Other"},
-  {n:"Worn wooden crate",img:"items/wornwoodencrate.png",cat:"Outdoor"},{n:"Woven carpeting",img:"items/wovencarpeting.png",cat:"Blocks"},{n:"Wyndon",img:"items/wyndon.png",cat:"Other"},
-  {n:"Yellow cottage kit",img:"items/yellowcottagekit.png",cat:"Kits"},{n:"Yellow hut kit",img:"items/yellowhutkit.png",cat:"Kits"},{n:"Yellow meteor lamp",img:"items/yellowmeteorlamp.png",cat:"Utilities"},
-  {n:"Yellow rock",img:"items/yellowrock.png",cat:"Blocks"},{n:"Yellow tall grass",img:"items/yellowtallgrass.png",cat:"Nature"},{n:"Yellow-green shoots",img:"items/yellowgreenshoots.png",cat:"Nature"},
-  {n:"bean plant",img:"items/beanplant.png",cat:"Other"},{n:"potato plant",img:"items/potatoplant.png",cat:"Other"},{n:"tomato plant",img:"items/tomatoplant.png",cat:"Other"},
-  {n:"wheat plant",img:"items/wheatplant.png",cat:"Other"}
-];
 
 /* ---------------- helpers ---------------- */
 const $ = s => document.querySelector(s);
@@ -1689,7 +1194,6 @@ const SPELLING_LEVELS = [
    speaker instead. Either way the child still has to connect a spoken name to a
    written one; nothing ever reads a word to them.
    "Clean" (for promotion) means the first tap was the correct one. */
-const SPELLABLE_ITEMS = ITEMS.filter(it => /^[A-Za-z]+$/.test(it.n));
 function lenGatedReadingPool(maxLen, minLen=3){
   const combined = genGatedSpellablePokemon().concat(SPELLABLE_ITEMS);
   let pool = combined.filter(p => p.n.length>=minLen && p.n.length<=maxLen);
@@ -2310,41 +1814,36 @@ function renderSpell(p){
    - SPEECH ONLY. Spelling tiles, Reading options, the Pokédex and every other
      display keep using the real name; nothing here changes what's on screen.
 
+   Provenance matters here, so every entry is marked:
+   - `// checked`     verified against a published pronunciation guide.
+   - `// unverified`  derived from the name's etymology — most are transparent
+                      puns a synthesiser cannot see (Polteageist is poltergeist
+                      + tea, Eiscue is ice + cue, Toedscool is toads + Tentacool)
+                      — but no guide was found to confirm them. Treat as guesses.
+
+   Coverage is deliberately partial. A respelling only does anything when it
+   differs from what the synthesiser already produces, so names with ordinary
+   English spellings (Pikachu, Charmander, Squirtle) are left alone: overriding
+   them is all risk and no gain. Only names scored as orthographically hazardous
+   are here.
+
+   Sourcing note for whoever picks this up: direct fetches to Bulbapedia,
+   Serebii, PokémonDB, Wikipedia and the Fandom wikis are all blocked by this
+   environment's egress proxy, and no published dataset pairs names with
+   pronunciations. Web *search* does reach their content, ~4-5 names a query,
+   which is how the checked ones were confirmed and how two wrong guesses
+   (Rayquaza, Gyarados) were caught. Coverage thins out sharply for Gen 8-9.
+
    Use tools/pronounce.html to audit these by ear — it lists every name with a
    play button and collects the ones that sound wrong. */
-const SPEECH_OVERRIDES = {
-  arcanine:   "ar kuh nine",
-  celebi:     "sell uh bee",
-  chandelure: "shan duh loor",
-  deoxys:     "dee ok sis",
-  entei:      "en tay",
-  eternatus:  "ee ter nay tus",
-  giratina:   "gee ruh tee nuh",
-  groudon:    "grow don",
-  gyarados:   "gyah ruh dose",
-  jirachi:    "jih rah chee",
-  kangaskhan: "kang gus kahn",
-  koraidon:   "kuh rye don",
-  kyogre:     "kai oh gur",
-  lucario:    "loo car ee oh",
-  lugia:      "loo gee uh",
-  milotic:    "my lot ik",
-  mimikyu:    "mim ih kyoo",
-  miraidon:   "muh rye don",
-  necrozma:   "neh kroz muh",
-  ninetales:  "nine tales",
-  raikou:     "rye koo",
-  rayquaza:   "ray kwah zuh",
-  solgaleo:   "sol guh lay oh",
-  suicune:    "swee koon",
-  volcarona:  "vol kuh roh nuh",
-  xerneas:    "zur nee us",
-  yveltal:    "ee vel tahl",
-  zoroark:    "zoh roh ark",
-  zygarde:    "zye guard",
-};
 function sayAs(name){
-  return SPEECH_OVERRIDES[String(name).toLowerCase()] || name;
+  const key = String(name).toLowerCase();
+  if(SPEECH_OVERRIDES[key]) return SPEECH_OVERRIDES[key];
+  // Roster names are slugs, so multi-word species arrive hyphenated — "great-tusk",
+  // "roaring-moon", "iron-bundle". Those are ordinary English once the hyphen is a
+  // space, and a synthesiser handed the hyphen may spell it out or run the words
+  // together. Covers ~25 Gen 7–9 names at once, and any hyphenated name added later.
+  return key.includes("-") ? key.replace(/-+/g, " ") : name;
 }
 
 function speak(text){
@@ -3134,10 +2633,17 @@ function renderTrailSettings(){
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
 }
 
-/* ---------------- wire up ---------------- */
-loadSettings();
-renderStreak();
-renderTrailSettings();
+/* ---------------- wire up ----------------
+   Listeners bind immediately (they only fire on interaction), but anything that
+   reads the roster has to wait for the CSVs to arrive. */
+(async function boot(){
+  try{ await loadData(); }
+  catch(err){ console.error(err); showDataError(err); return; }
+  loadSettings();
+  renderStreak();
+  renderTrailSettings();
+  window.__dataReady = true;      // tools/pronounce.html waits on this
+})();
 
 $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
