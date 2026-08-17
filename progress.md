@@ -57,7 +57,7 @@ Settings has an **About** card: `Build` (hand-maintained), `Published`, and `Thi
 
 ## Phase 17 — Data out of index.html
 
-`index.html` was 236KB, roughly half of it data literals. All three blocks moved to `data/*.csv`, fetched and parsed at startup so they can be maintained in a spreadsheet. The file is now **121KB**.
+`index.html` was 236KB, roughly half of it data literals. All three blocks moved to `data/*.csv`, fetched and parsed at startup so they can be maintained in a spreadsheet, roughly **halving the file**.
 
 - **The trade-off**: `fetch` is blocked on `file://`, so the app must be **served over http** rather than opened by double-clicking. A missing CSV shows a legible error instead of booting with silently empty pools.
 - Boot is async. Listeners bind immediately; anything reading the roster waits for data.
