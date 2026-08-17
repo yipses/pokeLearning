@@ -1,7 +1,7 @@
 # Poké Learning — Product Requirements Document
 
 **Owner:** Derek Yip
-**Platform:** Single-file web app (`index.html`), works offline, mobile-friendly
+**Platform:** Web app — one page (`index.html`) plus `data/*.csv` and local artwork. Served over http(s), works offline once loaded, mobile-first
 **Audience:** Young learner(s) practicing spelling, reading, and math, themed around Pokémon
 
 > This document describes **what the app does today** — nothing else. How it got here, what changed when and why, what's still open, and what might come next all live in `progress.md`. The curriculum design rationale behind Lesson Trails lives in `LessonTrails.md`.
@@ -10,7 +10,7 @@
 
 ## 1. Summary
 
-Poké Learning is a self-contained, no-build, no-dependency HTML/CSS/JS app that turns spelling, reading, and math practice into short, randomized, Pokémon-themed mini-games. A session mixes challenges from whichever modes are turned on, tracks a score, and ends with a results screen.
+Poké Learning is a no-build, no-dependency HTML/CSS/JS app — one page plus a folder of CSV data and local artwork — that turns spelling, reading, and math practice into short, randomized, Pokémon-themed mini-games. A session mixes challenges from whichever modes are turned on, tracks a score, and ends with a results screen.
 
 Difficulty is not a setting a parent picks and re-picks. Four **Lesson Trails** — Spelling, Reading, Add/Subtract, and Multiply↔Divide — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress dashboard, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
 
@@ -19,7 +19,7 @@ Difficulty is not a setting a parent picks and re-picks. Four **Lesson Trails** 
 - Make repetitive spelling/reading/math drilling feel like play, not homework.
 - Support a range of skill levels and question styles (abstract numbers, visual/concrete representations, patterns, picture recall) rather than one fixed format.
 - Ramp difficulty automatically, per skill, based on real performance.
-- Work fully offline and load fast — no build step, no external runtime dependencies, no account/login.
+- Load fast with no build step, no external runtime dependencies and no account/login, and keep working without a network once loaded. The page must be **served over http(s)** rather than opened as a file, since it fetches its data (§13).
 - Let a parent/guardian tune content and placement per mode without touching code.
 - Remember settings and progress between visits.
 
@@ -170,10 +170,11 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 ## 8. Pokédex & Catching
 
 - Every challenge screen shows a decorative grass strip. At a configurable rate (Settings, default 10%), it shakes to signal a Pokémon is hiding.
-- Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer).
+- Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer). Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. Spelling's Phase B pool and Reading's Pokémon pool respect the same gate.
 - The **Pokédex screen** shows every Pokémon organized by generation: caught ones in full color with their name, uncaught ones as a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with the name hidden as "???", plus a live X/Y caught count per generation.
-- **Every entry is tappable**, opening a detail popup with larger artwork, the Dex number, the name, type badges, and a 🔊 speaker. Uncaught entries open too, but keep their secret — silhouette, "???", no types and no read-aloud — so browsing can't spoil what's still out there to find.
+- **Legendary and mythical species are called out**: a gold cell with a ✨ badge in the grid, a matching chip above the type badges in the detail popup, and a per-generation tally in each generation header (`✨ 2/5 · 3 / 147`). The marker shows on **uncaught** slots too — it reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name, types and the rarity chip all stay hidden until it's caught.
+- **Every entry is tappable**, opening a detail popup with larger artwork, the Dex number, the name, type badges, any rarity chip, and a 🔊 speaker. Uncaught entries open too, but keep their secret — silhouette, "???", no types and no read-aloud — so browsing can't spoil what's still out there to find.
 - A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
 
 ## 9. Dashboard
@@ -213,9 +214,18 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 13. Data & Offline Assets
 
-- **Pokémon roster**: **1,021** Pokémon (the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic: Nidoran♀/♂, Farfetch'd, Mr. Mime). Each entry carries its name, National Dex ID, real type(s), and real Base Stat Total. 984 of the 1,021 names are plain single words suitable for the tile-spelling mechanic; the other 37 (Ho-Oh, the Tapu guardians, most Gen 9 Paradox Pokémon) are excluded from Spelling specifically but usable everywhere else.
-- **Pokopia items**: **922** items (name, image, category) across 12 categories. 108 are plain single words; 101 of those are placed across the Phonics Ladder's 9 patterns.
-- **Fully offline**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path. The app does not depend on PokéAPI, GitHub, Bulbapedia, or any fan site being reachable at runtime.
+All game data lives in **`data/*.csv`**, fetched and parsed at startup rather than embedded in code, so it can be maintained in a spreadsheet without touching the app. `data/README.md` documents every column and the editing traps. Rows may be reordered freely; the app sorts where order matters.
+
+| File | Rows | Columns |
+|---|---|---|
+| `data/pokemon.csv` | 1,021 | `id`, `name`, `type1`, `type2`, `base_stat_total`, `rarity` |
+| `data/items.csv` | 922 | `name`, `image`, `category` |
+| `data/pronunciations.csv` | 184 | `name`, `say_as`, `source` |
+
+- **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). 984 of the 1,021 names are plain single words suitable for the tile-spelling mechanic; the other 37 (Ho-Oh, the Tapu guardians, most Gen 9 Paradox Pokémon) are excluded from Spelling specifically but usable everywhere else. `rarity` marks **71 legendary** and **23 mythical** species.
+- **Pokopia items**: **922** items across 12 categories. 108 are plain single words; 101 of those are placed across the Phonics Ladder's 9 patterns. The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
+- **Offline, but served**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path, and nothing is fetched from PokéAPI, GitHub or any fan site at runtime. Because the CSVs are fetched, though, the page must be **served over http(s)** — browsers block `fetch` on `file://` as cross-origin, so opening `index.html` by double-clicking it shows a load error instead. Once loaded, the browser cache covers repeat visits.
+- **Failure is loud**: a missing or empty CSV replaces the page with a legible error rather than booting an app with silently empty pools.
 - **Storage keys**: Lesson Trails progress, the Pokédex collection, the set of caught-but-not-yet-viewed Pokémon, the play streak, and general settings each persist under their own `localStorage` key.
 
 ## 14. Design Notes
@@ -223,18 +233,19 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 - Warm, pastel, "cozy life-sim" visual style (leaf greens, sky blues, cream, sun yellow, berry pink) consistent across every mode.
 - Mobile-first responsive layout: touch targets sized for small screens, a dedicated `@media (max-width:480px)` breakpoint, no horizontal page scroll.
 - Speech synthesis (`speechSynthesis` API) is used for read-aloud in Spelling, Battle, Reading, and the Pokédex — in Reading, only ever to name a picture (§7.2). Utterances are pinned to `en-US`, since without an explicit language the OS default voice applies its own language's phonetics to English spellings.
-- Because the synthesiser reads invented names as though they were English words, a **pronunciation override map** hands it a phonetic respelling for names it mangles (`"rayquaza"` → `"ray kwah zuh"`). Overrides affect **speech only** — spelling tiles, Reading options and every display keep the real name. Values are lowercase and space-separated by convention: capitals risk being read as an initialism and spelled out letter by letter, and the Web Speech API offers no usable SSML for marking stress.
+- Because the synthesiser reads invented names as though they were English words, a **pronunciation override map** (`data/pronunciations.csv`, 184 entries) hands it a phonetic respelling for names it mangles (`"rayquaza"` → `"ray kwah zuh"`). Overrides affect **speech only** — spelling tiles, Reading options and every display keep the real name. Values are lowercase and space-separated by convention: capitals risk being read as an initialism and spelled out letter by letter, and the Web Speech API offers no usable SSML for marking stress.
 - Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letter, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
 - Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius.
-- No external font/script/style dependencies; everything needed to render and run ships in the one HTML file plus the local image folders.
+- No external font/script/style dependencies; everything needed to render and run ships in `index.html` plus the local `data/` and image folders.
 
 ## 15. Technical Architecture
 
 - **Stack**: vanilla HTML/CSS/JS, no framework, no build step, no package manager.
+- **Data loading**: `loadData()` fetches the three CSVs in parallel at startup and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
 - **State**: in-memory JS objects for the active session/battle; `localStorage` for everything persisted.
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
 - **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all four tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.
-- **Assets**: local `pokemon/*.png` and `items/*.png`, referenced via relative paths from `index.html`.
-- **`tools/pronounce.html`**: a development-only audit page, not part of the app. Lists every name with a play button and collects the ones that sound wrong. It reads `POKEMON` and `SPEECH_OVERRIDES` out of `index.html` through a hidden iframe rather than keeping its own copy, so it cannot drift out of sync — which means it must be served over `http://`, as a `file://` iframe counts as a different origin.
+- **Assets**: local `pokemon/*.png` and `items/*.png`, referenced via relative paths from `index.html`. A Pokémon's artwork is found by `id` (`25` → `pokemon/25.png`); an item's by its `image` slug.
+- **`tools/pronounce.html`**: a development-only audit page, not part of the app. Lists every name with a play button and collects the ones that sound wrong. It reads `POKEMON` and `SPEECH_OVERRIDES` out of a hidden `index.html` iframe, and provenance from `data/pronunciations.csv`, rather than keeping its own copy, so it cannot drift out of sync. Each row plays **Before** (the raw spelling) and **After** (the respelling) with an A/B comparison, and the respelling is editable so a fix can be tried by ear and copied back out.

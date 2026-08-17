@@ -203,15 +203,46 @@ The division of labour from here: the flagged list comes back, each fix is a one
 
 That changes the loop meaningfully. Flagging alone reports *that* something is wrong and leaves the fix to be guessed at blind, which is the same problem that seeded 29 unheard entries. An edited box reports what actually sounds *right* on the device the child uses — turning the person with ears from a reporter into the one who solves it, and removing the blind guess from the loop entirely.
 
+## Phase 17 — Splitting the data out of index.html
+
+`index.html` had reached 236KB, and roughly half of it was data literals. Pulled all three data blocks into `data/*.csv`, fetched and parsed at startup, so they can be maintained in a spreadsheet without touching code:
+
+| File | Rows | Was |
+|---|---|---|
+| `data/pokemon.csv` | 1,021 | 48KB of `POKEMON` |
+| `data/items.csv` | 922 | 58KB of `ITEMS` |
+| `data/pronunciations.csv` | 184 | 12KB of `SPEECH_OVERRIDES` |
+
+`index.html` is now **121KB / 2,690 lines**, about half its former size, and what remains is markup, styles and logic rather than data.
+
+- **The trade-off, stated up front rather than discovered later**: `fetch` is blocked on `file://` as cross-origin, so the app must now be **served over http** instead of opened by double-clicking. GitHub Pages does that, and the browser cache still covers repeat visits — but the "download the ZIP and open index.html" route suggested earlier no longer works. A missing CSV replaces the page with a legible error rather than booting an app with silently empty pools.
+- **Boot became async.** Listeners still bind immediately since they only fire on interaction, but anything reading the roster waits on the data, and `SPELLABLE_POKEMON` / `SPELLABLE_ITEMS` moved from module-level derivations into the load step.
+- **Column design favours the spreadsheet.** Types are `type1`/`type2` rather than a pipe-delimited cell, because that sorts and filters properly in Sheets. `items.csv` stores a bare slug (`honey`) rather than a path, so the `items/` folder and `.png` extension live in exactly one place.
+- **A build-time slip worth remembering**: the first attempt wrote a broken CSV parser because Python's `re.sub` interprets escape sequences *in the replacement string*, turning `\n` into literal newlines. The page still rendered its static HTML while the script was dead on arrival — assertions all passed against a corpse. Added a syntax check (`new Function()` over the extracted script) to the flow, which catches that class of failure immediately.
+- Verified beyond the parse itself: all 922 item image paths resolve on disk, every Phase A phonics word still finds its item, Reading still mixes items with Pokémon, and `SPELLABLE_ITEMS` still lands on the documented 108.
+
+## Phase 18 — Legendary and mythical call-outs
+
+- Added a `rarity` column to `data/pokemon.csv`, **sourced rather than recalled** — PokéAPI's `pokemon_species.csv` carries `is_legendary` / `is_mythical`, and `raw.githubusercontent.com` turned out to be reachable even though every wiki is egress-blocked. The join matched all 1,021 names with zero id mismatches: **71 legendary, 23 mythical**.
+- In the Pokédex: a gold cell with a ✨ badge, a matching chip in the detail popup, and a per-generation tally in each header (`✨ 2/5 · 3 / 147`) — per generation, matching how the collection is gated.
+- Catching one changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
+- **The marker deliberately shows on uncaught slots.** It reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name, types and the rarity chip stay hidden until it's caught.
+
 ---
 
-**Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the app is confirmed running in a browser, and it's published on GitHub Pages. What's left:
-- An offered-but-not-yet-done audit of the ~820 remaining Pokopia items for other name/image mismatches like the CD/Bill one (only the 101 used in Spelling have been individually eyeballed).
+**Where things stand:** All four Lesson Trails tracks are live and promoting, the Dashboard shows real progress for all of them, the Pokédex has entry detail and legendary call-outs, all game data is in editable CSVs, and it's published on GitHub Pages. What's left:
+
+- **46 unverified pronunciations.** All Gen 8–9, all with a stated reason for existing, none yet heard. They'll surface naturally when the collection reaches them; `tools/pronounce.html` filters to exactly this set. The first ear-audit established the rule to apply if any sound wrong: **drop it rather than re-guess** — the plain spelling is a known state.
+- **An audit of the ~820 un-eyeballed Pokopia items** for other name/image mismatches like the CD/Bill one (only the 101 used in Spelling have been individually checked). Now much easier than it was: `items.csv` is a spreadsheet, and a browser can render every image for comparison.
+- **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number is worse than none, since the About card's whole purpose is telling a fresh copy from a cached one.
+
+**Ideas parked, not scheduled:** a service worker so the app installs and runs genuinely offline (now that it fetches data, this is more valuable than it was); moving the type-effectiveness chart to CSV if it ever needs editing; and the deferred Rhyme Match / Clue Words reading modes recorded in Phase 13.
 
 **Doc roles, so this doesn't drift again:**
 - `Overview.md` — what the app does *today*. No history, no status, no plans.
 - `progress.md` — how it got here, what changed and why, what's still open, ideas parked.
 - `LessonTrails.md` — the curriculum design rationale behind the four trails.
+- `data/README.md` — what every CSV column means, and the editing traps that aren't obvious (blank `type2` rather than "none", `image` without folder or extension, a `say_as` typo silently never firing).
 
 ---
 
