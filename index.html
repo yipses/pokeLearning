@@ -480,6 +480,25 @@
   }
   .dex-rare.mythical{ background:#d9b6f0; }
   .rare-count{ color:var(--sun-deep); }
+  /* Sized so a three-stage line — the common case — fits one row inside the
+     card's 220px interior. Branching families (Eevee) still wrap, which is fine. */
+  .evo-row{
+    display:flex; align-items:center; justify-content:center; gap:3px;
+    flex-wrap:wrap; margin:10px 0 2px;
+  }
+  .evo{
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    width:54px; padding:4px 1px; font:inherit; cursor:pointer;
+    background:var(--white); border:2px solid var(--cream-2); border-radius:12px;
+  }
+  .evo:hover:not(:disabled){ border-color:var(--sun-deep); }
+  .evo.current{ border-color:var(--leaf); background:var(--cream); cursor:default; }
+  .evo img{ width:36px; height:36px; object-fit:contain; }
+  .evo img.silhouette{ filter:brightness(0) opacity(.28); }
+  .evo span{ font-size:.58rem; font-weight:800; color:var(--ink-soft); text-transform:capitalize;
+    max-width:50px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .evo.current span{ color:var(--ink); }
+  .evo-arrow{ color:var(--ink-soft); font-size:.66rem; }
   .rarity-chip{
     display:inline-block; margin:0 0 6px; padding:3px 12px; border-radius:999px;
     background:var(--sun); color:#7a5a12; font-weight:900; font-size:.78rem;
@@ -808,6 +827,7 @@
       <div class="catch-name" id="catchName">Bulbasaur</div>
       <div class="rarity-chip hidden" id="catchRarity"></div>
       <div class="battle-types catch-types" id="catchTypes"></div>
+      <div class="evo-row hidden" id="catchEvo"></div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
     </div>
   </div>
@@ -820,7 +840,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 18;
+const APP_BUILD = 22;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -849,6 +869,7 @@ function renderAbout(){
 let POKEMON = [];
 let SPEECH_OVERRIDES = {};
 let SPELLABLE_POKEMON = [];
+let EVOLVES_INTO = {};
 let ITEMS = [];
 let SPELLABLE_ITEMS = [];
 
@@ -896,7 +917,14 @@ async function loadData(){
     t: [r.type1, r.type2].filter(Boolean),
     bst: Number(r.base_stat_total),
     rarity: r.rarity || "",          // "legendary" | "mythical" | "" — see data/README.md
+    from: r.evolves_from || "",      // name of what it evolves FROM, blank if none
   }));
+  // Reverse index: what each Pokémon evolves INTO. Branching families (Eevee has
+  // eight) fall out naturally as a list.
+  EVOLVES_INTO = {};
+  for(const p of POKEMON){
+    if(p.from) (EVOLVES_INTO[p.from] ||= []).push(p);
+  }
   SPEECH_OVERRIDES = Object.fromEntries(sayRows.map(r => [r.name, r.say_as]));
   // The CSV stores the bare slug; the items/ folder convention lives here only.
   ITEMS = itemRows.map(r => ({ n: r.name, img: `items/${r.image}.png`, cat: r.category }));
@@ -1158,7 +1186,7 @@ function mkPhaseA(poolKey){
     while(pick === lastPhonicsWord[poolKey]) pick = pool[rand(pool.length)];
   }
   lastPhonicsWord[poolKey] = pick;
-  return {kind:"spell", task:"full", poke: pick, pool, hintLimit:3};
+  return {kind:"spell", task:"full", poke: pick, hintLimit:3};
 }
 
 function genGatedSpellablePokemon(){
@@ -1175,7 +1203,7 @@ function lenGatedPokemon(maxLen, minLen=3){
 function mkPhaseB(fullMax, fullHints, missMax, missBlanks){
   if(rand(2)===0){
     const pool = lenGatedPokemon(fullMax);
-    return {kind:"spell", task:"full", poke: pool[rand(pool.length)], pool, hintLimit:fullHints};
+    return {kind:"spell", task:"full", poke: pool[rand(pool.length)], hintLimit:fullHints};
   }
   const pool = lenGatedPokemon(missMax);
   return {kind:"spell", task:"missing", poke: pool[rand(pool.length)], blankRange:missBlanks};
@@ -1605,6 +1633,7 @@ function showPokeModal(poke, opts){
   $("#catchRarity").textContent = rarity ? `✨ ${rarity}` : "";
   $("#catchRarity").classList.toggle("hidden", !rarity);
   $("#catchRarity").classList.toggle("mythical", poke.rarity === "mythical");
+  renderEvoRow(revealed ? poke : null);
   $("#catchSay").classList.toggle("hidden", !revealed);
   $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
   const modal = $("#catchModal");
@@ -1617,6 +1646,43 @@ function catchCaption(poke){
   if(poke.rarity === "legendary") return "✨ Legendary Catch!";
   return "🎉 Caught!";
 }
+/* The immediate family only — one step back, every step forward. Deeper chains
+   stay reachable because each member here reopens the popup on itself, so a
+   three-stage line is two taps rather than a wall of sprites. Hidden entirely
+   for an uncaught entry, which keeps its secret. */
+function renderEvoRow(poke){
+  const row = $("#catchEvo");
+  if(!poke){ row.classList.add("hidden"); row.innerHTML = ""; return; }
+  const prev = poke.from ? POKEMON.find(x => x.n === poke.from) : null;
+  const next = EVOLVES_INTO[poke.n] || [];
+  if(!prev && !next.length){ row.classList.add("hidden"); row.innerHTML = ""; return; }
+
+  const collected = loadCollection();
+  const chip = (p, current) => {
+    const got = current || collected.includes(p.id);
+    return `<button class="evo${current ? " current" : ""}" type="button" data-id="${p.id}"
+      ${current ? "disabled" : ""} aria-label="${got ? cap(p.n) : "Not caught yet"}">
+      <img src="${artwork(p.id)}" alt="" class="${got ? "" : "silhouette"}">
+      <span>${got ? cap(p.n) : "???"}</span></button>`;
+  };
+  row.innerHTML = (prev ? chip(prev, false) + `<span class="evo-arrow">➜</span>` : "")
+    + chip(poke, true)
+    + (next.length ? `<span class="evo-arrow">➜</span>` + next.map(x => chip(x, false)).join("") : "");
+  row.querySelectorAll(".evo[data-id]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const target = POKEMON.find(x => x.id === Number(btn.dataset.id));
+      const got = loadCollection().includes(target.id);
+      markSeen(target.id);
+      showPokeModal(target, {
+        caption: got ? "📖 Pokédex" : "❔ Not Caught",
+        revealed: got,
+        dismissOnBackdrop: true,
+      });
+    });
+  });
+  row.classList.remove("hidden");
+}
+
 function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke) }); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
@@ -1918,7 +1984,12 @@ function speakName(name){
 }
 
 function hintLetter(){
-  if(!spellState || spellState.hintsUsed >= spellState.hintLimit) return;
+  if(!spellState) return;
+  // Every hint in the allowance is usable. This guard used to fire on SPENDING
+  // the last one, which revealed the final letter and then immediately locked
+  // the board and swapped the word — so a 3-hint word really gave 2, and a
+  // 1-hint word gave none.
+  if(spellState.hintsUsed >= spellState.hintLimit) return;
   const name = spellState.name;
   // undo any wrong letters so the filled prefix is correct before revealing the next one
   while(spellState.filled.some((f,i)=> f.ch !== name[i])) backspaceLetter();
@@ -1933,7 +2004,6 @@ function hintLetter(){
   if(wasLastLetter) return;                     // that hint finished the word — checkSpell() already handled it
   spellState.hintsUsed++;
   updateHintButton();
-  if(spellState.hintsUsed >= spellState.hintLimit) outOfHints();
 }
 
 function updateHintButton(){
@@ -1944,22 +2014,6 @@ function updateHintButton(){
   btn.disabled = left === 0;
 }
 
-function outOfHints(){
-  const fb = $("#feedback");
-  document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
-  fb.className="feedback bad";
-  fb.textContent = "💡 Out of hints — here's a new word to try!";
-  const p = spellState.p;
-  setTimeout(()=>{
-    // draw a different word from the same pool so hint-outs don't stall the session
-    let poke = p.poke;
-    if(p.pool && p.pool.length>1){
-      do{ poke = p.pool[rand(p.pool.length)]; } while(poke===p.poke);
-    }
-    p.poke = poke;
-    renderSpell(p);
-  }, 1200);
-}
 
 let spellState=null;
 
