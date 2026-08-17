@@ -17,11 +17,9 @@ Difficulty is not a setting a parent picks and re-picks. Four **Lesson Trails** 
 ## 2. Goals
 
 - Make repetitive spelling/reading/math drilling feel like play, not homework.
-- Support a range of skill levels and question styles (abstract numbers, visual/concrete representations, patterns, picture recall) rather than one fixed format.
-- Ramp difficulty automatically, per skill, based on real performance.
-- Load fast with no build step, no external runtime dependencies and no account/login, and keep working without a network once loaded. The page must be **served over http(s)** rather than opened as a file, since it fetches its data (§13).
-- Let a parent/guardian tune content and placement per mode without touching code.
-- Remember settings and progress between visits.
+- Support a range of question styles — abstract numbers, concrete pictures, patterns, word recall — rather than one fixed format.
+- Ramp difficulty automatically, per skill, on real performance, and let a parent override placement without touching code.
+- Load fast, remember everything between visits, and keep working without a network once loaded. No build step, no runtime dependencies, no account.
 
 ## 3. Non-goals
 
@@ -47,17 +45,17 @@ Settings, Lesson Trails progress, the Pokédex collection, and the play streak p
 
 ## 5. Sessions
 
-Every mode can be independently toggled on/off in Settings. When a session starts, the app builds a pool of active modes and, for each of the **N** total challenges (set in Settings), randomly draws from that pool — with the rule that **the same mode never repeats back-to-back** when more than one mode is active. If a mode is toggled on but has nothing enabled within it, it's excluded from the pool automatically.
+Each mode toggles on/off in Settings. A session draws each of its **N** challenges at random from the active modes, never repeating the same mode back-to-back. A mode with nothing enabled inside it drops out of the pool automatically.
 
 ## 6. Lesson Trails
 
 Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are four: **Spelling**, **Reading**, **Add/Subtract**, and **Multiply↔Divide**. All four share one progression engine; a track supplies only its level list and generator functions.
 
-**How a session mixes difficulty.** Each track has a **frontier** — the level currently being worked on. Rather than only asking frontier-level questions, each track's question pool blends three bands: **Review** (20%, a level below frontier), **Current** (60%, at frontier), **Stretch** (20%, a level above). This is deliberately not "master level N completely, then jump to N+1" — interleaved practice across nearby difficulty outperforms single-difficulty blocked practice for retention, even though blocked practice feels easier in the moment.
+**Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
-**What counts as progress.** An answer only counts toward promotion if it's **clean** — correct on the first attempt, no wrong guesses, no hints. This tracking is invisible to the player: retrying until correct, or using a hint, still works exactly as it always has and still advances the session — it just doesn't count toward the promotion window. A track promotes via **either** 10 clean answers in a row (instant) **or** 16 of the last 20 (80%) clean (standard pace) — whichever happens first. There is no demotion; a rough patch is absorbed by the Review band instead of rolling the frontier back.
+**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on 10 clean in a row, or 16 of the last 20, whichever lands first. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
 
-**Manual placement.** Every frontier is directly editable in Settings in either direction, for a parent who wants to place a child ahead of or behind where auto-progression would put them. Moving a frontier resets that track's rolling window.
+**Manual placement.** Every frontier is editable in Settings in either direction. Moving one resets that track's rolling window.
 
 ## 7. Challenge Modes
 
@@ -67,17 +65,7 @@ One graduated trail of 14 levels across two phases.
 
 **Phase A — Phonics Ladder (9 levels)**, using real, audited single-word items from the Pokopia catalog. Not generation-gated: a pattern's words are available as soon as its level unlocks.
 
-| Level | Pattern |
-|---|---|
-| A1 | Short-vowel CVC |
-| A2 | Floss-rule doubles |
-| A3 | Consonant blends |
-| A4 | Digraphs |
-| A5 | Silent-e |
-| A6 | Vowel teams |
-| A7 | R-controlled vowels |
-| A8 | Compound words |
-| A9 | Multisyllabic |
+The nine patterns run CVC → floss-rule doubles → blends → digraphs → silent-e → vowel teams → r-controlled → compound words → multisyllabic. Level detail, including how many real words back each pattern, is in `LessonTrails.md`.
 
 The easiest patterns have genuinely small pools (a few real words each), so the generator never repeats the immediately-previous word for a given pattern.
 
@@ -86,15 +74,7 @@ The easiest patterns have genuinely small pools (a few real words each), so the 
 - **Full Spelling** — the mystery Pokémon's artwork is shown and the player spells its name from shuffled letter tiles (tap) or the keyboard. Controls: 🔊 (a speaker on the picture, speaks the name), 💡 Hint (reveals the next correct letter — running out swaps in a new word from the same pool rather than leaving the player stuck), Backspace, Clear. Wrong letters are rejected immediately with a shake; correct letters lock into a slot.
 - **Missing Letter** — the word is mostly shown with blanks to fill and no hints at all. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams, and r-controlled vowels as single atomic units, so a blank never splits a sound.
 
-Each Phase B level sets its own Full Spelling length ceiling, its own hint allowance, and its own Missing Letter length ceiling and blank count. Hints tighten as levels rise (3 → 3 → 2 → 2 → 1), and Missing Letter's length ceiling runs ahead of Full Spelling's at the earlier levels, since blanking part of a shown word is an easier task than spelling it from nothing.
-
-| Level | Full Spelling max | Hints | Missing Letter max | Blanks |
-|---|---|---|---|---|
-| B1 | 3 | 3 | 5 | 1 |
-| B2 | 5 | 3 | 7 | 2–3 |
-| B3 | 7 | 2 | 9 | 2–4 |
-| B4 | 9 | 2 | 10 | 3–4 |
-| B5 | 10 | 1 | 10 | 3–5 |
+Each Phase B level sets its own Full Spelling length ceiling, hint allowance, Missing Letter length ceiling and blank count. Hints tighten as levels rise (3 → 3 → 2 → 2 → 1), and Missing Letter's ceiling runs ahead of Full Spelling's at the earlier levels, since blanking part of a shown word is easier than spelling it from nothing. Per-level parameters are in `LessonTrails.md`.
 
 Phase A words use the default allowance of 3 hints.
 
@@ -107,14 +87,7 @@ Two fixed 5-choice formats, so difficulty stays constant round to round rather t
 
 Draws from a combined pool of Pokémon (generation-gated, same as Phase B) and Pokopia items (not gated — items aren't part of the Pokédex collection loop). Ramps on two independent axes: word length, and distractor difficulty ("easy" = random, "tricky" = the four wrong options share the target's first letter or length, falling back to random when the gated pool is too small to find four tricky matches).
 
-| Level | Mode | Word length | Distractors |
-|---|---|---|---|
-| 1 | Read & Choose | 3–6 | Easy |
-| 2 | Reverse Read & Choose | 3–6 | Easy |
-| 3 | Read & Choose | 3–6 | Tricky |
-| 4 | Reverse Read & Choose | 3–6 | Tricky |
-| 5 | Both, mixed | 7–10 | Easy |
-| 6 | Both, mixed | 7–10 | Tricky |
+Six levels: word length holds at 3–6 letters through level 4 then jumps to 7–10, while distractors go from easy to tricky. Levels 1–4 are single-mode and alternate; 5–6 mix both. Full table in `LessonTrails.md`.
 
 **Read-aloud rule: pictures may be named aloud; words never are.** Read & Choose prompts with a picture, which a child may not recognize, so a 🔊 Say it names it — resolving the prompt while leaving the five written options to be read. Reverse Read & Choose prompts with the written word and therefore has no speaker on the prompt at all; each of its five picture options carries its own instead. In both modes the child must connect a spoken name to a written one, and nothing ever reads a word aloud to them. There are no hints on either mode.
 
@@ -124,35 +97,9 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 Two tracks. Answers auto-check as the player types (waiting until enough digits are entered to match the answer's length before judging); a **Next ▶** button appears once the answer is correct. A correct answer shows a large animated ✅ and no caption text.
 
-**Add/Subtract — 8 levels.** Each level auto-generates a mix of addition and subtraction within its range. Levels 4a–5b use rejection sampling to control specifically for whether the ones digit carries or borrows, making "no regrouping" and "with regrouping" genuinely distinct steps rather than just wider ranges.
+**Add/Subtract — 8 levels**, from *within 5* to *within 100 with regrouping* (see `LessonTrails.md`). Each level auto-generates a mix of addition and subtraction within its range. Levels 4a–5b use rejection sampling to control specifically for whether the ones digit carries or borrows, making "no regrouping" and "with regrouping" genuinely distinct steps rather than just wider ranges.
 
-| Level | Range |
-|---|---|
-| 1 | Within 5 |
-| 2 | Within 10 |
-| 3a | Teen + Ones |
-| 3b | Teen + Teen |
-| 4a | Within 40, no regrouping |
-| 4b | Within 40, with regrouping |
-| 5a | Within 100, no regrouping |
-| 5b | Within 100, with regrouping |
-
-**Multiply↔Divide — 12 interleaved steps sharing one frontier.** Multiplication gets two full steps before division is introduced at all, and division gets the same two-step ramp once it starts.
-
-| Level | Step |
-|---|---|
-| 1 | Tiny facts (×1–3) |
-| 2 | Small facts (×1–5) |
-| 3 | Tiny facts, inverse (÷1–3) |
-| 4 | Small facts, inverse (÷1–5) |
-| 5 | Small anchor, mixed (×) |
-| 6 | Small anchor, mixed (÷) |
-| 7 | Harder tables only (×) |
-| 8 | Harder tables only (÷) |
-| 9 | Flipped orientation (×) |
-| 10 | Flipped orientation (÷) |
-| 11 | Full range (×) |
-| 12 | Full range (÷) |
+**Multiply↔Divide — 12 interleaved steps sharing one frontier**, from tiny facts (×1–3) to full range (÷1–10) (see `LessonTrails.md`). Multiplication gets two full steps before division is introduced at all, and division gets the same two-step ramp once it starts.
 
 **Skip-counting pattern sets.** On both tracks, roughly 30% of questions become a 4-in-a-row skip-counting set instead of a single equation, checked all at once. Step size is any value where four repetitions fit the level's number range, so a low level offers only counting by 1 while a high level can offer counting by up to 25.
 
@@ -232,8 +179,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 
 - Warm, pastel, "cozy life-sim" visual style (leaf greens, sky blues, cream, sun yellow, berry pink) consistent across every mode.
 - Mobile-first responsive layout: touch targets sized for small screens, a dedicated `@media (max-width:480px)` breakpoint, no horizontal page scroll.
-- Speech synthesis (`speechSynthesis` API) is used for read-aloud in Spelling, Battle, Reading, and the Pokédex — in Reading, only ever to name a picture (§7.2). Utterances are pinned to `en-US`, since without an explicit language the OS default voice applies its own language's phonetics to English spellings.
-- Because the synthesiser reads invented names as though they were English words, a **pronunciation override map** (`data/pronunciations.csv`, 184 entries) hands it a phonetic respelling for names it mangles (`"rayquaza"` → `"ray kwah zuh"`). Overrides affect **speech only** — spelling tiles, Reading options and every display keep the real name. Values are lowercase and space-separated by convention: capitals risk being read as an initialism and spelled out letter by letter, and the Web Speech API offers no usable SSML for marking stress.
+- Speech synthesis is used in Spelling, Battle, Reading and the Pokédex — in Reading, only ever to name a picture (§7.2). Utterances are pinned to `en-US`, since otherwise the OS default voice applies its own language's phonetics to English spellings. Names the synthesiser mangles are respelled via `data/pronunciations.csv` (§13); overrides affect **speech only**.
 - Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letter, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
