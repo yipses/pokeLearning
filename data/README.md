@@ -15,6 +15,7 @@ back.
 | `type1` | Required. Drives Battle type effectiveness and the Pokédex badges |
 | `type2` | Blank for single-type species — leave the cell empty, don't write "none" |
 | `base_stat_total` | Integer. Weights the Battle winner roll |
+| `evolves_from` | Name of the species this evolves **from**, or blank. Must match a `name` in this file — the four rows whose real parent is an excluded species (Nidorina, Nidorino, Sirfetch'd, Mr. Rime) are deliberately blank, since a link that can't be followed is worse than none. The reverse direction is derived at load time, so branching families need no extra data |
 | `rarity` | `legendary`, `mythical`, or blank. Drives the ✨ marker in the Pokédex and the catch banner. Sourced from PokéAPI's `pokemon_species.csv` (`is_legendary` / `is_mythical`), joined on name with all 1,021 matching and no id mismatches |
 
 Rows may be in any order; the app sorts by `id` where order matters. Adding a
