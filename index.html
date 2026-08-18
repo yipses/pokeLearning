@@ -507,6 +507,52 @@
     text-transform:uppercase; letter-spacing:.03em;
   }
 
+  /* ---------- home showcase ---------- */
+  /* The middle band of the home screen: one Pokémon, big enough to be the reason
+     a child taps Start. Caught ones show off the collection, wild ones tease as a
+     silhouette. The whole card is a button — tapping re-rolls the pick. */
+  .showcase{
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    width:100%; margin:0 0 14px; padding:12px 12px 14px; font:inherit; cursor:pointer;
+    background:linear-gradient(180deg,var(--white),var(--cream));
+    border:3px solid rgba(255,255,255,.9); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); text-align:center;
+    transition: transform .06s, box-shadow .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .showcase:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  .showcase-frame{
+    width:196px; height:196px; border-radius:50%;
+    background:radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
+    box-shadow:var(--shadow-sm), inset 0 0 0 5px rgba(255,255,255,.7);
+    display:grid; place-items:center; overflow:hidden;
+  }
+  /* Same 65%-ish cap as .poke-frame, for the same reason: the circle clips corners. */
+  .showcase-frame img{
+    max-width:68%; max-height:68%; width:auto; height:auto; object-fit:contain;
+    filter:drop-shadow(0 6px 8px rgba(0,0,0,.15));
+  }
+  .showcase-frame img.silhouette{ filter:brightness(0) opacity(.28); }
+  .showcase-name{ font-size:1.2rem; font-weight:900; color:var(--ink); margin-top:8px; line-height:1.2; }
+  .showcase-hint{ font-size:.72rem; font-weight:700; color:var(--ink-soft); line-height:1.3; }
+
+  /* ---------- home actions / footer ---------- */
+  .home-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .home-actions .btn{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    padding:14px 8px; font-size:clamp(.95rem, 3.9vw, 1.15rem); line-height:1.2; text-align:center;
+  }
+  .action-icon{ font-size:1.35rem; line-height:1; }
+  .home-footer{ display:flex; justify-content:center; margin-top:18px; }
+  .gear-btn{
+    width:46px; height:46px; border-radius:50%; border:none; cursor:pointer;
+    font:inherit; font-size:1.35rem; line-height:1; background:var(--white);
+    box-shadow:0 3px 0 var(--cream-2), var(--shadow-sm);
+    display:grid; place-items:center; -webkit-tap-highlight-color:transparent;
+    transition: transform .06s, box-shadow .06s;
+  }
+  .gear-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--cream-2); }
+
   /* ---------- About / build identity ---------- */
   .about-rows{ margin-top:4px; }
   .about-row{
@@ -638,6 +684,7 @@
 
   @media (max-width:480px){
     .poke-frame{ width:180px; height:180px; }
+    .showcase-frame{ width:170px; height:170px; }
     .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
     .slot-word{ gap:6px; }
@@ -687,11 +734,16 @@
 
     <div class="tiles" id="homeTiles"></div>
 
-    <button class="btn big green" id="startBtn">▶  Start Playing!</button>
-    <button class="btn big berry" id="battleBtn" style="margin-top:12px">⚔️ Pokémon Battle!</button>
-    <button class="btn ghost big" id="pokedexBtn" style="margin-top:12px">📖 My Pokédex</button>
-    <button class="btn ghost big" id="dashboardBtn" style="margin-top:12px">📊 My Progress</button>
-    <button class="btn ghost big" id="settingsBtn" style="margin-top:12px">⚙️ Settings</button>
+    <button class="showcase" id="homeShowcase" type="button"></button>
+
+    <div class="home-actions">
+      <button class="btn green" id="startBtn"><span class="action-icon">▶</span>Start Playing!</button>
+      <button class="btn berry" id="battleBtn"><span class="action-icon">⚔️</span>Pokémon Battle!</button>
+    </div>
+
+    <div class="home-footer">
+      <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
+    </div>
   </section>
 
   <!-- ============ SETTINGS ============ -->
@@ -1557,7 +1609,46 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); }
+function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); }
+
+/* The home screen's middle band: one Pokémon from the generation being worked
+   on, shown big. A caught one is a trophy, an uncaught one a silhouette teaser —
+   the half that makes a child want to press Start. Re-rolls on every tap, and
+   whenever the home screen is refreshed, so what's on show keeps changing. */
+function renderShowcase(){
+  const el = $("#homeShowcase");
+  if(!el || !POKEMON.length) return;
+  const collected = loadCollection();
+  const g = currentGenRange(collected);
+  const pool = g ? POKEMON.filter(p => p.id>=g.from && p.id<=g.to) : POKEMON;
+  const caught = pool.filter(p => collected.includes(p.id));
+  const wild = pool.filter(p => !collected.includes(p.id));
+  // Half caught, half wild — until one side is empty, at which point the other
+  // takes every turn (a brand-new player has nothing caught to show off).
+  const showCaught = caught.length > 0 && (wild.length === 0 || Math.random() < .5);
+  const list = showCaught ? caught : wild;
+  const poke = list[Math.floor(Math.random()*list.length)];
+  if(!poke) return;
+
+  el.innerHTML = `
+    <span class="showcase-frame">
+      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Mystery Pokémon"}"
+           class="${showCaught ? "" : "silhouette"}" decoding="async">
+    </span>
+    <span class="showcase-name">${showCaught ? cap(poke.n) : "Who's that Pokémon?"}</span>
+    <span class="showcase-hint">${showCaught
+      ? `#${String(poke.id).padStart(3,"0")} · in your Pokédex`
+      : "Play a round to catch it!"}</span>`;
+
+  // Same single cache-busting retry the Pokédex grid uses — one dropped request
+  // would otherwise leave the home screen showing a broken image until reload.
+  const img = el.querySelector("img");
+  img.addEventListener("error", ()=>{
+    if(img.dataset.retried) return;
+    img.dataset.retried = "1";
+    img.src = artwork(poke.id) + "?r=1";
+  });
+}
 
 function renderTiles(el){
   if(!el) return;
@@ -2923,9 +3014,10 @@ $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
 $("#battleBackBtn").addEventListener("click", ()=> show("setup"));
 $("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"); });
-$("#pokedexBtn").addEventListener("click", ()=>{ renderPokedex(); show("pokedex"); });
+// The Pokédex and Progress screens are reached through the home tiles now, so
+// the home screen keeps to one job: pick a mode and play.
+$("#homeShowcase").addEventListener("click", renderShowcase);
 $("#dexBackBtn").addEventListener("click", ()=> show("setup"));
-$("#dashboardBtn").addEventListener("click", ()=>{ renderDashboard(); show("dashboard"); });
 $("#dashboardBackBtn").addEventListener("click", ()=> show("setup"));
 $("#settingsBackBtn").addEventListener("click", ()=> show("setup"));
 $("#quitBtn").addEventListener("click", ()=>{
