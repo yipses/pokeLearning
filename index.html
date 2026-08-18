@@ -220,6 +220,21 @@
   .slot.active{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
   .slot.filled{ background:var(--cream); }
 
+  /* A separator is DEFINED, not spelled — it is already in place, has no slot and
+     no tile. It must not look like an empty slot, or it reads as work still to do:
+     a space is a low bar sitting on the writing line, a hyphen is its own glyph.
+     Letters are grouped per word so a two-word name wraps between words, not
+     through the middle of one. */
+  .slot-word{ display:flex; flex-wrap:wrap; gap:8px; }
+  .slot-sep{
+    width:26px; align-self:stretch; display:flex; align-items:center; justify-content:center;
+    font-size:1.9rem; font-weight:800; color:var(--ink-soft);
+  }
+  .slot-sep:empty::before{
+    content:""; width:18px; height:5px; border-radius:3px;
+    background:var(--sky-deep); align-self:flex-end; margin-bottom:12px;
+  }
+
   @keyframes shake{ 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-9px)} 40%,80%{transform:translateX(9px)} }
   .shake{ animation: shake .42s; }
 
@@ -240,6 +255,14 @@
     width:34px; height:52px; border-radius:12px; background:var(--cream);
     display:grid; place-items:center; font-size:1.6rem; font-weight:800;
     text-transform:uppercase; color:var(--ink);
+  }
+  .mw-sep{
+    width:22px; height:52px; display:flex; align-items:center; justify-content:center;
+    font-size:1.6rem; font-weight:800; color:var(--ink-soft);
+  }
+  .mw-sep:empty::before{
+    content:""; width:16px; height:5px; border-radius:3px;
+    background:var(--sky-deep); align-self:flex-end; margin-bottom:10px;
   }
   .mw-blank{
     height:52px; font:inherit; font-weight:800; font-size:1.6rem; text-align:center;
@@ -612,8 +635,13 @@
     .poke-frame{ width:180px; height:180px; }
     .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
+    .slot-word{ gap:6px; }
+    .slot-sep{ width:20px; font-size:1.5rem; }
+    .slot-sep:empty::before{ width:14px; margin-bottom:10px; }
     .tile{ width:46px; height:52px; font-size:1.4rem; }
     .mw-letter{ width:28px; height:44px; font-size:1.3rem; }
+    .mw-sep{ width:18px; height:44px; font-size:1.3rem; }
+    .mw-sep:empty::before{ width:12px; margin-bottom:8px; }
     .mw-blank{ height:44px; font-size:1.3rem; }
     .reading-opt-img img{ width:48px; height:48px; }
     .reading-say-mini{ width:26px; height:26px; font-size:12px; }
@@ -935,6 +963,27 @@ async function fetchCsv(path){
   return parseCsv(await res.text());
 }
 
+/* ---------------- multi-word names ----------------
+   A "spellable" name is one the tile mechanic can actually render: plain letters,
+   optionally joined by single separators. A separator — a space, as in the Pokopia
+   item "Sturdy stick", or a hyphen, as in the Pokémon "ho-oh" — is DEFINED rather
+   than spelled. It is drawn into the puzzle already in place, is never handed out
+   as a tile, is never chosen as a blank, and is never typed. The child only ever
+   supplies letters, so a two-word name costs exactly as much as its letters do.
+
+   Widening this from the old /^[A-Za-z]+$/ takes the item catalogue's usable rows
+   from 110 to 909 of 922, and brings the 37 hyphenated Pokémon (Ho-Oh, the Tapu
+   guardians, most Gen 9 Paradox species) back into Spelling. Names carrying
+   anything else stay out, because there is no tile for those either: digits
+   (Porygon2), apostrophes (Farfetch'd), accents (Pokémetal fragment). */
+const SEPARATORS = " -";
+const isSeparator = ch => ch.length === 1 && SEPARATORS.includes(ch);
+const SPELLABLE_RE = /^[A-Za-z]+([ -][A-Za-z]+)*$/;
+// Difficulty is measured in letters-to-supply, not characters, so "Sea glass"
+// (8 letters) sits with the other 8-letter words instead of being pushed a band
+// up by punctuation the child never has to produce.
+const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
+
 async function loadData(){
   const [pokeRows, sayRows, itemRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
@@ -958,8 +1007,8 @@ async function loadData(){
   SPEECH_OVERRIDES = Object.fromEntries(sayRows.map(r => [r.name, r.say_as]));
   // The CSV stores the bare slug; the items/ folder convention lives here only.
   ITEMS = itemRows.map(r => ({ n: r.name, img: `items/${r.image}.png`, cat: r.category }));
-  SPELLABLE_POKEMON = POKEMON.filter(p => /^[A-Za-z]+$/.test(p.n));
-  SPELLABLE_ITEMS = ITEMS.filter(it => /^[A-Za-z]+$/.test(it.n));
+  SPELLABLE_POKEMON = POKEMON.filter(p => SPELLABLE_RE.test(p.n));
+  SPELLABLE_ITEMS = ITEMS.filter(it => SPELLABLE_RE.test(it.n));
   if(!POKEMON.length) throw new Error("data/pokemon.csv is empty");
   if(!ITEMS.length) throw new Error("data/items.csv is empty");
 }
@@ -974,8 +1023,6 @@ function showDataError(err){
 }
 
 const artwork = id => `pokemon/${id}.png`;
-// Pokémon usable in Spelling: single plain-letter names only (no hyphens/spaces/colons),
-// same rule that already excludes Nidoran♀/♂, Farfetch'd, and Mr. Mime from the roster.
 
 /* ---------------- Pokopia item data (name + direct image URL) ---------------- */
 
@@ -1226,7 +1273,7 @@ function genGatedSpellablePokemon(){
   return pool;
 }
 function lenGatedPokemon(maxLen, minLen=3){
-  let pool = genGatedSpellablePokemon().filter(p => p.n.length>=minLen && p.n.length<=maxLen);
+  let pool = genGatedSpellablePokemon().filter(p => letterCount(p.n)>=minLen && letterCount(p.n)<=maxLen);
   if(pool.length===0) pool = genGatedSpellablePokemon();
   return pool;
 }
@@ -1274,7 +1321,7 @@ const SPELLING_LEVELS = [
    "Clean" (for promotion) means the first tap was the correct one. */
 function lenGatedReadingPool(maxLen, minLen=3){
   const combined = genGatedSpellablePokemon().concat(SPELLABLE_ITEMS);
-  let pool = combined.filter(p => p.n.length>=minLen && p.n.length<=maxLen);
+  let pool = combined.filter(p => letterCount(p.n)>=minLen && letterCount(p.n)<=maxLen);
   if(pool.length===0) pool = combined;
   return pool;
 }
@@ -1285,7 +1332,8 @@ function mkReading(mode, minLen, maxLen, difficulty){
   let candidates = rest;
   if(difficulty === "tricky"){
     const t0 = target.n[0].toLowerCase();
-    const tricky = rest.filter(p => p.n[0].toLowerCase()===t0 || p.n.length===target.n.length);
+    const tLen = letterCount(target.n);
+    const tricky = rest.filter(p => p.n[0].toLowerCase()===t0 || letterCount(p.n)===tLen);
     if(tricky.length >= 4) candidates = tricky;
   }
   const distractors = shuffle(candidates).slice(0,4);
@@ -1967,18 +2015,39 @@ function renderSpell(p){
     </div>
   `;
 
+  // Separators are drawn in already resolved and get no slot, so `slotEls` holds
+  // exactly the letters the child has to supply and stays index-aligned with
+  // `target`. Each word also gets its own group, so a name like "sturdy stick"
+  // wraps between its words on a narrow screen rather than mid-word.
   const slotsEl = $("#slots");
-  for(let i=0;i<name.length;i++){
+  const slotEls = [];
+  let group = null;
+  for(const ch of name){
+    if(isSeparator(ch)){
+      const sep = document.createElement("div");
+      sep.className = "slot-sep";
+      sep.textContent = ch === "-" ? "-" : "";
+      slotsEl.appendChild(sep);
+      group = null;
+      continue;
+    }
+    if(!group){
+      group = document.createElement("div");
+      group.className = "slot-word";
+      slotsEl.appendChild(group);
+    }
     const s = document.createElement("div");
-    s.className="slot"; s.dataset.i=i;
-    slotsEl.appendChild(s);
+    s.className="slot"; s.dataset.i = slotEls.length;
+    group.appendChild(s);
+    slotEls.push(s);
   }
 
-  let letters = shuffle(name.split(""));
+  const target = name.replace(/[^a-z]/g, "").split("");
+  let letters = shuffle(target);
   // make sure the jumble isn't accidentally the correct spelling
   let tries = 0;
-  while(name.length > 1 && letters.join("") === name && tries < 25){
-    letters = shuffle(name.split("")); tries++;
+  while(target.length > 1 && letters.join("") === target.join("") && tries < 25){
+    letters = shuffle(target); tries++;
   }
   const tilesEl = $("#tiles");
   letters.forEach((ch,i)=>{
@@ -1988,7 +2057,7 @@ function renderSpell(p){
     tilesEl.appendChild(t);
   });
 
-  const state = { name, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p };
+  const state = { name, target, slotEls, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p };
   spellState = state;
   refreshSlots();
 
@@ -2071,15 +2140,15 @@ function hintLetter(){
   // the board and swapped the word — so a 3-hint word really gave 2, and a
   // 1-hint word gave none.
   if(spellState.hintsUsed >= spellState.hintLimit) return;
-  const name = spellState.name;
+  const target = spellState.target;            // letters only — separators are never hinted
   // undo any wrong letters so the filled prefix is correct before revealing the next one
-  while(spellState.filled.some((f,i)=> f.ch !== name[i])) backspaceLetter();
+  while(spellState.filled.some((f,i)=> f.ch !== target[i])) backspaceLetter();
   const pos = spellState.filled.length;
-  if(pos >= name.length) return;               // already complete
-  const ch = name[pos];
+  if(pos >= target.length) return;             // already complete
+  const ch = target[pos];
   const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.textContent === ch);
   if(!tile) return;
-  const wasLastLetter = pos === name.length - 1;
+  const wasLastLetter = pos === target.length - 1;
   spellState.p._notClean = true;                // hint used — this attempt no longer counts as clean
   placeLetter(ch, tile);
   if(wasLastLetter) return;                     // that hint finished the word — checkSpell() already handled it
@@ -2099,7 +2168,7 @@ function updateHintButton(){
 let spellState=null;
 
 function refreshSlots(){
-  const slots=[...$("#slots").children];
+  const slots = spellState.slotEls;
   slots.forEach((s,i)=>{
     s.textContent = spellState.filled[i] ? spellState.filled[i].ch : "";
     s.classList.toggle("filled", !!spellState.filled[i]);
@@ -2109,7 +2178,7 @@ function refreshSlots(){
 
 function placeLetter(ch, tileEl){
   if(!spellState) return;
-  if(spellState.filled.length >= spellState.name.length) return;
+  if(spellState.filled.length >= spellState.target.length) return;
   // pick a specific unused tile matching this char (for keyboard typing tileEl may be null)
   if(!tileEl){
     tileEl = spellState.tileEls.find(t => !t.classList.contains("used") && t.textContent===ch);
@@ -2121,8 +2190,8 @@ function placeLetter(ch, tileEl){
   tileEl.classList.add("used");
   spellState.filled.push({ch, tile:tileEl});
   refreshSlots();
-  if(ch !== spellState.name[pos]){ markWrong(); return; } // wrong letter — tell them right away
-  if(spellState.filled.length === spellState.name.length) checkSpell();
+  if(ch !== spellState.target[pos]){ markWrong(); return; } // wrong letter — tell them right away
+  if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
 function backspaceLetter(){
@@ -2143,7 +2212,7 @@ function clearSpell(){
 function checkSpell(){
   const guess = spellState.filled.map(f=>f.ch).join("");
   const fb = $("#feedback");
-  if(guess === spellState.name){
+  if(guess === spellState.target.join("")){
     correct++;
     if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, !spellState.p._notClean);
     fb.className="feedback good";
@@ -2175,23 +2244,34 @@ const CHUNK_PATTERNS = [
   "ar","er","ir","or","ur",
   "bl","br","cl","cr","dr","fl","fr","gl","gr","pl","pr","sc","sk","sl","sm","sn","sp","st","sw","tr","tw","qu","ng","nk"
 ];
+// A separator is its own chunk, and each word is chunked independently, so a
+// pattern can never straddle the join: "sea glass" must not read its "a g" as a
+// unit, and "iron-thorns" must not pull "n-t" together.
 function chunkWord(word){
-  const chunks = []; let i = 0;
-  while(i < word.length){
-    const three = word.slice(i,i+3), two = word.slice(i,i+2);
-    if(three.length===3 && CHUNK_PATTERNS.includes(three)){ chunks.push(three); i+=3; }
-    else if(two.length===2 && CHUNK_PATTERNS.includes(two)){ chunks.push(two); i+=2; }
-    else { chunks.push(word[i]); i+=1; }
+  const chunks = [];
+  for(const part of word.split(/([ -])/)){
+    if(part === "") continue;
+    if(isSeparator(part)){ chunks.push(part); continue; }
+    let i = 0;
+    while(i < part.length){
+      const three = part.slice(i,i+3), two = part.slice(i,i+2);
+      if(three.length===3 && CHUNK_PATTERNS.includes(three)){ chunks.push(three); i+=3; }
+      else if(two.length===2 && CHUNK_PATTERNS.includes(two)){ chunks.push(two); i+=2; }
+      else { chunks.push(part[i]); i+=1; }
+    }
   }
   return chunks;
 }
-// picks which chunk *indices* go blank, always leaving at least one chunk visible
+// picks which chunk *indices* go blank, always leaving at least one letter chunk
+// visible. Separator chunks are shown, never blanked — they are defined, not
+// spelled — so they are excluded from both the candidates and the count.
 function pickBlankChunks(chunks, blankRange){
-  const maxPossible = Math.max(1, chunks.length - 1);
+  const candidates = chunks.map((c,i)=> isSeparator(c) ? -1 : i).filter(i => i >= 0);
+  const maxPossible = Math.max(1, candidates.length - 1);
   const lo = Math.min(blankRange[0], maxPossible);
   const hi = Math.min(blankRange[1], maxPossible);
   const n = randInt(lo, hi);
-  return new Set(shuffle(chunks.map((_,i)=>i)).slice(0,n));
+  return new Set(shuffle(candidates).slice(0,n));
 }
 
 let missingState = null;
@@ -2214,7 +2294,12 @@ function renderMissingLetter(p){
   const wordEl = $("#missingWord");
   const blanks = [];
   chunks.forEach((chunk,i)=>{
-    if(blankIdx.has(i)){
+    if(isSeparator(chunk)){
+      const sep = document.createElement("span");
+      sep.className = "mw-sep";
+      sep.textContent = chunk === "-" ? "-" : "";
+      wordEl.appendChild(sep);
+    } else if(blankIdx.has(i)){
       const inp = document.createElement("input");
       inp.className = "mw-blank";
       inp.maxLength = chunk.length;
@@ -2572,6 +2657,10 @@ document.addEventListener("keydown", e=>{
   if($("#play").classList.contains("hidden")) return;
   if(!spellState) return;
   if(e.key==="Backspace"){ e.preventDefault(); backspaceLetter(); return; }
+  // Separators are already placed, so typing one is a no-op — but swallow the key
+  // anyway: on a two-word name a child WILL reach for the spacebar, and letting it
+  // through scrolls the play screen out from under them.
+  if(isSeparator(e.key)){ e.preventDefault(); return; }
   const ch = e.key.toLowerCase();
   if(ch.length===1 && ch>="a" && ch<="z"){
     // only place if that letter is still available
