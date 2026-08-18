@@ -39,7 +39,7 @@ exists when adding a row.
 Some names are referenced by the phonics word lists in `index.html`; renaming
 one there without updating both will silently drop it from Spelling.
 
-## pronunciations.csv — 251 rows
+## pronunciations.csv — 184 rows
 
 Respellings handed to the speech synthesiser instead of the real name, because
 it reads invented names as though they were English words.

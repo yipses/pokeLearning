@@ -78,15 +78,15 @@ Interacts with Pokédex generation-gating like this: that gate only ever applied
 
 | # | Pattern | Skill | Words available | Examples |
 |---|---|---|---|---|
-| 1 | Short-vowel CVC | Simplest decoding — one consonant, one short vowel, one consonant. | 4 — thin | Fan, Mug, Sign, Sink |
-| 2 | Floss-rule doubles | ll / ss / ff after a short vowel. | 3 — thin | Bell, Bill, Moss |
-| 3 | Consonant blends | Two consonants blended smoothly — fl, gl, gr. | 3 — thin | Fluff, Glass, Gravel |
-| 4 | Digraphs | Two letters, one sound — sh, ch, th, wh. | 9 | Shutter, Torch, Perch, Wheat… |
+| 1 | Short-vowel CVC | Simplest decoding — one consonant, one short vowel, one consonant. | 3 — thin | Fan, Mug, Sink |
+| 2 | Floss-rule doubles | ll / ss / ff after a short vowel. | 2 — thin | Bell, Moss |
+| 3 | Consonant blends | Two consonants blended smoothly — br, fl, gl, gr. | 4 — thin | Brick, Fluff, Glass, Gravel |
+| 4 | Digraphs | Two letters, one sound — sh, ch, th, wh. | 6 | Shutter, Torch, Perch, Wheat… |
 | 5 | Silent-e (magic e) | Trailing e makes the vowel say its name. | 10 | Bike, Rope, Slide, Wire… |
-| 6 | Vowel teams | Two vowels, one sound — ay, ea, oo. | 11 | Clay, Leaf, Seaweed, Book… |
-| 7 | R-controlled vowels | ar / er / or reshape the vowel sound entirely. | 14 | Cart, Barrel, Fern, Letter… |
-| 8 | Compound words | Two known words joined — its own real skill. | 18 | Bathtub, Campfire, Mailbox… |
-| 9 | Multisyllabic | Longer real vocabulary, several syllables. | 24 | Computer, Refrigerator, Treasure… |
+| 6 | Vowel teams | Two vowels, one sound — ay, ea, oo. | 9 | Balloons, Bean, Book, Canoe… |
+| 7 | R-controlled vowels | ar / er / or reshape the vowel sound entirely. | 12 | Barrel, Cart, Counter, Fern… |
+| 8 | Compound words | Two known words joined — its own real skill. | 30 | Bathtub, Bookcase, Campfire, Corkboard… |
+| 9 | Multisyllabic | Longer real vocabulary, several syllables. | 24 | Bonfire, Cannon, Computer, Concrete… |
 
 Counts are audited against the actual item catalog, not guessed — every word already has a real image. **Patterns 1–3 are genuinely thin** (3–4 words each): early levels will repeat words more than later ones. That's normal for beginning practice, not a bug, but it's why those levels won't feel as fresh as Multisyllabic or Compound Words, which are the deepest pools by far. No invented words anywhere — if a pattern doesn't have real catalog words, it doesn't get a level. Dropped from the source list: *Wyndon* (a place name) and *Tinkagear* (invented game jargon).
 
