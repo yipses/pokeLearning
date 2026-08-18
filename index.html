@@ -441,6 +441,21 @@
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   #catchSay{ margin-top:6px; }
 
+  .caught-title{ font-weight:800; color:var(--leaf-deep); margin:4px 0 8px; }
+  .caught-none{ color:var(--ink-soft); font-size:.9rem; margin:4px 0 14px; }
+  .caught-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:16px; }
+  .caught-chip{
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    width:76px; padding:6px 2px; font:inherit; cursor:pointer;
+    background:var(--white); border:3px solid var(--sun); border-radius:14px;
+    box-shadow:var(--shadow-sm);
+  }
+  .caught-chip:active{ transform:translateY(2px); }
+  .caught-chip img{ width:52px; height:52px; object-fit:contain; }
+  .caught-chip span{ font-size:.66rem; font-weight:800; color:var(--ink); text-transform:capitalize;
+    max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #resultTiles{ margin-bottom:16px; }
+
   /* ---------- home tiles ---------- */
   /* Three across at any phone width — the numbers scale rather than the layout
      breaking, since "147/147" is the widest thing that ever lands here. */
@@ -779,23 +794,13 @@
   <!-- ============ RESULTS ============ -->
   <section id="results" class="hidden">
     <div class="card result">
-      <div class="big-emoji" id="resultEmoji">🎉</div>
-      <svg class="result-pokeball hidden" id="resultPokeball" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="46" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-        <path d="M4 50a46 46 0 0 1 92 0z" fill="#ef5350" stroke="#2b2b2b" stroke-width="5"/>
-        <line x1="4" y1="50" x2="96" y2="50" stroke="#2b2b2b" stroke-width="5"/>
-        <circle cx="50" cy="50" r="14" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-        <circle cx="50" cy="50" r="6" fill="#fff" stroke="#2b2b2b" stroke-width="4"/>
-      </svg>
-      <div class="poke-frame result-reveal hidden" id="resultRevealFrame">
-        <img id="resultRevealImg" alt="">
-      </div>
-      <h2 id="resultTitle">Great job, Trainer!</h2>
-      <p class="result-caption hidden" id="resultCaption"></p>
-      <div class="score-pill" id="scorePill">0 / 0 correct</div>
+      <div class="big-emoji">🎉</div>
+      <h2 id="resultTitle">Round finished!</h2>
+      <div class="tiles" id="resultTiles"></div>
+      <div id="caughtBlock"></div>
       <div class="card" style="text-align:left; box-shadow:none; border-style:dashed; padding:14px 18px; margin-bottom:18px;">
         <div class="field">
-          <label>Number of challenges
+          <label>Questions per round
             <span class="hint">Change it before playing again</span>
           </label>
           <input type="number" id="totalCountResults" min="1" max="50" value="10">
@@ -865,7 +870,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 24;
+const APP_BUILD = 26;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -1499,8 +1504,9 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){
-  const el = $("#homeTiles");
+function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); }
+
+function renderTiles(el){
   if(!el) return;
   const data = loadStreak();
   const collected = loadCollection();
@@ -1545,7 +1551,7 @@ function startGame(){
   saveSettings();
   queue = buildQueue();
   if(queue.length===0){ alert("Turn on at least one challenge mode in Settings to play!"); return; }
-  idx=0; correct=0;
+  idx=0; correct=0; roundCatches=[];
   show("play");
   renderProblem();
 }
@@ -1586,6 +1592,20 @@ function advanceQueue(){
 /* ---------------- grass encounters & collection ---------------- */
 const COLLECTION_KEY = "pokeLearningCollection";
 let grassEncounter = null;
+let roundCatches = [];   // caught during the current round, for the results screen
+
+/* Questions since the last grass encounter. Persisted, and deliberately NOT
+   reset per round: a drought starting near the end of one round should carry
+   into the next rather than being forgiven by the round boundary. */
+const PITY_KEY = "pokeLearningSinceEncounter";
+let sinceEncounter = 0;
+function loadSinceEncounter(){
+  const n = parseInt(localStorage.getItem(PITY_KEY), 10);
+  sinceEncounter = isNaN(n) ? 0 : n;
+}
+function saveSinceEncounter(){
+  try{ localStorage.setItem(PITY_KEY, String(sinceEncounter)); }catch(e){}
+}
 
 function loadCollection(){
   try{ return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || []; }catch(e){ return []; }
@@ -1658,12 +1678,24 @@ function maybeStartGrassEncounter(){
   const strip = $("#grassStrip");
   if(strip) strip.classList.remove("shaking");
 
-  const rate = clampInt($("#grassRate").value, 0, 100, 10) / 100;
-  if(Math.random() >= rate) return;
+  const pct = clampInt($("#grassRate").value, 0, 100, 10);
+  if(pct <= 0) return;
+
+  // Pity timer. A pure per-question roll can go cold for a long stretch, which
+  // to a young child reads as the feature being broken rather than unlucky. At
+  // rate R the average wait is 100/R questions, so guaranteeing one a question
+  // short of that caps the drought without changing how it usually feels: at
+  // 10%, an encounter is forced on the 9th question since the last one.
+  const pityAt = Math.max(1, Math.round(100 / pct) - 1);
+  sinceEncounter++;
+  const forced = sinceEncounter >= pityAt;
+  if(!forced && rand(100) >= pct){ saveSinceEncounter(); return; }
 
   const collected = loadCollection();
   let pool = currentGenPool(collected);
   if(!pool || pool.length===0) pool = POKEMON;
+  sinceEncounter = 0;
+  saveSinceEncounter();
   grassEncounter = { poke: pool[rand(pool.length)], caught:false };
 
   if(strip) strip.classList.add("shaking");
@@ -1748,6 +1780,7 @@ let pendingCatchCallback = null;
 
 function revealGrassCatch(poke, callback){
   addToCollection(poke.id);
+  roundCatches.push(poke);
   const strip = $("#grassStrip");
   if(strip) strip.classList.remove("shaking");
   pendingCatchCallback = callback;
@@ -2729,47 +2762,36 @@ function finishBattle(){
 }
 
 /* ---------------- results ---------------- */
-// Drawn from the roster's own rarity data rather than a hardcoded list — the
-// old one was six Gen 1 ids and included Dragonite, which isn't legendary.
-function legendaryPool(){
-  return POKEMON.filter(p => p.rarity === "legendary" || p.rarity === "mythical");
-}
 
 function finish(){
   recordDailyCompletion();
   updateProgress();
   $("#countBadge").textContent = `${queue.length} / ${queue.length}`;
   $("#progFill").style.width = "100%";
-  const total = queue.length;
-  const pct = total? correct/total : 0;
-  $("#scorePill").textContent = `${correct} / ${total} correct`;
-  let emoji="🎉", title="Great job, Trainer!";
-  if(pct===1){ emoji="🏆"; title="Perfect! You're a Champion!"; }
-  else if(pct>=0.7){ emoji="🌟"; title="Awesome work!"; }
-  else if(pct>=0.4){ emoji="😊"; title="Nice try — keep going!"; }
-  else { emoji="💪"; title="Good effort — let's practice more!"; }
-
-  const emojiEl = $("#resultEmoji"), ballEl = $("#resultPokeball");
-  const revealFrame = $("#resultRevealFrame"), revealImg = $("#resultRevealImg"), caption = $("#resultCaption");
-  if(pct===1){
-    emojiEl.classList.add("hidden");
-    ballEl.classList.remove("hidden");
-    const pool = legendaryPool();
-    const legend = pool[rand(pool.length)];
-    revealImg.src = artwork(legend.id);
-    revealImg.alt = cap(legend.n);
-    revealFrame.classList.remove("hidden");
-    caption.textContent = `You earned ${cap(legend.n)}!`;
-    caption.classList.remove("hidden");
+  // No score here: every mode retries until correct, so a finished round is
+  // always 100% and a "perfect run" reward meant nothing. The reward is what
+  // was actually caught, and the tiles carry the sense of progress on the
+  // a round that catches nothing — rarer now the pity timer caps droughts,
+  // but still possible on short rounds or once a generation is fully caught.
+  renderHomeTiles();
+  const block = $("#caughtBlock");
+  if(roundCatches.length){
+    block.innerHTML = `<p class="caught-title">You caught ${roundCatches.length === 1 ? "a Pokémon" : roundCatches.length + " Pokémon"}!</p>
+      <div class="caught-row">${roundCatches.map(p => `
+        <button class="caught-chip" type="button" data-id="${p.id}">
+          <img src="${artwork(p.id)}" alt="${cap(p.n)}">
+          <span>${cap(p.n)}</span>
+        </button>`).join("")}</div>`;
+    block.querySelectorAll("[data-id]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
+        markSeen(poke.id);
+        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true });
+      });
+    });
   } else {
-    emojiEl.textContent = emoji;
-    emojiEl.classList.remove("hidden");
-    ballEl.classList.add("hidden");
-    revealFrame.classList.add("hidden");
-    caption.classList.add("hidden");
+    block.innerHTML = `<p class="caught-none">No wild Pok&eacute;mon this time — keep playing to find one!</p>`;
   }
-
-  $("#resultTitle").textContent=title;
   $("#totalCountResults").value = $("#totalCount").value;
   show("results");
 }
@@ -2808,6 +2830,7 @@ function renderTrailSettings(){
   try{ await loadData(); }
   catch(err){ console.error(err); showDataError(err); return; }
   loadSettings();
+  loadSinceEncounter();
   renderHomeTiles();
   renderTrailSettings();
   window.__dataReady = true;      // tools/pronounce.html waits on this

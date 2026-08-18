@@ -36,7 +36,7 @@ Seven top-level screens, all within one `index.html`:
 | **Start** | Three status tiles, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, quit button |
-| **Results** | Score, tiered feedback (with a special reveal for a perfect run), replay controls |
+| **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
 | **Pokédex** | Every Pokémon, organized by generation, caught ones in color, uncaught ones as grey silhouettes |
 | **Dashboard** | One progress card per Lesson Trail |
@@ -117,6 +117,7 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 ## 8. Pokédex & Catching
 
 - Every challenge screen shows a decorative grass strip. At a configurable rate (Settings, default 10%), it shakes to signal a Pokémon is hiding.
+- **A pity timer caps droughts.** A pure per-question roll can go cold for a long stretch, which to a young child reads as the feature being broken rather than unlucky. At rate R the average wait is 100/R questions, so an encounter is *guaranteed* one question short of that — at 10%, on the 9th question since the last one. The counter persists and is deliberately **not** reset per round: a drought starting near the end of one round carries into the next rather than being forgiven by the boundary.
 - Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer). Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. Spelling's Phase B pool and Reading's Pokémon pool respect the same gate.
 - The **Pokédex screen** shows every Pokémon organized by generation: caught ones in full color with their name, uncaught ones as a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with the name hidden as "???", plus a live X/Y caught count per generation.
@@ -161,10 +162,11 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 11. Results Screen
 
-- A score pill (`X / Y correct`) and a tiered message/emoji based on performance.
-- A **perfect run** gets a special animated reveal: the plain trophy emoji is replaced by the app's Pokéball icon "popping" in, followed by a randomly chosen legendary Pokémon with a "You earned [Name]!" caption.
-- An editable "Number of challenges" field, so **Play Again** can start a new round at a different length.
-- "Go Back" returns to the home screen.
+- A heading — **"Round finished!"** — and the same three status tiles as the Start screen, so finishing a round shows the progress it just moved.
+- **What was caught this round**, as tappable chips that open the full detail popup. When nothing was caught, a plain line says so rather than inventing a consolation prize.
+- An editable "Questions per round" field, so **Play Again** can start a different length.
+
+**There is deliberately no score.** Every mode retries until the answer is correct, so a finished round is always 100% — a score would be a number that cannot vary, and the tiered praise it drove ("Perfect! You're a Champion!") fired every single time. The old perfect-run reward went with it: it announced "You earned Mewtwo!" and granted nothing, so a child who went looking for it in their Pokédex never found it. Performance is measured where it means something — clean answers driving the Lesson Trails, shown on the Dashboard.
 
 ## 12. Settings & Persistence
 
