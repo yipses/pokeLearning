@@ -480,12 +480,14 @@
   #resultTiles{ margin-bottom:16px; }
 
   /* ---------- home tiles ---------- */
-  /* Three across at any phone width — the numbers scale rather than the layout
-     breaking, since "147/147" is the widest thing that ever lands here. */
+  /* Three across at any phone width — value and icon sit on one line with a
+     single-word label underneath, so the tiles stay short. The number scales
+     rather than the layout breaking, since "147/147" is the widest thing that
+     ever lands here. */
   .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:0 0 14px; }
   .tile-card{
     display:flex; flex-direction:column; align-items:center; gap:1px;
-    padding:12px 4px; font:inherit; cursor:pointer; text-align:center;
+    padding:9px 4px; font:inherit; cursor:pointer; text-align:center;
     background:linear-gradient(180deg,var(--white),var(--cream));
     border:3px solid rgba(255,255,255,.9); border-radius:var(--radius-sm);
     box-shadow:var(--shadow-sm);
@@ -494,13 +496,16 @@
   .tile-card:hover{ border-color:var(--sun-deep); }
   .tile-card:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
   .tile-card.done{ border-color:var(--leaf); background:linear-gradient(180deg,#f5fbf5,#e8f5ea); }
-  .tile-icon{ font-size:1.05rem; line-height:1.1; }
+  .tile-top{ display:flex; align-items:center; justify-content:center; gap:5px; }
+  .tile-icon{ font-size:clamp(1.1rem, 5vw, 1.45rem); line-height:1; }
   .tile-big{
-    font-size:clamp(1.05rem, 5.2vw, 1.5rem); font-weight:900; color:var(--ink);
+    font-size:clamp(1rem, 4.8vw, 1.45rem); font-weight:900; color:var(--ink);
     line-height:1.15; font-variant-numeric:tabular-nums;
   }
-  .tile-label{ font-size:.66rem; font-weight:800; color:var(--leaf-deep); line-height:1.2; }
-  .tile-small{ font-size:.6rem; color:var(--ink-soft); line-height:1.2; }
+  .tile-label{
+    font-size:.66rem; font-weight:800; color:var(--leaf-deep); line-height:1.2;
+    text-transform:uppercase; letter-spacing:.03em;
+  }
 
   /* ---------- About / build identity ---------- */
   .about-rows{ margin-top:4px; }
@@ -1568,21 +1573,19 @@ function renderTiles(el){
     dexBig = `${inGen.filter(p => collected.includes(p.id)).length}/${inGen.length}`;
     dexSmall = g.label.split("—")[0].replace("Generation","Gen").trim();
   } else {
-    dexBig = `${collected.length}`; dexSmall = "All caught!";
+    dexBig = `${collected.length}`; dexSmall = "Complete";
   }
 
-  const tile = (id, icon, big, label, small, done) => `
+  const tile = (id, icon, big, label, done) => `
     <button class="tile-card${done ? " done" : ""}" type="button" data-go="${id}">
-      <span class="tile-icon">${icon}</span>
-      <span class="tile-big">${big}</span>
+      <span class="tile-top"><span class="tile-big">${big}</span><span class="tile-icon">${icon}</span></span>
       <span class="tile-label">${label}</span>
-      <span class="tile-small">${small}</span>
     </button>`;
 
   el.innerHTML =
-    tile("dashboard", "🎯", done, "Rounds Today", `of ${goal}`, done >= goal) +
-    tile("pokedex", "📕", dexBig, "Pokémon", dexSmall, false) +
-    tile("dashboard", "🔥", currentStreak(), "Day Streak", "in a row", false);
+    tile("dashboard", "🎯", `${done}/${goal}`, "Rounds", done >= goal) +
+    tile("pokedex", "📕", dexBig, dexSmall, false) +
+    tile("dashboard", "🔥", currentStreak(), "Streak", false);
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;
