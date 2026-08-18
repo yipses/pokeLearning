@@ -982,6 +982,7 @@
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
+      <button class="btn green big hidden" id="catchBackBtn" style="margin-top:10px">← Back</button>
     </div>
   </div>
 
@@ -993,7 +994,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 28;
+const APP_BUILD = 29;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -1889,8 +1890,36 @@ function maybeStartGrassEncounter(){
    "???", no caption — so browsing the dex can't spoil what's still out there to
    find, and there is no word on screen the child has to decode for no payoff.
    Backdrop-dismissal is opt-in: the catch reveal deliberately requires the Okay
-   button, but browsing the dex means opening and closing a lot of these. */
+   button, but browsing the dex means opening and closing a lot of these.
+
+   The popup navigates to itself: tapping an evolution relative replaces what's
+   on screen with that relative. `modalTrail` remembers what you came from so
+   there is a way back — without it, following a family line one hop was a
+   one-way trip and the only button left closed the whole thing. On a catch
+   reveal that was worse than a dead end: Okay runs the pending callback and
+   advances the round, so drilling in and pressing it skipped the catch you were
+   being shown. While the trail has anything in it, Back is the only exit. */
+let modalTrail = [];        // entries behind the one on screen
+let modalCurrent = null;    // {poke, opts} for the entry on screen
+
+// Fresh entry from outside the popup: the trail starts over.
 function showPokeModal(poke, opts){
+  modalTrail = [];
+  renderPokeModal(poke, opts);
+}
+// Same entry, one hop deeper: remember where we were.
+function navPokeModal(poke, opts){
+  if(modalCurrent) modalTrail.push(modalCurrent);
+  renderPokeModal(poke, opts);
+}
+function backPokeModal(){
+  const prev = modalTrail.pop();
+  if(!prev){ hideCatchModal(); return; }
+  renderPokeModal(prev.poke, prev.opts);
+}
+
+function renderPokeModal(poke, opts){
+  modalCurrent = { poke, opts };
   const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false } = opts || {};
   $("#catchCaption").textContent = caption;
   $("#catchCaption").classList.toggle("hidden", !caption);
@@ -1913,6 +1942,11 @@ function showPokeModal(poke, opts){
   renderEvoRow(revealed ? poke : null);
   $("#catchSay").classList.toggle("hidden", !revealed);
   $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
+  // One primary button, never two: Back while there is somewhere to go back to,
+  // Okay once you're at the entry you opened.
+  const deep = modalTrail.length > 0;
+  $("#catchBackBtn").classList.toggle("hidden", !deep);
+  $("#catchOkBtn").classList.toggle("hidden", deep);
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   modal.classList.remove("hidden");
@@ -1950,11 +1984,14 @@ function renderEvoRow(poke){
       const target = POKEMON.find(x => x.id === Number(btn.dataset.id));
       const got = loadCollection().includes(target.id);
       markSeen(target.id);
-      showPokeModal(target, {
+      navPokeModal(target, {
         caption: "",
         greet: got ? "Welcome back!" : "",
         revealed: got,
-        dismissOnBackdrop: true,
+        // Inherit the backdrop rule from where we came from: a catch reveal that
+        // has to be acknowledged must not become dismissable by walking one hop
+        // down its own family tree.
+        dismissOnBackdrop: !!(modalCurrent && modalCurrent.opts && modalCurrent.opts.dismissOnBackdrop),
       });
     });
   });
@@ -1964,6 +2001,8 @@ function renderEvoRow(poke){
 function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke) }); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
+  modalTrail = [];
+  modalCurrent = null;
 }
 
 let pendingCatchCallback = null;
@@ -3114,6 +3153,7 @@ $("#quitBtn").addEventListener("click", ()=>{
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });
+$("#catchBackBtn").addEventListener("click", backPokeModal);
 $("#catchOkBtn").addEventListener("click", ()=>{
   hideCatchModal();
   const cb = pendingCatchCallback;
