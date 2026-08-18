@@ -174,7 +174,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 - A heading — **"Round finished!"** — and the same three status tiles as the Start screen, so finishing a round shows the progress it just moved.
 - **What was caught this round**, as tappable chips that open the full detail popup. When nothing was caught, a plain line says so rather than inventing a consolation prize.
-- An editable "Questions per round" field, so **Play Again** can start a different length.
+- **Play Again**, which starts another round at the length set in Settings, and **Go Back**.
 
 **There is deliberately no score.** Every mode retries until the answer is correct, so a finished round is always 100% — a score would be a number that cannot vary, and the tiered praise it drove ("Perfect! You're a Champion!") fired every single time. The old perfect-run reward went with it: it announced "You earned Mewtwo!" and granted nothing, so a child who went looking for it in their Pokédex never found it. Performance is measured where it means something — clean answers driving the Lesson Trails, shown on the Dashboard.
 
