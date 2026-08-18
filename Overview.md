@@ -33,12 +33,12 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | Three status tiles, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
+| **Start** | Three status tiles, one of your Pokémon shown big, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, quit button |
 | **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
-| **Pokédex** | Every Pokémon, organized by generation, caught ones in color, uncaught ones as grey silhouettes |
+| **Pokédex** | Every Pokémon, one generation per tab, caught ones in color, uncaught ones as grey silhouettes |
 | **Dashboard** | One progress card per Lesson Trail |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
@@ -140,6 +140,14 @@ Three tiles across the top of the Start screen, each tappable:
 A "round" is one full session; how many questions make up a round, and how many rounds a day the streak needs, are both Settings values.
 
 **The streak holds until the day actually ends.** It counts consecutive days ending today *or yesterday*, so a streak earned yesterday still reads correctly at 8am before anything has been played, and only breaks once a whole day has passed without meeting the goal. Daily round counts are kept indefinitely rather than pruned to a window — pruning would silently cap the streak at the window's length.
+
+## 8c. Home Showcase
+
+Below the tiles, the middle band of the Start screen shows **one of the child's own Pokémon**, big: artwork in a circular frame, its name, its Dex number, and **"Welcome back!"**. The whole card is a button — tapping it re-rolls the pick, as does every return to the home screen.
+
+It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
+
+**Before anything at all is caught** there is no trophy to show, so the band falls back to a silhouette and its **type badges** — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not.
 
 ## 9. Dashboard
 

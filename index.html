@@ -520,9 +520,10 @@
   }
 
   /* ---------- home showcase ---------- */
-  /* The middle band of the home screen: one Pokémon, big enough to be the reason
-     a child taps Start. Caught ones show off the collection, wild ones tease as a
-     silhouette. The whole card is a button — tapping re-rolls the pick. */
+  /* The middle band of the home screen: one of your own Pokémon, big enough to be
+     the reason a child taps Start. Only ever a caught one, unless nothing is
+     caught yet — then an outline and its type stand in. The whole card is a
+     button; tapping re-rolls the pick. */
   .showcase{
     display:flex; flex-direction:column; align-items:center; gap:1px;
     width:100%; margin:0 0 14px; padding:12px 12px 14px; font:inherit; cursor:pointer;
@@ -546,7 +547,11 @@
   }
   .showcase-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   .showcase-name{ font-size:1.2rem; font-weight:900; color:var(--ink); margin-top:8px; line-height:1.2; }
-  .showcase-hint{ font-size:.72rem; font-weight:700; color:var(--ink-soft); line-height:1.3; }
+  .showcase-num{ font-size:.78rem; font-weight:800; color:var(--ink-soft); line-height:1.3; }
+  .showcase-greet{ font-size:.9rem; font-weight:800; color:var(--leaf-deep); margin-top:2px; line-height:1.3; }
+  /* Stands in for the name block when nothing is caught yet, so the card keeps
+     roughly the same height either way and Start doesn't jump up the screen. */
+  .showcase-types{ display:flex; gap:6px; justify-content:center; margin-top:12px; padding-bottom:10px; }
 
   /* ---------- home actions / footer ---------- */
   .home-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -1644,10 +1649,15 @@ function recordDailyCompletion(){
 
 function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); }
 
-/* The home screen's middle band: one Pokémon from the generation being worked
-   on, shown big. A caught one is a trophy, an uncaught one a silhouette teaser —
-   the half that makes a child want to press Start. Re-rolls on every tap, and
-   whenever the home screen is refreshed, so what's on show keeps changing. */
+/* The home screen's middle band: one of YOUR Pokémon, shown big — name, number,
+   "Welcome back!". It is a trophy shelf, not a teaser: showing off a catch is
+   what makes a child want to press Start, and it re-rolls on every tap so the
+   shelf keeps turning over.
+
+   Before anything is caught there is no trophy to show, so the band falls back
+   to a silhouette and its type — an outline and one short word, no sentence. A
+   five-year-old cannot read "Play a round to catch it!", and a mystery shape is
+   the whole invitation anyway (§14.1 of Overview.md). */
 function renderShowcase(){
   const el = $("#homeShowcase");
   if(!el || !POKEMON.length) return;
@@ -1655,23 +1665,28 @@ function renderShowcase(){
   const g = currentGenRange(collected);
   const pool = g ? POKEMON.filter(p => p.id>=g.from && p.id<=g.to) : POKEMON;
   const caught = pool.filter(p => collected.includes(p.id));
-  const wild = pool.filter(p => !collected.includes(p.id));
-  // Half caught, half wild — until one side is empty, at which point the other
-  // takes every turn (a brand-new player has nothing caught to show off).
-  const showCaught = caught.length > 0 && (wild.length === 0 || Math.random() < .5);
-  const list = showCaught ? caught : wild;
+  // Fall back to the whole collection, not just this generation: once a
+  // generation is freshly gated open you have caught nothing in it yet, and
+  // there is no reason to hide the trophies earned in the last one.
+  const shelf = caught.length ? caught : POKEMON.filter(p => collected.includes(p.id));
+  const list = shelf.length ? shelf : pool.filter(p => !collected.includes(p.id));
+  const showCaught = shelf.length > 0;
   const poke = list[Math.floor(Math.random()*list.length)];
   if(!poke) return;
 
   el.innerHTML = `
     <span class="showcase-frame">
-      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Mystery Pokémon"}"
+      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
            class="${showCaught ? "" : "silhouette"}" decoding="async">
     </span>
-    <span class="showcase-name">${showCaught ? cap(poke.n) : "Who's that Pokémon?"}</span>
-    <span class="showcase-hint">${showCaught
-      ? `#${String(poke.id).padStart(3,"0")} · in your Pokédex`
-      : "Play a round to catch it!"}</span>`;
+    ${showCaught ? `
+      <span class="showcase-name">${cap(poke.n)}</span>
+      <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
+      <span class="showcase-greet">Welcome back!</span>
+    ` : `
+      <span class="showcase-types">${(poke.t||[]).map(t=>
+        `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
+    `}`;
 
   // Same single cache-busting retry the Pokédex grid uses — one dropped request
   // would otherwise leave the home screen showing a broken image until reload.
