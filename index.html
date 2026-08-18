@@ -477,16 +477,20 @@
   .caught-title{ font-weight:800; color:var(--leaf-deep); margin:4px 0 8px; }
   .caught-none{ color:var(--ink-soft); font-size:.9rem; margin:4px 0 14px; }
   .caught-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:16px; }
+  /* Sized to be the reward on this screen, not a footnote to it. Three across
+     still fit a 420px phone; four or more wrap, which is what `.caught-row`'s
+     flex-wrap is for. */
   .caught-chip{
-    display:flex; flex-direction:column; align-items:center; gap:1px;
-    width:76px; padding:6px 2px; font:inherit; cursor:pointer;
-    background:var(--white); border:3px solid var(--sun); border-radius:14px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    width:112px; padding:10px 4px; font:inherit; cursor:pointer;
+    background:var(--white); border:3px solid var(--sun); border-radius:18px;
     box-shadow:var(--shadow-sm);
   }
   .caught-chip:active{ transform:translateY(2px); }
-  .caught-chip img{ width:52px; height:52px; object-fit:contain; }
-  .caught-chip span{ font-size:.66rem; font-weight:800; color:var(--ink); text-transform:capitalize;
-    max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .caught-chip img{ width:84px; height:84px; object-fit:contain;
+    filter:drop-shadow(0 4px 6px rgba(0,0,0,.15)); }
+  .caught-chip span{ font-size:.86rem; font-weight:800; color:var(--ink); text-transform:capitalize;
+    max-width:104px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   #resultTiles{ margin-bottom:16px; }
 
   /* ---------- home tiles ---------- */
@@ -583,14 +587,34 @@
   /* ---------- Pokédex ---------- */
   /* Nine tabs across a phone: they scroll sideways rather than wrapping to a
      second row, so the grid below always starts in the same place. */
+  /* Touch can swipe the strip; a mouse cannot, so the arrows are the desktop
+     affordance. They appear only when the strip actually overflows and disable
+     at each end, so on a wide screen where all nine tabs fit there is no
+     furniture at all. */
+  .dex-tabs-wrap{ display:flex; align-items:flex-start; gap:6px; margin:0 0 14px; }
   .dex-tabs{
-    display:flex; gap:7px; margin:0 0 14px; padding:2px 2px 8px;
+    flex:1 1 auto; min-width:0;
+    display:flex; gap:5px; padding:2px 2px 8px;
     overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    scroll-behavior:smooth;
   }
   .dex-tabs::-webkit-scrollbar{ display:none; }
+  .dex-arrow{
+    flex:0 0 auto; font:inherit; font-size:1.3rem; font-weight:900; line-height:1;
+    width:38px; height:40px; cursor:pointer; color:var(--leaf-deep);
+    background:rgba(255,255,255,.85); border:3px solid rgba(255,255,255,.9);
+    border-radius:999px; box-shadow:var(--shadow-sm);
+    display:flex; align-items:center; justify-content:center;
+    transition: opacity .15s, transform .06s;
+  }
+  .dex-arrow:active:not(:disabled){ transform:translateY(2px); }
+  .dex-arrow:disabled{ opacity:.32; cursor:default; }
+  /* Padding is tuned so all nine tabs fit the 760px content column: on a desktop
+     window nothing overflows and the arrows never appear. Narrower than that and
+     they do, which is exactly when the arrows are wanted. */
   .dex-tab{
     flex:0 0 auto; font:inherit; font-weight:800; font-size:.86rem; cursor:pointer;
-    padding:9px 15px; border-radius:999px; color:var(--leaf-deep);
+    padding:9px 11px; border-radius:999px; color:var(--leaf-deep);
     background:rgba(255,255,255,.85); border:3px solid rgba(255,255,255,.9);
     box-shadow:var(--shadow-sm); transition: transform .06s, border-color .15s;
   }
@@ -745,6 +769,11 @@
     .battle-frame{ width:100px; height:100px; }
     .battle-vs{ width:42px; height:42px; font-size:.9rem; }
     .battle-name{ font-size:.92rem; }
+    /* Keep three catches on one row on a small phone. */
+    .caught-chip{ width:92px; padding:8px 3px; }
+    .caught-chip img{ width:66px; height:66px; }
+    .caught-chip span{ font-size:.76rem; max-width:84px; }
+    .caught-row{ gap:6px; }
   }
 </style>
 </head>
@@ -944,7 +973,11 @@
       <h2 style="justify-content:center;"><span class="chip">📖</span> My Pokédex</h2>
       <div class="score-pill" id="dexCount">0 / 0 caught</div>
     </div>
-    <div class="dex-tabs" id="dexTabs" role="tablist" aria-label="Generation"></div>
+    <div class="dex-tabs-wrap">
+      <button class="dex-arrow hidden" type="button" id="dexTabsPrev" aria-label="Scroll to earlier generations">‹</button>
+      <div class="dex-tabs" id="dexTabs" role="tablist" aria-label="Generation"></div>
+      <button class="dex-arrow hidden" type="button" id="dexTabsNext" aria-label="Scroll to later generations">›</button>
+    </div>
     <div id="dexGrid"></div>
   </section>
 
@@ -986,7 +1019,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 30;
+const APP_BUILD = 31;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -2014,6 +2047,39 @@ function revealGrassCatch(poke, callback){
    away. Labels are truncated to "Gen 1" so all nine fit across a phone. */
 let dexGen = null;
 
+/* The tab strip scrolls sideways, which a touchscreen handles by itself and a
+   mouse does not — so desktop gets arrow buttons. They exist only while the
+   strip actually overflows: at nine tabs on a wide window everything fits and
+   the arrows stay out of the layout entirely. Each press moves about two thirds
+   of the visible width, and the arrow at the end you have reached goes flat. */
+function updateDexArrows(){
+  const el = $("#dexTabs"), prev = $("#dexTabsPrev"), next = $("#dexTabsNext");
+  if(!el || !prev || !next) return;
+  const max = el.scrollWidth - el.clientWidth;
+  const overflows = max > 2;            // sub-pixel widths mean this is never exactly 0
+  prev.classList.toggle("hidden", !overflows);
+  next.classList.toggle("hidden", !overflows);
+  prev.disabled = el.scrollLeft <= 1;
+  next.disabled = el.scrollLeft >= max - 1;
+}
+/* Centre the open tab and refresh the arrows. Must run while the Pokédex is
+   actually visible: a `display:none` section measures 0 in every direction, so
+   called too early the strip looks like it fits and the arrows never appear.
+   `show()` calls this again once the section is on screen. */
+function syncDexTabs(){
+  const el = $("#dexTabs");
+  if(!el) return;
+  const on = el.querySelector(".dex-tab.on");
+  if(on && el.clientWidth) el.scrollLeft = on.offsetLeft - (el.clientWidth - on.offsetWidth) / 2;
+  updateDexArrows();
+}
+function scrollDexTabs(dir){
+  const el = $("#dexTabs");
+  el.scrollLeft += dir * el.clientWidth * 0.66;
+  // Smooth scrolling means scrollLeft hasn't landed yet; the scroll listener
+  // below updates the disabled states as it settles.
+}
+
 function renderPokedex(){
   const collected = loadCollection();
   const unseen = loadUnseen();
@@ -2047,6 +2113,7 @@ function renderPokedex(){
       window.scrollTo({ top:0, behavior:"smooth" });
     });
   });
+  syncDexTabs();
 
   const genPokes = inGen(g);
   const genCaught = genPokes.filter(p => collected.includes(p.id)).length;
@@ -3094,6 +3161,9 @@ function finish(){
 function show(which){
   ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
   window.scrollTo({top:0, behavior:"smooth"});
+  // Widths only exist once the section is displayed, so the tab strip is sized
+  // here rather than in renderPokedex, which usually runs one line earlier.
+  if(which === "pokedex") syncDexTabs();
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
@@ -3137,6 +3207,10 @@ $("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"
 // the home screen keeps to one job: pick a mode and play.
 $("#homeShowcase").addEventListener("click", renderShowcase);
 $("#dexBackBtn").addEventListener("click", ()=> show("setup"));
+$("#dexTabsPrev").addEventListener("click", ()=> scrollDexTabs(-1));
+$("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
+$("#dexTabs").addEventListener("scroll", updateDexArrows);
+window.addEventListener("resize", updateDexArrows);
 $("#dashboardBackBtn").addEventListener("click", ()=> show("setup"));
 $("#settingsBackBtn").addEventListener("click", ()=> show("setup"));
 $("#quitBtn").addEventListener("click", ()=>{
