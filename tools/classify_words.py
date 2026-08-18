@@ -192,3 +192,35 @@ for lv in range(1,10):
     ws = [r["word"] for r in rows if r["level"]==lv]
     print(f"{lv:<6}{LEVELS[lv]:<20}{len(ws):>7}   {', '.join(ws[:6])}")
 print(f"\ntotal {len(rows)} words -> data/word_levels.csv")
+
+# ---------------- emit data/item_levels.csv ----------------
+# The per-item view: every catalogue name with the level it lands on. Derived
+# from word_levels.csv, so correcting a word there re-grades every item using it.
+word_level = {r["word"]: r["level"] for r in rows}
+out = []
+for name in items:
+    spellable = bool(re.fullmatch(r"[A-Za-z]+([ -][A-Za-z]+)*", name))
+    parts = [p.lower() for p in re.split(r"[ -]", name)] if spellable else []
+    lvls = [word_level[p] for p in parts if p in word_level]
+    out.append({
+        "item": name,
+        "level": max(lvls) if lvls else "",
+        "kind": "" if not spellable else ("compound" if len(parts) > 1 else "single"),
+        "words": len(parts) if spellable else "",
+        "components": " + ".join(parts) if len(parts) > 1 else "",
+        "component_levels": " + ".join(str(l) for l in lvls) if len(parts) > 1 else "",
+        "letters": len(re.sub(r"[^A-Za-z]", "", name)),
+        "longest_word": max((len(p) for p in parts), default=""),
+        "spellable": "yes" if spellable else "no",
+    })
+out.sort(key=lambda r: (r["level"] == "", r["level"], r["item"]))
+with open("data/item_levels.csv", "w", newline="") as f:
+    wtr = csv.DictWriter(f, fieldnames=list(out[0].keys()))
+    wtr.writeheader(); wtr.writerows(out)
+
+byl = collections.Counter(r["level"] for r in out if r["level"] != "")
+print(f"\ndata/item_levels.csv: {len(out)} items ({sum(1 for r in out if r['spellable']=='no')} unspellable, kept with a blank level)")
+print("items per level:", {k: byl[k] for k in sorted(byl)})
+for probe in ["Sea glass fragments", "Charcoal", "Copper ore", "Log bed"]:
+    r = next((x for x in out if x["item"] == probe), None)
+    if r: print(f"   {r['item']:<22} L{r['level']}  {r['kind']:<9} {r['components'] or '-':<34} {r['component_levels']}")
