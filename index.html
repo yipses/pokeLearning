@@ -870,7 +870,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 26;
+const APP_BUILD = 27;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -1551,7 +1551,7 @@ function startGame(){
   saveSettings();
   queue = buildQueue();
   if(queue.length===0){ alert("Turn on at least one challenge mode in Settings to play!"); return; }
-  idx=0; correct=0; roundCatches=[];
+  idx=0; correct=0; roundCatches=[]; sinceEncounter=0;
   show("play");
   renderProblem();
 }
@@ -1594,18 +1594,10 @@ const COLLECTION_KEY = "pokeLearningCollection";
 let grassEncounter = null;
 let roundCatches = [];   // caught during the current round, for the results screen
 
-/* Questions since the last grass encounter. Persisted, and deliberately NOT
-   reset per round: a drought starting near the end of one round should carry
-   into the next rather than being forgiven by the round boundary. */
-const PITY_KEY = "pokeLearningSinceEncounter";
+/* Questions since the last grass encounter, feeding the pity timer below.
+   Reset at the start of every round — each round is its own experience, so a
+   cold streak doesn't follow the child into the next one. */
 let sinceEncounter = 0;
-function loadSinceEncounter(){
-  const n = parseInt(localStorage.getItem(PITY_KEY), 10);
-  sinceEncounter = isNaN(n) ? 0 : n;
-}
-function saveSinceEncounter(){
-  try{ localStorage.setItem(PITY_KEY, String(sinceEncounter)); }catch(e){}
-}
 
 function loadCollection(){
   try{ return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || []; }catch(e){ return []; }
@@ -1685,17 +1677,17 @@ function maybeStartGrassEncounter(){
   // to a young child reads as the feature being broken rather than unlucky. At
   // rate R the average wait is 100/R questions, so guaranteeing one a question
   // short of that caps the drought without changing how it usually feels: at
-  // 10%, an encounter is forced on the 9th question since the last one.
+  // 10%, an encounter is forced on the 9th question since the last one, or
+  // since the round began, whichever is later.
   const pityAt = Math.max(1, Math.round(100 / pct) - 1);
   sinceEncounter++;
   const forced = sinceEncounter >= pityAt;
-  if(!forced && rand(100) >= pct){ saveSinceEncounter(); return; }
+  if(!forced && rand(100) >= pct) return;
 
   const collected = loadCollection();
   let pool = currentGenPool(collected);
   if(!pool || pool.length===0) pool = POKEMON;
   sinceEncounter = 0;
-  saveSinceEncounter();
   grassEncounter = { poke: pool[rand(pool.length)], caught:false };
 
   if(strip) strip.classList.add("shaking");
@@ -2830,7 +2822,6 @@ function renderTrailSettings(){
   try{ await loadData(); }
   catch(err){ console.error(err); showDataError(err); return; }
   loadSettings();
-  loadSinceEncounter();
   renderHomeTiles();
   renderTrailSettings();
   window.__dataReady = true;      // tools/pronounce.html waits on this
