@@ -441,6 +441,44 @@
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   #catchSay{ margin-top:6px; }
 
+  .caught-title{ font-weight:800; color:var(--leaf-deep); margin:4px 0 8px; }
+  .caught-none{ color:var(--ink-soft); font-size:.9rem; margin:4px 0 14px; }
+  .caught-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:16px; }
+  .caught-chip{
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    width:76px; padding:6px 2px; font:inherit; cursor:pointer;
+    background:var(--white); border:3px solid var(--sun); border-radius:14px;
+    box-shadow:var(--shadow-sm);
+  }
+  .caught-chip:active{ transform:translateY(2px); }
+  .caught-chip img{ width:52px; height:52px; object-fit:contain; }
+  .caught-chip span{ font-size:.66rem; font-weight:800; color:var(--ink); text-transform:capitalize;
+    max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #resultTiles{ margin-bottom:16px; }
+
+  /* ---------- home tiles ---------- */
+  /* Three across at any phone width — the numbers scale rather than the layout
+     breaking, since "147/147" is the widest thing that ever lands here. */
+  .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:0 0 14px; }
+  .tile-card{
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    padding:12px 4px; font:inherit; cursor:pointer; text-align:center;
+    background:linear-gradient(180deg,var(--white),var(--cream));
+    border:3px solid rgba(255,255,255,.9); border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm);
+    transition: transform .06s, border-color .15s, box-shadow .15s;
+  }
+  .tile-card:hover{ border-color:var(--sun-deep); }
+  .tile-card:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  .tile-card.done{ border-color:var(--leaf); background:linear-gradient(180deg,#f5fbf5,#e8f5ea); }
+  .tile-icon{ font-size:1.05rem; line-height:1.1; }
+  .tile-big{
+    font-size:clamp(1.05rem, 5.2vw, 1.5rem); font-weight:900; color:var(--ink);
+    line-height:1.15; font-variant-numeric:tabular-nums;
+  }
+  .tile-label{ font-size:.66rem; font-weight:800; color:var(--leaf-deep); line-height:1.2; }
+  .tile-small{ font-size:.6rem; color:var(--ink-soft); line-height:1.2; }
+
   /* ---------- About / build identity ---------- */
   .about-rows{ margin-top:4px; }
   .about-row{
@@ -614,11 +652,7 @@
   <!-- ============ SETUP ============ -->
   <section id="setup">
 
-    <div class="card">
-      <h2><span class="chip">⭐</span> Play Streak</h2>
-      <p class="sub">One star for every round finished start-to-finish with Start Playing (last 7 days).</p>
-      <div id="streakList"></div>
-    </div>
+    <div class="tiles" id="homeTiles"></div>
 
     <button class="btn big green" id="startBtn">▶  Start Playing!</button>
     <button class="btn big berry" id="battleBtn" style="margin-top:12px">⚔️ Pokémon Battle!</button>
@@ -637,10 +671,16 @@
       <h2><span class="chip">🎯</span> General Settings</h2>
       <p class="sub">Each challenge is randomly picked from whichever modes are turned on below.</p>
       <div class="field">
-        <label>Number of challenges
-          <span class="hint">Total challenges for this session</span>
+        <label>Questions per round
+          <span class="hint">How many challenges make up one round</span>
         </label>
         <input type="number" id="totalCount" min="1" max="50" value="10">
+      </div>
+      <div class="field">
+        <label>Rounds per day
+          <span class="hint">Rounds needed to keep the streak going</span>
+        </label>
+        <input type="number" id="roundsGoal" min="1" max="20" value="2">
       </div>
       <div class="field">
         <label>Wild Pok&eacute;mon rate
@@ -754,23 +794,13 @@
   <!-- ============ RESULTS ============ -->
   <section id="results" class="hidden">
     <div class="card result">
-      <div class="big-emoji" id="resultEmoji">🎉</div>
-      <svg class="result-pokeball hidden" id="resultPokeball" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="46" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-        <path d="M4 50a46 46 0 0 1 92 0z" fill="#ef5350" stroke="#2b2b2b" stroke-width="5"/>
-        <line x1="4" y1="50" x2="96" y2="50" stroke="#2b2b2b" stroke-width="5"/>
-        <circle cx="50" cy="50" r="14" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-        <circle cx="50" cy="50" r="6" fill="#fff" stroke="#2b2b2b" stroke-width="4"/>
-      </svg>
-      <div class="poke-frame result-reveal hidden" id="resultRevealFrame">
-        <img id="resultRevealImg" alt="">
-      </div>
-      <h2 id="resultTitle">Great job, Trainer!</h2>
-      <p class="result-caption hidden" id="resultCaption"></p>
-      <div class="score-pill" id="scorePill">0 / 0 correct</div>
+      <div class="big-emoji">🎉</div>
+      <h2 id="resultTitle">Round finished!</h2>
+      <div class="tiles" id="resultTiles"></div>
+      <div id="caughtBlock"></div>
       <div class="card" style="text-align:left; box-shadow:none; border-style:dashed; padding:14px 18px; margin-bottom:18px;">
         <div class="field">
-          <label>Number of challenges
+          <label>Questions per round
             <span class="hint">Change it before playing again</span>
           </label>
           <input type="number" id="totalCountResults" min="1" max="50" value="10">
@@ -840,7 +870,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 22;
+const APP_BUILD = 27;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -1437,7 +1467,20 @@ function loadSettings(){
 
 /* ---------------- daily play streak ---------------- */
 const STREAK_KEY = "pokeLearningDailyStars";
-const STREAK_DAYS = 7;
+const ROUNDS_GOAL_DEFAULT = 2;
+function roundsGoal(){ return clampInt($("#roundsGoal")?.value, 1, 20, ROUNDS_GOAL_DEFAULT); }
+
+/* Consecutive days that met the goal. Today counts once met; until then the
+   streak stands on yesterday, so it holds all day and only breaks when a whole
+   day has passed unmet — rather than resetting to zero every midnight. */
+function currentStreak(){
+  const data = loadStreak(), goal = roundsGoal();
+  const d = new Date();
+  if((data[dateKey(d)]||0) < goal) d.setDate(d.getDate()-1);
+  let n = 0;
+  while((data[dateKey(d)]||0) >= goal){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
 
 function dateKey(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -1455,31 +1498,50 @@ function recordDailyCompletion(){
   const data = loadStreak();
   const key = dateKey(new Date());
   data[key] = (data[key]||0) + 1;
-  // drop anything older than the window we display
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-(STREAK_DAYS-1));
-  const cutoffKey = dateKey(cutoff);
-  Object.keys(data).forEach(k=>{ if(k < cutoffKey) delete data[k]; });
+  // Every day is kept. A decade of {date: count} is ~70KB against a multi-MB
+  // budget, and pruning to a window would silently cap the streak at its length.
   saveStreak(data);
-  renderStreak();
+  renderHomeTiles();
 }
 
-function renderStreak(){
+function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); }
+
+function renderTiles(el){
+  if(!el) return;
   const data = loadStreak();
-  const list = $("#streakList");
-  if(!list) return;
-  list.innerHTML = "";
-  const today = new Date();
-  for(let i=STREAK_DAYS-1;i>=0;i--){
-    const d = new Date(today);
-    d.setDate(d.getDate()-i);
-    const count = data[dateKey(d)] || 0;
-    const row = document.createElement("div");
-    row.className = "field streak-row";
-    row.innerHTML = count
-      ? `<label>${dateLabel(d)}</label><span class="streak-stars">${"⭐".repeat(count)}</span>`
-      : `<label>${dateLabel(d)}</label><span class="streak-empty">Not played yet</span>`;
-    list.appendChild(row);
+  const collected = loadCollection();
+  const g = currentGenRange(collected);
+  const goal = roundsGoal();
+  const done = data[dateKey(new Date())] || 0;
+
+  let dexBig, dexSmall;
+  if(g){
+    const inGen = POKEMON.filter(p => p.id>=g.from && p.id<=g.to);
+    dexBig = `${inGen.filter(p => collected.includes(p.id)).length}/${inGen.length}`;
+    dexSmall = g.label.split("—")[0].replace("Generation","Gen").trim();
+  } else {
+    dexBig = `${collected.length}`; dexSmall = "All caught!";
   }
+
+  const tile = (id, icon, big, label, small, done) => `
+    <button class="tile-card${done ? " done" : ""}" type="button" data-go="${id}">
+      <span class="tile-icon">${icon}</span>
+      <span class="tile-big">${big}</span>
+      <span class="tile-label">${label}</span>
+      <span class="tile-small">${small}</span>
+    </button>`;
+
+  el.innerHTML =
+    tile("dashboard", "🎯", done, "Rounds Today", `of ${goal}`, done >= goal) +
+    tile("pokedex", "📕", dexBig, "Pokémon", dexSmall, false) +
+    tile("dashboard", "🔥", currentStreak(), "Day Streak", "in a row", false);
+  el.querySelectorAll("[data-go]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const to = b.dataset.go;
+      if(to === "pokedex"){ renderPokedex(); show("pokedex"); }
+      else { renderDashboard(); show("dashboard"); }
+    });
+  });
 }
 
 /* ---------------- game state ---------------- */
@@ -1489,7 +1551,7 @@ function startGame(){
   saveSettings();
   queue = buildQueue();
   if(queue.length===0){ alert("Turn on at least one challenge mode in Settings to play!"); return; }
-  idx=0; correct=0;
+  idx=0; correct=0; roundCatches=[]; sinceEncounter=0;
   show("play");
   renderProblem();
 }
@@ -1530,6 +1592,12 @@ function advanceQueue(){
 /* ---------------- grass encounters & collection ---------------- */
 const COLLECTION_KEY = "pokeLearningCollection";
 let grassEncounter = null;
+let roundCatches = [];   // caught during the current round, for the results screen
+
+/* Questions since the last grass encounter, feeding the pity timer below.
+   Reset at the start of every round — each round is its own experience, so a
+   cold streak doesn't follow the child into the next one. */
+let sinceEncounter = 0;
 
 function loadCollection(){
   try{ return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || []; }catch(e){ return []; }
@@ -1602,12 +1670,24 @@ function maybeStartGrassEncounter(){
   const strip = $("#grassStrip");
   if(strip) strip.classList.remove("shaking");
 
-  const rate = clampInt($("#grassRate").value, 0, 100, 10) / 100;
-  if(Math.random() >= rate) return;
+  const pct = clampInt($("#grassRate").value, 0, 100, 10);
+  if(pct <= 0) return;
+
+  // Pity timer. A pure per-question roll can go cold for a long stretch, which
+  // to a young child reads as the feature being broken rather than unlucky. At
+  // rate R the average wait is 100/R questions, so guaranteeing one a question
+  // short of that caps the drought without changing how it usually feels: at
+  // 10%, an encounter is forced on the 9th question since the last one, or
+  // since the round began, whichever is later.
+  const pityAt = Math.max(1, Math.round(100 / pct) - 1);
+  sinceEncounter++;
+  const forced = sinceEncounter >= pityAt;
+  if(!forced && rand(100) >= pct) return;
 
   const collected = loadCollection();
   let pool = currentGenPool(collected);
   if(!pool || pool.length===0) pool = POKEMON;
+  sinceEncounter = 0;
   grassEncounter = { poke: pool[rand(pool.length)], caught:false };
 
   if(strip) strip.classList.add("shaking");
@@ -1692,6 +1772,7 @@ let pendingCatchCallback = null;
 
 function revealGrassCatch(poke, callback){
   addToCollection(poke.id);
+  roundCatches.push(poke);
   const strip = $("#grassStrip");
   if(strip) strip.classList.remove("shaking");
   pendingCatchCallback = callback;
@@ -2673,43 +2754,36 @@ function finishBattle(){
 }
 
 /* ---------------- results ---------------- */
-const LEGENDARY_IDS = [144,145,146,149,150,151]; // Articuno, Zapdos, Moltres, Dragonite, Mewtwo, Mew
 
 function finish(){
   recordDailyCompletion();
   updateProgress();
   $("#countBadge").textContent = `${queue.length} / ${queue.length}`;
   $("#progFill").style.width = "100%";
-  const total = queue.length;
-  const pct = total? correct/total : 0;
-  $("#scorePill").textContent = `${correct} / ${total} correct`;
-  let emoji="🎉", title="Great job, Trainer!";
-  if(pct===1){ emoji="🏆"; title="Perfect! You're a Champion!"; }
-  else if(pct>=0.7){ emoji="🌟"; title="Awesome work!"; }
-  else if(pct>=0.4){ emoji="😊"; title="Nice try — keep going!"; }
-  else { emoji="💪"; title="Good effort — let's practice more!"; }
-
-  const emojiEl = $("#resultEmoji"), ballEl = $("#resultPokeball");
-  const revealFrame = $("#resultRevealFrame"), revealImg = $("#resultRevealImg"), caption = $("#resultCaption");
-  if(pct===1){
-    emojiEl.classList.add("hidden");
-    ballEl.classList.remove("hidden");
-    const legendId = LEGENDARY_IDS[rand(LEGENDARY_IDS.length)];
-    const legend = POKEMON.find(p=> p.id===legendId);
-    revealImg.src = artwork(legend.id);
-    revealImg.alt = cap(legend.n);
-    revealFrame.classList.remove("hidden");
-    caption.textContent = `You earned ${cap(legend.n)}!`;
-    caption.classList.remove("hidden");
+  // No score here: every mode retries until correct, so a finished round is
+  // always 100% and a "perfect run" reward meant nothing. The reward is what
+  // was actually caught, and the tiles carry the sense of progress on the
+  // a round that catches nothing — rarer now the pity timer caps droughts,
+  // but still possible on short rounds or once a generation is fully caught.
+  renderHomeTiles();
+  const block = $("#caughtBlock");
+  if(roundCatches.length){
+    block.innerHTML = `<p class="caught-title">You caught ${roundCatches.length === 1 ? "a Pokémon" : roundCatches.length + " Pokémon"}!</p>
+      <div class="caught-row">${roundCatches.map(p => `
+        <button class="caught-chip" type="button" data-id="${p.id}">
+          <img src="${artwork(p.id)}" alt="${cap(p.n)}">
+          <span>${cap(p.n)}</span>
+        </button>`).join("")}</div>`;
+    block.querySelectorAll("[data-id]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
+        markSeen(poke.id);
+        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true });
+      });
+    });
   } else {
-    emojiEl.textContent = emoji;
-    emojiEl.classList.remove("hidden");
-    ballEl.classList.add("hidden");
-    revealFrame.classList.add("hidden");
-    caption.classList.add("hidden");
+    block.innerHTML = `<p class="caught-none">No wild Pok&eacute;mon this time — keep playing to find one!</p>`;
   }
-
-  $("#resultTitle").textContent=title;
   $("#totalCountResults").value = $("#totalCount").value;
   show("results");
 }
@@ -2748,7 +2822,7 @@ function renderTrailSettings(){
   try{ await loadData(); }
   catch(err){ console.error(err); showDataError(err); return; }
   loadSettings();
-  renderStreak();
+  renderHomeTiles();
   renderTrailSettings();
   window.__dataReady = true;      // tools/pronounce.html waits on this
 })();

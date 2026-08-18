@@ -79,6 +79,19 @@ Fixed by moving the check into the guard, so every hint in the allowance is usab
 
 ---
 
+## Phase 21 — Evolution families in the Pokédex
+
+National Dex order already puts 83% of evolution families side by side, but cross-generation evolutions can sit hundreds of slots apart — Pichu is #172 while Pikachu is #25, and Eevee's family spans #133 to #700. Within Gen 1 there are no splits at all, so this only starts mattering at Gen 2.
+
+An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives a strip in the detail popup: one step back, every step forward, current entry highlighted. Each member is tappable and reopens the popup on itself, so a three-stage line is two taps rather than a wall of sprites — which matters for Eevee's eight branches. Relatives not yet caught show as silhouettes, turning the strip into a motivator rather than a spoiler; an uncaught entry shows no strip at all. Four rows are deliberately blank (Nidorina, Nidorino, Sirfetch'd, Mr. Rime) because their real parent is one of the four species excluded from the roster, and a link that can't be followed is worse than none.
+
+## Phase 22 — Home tiles, an honest results screen, and a pity timer
+
+- **The Play Streak card became three tiles.** Seven rows reading "Not played yet" took ~420px and pushed Start Playing below the fold; three tappable tiles (Rounds Today / Pokémon / Day Streak) take ~90px. The stored data already turned out to be rounds-per-day — `recordDailyCompletion()` fires once per finished session — so nothing needed migrating. Daily counts are no longer pruned to 7 days, which would have silently capped the streak at the window length. Settings gained **Rounds per day** (default 2) and renamed the old count to **Questions per round** (default 10), naming two units that had been implied.
+- **The streak holds until the day ends**, counting consecutive days ending today *or yesterday*, rather than resetting to zero at midnight before the child has played.
+- **The results screen dropped its score**, because the score could never be anything but 100%: every mode retries until correct, so `correct` always equalled `total`. "Perfect! You're a Champion!" fired every round and the other three tiers were unreachable code. The perfect-run reward was worse — it announced "You earned Mewtwo!" and called no `addToCollection`, a broken promise on every round. The screen is now "Round finished!", the three tiles, and the Pokémon actually caught this round as tappable chips. `LEGENDARY_IDS` went with it, having listed Dragonite, which isn't legendary.
+- **A pity timer caps encounter droughts.** At rate R an encounter is guaranteed one question short of the average wait (at 10%, the 9th question). The counter resets each round, so a cold streak never follows the child into the next one. Verified deterministically at 5/10/25/50% — and the first version of that test proved nothing, because `rand` is a `const` arrow that can't be replaced from outside; stubbing `Math.random`, which it actually calls, was what made it real.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.

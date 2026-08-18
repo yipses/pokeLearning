@@ -33,10 +33,10 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | Play Streak, "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
+| **Start** | Three status tiles, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, quit button |
-| **Results** | Score, tiered feedback (with a special reveal for a perfect run), replay controls |
+| **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
 | **Pokédex** | Every Pokémon, organized by generation, caught ones in color, uncaught ones as grey silhouettes |
 | **Dashboard** | One progress card per Lesson Trail |
@@ -117,6 +117,7 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 ## 8. Pokédex & Catching
 
 - Every challenge screen shows a decorative grass strip. At a configurable rate (Settings, default 10%), it shakes to signal a Pokémon is hiding.
+- **A pity timer caps droughts.** A pure per-question roll can go cold for a long stretch, which to a young child reads as the feature being broken rather than unlucky. At rate R the average wait is 100/R questions, so an encounter is *guaranteed* one question short of that — at 10%, on the 9th question since the last one. The counter **resets at the start of every round** — each round is its own experience, so a cold streak never follows the child into the next one.
 - Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer). Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. Spelling's Phase B pool and Reading's Pokémon pool respect the same gate.
 - The **Pokédex screen** shows every Pokémon organized by generation: caught ones in full color with their name, uncaught ones as a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with the name hidden as "???", plus a live X/Y caught count per generation.
@@ -124,6 +125,20 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - **Every entry is tappable**, opening a detail popup with larger artwork, the Dex number, the name, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**.
 - **The evolution strip** shows one step back and every step forward, with the current entry highlighted. Relatives not yet caught appear as silhouettes with "???", and every member is tappable — so a three-stage line is two taps rather than a wall of sprites, and branching families (Eevee's eight) simply wrap. National Dex order puts 83% of families side by side already, but cross-generation evolutions can sit hundreds of slots apart (Pichu is #172, Pikachu #25), which is what this makes visible. Uncaught entries open too, but keep their secret — silhouette, "???", no types and no read-aloud — so browsing can't spoil what's still out there to find.
 - A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
+
+## 8b. Home Tiles
+
+Three tiles across the top of the Start screen, each tappable:
+
+| Tile | Shows | Goes to |
+|---|---|---|
+| 🎯 **Rounds Today** | rounds finished today, against the daily goal; turns green once met | Dashboard |
+| 📕 **Pokémon** | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
+| 🔥 **Day Streak** | consecutive days that met the rounds goal | Dashboard |
+
+A "round" is one full session; how many questions make up a round, and how many rounds a day the streak needs, are both Settings values.
+
+**The streak holds until the day actually ends.** It counts consecutive days ending today *or yesterday*, so a streak earned yesterday still reads correctly at 8am before anything has been played, and only breaks once a whole day has passed without meeting the goal. Daily round counts are kept indefinitely rather than pruned to a window — pruning would silently cap the streak at the window's length.
 
 ## 9. Dashboard
 
@@ -147,14 +162,15 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 11. Results Screen
 
-- A score pill (`X / Y correct`) and a tiered message/emoji based on performance.
-- A **perfect run** gets a special animated reveal: the plain trophy emoji is replaced by the app's Pokéball icon "popping" in, followed by a randomly chosen legendary Pokémon with a "You earned [Name]!" caption.
-- An editable "Number of challenges" field, so **Play Again** can start a new round at a different length.
-- "Go Back" returns to the home screen.
+- A heading — **"Round finished!"** — and the same three status tiles as the Start screen, so finishing a round shows the progress it just moved.
+- **What was caught this round**, as tappable chips that open the full detail popup. When nothing was caught, a plain line says so rather than inventing a consolation prize.
+- An editable "Questions per round" field, so **Play Again** can start a different length.
+
+**There is deliberately no score.** Every mode retries until the answer is correct, so a finished round is always 100% — a score would be a number that cannot vary, and the tiered praise it drove ("Perfect! You're a Champion!") fired every single time. The old perfect-run reward went with it: it announced "You earned Mewtwo!" and granted nothing, so a child who went looking for it in their Pokédex never found it. Performance is measured where it means something — clean answers driving the Lesson Trails, shown on the Dashboard.
 
 ## 12. Settings & Persistence
 
-- **General**: Number of Challenges (governs session length across all active modes) and Wild Pokémon rate (grass encounter chance).
+- **General**: Questions per round (session length across all active modes, default 10), Rounds per day (the streak goal, default 2), and Wild Pokémon rate (grass encounter chance).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
 - **Per trail**: a frontier dropdown showing the current level in plain language ("Level 4a — Within 40, no regrouping"), which doubles as the manual placement control.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
