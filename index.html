@@ -919,14 +919,6 @@
       <h2 id="resultTitle">Round finished!</h2>
       <div class="home-tiles" id="resultTiles"></div>
       <div id="caughtBlock"></div>
-      <div class="card" style="text-align:left; box-shadow:none; border-style:dashed; padding:14px 18px; margin-bottom:18px;">
-        <div class="field">
-          <label>Questions per round
-            <span class="hint">Change it before playing again</span>
-          </label>
-          <input type="number" id="totalCountResults" min="1" max="50" value="10">
-        </div>
-      </div>
       <div>
         <button class="btn green big" id="againBtn">Play Again</button>
         <button class="btn ghost big" id="backSetupBtn" style="margin-top:12px">Go Back</button>
@@ -994,7 +986,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 29;
+const APP_BUILD = 30;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -3095,7 +3087,6 @@ function finish(){
   } else {
     block.innerHTML = `<p class="caught-none">No catch this time!</p>`;
   }
-  $("#totalCountResults").value = $("#totalCount").value;
   show("results");
 }
 
@@ -3165,15 +3156,7 @@ $("#catchOkBtn").addEventListener("click", ()=>{
 $("#catchModal").addEventListener("click", (e)=>{
   if(e.target === e.currentTarget && e.currentTarget.classList.contains("dismissable")) hideCatchModal();
 });
-$("#againBtn").addEventListener("click", ()=>{
-  $("#totalCount").value = $("#totalCountResults").value;
-  saveSettings();
-  startGame();
-});
-$("#totalCountResults").addEventListener("change", ()=>{
-  $("#totalCount").value = $("#totalCountResults").value;
-  saveSettings();
-});
+$("#againBtn").addEventListener("click", startGame);
 $("#backSetupBtn").addEventListener("click", ()=> show("setup"));
 
 // persist setup/settings changes as they happen
