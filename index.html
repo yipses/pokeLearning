@@ -7,6 +7,14 @@
 <!-- Pokéball favicon, inlined as an SVG data URI so it needs no extra file and
      the app stays a single self-contained page. Same artwork as the header mark. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23ffffff' stroke='%232b2b2b' stroke-width='5'/%3E%3Cpath d='M4 50a46 46 0 0 1 92 0z' fill='%23ef5350' stroke='%232b2b2b' stroke-width='5'/%3E%3Cline x1='4' y1='50' x2='96' y2='50' stroke='%232b2b2b' stroke-width='5'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%23ffffff' stroke='%232b2b2b' stroke-width='5'/%3E%3C/svg%3E">
+<!-- The Pokémon Switch games set their UI in FOT-Rodin, a rounded Japanese
+     gothic. M PLUS Rounded 1c is the closest freely-licensed match: same soft
+     terminals, same even stroke, and it carries a 900 weight for the big
+     numbers. Loaded with display=swap so the page never waits on it, and the
+     fallback stack stays rounded if the request fails. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap">
 <style>
   :root{
     /* Pokopia-inspired cozy pastel palette */
@@ -27,13 +35,14 @@
     --shadow-sm: 0 4px 12px rgba(70,67,58,.12);
     --radius:    26px;
     --radius-sm: 16px;
+    --font-ui:   "M PLUS Rounded 1c", "Baloo 2", "Varela Round", "Trebuchet MS", system-ui, sans-serif;
     font-size: 16px;
   }
 
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
   body{
-    font-family: "Baloo 2", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
+    font-family: var(--font-ui);
     color:var(--ink);
     min-height:100vh;
     background:
@@ -459,6 +468,7 @@
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
   .catch-name{ font-weight:800; font-size:1.4rem; color:var(--ink); text-transform:capitalize; margin:2px 0 8px; }
+  .catch-greet{ margin:0 0 8px; font-weight:800; font-size:1rem; color:var(--leaf-deep); }
   .catch-types{ margin-bottom:4px; }
   /* Needs to out-specify `.poke-frame img`, which sets its own drop-shadow filter. */
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
@@ -484,7 +494,9 @@
      single-word label underneath, so the tiles stay short. The number scales
      rather than the layout breaking, since "147/147" is the widest thing that
      ever lands here. */
-  .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:0 0 14px; }
+  /* Named `home-tiles`, not `tiles`: the spelling letter bank owns `.tiles`
+     already, and a grid rule here silently reflowed that bank into 3 columns. */
+  .home-tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:0 0 14px; }
   .tile-card{
     display:flex; flex-direction:column; align-items:center; gap:1px;
     padding:9px 4px; font:inherit; cursor:pointer; text-align:center;
@@ -508,9 +520,10 @@
   }
 
   /* ---------- home showcase ---------- */
-  /* The middle band of the home screen: one Pokémon, big enough to be the reason
-     a child taps Start. Caught ones show off the collection, wild ones tease as a
-     silhouette. The whole card is a button — tapping re-rolls the pick. */
+  /* The middle band of the home screen: one of your own Pokémon, big enough to be
+     the reason a child taps Start. Only ever a caught one, unless nothing is
+     caught yet — then an outline and its type stand in. The whole card is a
+     button; tapping re-rolls the pick. */
   .showcase{
     display:flex; flex-direction:column; align-items:center; gap:1px;
     width:100%; margin:0 0 14px; padding:12px 12px 14px; font:inherit; cursor:pointer;
@@ -534,7 +547,11 @@
   }
   .showcase-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   .showcase-name{ font-size:1.2rem; font-weight:900; color:var(--ink); margin-top:8px; line-height:1.2; }
-  .showcase-hint{ font-size:.72rem; font-weight:700; color:var(--ink-soft); line-height:1.3; }
+  .showcase-num{ font-size:.78rem; font-weight:800; color:var(--ink-soft); line-height:1.3; }
+  .showcase-greet{ font-size:.9rem; font-weight:800; color:var(--leaf-deep); margin-top:2px; line-height:1.3; }
+  /* Stands in for the name block when nothing is caught yet, so the card keeps
+     roughly the same height either way and Start doesn't jump up the screen. */
+  .showcase-types{ display:flex; gap:6px; justify-content:center; margin-top:12px; padding-bottom:10px; }
 
   /* ---------- home actions / footer ---------- */
   .home-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -564,6 +581,25 @@
   .about-row b{ color:var(--ink); font-weight:800; font-variant-numeric:tabular-nums; }
 
   /* ---------- Pokédex ---------- */
+  /* Nine tabs across a phone: they scroll sideways rather than wrapping to a
+     second row, so the grid below always starts in the same place. */
+  .dex-tabs{
+    display:flex; gap:7px; margin:0 0 14px; padding:2px 2px 8px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .dex-tabs::-webkit-scrollbar{ display:none; }
+  .dex-tab{
+    flex:0 0 auto; font:inherit; font-weight:800; font-size:.86rem; cursor:pointer;
+    padding:9px 15px; border-radius:999px; color:var(--leaf-deep);
+    background:rgba(255,255,255,.85); border:3px solid rgba(255,255,255,.9);
+    box-shadow:var(--shadow-sm); transition: transform .06s, border-color .15s;
+  }
+  .dex-tab:active{ transform:translateY(2px); }
+  .dex-tab.done{ border-color:var(--leaf); }
+  .dex-tab.on{
+    color:var(--white); border-color:var(--leaf-deep);
+    background:linear-gradient(160deg, var(--leaf), var(--leaf-deep));
+  }
   .dex-gen-section{ margin:0 0 26px; }
   .dex-gen-title{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -726,13 +762,13 @@
       </svg>
       Poké Learning
     </h1>
-    <p>Spell, solve, and catch the Pokémon — let's play!</p>
+    <p>Spell, count, and catch!</p>
   </div>
 
   <!-- ============ SETUP ============ -->
   <section id="setup">
 
-    <div class="tiles" id="homeTiles"></div>
+    <div class="home-tiles" id="homeTiles"></div>
 
     <button class="showcase" id="homeShowcase" type="button"></button>
 
@@ -881,7 +917,7 @@
     <div class="card result">
       <div class="big-emoji">🎉</div>
       <h2 id="resultTitle">Round finished!</h2>
-      <div class="tiles" id="resultTiles"></div>
+      <div class="home-tiles" id="resultTiles"></div>
       <div id="caughtBlock"></div>
       <div class="card" style="text-align:left; box-shadow:none; border-style:dashed; padding:14px 18px; margin-bottom:18px;">
         <div class="field">
@@ -916,6 +952,7 @@
       <h2 style="justify-content:center;"><span class="chip">📖</span> My Pokédex</h2>
       <div class="score-pill" id="dexCount">0 / 0 caught</div>
     </div>
+    <div class="dex-tabs" id="dexTabs" role="tablist" aria-label="Generation"></div>
     <div id="dexGrid"></div>
   </section>
 
@@ -940,10 +977,12 @@
       </div>
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
+      <p class="catch-greet hidden" id="catchGreet"></p>
       <div class="rarity-chip hidden" id="catchRarity"></div>
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
+      <button class="btn green big hidden" id="catchBackBtn" style="margin-top:10px">← Back</button>
     </div>
   </div>
 
@@ -955,8 +994,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 27;
-const APP_BUILD_DATE = "16 Aug 2026";
+const APP_BUILD = 29;
+const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -1611,10 +1650,15 @@ function recordDailyCompletion(){
 
 function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); }
 
-/* The home screen's middle band: one Pokémon from the generation being worked
-   on, shown big. A caught one is a trophy, an uncaught one a silhouette teaser —
-   the half that makes a child want to press Start. Re-rolls on every tap, and
-   whenever the home screen is refreshed, so what's on show keeps changing. */
+/* The home screen's middle band: one of YOUR Pokémon, shown big — name, number,
+   "Welcome back!". It is a trophy shelf, not a teaser: showing off a catch is
+   what makes a child want to press Start, and it re-rolls on every tap so the
+   shelf keeps turning over.
+
+   Before anything is caught there is no trophy to show, so the band falls back
+   to a silhouette and its type — an outline and one short word, no sentence. A
+   five-year-old cannot read "Play a round to catch it!", and a mystery shape is
+   the whole invitation anyway (§14.1 of Overview.md). */
 function renderShowcase(){
   const el = $("#homeShowcase");
   if(!el || !POKEMON.length) return;
@@ -1622,23 +1666,28 @@ function renderShowcase(){
   const g = currentGenRange(collected);
   const pool = g ? POKEMON.filter(p => p.id>=g.from && p.id<=g.to) : POKEMON;
   const caught = pool.filter(p => collected.includes(p.id));
-  const wild = pool.filter(p => !collected.includes(p.id));
-  // Half caught, half wild — until one side is empty, at which point the other
-  // takes every turn (a brand-new player has nothing caught to show off).
-  const showCaught = caught.length > 0 && (wild.length === 0 || Math.random() < .5);
-  const list = showCaught ? caught : wild;
+  // Fall back to the whole collection, not just this generation: once a
+  // generation is freshly gated open you have caught nothing in it yet, and
+  // there is no reason to hide the trophies earned in the last one.
+  const shelf = caught.length ? caught : POKEMON.filter(p => collected.includes(p.id));
+  const list = shelf.length ? shelf : pool.filter(p => !collected.includes(p.id));
+  const showCaught = shelf.length > 0;
   const poke = list[Math.floor(Math.random()*list.length)];
   if(!poke) return;
 
   el.innerHTML = `
     <span class="showcase-frame">
-      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Mystery Pokémon"}"
+      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
            class="${showCaught ? "" : "silhouette"}" decoding="async">
     </span>
-    <span class="showcase-name">${showCaught ? cap(poke.n) : "Who's that Pokémon?"}</span>
-    <span class="showcase-hint">${showCaught
-      ? `#${String(poke.id).padStart(3,"0")} · in your Pokédex`
-      : "Play a round to catch it!"}</span>`;
+    ${showCaught ? `
+      <span class="showcase-name">${cap(poke.n)}</span>
+      <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
+      <span class="showcase-greet">Welcome back!</span>
+    ` : `
+      <span class="showcase-types">${(poke.t||[]).map(t=>
+        `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
+    `}`;
 
   // Same single cache-busting retry the Pokédex grid uses — one dropped request
   // would otherwise leave the home screen showing a broken image until reload.
@@ -1778,15 +1827,15 @@ function markSeen(id){
 
 // dex-number ranges per generation — a generation only starts spawning once the previous one is fully caught
 const GENERATIONS = [
-  {from:1,   to:151,  label:"Generation 1 — Kanto"},
-  {from:152, to:251,  label:"Generation 2 — Johto"},
-  {from:252, to:386,  label:"Generation 3 — Hoenn"},
-  {from:387, to:493,  label:"Generation 4 — Sinnoh"},
-  {from:494, to:649,  label:"Generation 5 — Unova"},
-  {from:650, to:721,  label:"Generation 6 — Kalos"},
-  {from:722, to:809,  label:"Generation 7 — Alola"},
-  {from:810, to:905,  label:"Generation 8 — Galar"},
-  {from:906, to:1025, label:"Generation 9 — Paldea"},
+  {from:1,   to:151,  label:"Generation 1 — Kanto",  short:"Gen 1"},
+  {from:152, to:251,  label:"Generation 2 — Johto",  short:"Gen 2"},
+  {from:252, to:386,  label:"Generation 3 — Hoenn",  short:"Gen 3"},
+  {from:387, to:493,  label:"Generation 4 — Sinnoh", short:"Gen 4"},
+  {from:494, to:649,  label:"Generation 5 — Unova",  short:"Gen 5"},
+  {from:650, to:721,  label:"Generation 6 — Kalos",  short:"Gen 6"},
+  {from:722, to:809,  label:"Generation 7 — Alola",  short:"Gen 7"},
+  {from:810, to:905,  label:"Generation 8 — Galar",  short:"Gen 8"},
+  {from:906, to:1025, label:"Generation 9 — Paldea", short:"Gen 9"},
 ];
 
 // the active generation is the lowest one not yet fully caught
@@ -1836,21 +1885,56 @@ function maybeStartGrassEncounter(){
 }
 
 /* One modal serves two callers: the grass catch reveal, and tapping an entry in
-   the Pokédex. An uncaught entry keeps its secret — silhouette, "???", no types,
-   no read-aloud — so browsing the dex can't spoil what's still out there to
-   find. Backdrop-dismissal is opt-in: the catch reveal deliberately requires the
-   Okay button, but browsing the dex means opening and closing a lot of these. */
+   the Pokédex. A caught entry reads: picture, number, name, "Welcome back!". An
+   uncaught one gets the outline and its type and nothing else — no name, no
+   "???", no caption — so browsing the dex can't spoil what's still out there to
+   find, and there is no word on screen the child has to decode for no payoff.
+   Backdrop-dismissal is opt-in: the catch reveal deliberately requires the Okay
+   button, but browsing the dex means opening and closing a lot of these.
+
+   The popup navigates to itself: tapping an evolution relative replaces what's
+   on screen with that relative. `modalTrail` remembers what you came from so
+   there is a way back — without it, following a family line one hop was a
+   one-way trip and the only button left closed the whole thing. On a catch
+   reveal that was worse than a dead end: Okay runs the pending callback and
+   advances the round, so drilling in and pressing it skipped the catch you were
+   being shown. While the trail has anything in it, Back is the only exit. */
+let modalTrail = [];        // entries behind the one on screen
+let modalCurrent = null;    // {poke, opts} for the entry on screen
+
+// Fresh entry from outside the popup: the trail starts over.
 function showPokeModal(poke, opts){
-  const { caption = "🎉 Caught!", revealed = true, dismissOnBackdrop = false } = opts || {};
+  modalTrail = [];
+  renderPokeModal(poke, opts);
+}
+// Same entry, one hop deeper: remember where we were.
+function navPokeModal(poke, opts){
+  if(modalCurrent) modalTrail.push(modalCurrent);
+  renderPokeModal(poke, opts);
+}
+function backPokeModal(){
+  const prev = modalTrail.pop();
+  if(!prev){ hideCatchModal(); return; }
+  renderPokeModal(prev.poke, prev.opts);
+}
+
+function renderPokeModal(poke, opts){
+  modalCurrent = { poke, opts };
+  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false } = opts || {};
   $("#catchCaption").textContent = caption;
+  $("#catchCaption").classList.toggle("hidden", !caption);
+  $("#catchGreet").textContent = greet;
+  $("#catchGreet").classList.toggle("hidden", !greet);
   $("#catchImg").src = artwork(poke.id);
   $("#catchImg").alt = revealed ? cap(poke.n) : "Not caught yet";
   $("#catchImg").classList.toggle("silhouette", !revealed);
   $("#catchNum").textContent = `#${String(poke.id).padStart(3,"0")}`;
-  $("#catchName").textContent = revealed ? cap(poke.n) : "???";
-  $("#catchTypes").innerHTML = revealed
-    ? (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("")
-    : "";
+  $("#catchName").textContent = revealed ? cap(poke.n) : "";
+  $("#catchName").classList.toggle("hidden", !revealed);
+  // Type shows either way: it is a single short word, it tells you something
+  // useful about a slot you have not filled yet, and it does not name the
+  // Pokémon hiding in it.
+  $("#catchTypes").innerHTML = (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("");
   const rarity = revealed ? RARITY_LABEL[poke.rarity] : null;
   $("#catchRarity").textContent = rarity ? `✨ ${rarity}` : "";
   $("#catchRarity").classList.toggle("hidden", !rarity);
@@ -1858,6 +1942,11 @@ function showPokeModal(poke, opts){
   renderEvoRow(revealed ? poke : null);
   $("#catchSay").classList.toggle("hidden", !revealed);
   $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
+  // One primary button, never two: Back while there is somewhere to go back to,
+  // Okay once you're at the entry you opened.
+  const deep = modalTrail.length > 0;
+  $("#catchBackBtn").classList.toggle("hidden", !deep);
+  $("#catchOkBtn").classList.toggle("hidden", deep);
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   modal.classList.remove("hidden");
@@ -1885,7 +1974,7 @@ function renderEvoRow(poke){
     return `<button class="evo${current ? " current" : ""}" type="button" data-id="${p.id}"
       ${current ? "disabled" : ""} aria-label="${got ? cap(p.n) : "Not caught yet"}">
       <img src="${artwork(p.id)}" alt="" class="${got ? "" : "silhouette"}">
-      <span>${got ? cap(p.n) : "???"}</span></button>`;
+      <span>${got ? cap(p.n) : "&nbsp;"}</span></button>`;
   };
   row.innerHTML = (prev ? chip(prev, false) + `<span class="evo-arrow">➜</span>` : "")
     + chip(poke, true)
@@ -1895,10 +1984,14 @@ function renderEvoRow(poke){
       const target = POKEMON.find(x => x.id === Number(btn.dataset.id));
       const got = loadCollection().includes(target.id);
       markSeen(target.id);
-      showPokeModal(target, {
-        caption: got ? "📖 Pokédex" : "❔ Not Caught",
+      navPokeModal(target, {
+        caption: "",
+        greet: got ? "Welcome back!" : "",
         revealed: got,
-        dismissOnBackdrop: true,
+        // Inherit the backdrop rule from where we came from: a catch reveal that
+        // has to be acknowledged must not become dismissable by walking one hop
+        // down its own family tree.
+        dismissOnBackdrop: !!(modalCurrent && modalCurrent.opts && modalCurrent.opts.dismissOnBackdrop),
       });
     });
   });
@@ -1908,6 +2001,8 @@ function renderEvoRow(poke){
 function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke) }); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
+  modalTrail = [];
+  modalCurrent = null;
 }
 
 let pendingCatchCallback = null;
@@ -1921,82 +2016,115 @@ function revealGrassCatch(poke, callback){
   showCatchModal(poke);
 }
 
+/* One generation at a time, chosen from a tab strip. Nine stacked sections meant
+   1,021 cells in the document and a very long scroll to reach Gen 9; a tab keeps
+   the visible grid to at most 160 cells and makes the generation you want one tap
+   away. Labels are truncated to "Gen 1" so all nine fit across a phone. */
+let dexGen = null;
+
 function renderPokedex(){
   const collected = loadCollection();
   const unseen = loadUnseen();
   const sorted = [...POKEMON].sort((a,b)=> a.id-b.id);
   $("#dexCount").textContent = `${collected.length} / ${sorted.length} caught`;
+
+  // a generation only appears once the roster actually reaches into its range
+  const gens = GENERATIONS.filter(g => sorted.some(p => p.id>=g.from && p.id<=g.to));
+  const tabsEl = $("#dexTabs");
   const container = $("#dexGrid");
+  tabsEl.innerHTML = "";
   container.innerHTML = "";
-  GENERATIONS.forEach(g=>{
-    const genPokes = sorted.filter(p => p.id>=g.from && p.id<=g.to);
-    if(genPokes.length===0) return;             // that generation isn't in the roster yet
-    const genCaught = genPokes.filter(p => collected.includes(p.id)).length;
-    const genRare = genPokes.filter(p => RARITY_LABEL[p.rarity]);
-    const genRareCaught = genRare.filter(p => collected.includes(p.id)).length;
+  if(gens.length===0) return;
 
-    const section = document.createElement("div");
-    section.className = "dex-gen-section";
-    section.innerHTML = `
-      <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
-        genRare.length ? `<b class="rare-count">✨ ${genRareCaught}/${genRare.length}</b> · ` : ""
-      }${genCaught} / ${genPokes.length}</span></h3>
-      <div class="dex-grid"></div>
-    `;
-    const grid = section.querySelector(".dex-grid");
-    genPokes.forEach(poke=>{
-      const got = collected.includes(poke.id);
-      const isNew = got && unseen.includes(poke.id);
-      const cell = document.createElement("button");
-      cell.type = "button";
-      cell.className = `dex-cell ${got ? "caught" : "uncaught"}`;
-      // Rarity shows on uncaught entries too. It gives nothing away about which
-      // Pokémon it is, and marking the slot is the point — it says "something
-      // worth finding lives here" rather than rewarding you only after the fact.
-      const rare = RARITY_LABEL[poke.rarity];
-      if(rare) cell.classList.add("legendary");
-      cell.setAttribute("aria-label", [
-        got ? cap(poke.n) : "Not caught yet",
-        `number ${poke.id}`,
-        rare || "",
-        isNew ? "new" : "",
-      ].filter(Boolean).join(", "));
-      cell.innerHTML = `
-        ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">✨</span>` : ""}
-        ${isNew ? `<span class="dex-new">NEW</span>` : ""}
-        <div class="dex-num">#${String(poke.id).padStart(3,"0")}</div>
-        <img class="dex-img${got ? "" : " silhouette"}" src="${artwork(poke.id)}" alt="${got ? cap(poke.n) : "???"}" loading="lazy" decoding="async">
-        <div class="dex-name">${got ? cap(poke.n) : "???"}</div>
-      `;
-      // An <img> never retries on its own, so one dropped request leaves a
-      // permanently broken tile until the page is reloaded. Across 1,021 of them
-      // on a flaky connection that is likely rather than exceptional — give each
-      // a single retry with a cache-busting query before giving up.
-      const img = cell.querySelector(".dex-img");
-      img.addEventListener("error", ()=>{
-        if(img.dataset.retried) return;
-        img.dataset.retried = "1";
-        img.src = artwork(poke.id) + "?r=1";
-      });
+  // default to the generation currently being caught, not always Gen 1
+  if(!gens.some(g => g.label === dexGen)) dexGen = (currentGenRange(collected) || gens[0]).label;
+  const g = gens.find(x => x.label === dexGen);
 
-      cell.addEventListener("click", ()=>{
-        // Opening a NEW entry is what clears its badge — drop it straight from
-        // this cell rather than re-rendering the whole dex and losing scroll.
-        if(markSeen(poke.id)){
-          const badge = cell.querySelector(".dex-new");
-          if(badge) badge.remove();
-          cell.setAttribute("aria-label", `${cap(poke.n)}, number ${poke.id}`);
-        }
-        showPokeModal(poke, {
-          caption: got ? "📖 Pokédex" : "❔ Not Caught",
-          revealed: got,
-          dismissOnBackdrop: true
-        });
-      });
-      grid.appendChild(cell);
+  const inGen = x => sorted.filter(p => p.id>=x.from && p.id<=x.to);
+  tabsEl.innerHTML = gens.map(x=>{
+    const pokes = inGen(x);
+    const done = pokes.every(p => collected.includes(p.id));
+    return `<button class="dex-tab${x===g ? " on" : ""}${done ? " done" : ""}" type="button"
+      data-gen="${x.label}" aria-pressed="${x===g}"
+      aria-label="${x.label}">${x.short}</button>`;
+  }).join("");
+  tabsEl.querySelectorAll("[data-gen]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      dexGen = btn.dataset.gen;
+      renderPokedex();
+      window.scrollTo({ top:0, behavior:"smooth" });
     });
-    container.appendChild(section);
   });
+
+  const genPokes = inGen(g);
+  const genCaught = genPokes.filter(p => collected.includes(p.id)).length;
+  const genRare = genPokes.filter(p => RARITY_LABEL[p.rarity]);
+  const genRareCaught = genRare.filter(p => collected.includes(p.id)).length;
+
+  const section = document.createElement("div");
+  section.className = "dex-gen-section";
+  section.innerHTML = `
+    <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
+      genRare.length ? `<b class="rare-count">✨ ${genRareCaught}/${genRare.length}</b> · ` : ""
+    }${genCaught} / ${genPokes.length}</span></h3>
+    <div class="dex-grid"></div>
+  `;
+  const grid = section.querySelector(".dex-grid");
+  genPokes.forEach(poke=>{
+    const got = collected.includes(poke.id);
+    const isNew = got && unseen.includes(poke.id);
+    const cell = document.createElement("button");
+    cell.type = "button";
+    cell.className = `dex-cell ${got ? "caught" : "uncaught"}`;
+    // Rarity shows on uncaught entries too. It gives nothing away about which
+    // Pokémon it is, and marking the slot is the point — it says "something
+    // worth finding lives here" rather than rewarding you only after the fact.
+    const rare = RARITY_LABEL[poke.rarity];
+    if(rare) cell.classList.add("legendary");
+    cell.setAttribute("aria-label", [
+      got ? cap(poke.n) : "Not caught yet",
+      `number ${poke.id}`,
+      rare || "",
+      isNew ? "new" : "",
+    ].filter(Boolean).join(", "));
+    // An uncaught cell carries no name text: "???" is a word a five-year-old has
+    // to stop and decode for no payoff. The outline and the number say it.
+    cell.innerHTML = `
+      ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">✨</span>` : ""}
+      ${isNew ? `<span class="dex-new">NEW</span>` : ""}
+      <div class="dex-num">#${String(poke.id).padStart(3,"0")}</div>
+      <img class="dex-img${got ? "" : " silhouette"}" src="${artwork(poke.id)}" alt="${got ? cap(poke.n) : "Not caught yet"}" loading="lazy" decoding="async">
+      ${got ? `<div class="dex-name">${cap(poke.n)}</div>` : ""}
+    `;
+    // An <img> never retries on its own, so one dropped request leaves a
+    // permanently broken tile until the page is reloaded. Across 1,021 of them
+    // on a flaky connection that is likely rather than exceptional — give each
+    // a single retry with a cache-busting query before giving up.
+    const img = cell.querySelector(".dex-img");
+    img.addEventListener("error", ()=>{
+      if(img.dataset.retried) return;
+      img.dataset.retried = "1";
+      img.src = artwork(poke.id) + "?r=1";
+    });
+
+    cell.addEventListener("click", ()=>{
+      // Opening a NEW entry is what clears its badge — drop it straight from
+      // this cell rather than re-rendering the whole dex and losing scroll.
+      if(markSeen(poke.id)){
+        const badge = cell.querySelector(".dex-new");
+        if(badge) badge.remove();
+        cell.setAttribute("aria-label", `${cap(poke.n)}, number ${poke.id}`);
+      }
+      showPokeModal(poke, {
+        caption: "",
+        greet: got ? "Welcome back!" : "",
+        revealed: got,
+        dismissOnBackdrop: true
+      });
+    });
+    grid.appendChild(cell);
+  });
+  container.appendChild(section);
 }
 
 /* ---------------- DASHBOARD ---------------- */
@@ -2324,7 +2452,7 @@ function markWrong(){
   setTimeout(()=>{ slots.classList.remove("shake"); }, 450);
   if(spellState){ spellState.p._notClean = true; backspaceLetter(); }   // remove the wrong letter, keeping the correct ones before it
   fb.className="feedback bad";
-  fb.textContent = "❌ Oops, that letter's wrong — try again!";
+  fb.textContent = "❌ Not that one — try again!";
 }
 
 /* ---------------- MISSING LETTER (Spelling Phase B) ----------------
@@ -2435,7 +2563,7 @@ function checkMissingBlank(inp, i){
     inp.classList.add("shake");
     setTimeout(()=> inp.classList.remove("shake"), 450);
     fb.className="feedback bad";
-    fb.textContent = "❌ Not quite — try that blank again!";
+    fb.textContent = "❌ Not that one — try again!";
   }
 }
 
@@ -2498,7 +2626,7 @@ function autoCheckMathInput(p, input){
     btn.focus();
   } else {
     if(mathState) mathState.hadMistake = true;
-    fb.className="feedback bad"; fb.textContent="❌ Not quite — try again!";
+    fb.className="feedback bad"; fb.textContent="❌ Try again!";
     input.classList.add("shake");
     setTimeout(()=> input.classList.remove("shake"), 450);
   }
@@ -2584,7 +2712,7 @@ function autoCheckVisualInput(p, input){
     btn.focus();
   } else {
     if(visualState) visualState.hadMistake = true;
-    fb.className="feedback bad"; fb.textContent="❌ Not quite — count again!";
+    fb.className="feedback bad"; fb.textContent="❌ Count again!";
     input.classList.add("shake");
     setTimeout(()=> input.classList.remove("shake"), 450);
   }
@@ -2945,9 +3073,9 @@ function finish(){
   $("#progFill").style.width = "100%";
   // No score here: every mode retries until correct, so a finished round is
   // always 100% and a "perfect run" reward meant nothing. The reward is what
-  // was actually caught, and the tiles carry the sense of progress on the
-  // a round that catches nothing — rarer now the pity timer caps droughts,
-  // but still possible on short rounds or once a generation is fully caught.
+  // was actually caught, and the tiles carry the sense of progress even on a
+  // round that catches nothing — rarer now the pity timer caps droughts, but
+  // still possible on short rounds or once a generation is fully caught.
   renderHomeTiles();
   const block = $("#caughtBlock");
   if(roundCatches.length){
@@ -2965,7 +3093,7 @@ function finish(){
       });
     });
   } else {
-    block.innerHTML = `<p class="caught-none">No wild Pok&eacute;mon this time — keep playing to find one!</p>`;
+    block.innerHTML = `<p class="caught-none">No catch this time!</p>`;
   }
   $("#totalCountResults").value = $("#totalCount").value;
   show("results");
@@ -3025,6 +3153,7 @@ $("#quitBtn").addEventListener("click", ()=>{
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });
+$("#catchBackBtn").addEventListener("click", backPokeModal);
 $("#catchOkBtn").addEventListener("click", ()=>{
   hideCatchModal();
   const cb = pendingCatchCallback;

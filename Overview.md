@@ -33,12 +33,12 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | Three status tiles, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
+| **Start** | Three status tiles, one of your Pokémon shown big, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, quit button |
 | **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
-| **Pokédex** | Every Pokémon, organized by generation, caught ones in color, uncaught ones as grey silhouettes |
+| **Pokédex** | Every Pokémon, one generation per tab, caught ones in color, uncaught ones as grey silhouettes |
 | **Dashboard** | One progress card per Lesson Trail |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
@@ -120,10 +120,12 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - **A pity timer caps droughts.** A pure per-question roll can go cold for a long stretch, which to a young child reads as the feature being broken rather than unlucky. At rate R the average wait is 100/R questions, so an encounter is *guaranteed* one question short of that — at 10%, on the 9th question since the last one. The counter **resets at the start of every round** — each round is its own experience, so a cold streak never follows the child into the next one.
 - Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer). Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. Spelling's Phase B pool and Reading's Pokémon pool respect the same gate.
-- The **Pokédex screen** shows every Pokémon organized by generation: caught ones in full color with their name, uncaught ones as a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with the name hidden as "???", plus a live X/Y caught count per generation.
-- **Legendary and mythical species are called out**: a gold cell with a ✨ badge in the grid, a matching chip above the type badges in the detail popup, and a per-generation tally in each generation header (`✨ 2/5 · 3 / 147`). The marker shows on **uncaught** slots too — it reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name, types and the rarity chip all stay hidden until it's caught.
-- **Every entry is tappable**, opening a detail popup with larger artwork, the Dex number, the name, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**.
-- **The evolution strip** shows one step back and every step forward, with the current entry highlighted. Relatives not yet caught appear as silhouettes with "???", and every member is tappable — so a three-stage line is two taps rather than a wall of sprites, and branching families (Eevee's eight) simply wrap. National Dex order puts 83% of families side by side already, but cross-generation evolutions can sit hundreds of slots apart (Pichu is #172, Pikachu #25), which is what this makes visible. Uncaught entries open too, but keep their secret — silhouette, "???", no types and no read-aloud — so browsing can't spoil what's still out there to find.
+- The **Pokédex screen** is organized into **generation tabs** — `Gen 1` … `Gen 9`, one row that scrolls sideways on a phone — showing one generation's grid at a time. It opens on whichever generation the collection gate is currently on, not always Gen 1, and a tab whose generation is fully caught is outlined in green. One generation at a time keeps the visible grid to at most 160 cells instead of 1,021 and puts Gen 9 one tap away instead of a very long scroll.
+- Within a tab: caught entries show in full colour with their name; uncaught ones are a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with **no name text at all** — the outline and the Dex number say it, where a row of `???` would be a word to decode for no payoff (§14.1). A live X/Y caught count sits in the generation header.
+- **Legendary and mythical species are called out**: a gold cell with a ✨ badge in the grid, a matching chip above the type badges in the detail popup, and a per-generation tally in each generation header (`✨ 2/5 · 3 / 147`). The marker shows on **uncaught** slots too — it reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name and rarity chip stay hidden until it's caught.
+- **Every entry is tappable**, opening a detail popup. A caught entry reads: larger artwork, the Dex number, the name, **"Welcome back!"**, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**. An uncaught one gets the outline, its number and its **type** — nothing else: no name, no greeting, no read-aloud. Type is the one thing shown either way; it is a single short word, it says something useful about a slot still to fill, and it doesn't name what's hiding in it.
+- **The popup keeps a back trail.** Tapping a relative replaces what's on screen with that relative, so the primary button becomes **← Back** and walks the hops in reverse; **Okay** returns only once you're back at the entry you opened. There is never more than one button. This matters most on a catch reveal, where Okay also advances the round: while you're a hop deep in the family tree, Back is the only exit, so the catch can't be skipped from a screen that isn't the catch.
+- **The evolution strip** shows one step back and every step forward, with the current entry highlighted. Relatives not yet caught appear as unlabelled silhouettes, and every member is tappable — so a three-stage line is two taps rather than a wall of sprites, and branching families (Eevee's eight) simply wrap. National Dex order puts 83% of families side by side already, but cross-generation evolutions can sit hundreds of slots apart (Pichu is #172, Pikachu #25), which is what this makes visible. Uncaught entries open too, but keep their secret — silhouette and type only, no name and no read-aloud — so browsing can't spoil what's still out there to find.
 - A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
 
 ## 8b. Home Tiles
@@ -139,6 +141,14 @@ Three tiles across the top of the Start screen, each tappable:
 A "round" is one full session; how many questions make up a round, and how many rounds a day the streak needs, are both Settings values.
 
 **The streak holds until the day actually ends.** It counts consecutive days ending today *or yesterday*, so a streak earned yesterday still reads correctly at 8am before anything has been played, and only breaks once a whole day has passed without meeting the goal. Daily round counts are kept indefinitely rather than pruned to a window — pruning would silently cap the streak at the window's length.
+
+## 8c. Home Showcase
+
+Below the tiles, the middle band of the Start screen shows **one of the child's own Pokémon**, big: artwork in a circular frame, its name, its Dex number, and **"Welcome back!"**. The whole card is a button — tapping it re-rolls the pick, as does every return to the home screen.
+
+It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
+
+**Before anything at all is caught** there is no trophy to show, so the band falls back to a silhouette and its **type badges** — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not.
 
 ## 9. Dashboard
 
@@ -201,7 +211,17 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
 - Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius.
-- No external font/script/style dependencies; everything needed to render and run ships in `index.html` plus the local `data/` and image folders.
+- **Type**: the UI is set in **M PLUS Rounded 1c**, the closest freely-licensed match to FOT-Rodin — the rounded Japanese gothic the Pokémon Switch games use — so the app reads as a sibling of the games it borrows from. Loaded from Google Fonts with `display=swap` and a rounded fallback stack (`Baloo 2`, `Varela Round`, `Trebuchet MS`), so the page never blocks on it and never falls back to something angular. This one stylesheet is the app's **only** external dependency; no scripts, no other styles — everything else ships in `index.html` plus the local `data/` and image folders.
+
+### 14.1 Copy rules
+
+The reader is five and still learning to read. Every word on a child-facing screen costs them effort, so:
+
+- **Never write a long sentence.** One to four words per line. `Try again!` — not `Not quite, try that blank again!`.
+- **Words have to earn their place.** A name, a number, `Welcome back!` — things worth the effort of decoding. Anything a picture, a number, or a control already says gets no text at all.
+- **Never make the child read a placeholder.** No `???`, no `Not Caught`. A grey outline already says "you haven't found this one".
+- **Say it plainly, not cleverly.** No wordplay, no encouragement paragraphs, no "Oops".
+- **Adult-facing screens are exempt.** Settings, the Dashboard and `data/README.md` are read by a parent and can explain themselves at length.
 
 ## 15. Technical Architecture
 
