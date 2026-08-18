@@ -53,7 +53,7 @@ Each core skill has its own **track** — an ordered sequence of levels — that
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
-**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on 10 clean in a row, or 16 of the last 20, whichever lands first. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
+**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on **5 clean in a row, or 8 of the last 10**, whichever lands first — short windows, so a child who has the level isn't made to prove it twenty times, and one they haven't got comes back through the Review band anyway. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
 
 **Manual placement.** Every frontier is editable in Settings in either direction. Moving one resets that track's rolling window.
 
@@ -74,7 +74,7 @@ The easiest patterns have genuinely small pools (a few real words each), so the 
 - **Full Spelling** — the mystery Pokémon's artwork is shown and the player spells its name from shuffled letter tiles (tap) or the keyboard. Controls: 🔊 (a speaker on the picture, speaks the name), 💡 Hint (reveals the next correct letter; greys out once the allowance is spent), Backspace, Clear. Wrong letters are rejected immediately with a shake; correct letters lock into a slot.
 - **Missing Letter** — the word is mostly shown with blanks to fill and no hints at all. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams, and r-controlled vowels as single atomic units, so a blank never splits a sound.
 
-Each Phase B level sets its own Full Spelling length ceiling, hint allowance, Missing Letter length ceiling and blank count. Hints tighten as levels rise (3 → 3 → 2 → 2 → 1), and Missing Letter's ceiling runs ahead of Full Spelling's at the earlier levels, since blanking part of a shown word is easier than spelling it from nothing. Per-level parameters are in `LessonTrails.md`.
+Each Phase B level sets its own Full Spelling length ceiling, hint allowance, Missing Letter length ceiling, multi-word ceiling and blank count. Hints tighten as levels rise (3 → 3 → 2 → 2 → 1). Missing Letter's ceiling runs ahead of Full Spelling's, since blanking part of a shown word is easier than spelling it from nothing, and a **multi-word ceiling** runs ahead of both — "Iron Hands" is 9 letters but never more than 5 in a row. Multi-word means a real space; a hyphenated name (Ho-Oh, Kommo-o) counts as one word. Per-level parameters are in `LessonTrails.md`.
 
 Phase A words use the default allowance of 3 hints.
 
@@ -157,7 +157,7 @@ Reached from "📊 My Progress" on the home screen. One card per Lesson Trail, e
 - The track's current level, in plain language.
 - Days at the current level.
 - Last-10 and Last-20 clean-answer progress bars.
-- A live SVG trend chart of rolling accuracy, with gate lines at 80% and 100%, a gold star marker at each instant 10/10 promotion, and a dashed "Leveled up" line at each 16/20 promotion.
+- A live SVG trend chart of rolling accuracy, with gate lines at 80% and 100%, a gold star marker at each instant 5/5 promotion, and a dashed "Leveled up" line at each 8/10 promotion.
 
 ## 10. Battle Mode
 

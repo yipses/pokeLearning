@@ -11,7 +11,7 @@ back.
 | Column | Notes |
 |---|---|
 | `id` | National Dex number. Also picks the artwork: id `25` → `pokemon/25.png` |
-| `name` | Lowercase, no spaces. Used for spelling, reading and display (capitalised at render time) |
+| `name` | Lowercase. Used for spelling, reading and display (capitalised at render time — an all-lowercase name gets a capital on **every** word, so `iron hands` renders as "Iron Hands"). **The separator is load-bearing:** a space means two real words (`iron hands`, `tapu koko`) and unlocks the Spelling trail's higher multi-word length ceiling; a hyphen means one word that happens to contain one (`ho-oh`, `kommo-o`, `porygon-z`) and follows the ordinary ceilings. These arrived from PokéAPI as hyphenated slugs and were separated by hand — don't "normalise" them back |
 | `type1` | Required. Drives Battle type effectiveness and the Pokédex badges |
 | `type2` | Blank for single-type species — leave the cell empty, don't write "none" |
 | `base_stat_total` | Integer. Weights the Battle winner roll |
@@ -27,7 +27,7 @@ The Pokopia item catalogue, used by Spelling's Phonics Ladder and by Reading.
 
 | Column | Notes |
 |---|---|
-| `name` | Capitalised, may contain spaces. Only single plain-letter words are usable for spelling |
+| `name` | Sentence case (first word capitalised, the rest lowercase — `Sea glass fragments`), may contain spaces. Render keeps that casing as given; only the all-lowercase Pokémon names get per-word capitals |
 | `image` | Bare filename with no folder or extension: `honey` → `items/honey.png` |
 | `category` | One of 12 groupings (Materials, Food, Blocks, …) |
 

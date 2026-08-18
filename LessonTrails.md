@@ -12,15 +12,17 @@ Nothing here is a hard gate a kid must fully clear before moving on — see the 
 
 **Not blocks — a blend.** Every round mixes three bands around each trail's **frontier** (the level currently being worked on), reshuffled into one queue rather than played in order.
 
-**Two ways to promote.** Tracking **clean** answers only (right on the first try, no hints) — **10/10** clean in a row promotes instantly; otherwise **16/20** (80%) clean in the rolling window promotes. Whichever hits first. No demotion — Review keeps old levels sharp instead.
+**Two ways to promote.** Tracking **clean** answers only (right on the first try, no hints) — **5/5** clean in a row promotes instantly; otherwise **8/10** (80%) clean in the rolling window promotes. Whichever hits first. No demotion — Review keeps old levels sharp instead.
 
-**You can place the pin.** The frontier is editable in Settings, in either direction — up if a kid's already ahead, down if a level was set too high. Moving it resets that track's Last 10 / Last 20 windows.
+These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. Both gates live in one place in the code (`PROMOTE`), and the Dashboard's labels and gate lines are drawn from it, so re-tuning is a one-line change.
+
+**You can place the pin.** The frontier is editable in Settings, in either direction — up if a kid's already ahead, down if a level was set too high. Moving it resets that track's Last 5 / Last 10 windows.
 
 **Mix:** Review — 20%, below frontier · Current — 60%, at frontier · Stretch — 20%, above frontier
 
 ### What counts as "right"
 
-The app itself never changes — every question can still be retried until it's solved, same as always, no new fail state. But for the purposes of promotion tracking, an answer only counts as **correct** if it's right on the **first attempt**, with **no wrong guesses and no hints used**. Getting there on the second try, or after a hint, still feels like success to the kid and still moves the session on — it just doesn't count toward Last 10 / Last 20. This is the only definition of "correct" used anywhere in this document.
+The app itself never changes — every question can still be retried until it's solved, same as always, no new fail state. But for the purposes of promotion tracking, an answer only counts as **correct** if it's right on the **first attempt**, with **no wrong guesses and no hints used**. Getting there on the second try, or after a hint, still feels like success to the kid and still moves the session on — it just doesn't count toward Last 5 / Last 10. This is the only definition of "correct" used anywhere in this document.
 
 ---
 
@@ -94,15 +96,23 @@ Counts are audited against the actual item catalog, not guessed — every word a
 
 ### Phase B — Fluency (Pokémon names, staggered by task)
 
-Full Spelling (empty tiles, build the whole word) and Missing Letter (word shown, fill the gaps) run at different word-length ceilings on the same level — Missing Letter is strictly easier per word, so it reaches further ahead.
+Full Spelling (empty tiles, build the whole word) and Missing Letter (word shown, fill the gaps) run at different word-length ceilings on the same level — Missing Letter is strictly easier per word, so it reaches further ahead. **Multi-word names get a third, higher ceiling** for the same reason: letter count overstates them. "Iron Hands" is 9 letters but never more than 5 in a row, and the space tells the child where one word ends and the next begins.
 
-| Level | Full Spelling | Hints (Full Spelling) | Missing Letter | Blanks | Hints (Missing Letter) |
-|---|---|---|---|---|---|
-| 1 | up to 3 letters | 3 | up to 5 letters | 1 | none |
-| 2 | up to 5 letters | 3 | up to 7 letters | 2–3 | none |
-| 3 | up to 7 letters | 2 | up to 9 letters | 2–4 | none |
-| 4 | up to 9 letters | 2 | up to 10 (max) | 3–4 | none |
-| 5 | up to 10 (max) | 1 | up to 10 (max) | 3–5 | none |
+| Level | Full Spelling | Hints (Full Spelling) | Missing Letter | Multi-word | Blanks | Hints (Missing Letter) |
+|---|---|---|---|---|---|---|
+| 1 | up to 3 letters | 3 | up to 5 letters | up to 6 | 1 | none |
+| 2 | up to 5 letters | 3 | up to 7 letters | up to 8 | 2–3 | none |
+| 3 | up to 6 letters | 2 | up to 8 letters | up to 9 | 2–4 | none |
+| 4 | up to 7 letters | 2 | up to 9 letters | up to 10 | 3–4 | none |
+| 5 | up to 8 letters | 1 | up to 10 letters | up to 12 | 3–5 | none |
+
+**"Multi-word" means two actual words**, separated by a space — *Iron Hands*, *Tapu Koko*, *Scream Tail*. A **hyphenated** name is not one: *Ho-Oh*, *Kommo-o* and *Porygon-Z* read and spell as single words and follow the ordinary ceilings. The roster stores the distinction directly (spaces for one, hyphens for the other), which it didn't originally — it came from PokéAPI, where every name is a hyphenated slug.
+
+The multi-word ceiling reaches 12 at Level 5 so that **all 27** two-word species are eventually reachable; the longest, *Iron Boulder*, is 11 letters and used to sit above every ceiling in the trail, in the pool but unable to appear.
+
+**Level 5 no longer spells everything.** At an 8-letter Full Spelling ceiling, 9- and 10-letter single words (*Bulbasaur*, *Charmander*) are never built from an empty row — they're practised through Missing Letter instead, which still reaches 10. That caps roughly a fifth of each generation as recognise-and-repair rather than build-from-scratch. It's a deliberate ceiling on the trail as a whole, to be raised when the ladder is extended past Level 5.
+
+**When a band is empty, the ceiling gives way one letter at a time.** Some generations have nothing at the easiest ceilings — Gen 9 has no 3-letter name at all, so Level 1's Full Spelling band is empty there. The pool raises its single-word ceiling by one letter until something fits (Gen 9 lands on 5 letters, six words) rather than falling back to the whole generation, which is what it used to do: that silently handed a Level 1 speller a 12-letter word. The multi-word ceiling doesn't inflate along with it.
 
 Missing Letter never gets hints — most of the word is already visible, so a hint would trivialize the one thing being tested. Blank *count* is a range so two 9-letter words in the same round don't always feel identical.
 
@@ -149,7 +159,7 @@ One status page per kid — where each trail's frontier sits right now, how clos
 - Days at the current level
 - Last-10 and Last-20 progress bars with exact fractions
 - A rolling-accuracy trend chart plotting Last-10 and Last-20 % over recent attempts, with dashed threshold lines at the 80% (Last-20 gate) and 100% (Last-10 gate) promotion thresholds
-- A ★ marker wherever a 10/10 instant promotion happened, and a dashed "Leveled up" line wherever the slower 16/20 path fired instead
+- A ★ marker wherever a 5/5 instant promotion happened, and a dashed "Leveled up" line wherever the slower 8/10 path fired instead
 
 ---
 

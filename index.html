@@ -1019,7 +1019,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 31;
+const APP_BUILD = 32;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -1104,6 +1104,12 @@ const SPELLABLE_RE = /^[A-Za-z]+([ -][A-Za-z]+)*$/;
 // (8 letters) sits with the other 8-letter words instead of being pushed a band
 // up by punctuation the child never has to produce.
 const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
+/* "Multi-word" means two actual words — "iron hands", "sea glass fragments".
+   A hyphenated name is NOT one: Ho-Oh, Kommo-o and Porygon-Z read and spell as
+   single words, and the roster stores them hyphenated for exactly that reason.
+   (Everything used to be hyphenated, because the roster came from PokéAPI's
+   slug format; the genuinely space-separated names were converted in the CSV.) */
+const isMultiWord = n => n.includes(" ");
 
 async function loadData(){
   const [pokeRows, sayRows, itemRows] = await Promise.all([
@@ -1197,6 +1203,15 @@ function frontierIndex(track){
 }
 function currentLevel(track){ return trackLevels(track)[frontierIndex(track)]; }
 
+/* Promotion gates, shared by all four trails. Two paths out of a level: a clean
+   run of `fastN`, or `windowNeed` of the last `windowN`. Both are deliberately
+   short — a child who has the level should not have to prove it twenty times,
+   and a level they have not got yet comes back around through the review band
+   anyway. The standard path keeps the same 80% bar it always had; it just asks
+   for half the evidence. */
+const PROMOTE = { fastN: 5, windowN: 10, windowNeed: 8 };
+const PROMOTE_PCT = Math.round(PROMOTE.windowNeed / PROMOTE.windowN * 100);
+
 // Records one attempt's outcome AT THE FRONTIER LEVEL ONLY (review/stretch
 // attempts don't call this). Returns true if it just triggered a promotion.
 // Also appends a Dashboard trend point (rolling Last-10/Last-20 % at this
@@ -1205,13 +1220,13 @@ function currentLevel(track){ return trackLevels(track)[frontierIndex(track)]; }
 function recordAttempt(track, wasClean){
   const p = progress[track];
   p.history.push(wasClean ? 1 : 0);
-  if(p.history.length > 20) p.history.shift();
-  const last10 = p.history.slice(-10);
-  const last20 = p.history.slice(-20);
-  const last10Pct = last10.length ? Math.round(last10.reduce((a,b)=>a+b,0)/last10.length*100) : 0;
-  const last20Pct = last20.length ? Math.round(last20.reduce((a,b)=>a+b,0)/last20.length*100) : 0;
-  const instant = last10.length===10 && last10.every(v=>v===1);
-  const standard = last20.length===20 && last20.reduce((a,b)=>a+b,0) >= 16;
+  if(p.history.length > PROMOTE.windowN) p.history.shift();
+  const fast = p.history.slice(-PROMOTE.fastN);
+  const win  = p.history.slice(-PROMOTE.windowN);
+  const fastPct = fast.length ? Math.round(fast.reduce((a,b)=>a+b,0)/fast.length*100) : 0;
+  const winPct  = win.length  ? Math.round(win.reduce((a,b)=>a+b,0)/win.length*100)   : 0;
+  const instant = fast.length===PROMOTE.fastN && fast.every(v=>v===1);
+  const standard = win.length===PROMOTE.windowN && win.reduce((a,b)=>a+b,0) >= PROMOTE.windowNeed;
   let promoted = false;
   let promotedVia = null;
   if(instant || standard){
@@ -1219,7 +1234,7 @@ function recordAttempt(track, wasClean){
     if(p.frontier < levels.length-1){ p.frontier++; promoted = true; promotedVia = instant ? "instant" : "standard"; p.frontierSince = Date.now(); }
     p.history = [];
   }
-  p.trend.push({last10:last10Pct, last20:last20Pct, promoted:promotedVia});
+  p.trend.push({fast:fastPct, win:winPct, promoted:promotedVia});
   if(p.trend.length > 40) p.trend.shift();
   saveProgress();
   return promoted;
@@ -1393,17 +1408,36 @@ function genGatedSpellablePokemon(){
   if(pool.length===0) pool = SPELLABLE_POKEMON;
   return pool;
 }
-function lenGatedPokemon(maxLen, minLen=3){
-  let pool = genGatedSpellablePokemon().filter(p => letterCount(p.n)>=minLen && letterCount(p.n)<=maxLen);
-  if(pool.length===0) pool = genGatedSpellablePokemon();
-  return pool;
+/* Multi-word names get their own, higher ceiling, for the same reason Missing
+   Letter's ceiling sits above Full Spelling's: letter count overstates how hard
+   they are. "Iron Hands" is 9 letters but never more than 5 in a row, and the
+   space tells the child where one word ends — so it belongs with the shorter
+   words, not with "Bellsprout". */
+function lenGatedPokemon(maxLen, multiMax, minLen=3){
+  const all = genGatedSpellablePokemon();
+  const within = (max, mmax) => all.filter(p => {
+    const L = letterCount(p.n);
+    return L >= minLen && L <= ((mmax && isMultiWord(p.n)) ? mmax : max);
+  });
+  let pool = within(maxLen, multiMax);
+  /* Some generations have nothing at the easiest ceilings — Gen 9 has no
+     3-letter name at all, so B1's Full Spelling band comes up empty. Raise the
+     ceiling a letter at a time until something fits, rather than falling back to
+     the whole generation: that older fallback ignored the ceiling entirely and
+     could hand a B1 speller a 12-letter word. */
+  let max = maxLen;
+  while(pool.length === 0 && max < 20){
+    max++;                        // only the single-word ceiling gives way; the
+    pool = within(max, multiMax); // multi-word one shouldn't inflate with it
+  }
+  return pool.length ? pool : all;
 }
-function mkPhaseB(fullMax, fullHints, missMax, missBlanks){
+function mkPhaseB(fullMax, fullHints, missMax, missBlanks, multiMax){
   if(rand(2)===0){
-    const pool = lenGatedPokemon(fullMax);
+    const pool = lenGatedPokemon(fullMax, multiMax);
     return {kind:"spell", task:"full", poke: pool[rand(pool.length)], hintLimit:fullHints};
   }
-  const pool = lenGatedPokemon(missMax);
+  const pool = lenGatedPokemon(missMax, multiMax);
   return {kind:"spell", task:"missing", poke: pool[rand(pool.length)], blankRange:missBlanks};
 }
 
@@ -1417,11 +1451,12 @@ const SPELLING_LEVELS = [
   {id:"A7", label:"Phonics — R-controlled vowels", gen:()=> mkPhaseA("rcontrolled")},
   {id:"A8", label:"Phonics — Compound words",      gen:()=> mkPhaseA("compound")},
   {id:"A9", label:"Phonics — Multisyllabic",       gen:()=> mkPhaseA("multisyllabic")},
-  {id:"B1", label:"Fluency — Level 1", gen:()=> mkPhaseB(3, 3, 5, [1,1])},
-  {id:"B2", label:"Fluency — Level 2", gen:()=> mkPhaseB(5, 3, 7, [2,3])},
-  {id:"B3", label:"Fluency — Level 3", gen:()=> mkPhaseB(7, 2, 9, [2,4])},
-  {id:"B4", label:"Fluency — Level 4", gen:()=> mkPhaseB(9, 2, 10, [3,4])},
-  {id:"B5", label:"Fluency — Level 5", gen:()=> mkPhaseB(10, 1, 10, [3,5])},
+  // mkPhaseB(fullMax, fullHints, missMax, missBlanks, multiWordMax)
+  {id:"B1", label:"Fluency — Level 1", gen:()=> mkPhaseB(3, 3, 5,  [1,1], 6)},
+  {id:"B2", label:"Fluency — Level 2", gen:()=> mkPhaseB(5, 3, 7,  [2,3], 8)},
+  {id:"B3", label:"Fluency — Level 3", gen:()=> mkPhaseB(6, 2, 8,  [2,4], 9)},
+  {id:"B4", label:"Fluency — Level 4", gen:()=> mkPhaseB(7, 2, 9,  [3,4], 10)},
+  {id:"B5", label:"Fluency — Level 5", gen:()=> mkPhaseB(8, 1, 10, [3,5], 12)},
 ];
 /* ---------------- Reading trail ----------------
    Fixed 5-choice formats — Read & Choose (see a picture, pick the word) and
@@ -2200,10 +2235,10 @@ function renderDashboard(){
   DASHBOARD_TRACKS.forEach(({id, label, color})=>{
     const p = progress[id];
     const level = currentLevel(id);
-    const last10 = p.history.slice(-10);
-    const last20 = p.history.slice(-20);
-    const last10Count = last10.reduce((a,b)=>a+b,0);
-    const last20Count = last20.reduce((a,b)=>a+b,0);
+    const fast = p.history.slice(-PROMOTE.fastN);
+    const win  = p.history.slice(-PROMOTE.windowN);
+    const fastCount = fast.reduce((a,b)=>a+b,0);
+    const winCount  = win.reduce((a,b)=>a+b,0);
     const days = Math.max(0, Math.floor((Date.now()-p.frontierSince)/86400000));
     const daysLabel = days===0 ? "Started today" : `${days} day${days===1?"":"s"} at this level`;
 
@@ -2218,14 +2253,14 @@ function renderDashboard(){
         <div class="dash-days">${daysLabel}</div>
       </div>
       <div class="window-row">
-        <span class="window-label">Last 10</span>
-        <span class="window-track"><span class="window-fill" style="width:${last10.length ? (last10Count/last10.length*100) : 0}%; background:${color}"></span></span>
-        <span class="window-val">${last10Count}/${last10.length}</span>
+        <span class="window-label">Last ${PROMOTE.fastN}</span>
+        <span class="window-track"><span class="window-fill" style="width:${fast.length ? (fastCount/fast.length*100) : 0}%; background:${color}"></span></span>
+        <span class="window-val">${fastCount}/${fast.length}</span>
       </div>
       <div class="window-row">
-        <span class="window-label">Last 20</span>
-        <span class="window-track"><span class="window-fill" style="width:${last20.length ? (last20Count/last20.length*100) : 0}%; background:${color}"></span></span>
-        <span class="window-val">${last20Count}/${last20.length}</span>
+        <span class="window-label">Last ${PROMOTE.windowN}</span>
+        <span class="window-track"><span class="window-fill" style="width:${win.length ? (winCount/win.length*100) : 0}%; background:${color}"></span></span>
+        <span class="window-val">${winCount}/${win.length}</span>
       </div>
       <div class="trend-wrap"></div>
     `;
@@ -2237,15 +2272,18 @@ function renderDashboard(){
   });
 }
 
-// Rolling Last-10/Last-20 accuracy over the track's recent attempts, plus
-// markers for how each promotion happened — a gold star for an instant 10/10
-// streak, a dashed "Leveled up" line for the slower 16/20 path.
+// Rolling accuracy over the two promotion windows, plus markers for how each
+// promotion happened — a gold star for a clean fast run, a dashed "Leveled up"
+// line for the slower percentage path. Points saved under the older gates are
+// read through their old keys so an existing chart doesn't break.
 function renderTrendChart(trend, color){
   const W=320, H=170, xL=30, xR=308, yTop=14, yBot=150;
   const n = trend.length;
   const xAt = i => n<=1 ? xL : xL + (xR-xL) * (i/(n-1));
   const yAt = pct => yBot - (pct/100)*(yBot-yTop);
-  const pathOf = key => trend.map((t,i)=> `${xAt(i).toFixed(1)} ${yAt(t[key]).toFixed(1)}`).join(" L ");
+  const fastOf = t => t.fast ?? t.last10 ?? 0;
+  const winOf  = t => t.win  ?? t.last20 ?? 0;
+  const pathOf = get => trend.map((t,i)=> `${xAt(i).toFixed(1)} ${yAt(get(t)).toFixed(1)}`).join(" L ");
 
   let svg = `<svg class="trend-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Rolling accuracy trend">`;
   [0,50,100].forEach(pct=>{
@@ -2253,18 +2291,18 @@ function renderTrendChart(trend, color){
     svg += `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" class="grid-line"/>`;
     svg += `<text x="${xL-5}" y="${Number(y)+3}" class="axis-label" text-anchor="end">${pct}</text>`;
   });
-  const y80 = yAt(80).toFixed(1), y100 = yAt(100).toFixed(1);
+  const y80 = yAt(PROMOTE_PCT).toFixed(1), y100 = yAt(100).toFixed(1);
   svg += `<line x1="${xL}" y1="${y80}" x2="${xR}" y2="${y80}" class="threshold-line"/>`;
-  svg += `<text x="${xL}" y="${Number(y80)-4}" class="threshold-label">80% · Last 20 gate</text>`;
+  svg += `<text x="${xL}" y="${Number(y80)-4}" class="threshold-label">${PROMOTE_PCT}% · Last ${PROMOTE.windowN} gate</text>`;
   svg += `<line x1="${xL}" y1="${y100}" x2="${xR}" y2="${y100}" class="threshold-line"/>`;
-  svg += `<text x="${xR}" y="${Number(y100)-4}" class="threshold-label" text-anchor="end">100% · Last 10 gate</text>`;
-  svg += `<path d="M ${pathOf("last20")}" fill="none" class="trend-line" style="stroke:${color}"/>`;
-  svg += `<path d="M ${pathOf("last10")}" fill="none" class="trend-line trend-line-10" style="stroke:${color}"/>`;
+  svg += `<text x="${xR}" y="${Number(y100)-4}" class="threshold-label" text-anchor="end">100% · Last ${PROMOTE.fastN} gate</text>`;
+  svg += `<path d="M ${pathOf(winOf)}" fill="none" class="trend-line" style="stroke:${color}"/>`;
+  svg += `<path d="M ${pathOf(fastOf)}" fill="none" class="trend-line trend-line-10" style="stroke:${color}"/>`;
   trend.forEach((t,i)=>{
     const x = xAt(i).toFixed(1);
-    svg += `<circle cx="${x}" cy="${yAt(t.last10).toFixed(1)}" r="2.2" class="trend-pt" style="fill:${color}"><title>Attempt ${i+1}: Last 10 = ${t.last10}%, Last 20 = ${t.last20}%</title></circle>`;
+    svg += `<circle cx="${x}" cy="${yAt(fastOf(t)).toFixed(1)}" r="2.2" class="trend-pt" style="fill:${color}"><title>Attempt ${i+1}: Last ${PROMOTE.fastN} = ${fastOf(t)}%, Last ${PROMOTE.windowN} = ${winOf(t)}%</title></circle>`;
     if(t.promoted==="instant"){
-      svg += `<text x="${x}" y="9" class="star-marker" text-anchor="middle">★<title>10/10 in a row — instant promotion</title></text>`;
+      svg += `<text x="${x}" y="9" class="star-marker" text-anchor="middle">★<title>${PROMOTE.fastN}/${PROMOTE.fastN} in a row — instant promotion</title></text>`;
     } else if(t.promoted==="standard"){
       svg += `<line x1="${x}" y1="${yTop-4}" x2="${x}" y2="${yBot}" class="promo-line"/>`;
       svg += `<text x="${x}" y="${H-4}" class="promo-label" text-anchor="middle">Leveled up</text>`;
@@ -2390,10 +2428,10 @@ function renderSpell(p){
 function sayAs(name){
   const key = String(name).toLowerCase();
   if(SPEECH_OVERRIDES[key]) return SPEECH_OVERRIDES[key];
-  // Roster names are slugs, so multi-word species arrive hyphenated — "great-tusk",
-  // "roaring-moon", "iron-bundle". Those are ordinary English once the hyphen is a
-  // space, and a synthesiser handed the hyphen may spell it out or run the words
-  // together. Covers ~25 Gen 7–9 names at once, and any hyphenated name added later.
+  // The genuinely two-word species now carry real spaces in the roster, so they
+  // need nothing here. What's left hyphenated is the nine one-word names that
+  // contain a hyphen (Ho-Oh, Kommo-o, Porygon-Z); a synthesiser handed the hyphen
+  // may spell it out or run the halves together, so it still becomes a space.
   return key.includes("-") ? key.replace(/-+/g, " ") : name;
 }
 
@@ -2527,7 +2565,7 @@ const CHUNK_PATTERNS = [
 ];
 // A separator is its own chunk, and each word is chunked independently, so a
 // pattern can never straddle the join: "sea glass" must not read its "a g" as a
-// unit, and "iron-thorns" must not pull "n-t" together.
+// unit, and "ho-oh" must not pull "o-o" together.
 function chunkWord(word){
   const chunks = [];
   for(const part of word.split(/([ -])/)){
@@ -3165,7 +3203,16 @@ function show(which){
   // here rather than in renderPokedex, which usually runs one line earlier.
   if(which === "pokedex") syncDexTabs();
 }
-function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+/* Pokémon names are stored lowercase, item names in sentence case — so an
+   all-lowercase string is a Pokémon name and every word takes a capital
+   ("iron hands" -> "Iron Hands", "ho-oh" -> "Ho-Oh"), while anything that
+   already carries a capital is an item and keeps the casing it was given
+   ("Sea glass fragments" stays sentence case). */
+function cap(s){
+  const str = String(s);
+  if(str !== str.toLowerCase()) return str.charAt(0).toUpperCase()+str.slice(1);
+  return str.replace(/(^|[ -])([a-z])/g, (m,sep,ch)=> sep + ch.toUpperCase());
+}
 
 /* ---------------- trail frontier settings (manual override) ---------------- */
 function renderTrailSelect(track, selectId, hintId, labelPrefix){
