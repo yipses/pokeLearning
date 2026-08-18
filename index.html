@@ -441,6 +441,29 @@
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   #catchSay{ margin-top:6px; }
 
+  /* ---------- home tiles ---------- */
+  /* Three across at any phone width — the numbers scale rather than the layout
+     breaking, since "147/147" is the widest thing that ever lands here. */
+  .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:0 0 14px; }
+  .tile-card{
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    padding:12px 4px; font:inherit; cursor:pointer; text-align:center;
+    background:linear-gradient(180deg,var(--white),var(--cream));
+    border:3px solid rgba(255,255,255,.9); border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm);
+    transition: transform .06s, border-color .15s, box-shadow .15s;
+  }
+  .tile-card:hover{ border-color:var(--sun-deep); }
+  .tile-card:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  .tile-card.done{ border-color:var(--leaf); background:linear-gradient(180deg,#f5fbf5,#e8f5ea); }
+  .tile-icon{ font-size:1.05rem; line-height:1.1; }
+  .tile-big{
+    font-size:clamp(1.05rem, 5.2vw, 1.5rem); font-weight:900; color:var(--ink);
+    line-height:1.15; font-variant-numeric:tabular-nums;
+  }
+  .tile-label{ font-size:.66rem; font-weight:800; color:var(--leaf-deep); line-height:1.2; }
+  .tile-small{ font-size:.6rem; color:var(--ink-soft); line-height:1.2; }
+
   /* ---------- About / build identity ---------- */
   .about-rows{ margin-top:4px; }
   .about-row{
@@ -614,11 +637,7 @@
   <!-- ============ SETUP ============ -->
   <section id="setup">
 
-    <div class="card">
-      <h2><span class="chip">⭐</span> Play Streak</h2>
-      <p class="sub">One star for every round finished start-to-finish with Start Playing (last 7 days).</p>
-      <div id="streakList"></div>
-    </div>
+    <div class="tiles" id="homeTiles"></div>
 
     <button class="btn big green" id="startBtn">▶  Start Playing!</button>
     <button class="btn big berry" id="battleBtn" style="margin-top:12px">⚔️ Pokémon Battle!</button>
@@ -637,10 +656,16 @@
       <h2><span class="chip">🎯</span> General Settings</h2>
       <p class="sub">Each challenge is randomly picked from whichever modes are turned on below.</p>
       <div class="field">
-        <label>Number of challenges
-          <span class="hint">Total challenges for this session</span>
+        <label>Questions per round
+          <span class="hint">How many challenges make up one round</span>
         </label>
         <input type="number" id="totalCount" min="1" max="50" value="10">
+      </div>
+      <div class="field">
+        <label>Rounds per day
+          <span class="hint">Rounds needed to keep the streak going</span>
+        </label>
+        <input type="number" id="roundsGoal" min="1" max="20" value="2">
       </div>
       <div class="field">
         <label>Wild Pok&eacute;mon rate
@@ -840,7 +865,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 22;
+const APP_BUILD = 24;
 const APP_BUILD_DATE = "16 Aug 2026";
 
 function renderAbout(){
@@ -1437,7 +1462,20 @@ function loadSettings(){
 
 /* ---------------- daily play streak ---------------- */
 const STREAK_KEY = "pokeLearningDailyStars";
-const STREAK_DAYS = 7;
+const ROUNDS_GOAL_DEFAULT = 2;
+function roundsGoal(){ return clampInt($("#roundsGoal")?.value, 1, 20, ROUNDS_GOAL_DEFAULT); }
+
+/* Consecutive days that met the goal. Today counts once met; until then the
+   streak stands on yesterday, so it holds all day and only breaks when a whole
+   day has passed unmet — rather than resetting to zero every midnight. */
+function currentStreak(){
+  const data = loadStreak(), goal = roundsGoal();
+  const d = new Date();
+  if((data[dateKey(d)]||0) < goal) d.setDate(d.getDate()-1);
+  let n = 0;
+  while((data[dateKey(d)]||0) >= goal){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
 
 function dateKey(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -1455,31 +1493,49 @@ function recordDailyCompletion(){
   const data = loadStreak();
   const key = dateKey(new Date());
   data[key] = (data[key]||0) + 1;
-  // drop anything older than the window we display
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-(STREAK_DAYS-1));
-  const cutoffKey = dateKey(cutoff);
-  Object.keys(data).forEach(k=>{ if(k < cutoffKey) delete data[k]; });
+  // Every day is kept. A decade of {date: count} is ~70KB against a multi-MB
+  // budget, and pruning to a window would silently cap the streak at its length.
   saveStreak(data);
-  renderStreak();
+  renderHomeTiles();
 }
 
-function renderStreak(){
+function renderHomeTiles(){
+  const el = $("#homeTiles");
+  if(!el) return;
   const data = loadStreak();
-  const list = $("#streakList");
-  if(!list) return;
-  list.innerHTML = "";
-  const today = new Date();
-  for(let i=STREAK_DAYS-1;i>=0;i--){
-    const d = new Date(today);
-    d.setDate(d.getDate()-i);
-    const count = data[dateKey(d)] || 0;
-    const row = document.createElement("div");
-    row.className = "field streak-row";
-    row.innerHTML = count
-      ? `<label>${dateLabel(d)}</label><span class="streak-stars">${"⭐".repeat(count)}</span>`
-      : `<label>${dateLabel(d)}</label><span class="streak-empty">Not played yet</span>`;
-    list.appendChild(row);
+  const collected = loadCollection();
+  const g = currentGenRange(collected);
+  const goal = roundsGoal();
+  const done = data[dateKey(new Date())] || 0;
+
+  let dexBig, dexSmall;
+  if(g){
+    const inGen = POKEMON.filter(p => p.id>=g.from && p.id<=g.to);
+    dexBig = `${inGen.filter(p => collected.includes(p.id)).length}/${inGen.length}`;
+    dexSmall = g.label.split("—")[0].replace("Generation","Gen").trim();
+  } else {
+    dexBig = `${collected.length}`; dexSmall = "All caught!";
   }
+
+  const tile = (id, icon, big, label, small, done) => `
+    <button class="tile-card${done ? " done" : ""}" type="button" data-go="${id}">
+      <span class="tile-icon">${icon}</span>
+      <span class="tile-big">${big}</span>
+      <span class="tile-label">${label}</span>
+      <span class="tile-small">${small}</span>
+    </button>`;
+
+  el.innerHTML =
+    tile("dashboard", "🎯", done, "Rounds Today", `of ${goal}`, done >= goal) +
+    tile("pokedex", "📕", dexBig, "Pokémon", dexSmall, false) +
+    tile("dashboard", "🔥", currentStreak(), "Day Streak", "in a row", false);
+  el.querySelectorAll("[data-go]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const to = b.dataset.go;
+      if(to === "pokedex"){ renderPokedex(); show("pokedex"); }
+      else { renderDashboard(); show("dashboard"); }
+    });
+  });
 }
 
 /* ---------------- game state ---------------- */
@@ -2673,7 +2729,11 @@ function finishBattle(){
 }
 
 /* ---------------- results ---------------- */
-const LEGENDARY_IDS = [144,145,146,149,150,151]; // Articuno, Zapdos, Moltres, Dragonite, Mewtwo, Mew
+// Drawn from the roster's own rarity data rather than a hardcoded list — the
+// old one was six Gen 1 ids and included Dragonite, which isn't legendary.
+function legendaryPool(){
+  return POKEMON.filter(p => p.rarity === "legendary" || p.rarity === "mythical");
+}
 
 function finish(){
   recordDailyCompletion();
@@ -2694,8 +2754,8 @@ function finish(){
   if(pct===1){
     emojiEl.classList.add("hidden");
     ballEl.classList.remove("hidden");
-    const legendId = LEGENDARY_IDS[rand(LEGENDARY_IDS.length)];
-    const legend = POKEMON.find(p=> p.id===legendId);
+    const pool = legendaryPool();
+    const legend = pool[rand(pool.length)];
     revealImg.src = artwork(legend.id);
     revealImg.alt = cap(legend.n);
     revealFrame.classList.remove("hidden");
@@ -2748,7 +2808,7 @@ function renderTrailSettings(){
   try{ await loadData(); }
   catch(err){ console.error(err); showDataError(err); return; }
   loadSettings();
-  renderStreak();
+  renderHomeTiles();
   renderTrailSettings();
   window.__dataReady = true;      // tools/pronounce.html waits on this
 })();
