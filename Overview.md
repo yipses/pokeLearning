@@ -75,7 +75,9 @@ Pokémon are gated by length rather than by phonics level because invented names
 
 The ladder is nine tiers of three, and within a tier only **`hinted_pct`** changes — the share of the word given away, 50% → 25% → 0%:
 
-- **Above 0% it's Missing Letter** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of the missing **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
+- **Above 0% it's Missing Letter** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
+
+  **The bank is padded with decoys to a floor of four tiles.** Holding only the missing chunks made a one-blank word a guaranteed tap — `MEW` showed `M` and a single `EW` tile — which was 9% of all Missing Letter questions and 45% of level 2. Four blanks or more get no decoys, so the hard end is untouched. Each decoy is drawn from the same phonics class as a chunk it competes with — single vowels, vowel teams, r-controlled vowels, digraphs, blends, single consonants — and is never a chunk the word contains. Class matters: beside a vowel team, `str` can be ruled out by eye without knowing the answer, and `oo` cannot. A wrong tap shakes the tile, says so, and costs the clean answer.
 - **At 0% it's Full Spelling** — empty slots, the whole word built from shuffled tiles (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear.
 
 **Both tasks answer the same way, in the same units: tap a tile holding a chunk.** `torch` is three slots and three tiles — `T`, `OR`, `CH` — in both. A chunk is the thing with a sound, so a tile can say what it is, and the same group is the same group on every screen. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next, so `t-o-r-c-h` fills `T`, then `OR`, then `CH`.
@@ -131,7 +133,9 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 ### 7.3 Math Trails
 
-Two tracks. Answers auto-check as the player types (waiting until enough digits are entered to match the answer's length before judging); a **Next ▶** button appears once the answer is correct. A correct answer shows a large animated ✅ and no caption text.
+Two tracks. **Answers are tapped in on a number pad, not typed** — a 3×4 grid of `1`–`9`, `0`, backspace and clear, sized for a thumb and laid out like a phone. Every math mode uses the same pad: plain Math, Visual Math, and Math Pattern, where one pad serves all four boxes and its keys go to whichever box the child is on. The answer box is display-only (`inputmode="none"`), so a tablet's own keyboard never opens; a physical keyboard still types, which costs nothing and is how the modes are driven in tests.
+
+Answers auto-check as digits arrive, waiting until there are enough to match the answer's length before judging. Once the answer is right the pad **hides** rather than greying out — it has nothing left to do, and on a phone that is what lifts the ✅ and the **Next ▶** button above the fold. A correct answer shows a large animated ✅ and no caption text.
 
 **Add/Subtract — 8 levels**, from *within 5* to *within 100 with regrouping* (see `LessonTrails.md`). Each level auto-generates a mix of addition and subtraction within its range. Levels 4a–5b use rejection sampling to control specifically for whether the ones digit carries or borrows, making "no regrouping" and "with regrouping" genuinely distinct steps rather than just wider ranges.
 
@@ -254,7 +258,8 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letter, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
-- Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius.
+- Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius. On the maths screens the frame takes a `compact` modifier and drops from 220px to 96px: the number pad is tall, and the Pokémon is decoration on a sum, so it is what gives way.
+- Rules for the Settings panel's number fields are scoped to `.field`. Unscoped, `input[type="number"]` outranks `.math-input` and `.pattern-input` on specificity — an attribute selector beats a class — and every answer box in the game silently rendered at settings size with 16px text.
 - **Type**: the UI is set in **M PLUS Rounded 1c**, the closest freely-licensed match to FOT-Rodin — the rounded Japanese gothic the Pokémon Switch games use — so the app reads as a sibling of the games it borrows from. Loaded from Google Fonts with `display=swap` and a rounded fallback stack (`Baloo 2`, `Varela Round`, `Trebuchet MS`), so the page never blocks on it and never falls back to something angular. This one stylesheet is the app's **only** external dependency; no scripts, no other styles — everything else ships in `index.html` plus the local `data/` and image folders.
 
 ### 14.1 Copy rules
