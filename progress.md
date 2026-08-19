@@ -212,6 +212,23 @@ Laid out against what comparable apps actually do, rather than from taste. The c
 
 **Found, not fixed:** the Settings screen scrolls horizontally at 360px wide — about 115px of overflow, caused by the level `<select>` elements sizing to their longest option ("Within 100, with regrouping"). It predates this work (build 51 overflowed by 127px) and is untouched by it.
 
+## Phase 44 — Two things saying one thing
+
+- **The round's top bar lost its `3 / 10` chip.** The progress bar beside it already showed the same fact, and neither number meant anything to a child who cannot read them yet. The bar now runs nearly the full width.
+- **"← Quit" became a ✕.** An icon, with an `aria-label`, in a round button matching the rest of the chrome. The `← Back` links on Settings, Battle, Pokédex and My progress keep their wording — those are for whoever is navigating, not for a child mid-round.
+- **Nearly deleted a rule that was still in use.** `.count-badge` looked like the removed chip's own style; it is also the Battle screen's win/loss record, which would have lost its pill and shadow silently. Caught by grepping the class before removing it, which is the same check `CLAUDE.md` prescribes for function names — and the third time in this project that a shared name has nearly bitten. The rule stayed; only the play-screen element went.
+
+## Phase 45 — Six numbers instead of a keypad
+
+- **Maths answers are picked from six**, in every mode. The keypad, the answer box and the `inputmode="none"` machinery are all gone — build 45 to build 55 in three days, which is the cost of the earlier call. Measuring answer lengths back then said a keypad was the only thing that covered a ladder reaching 196; it did not say whether *composing* the number was worth the screen it took.
+- **Checked the answer space before building, and it changed the design.** Four division levels have a total answer space of four or five values — smaller than the choice count — so distractors could not come from "other answers at this level". They come from the mistakes each operation invites instead, which is the better source anyway and has no such floor.
+- **Two rounds of tuning, both driven by looking at the actual sets.** First pass offered 16 and 17 beside an answer of 7, because the ±10 rule fired regardless of magnitude — a tens-column slip is only possible once there is a tens column. Second pass still scattered, because candidates were generated in plausibility order and then *sampled at random*, so a far option could beat a near one. Taking from the front of the list, with two spare for variety, fixed it: `3 + 4 = 7` now offers 4 5 6 7 8 10.
+- **The remaining wide sets are the good ones.** `4 + 3 → 1` and `6 − 5 → 11` look like outliers to a spread metric and are the most instructive options in the set: they are "did you add or subtract?". The metric was wrong, not the data.
+- **Math Pattern keeps all four equations on screen.** The choice was one box at a time; hiding the other three rows was not part of it, and stacking is what makes the pattern visible. One row is open, the six belong to it, and each answered row fills in.
+- **A wrong tap is spent** — dimmed and dead — so the same mistake can't be repeated and the field narrows. It still marks the answer unclean, so promotion is unchanged.
+- **Cost, stated plainly:** a blind guess now lands 1 in 6, and the round can be brute-forced in about three taps. Promotion resists it — every wrong tap marks the attempt unclean — but the practice is weaker than composing the number was.
+- **A splice bug caught by the duplicate-function grep.** Replacing the pattern section used the READING marker as its end bound; READING sits *before* MATH PATTERNS in the file, so the slice ran backwards and duplicated ~160 lines including a whole second `renderReading`. `grep -o "^function ..." | uniq -d` from `CLAUDE.md` caught it immediately. Fixed by searching for the end marker *after* the start index, and by using the correct section boundary.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
