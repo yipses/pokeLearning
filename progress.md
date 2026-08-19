@@ -133,6 +133,12 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **The field is relabelled "Expected drop"** — *out of 100 questions, about this many hide a Pokémon* — because the old label ("Chance a question hides a Pokémon") described the roll, and under any pity timer the roll is never what happens.
 - **Worth remembering: "longer than average" is a one-in-three event.** That is the whole reason a pity timer set at the mean wrecks the rate, and it isn't obvious until it's measured.
 
+## Phase 27 — Filled blanks rendered in the wrong case
+
+- **A filled Missing Letter box showed lowercase next to uppercase given letters** — `BL` reading as `bl` beside `A C K`. One line: `.mw-blank` was `text-transform:lowercase` while `.mw-letter` is `uppercase`. Display only; the answer check lowercases the value, so nothing behavioural depended on it.
+- **Not introduced by the ladder rebuild, but exposed by it.** `git log -S` puts that rule in the initial commit, and a correctly typed chunk has always locked lowercase. What changed is how often it's on screen: Missing Letter gained hints (a hint fills a whole chunk at once), and blank counts now come from `hinted_pct`, so at 50% about half the word sits in filled boxes instead of one.
+- Checked while in there: no question renders with a blank already filled (1,020 across all 25 levels), and chunking still holds a sound together — `black glasses` splits `bl · a · ck · ␣ · gl · a · s · s · e · s`.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.
