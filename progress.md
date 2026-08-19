@@ -148,6 +148,18 @@ Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped
 - **Nothing else changed.** `placeMissingChunk` already shook a wrong tile, said "Not that one" and marked the answer unclean — that path simply had no wrong tile to fire on. The one addition was locking the bank when the word completes, since decoys outlive the answer and the blend-back holds the screen for about a second.
 - Verified over 10,200 generated questions: no bank under four tiles, no decoy sharing no class with an answer, no decoy already in the word, no duplicates. Driven on screen for the wrong tap, the right tap and the end-of-word lock.
 
+## Phase 37 — Where the trivial maths questions actually come from
+
+Investigated, not fixed: the maths ladder is moving to a CSV with a min and a max per level, the way the word ladders already work, and the numbers below are what that CSV has to solve.
+
+- **Reported:** with the difficulty set high, questions like `1 + 1` and `1 × 1` still turn up. The proposal was a floor per level, not just a ceiling.
+- **Measured with each frontier parked at the top of its track.** Add/Subtract at "Within 100, with regrouping" is **4.1%** trivial. Multiply/Divide at "Full range (÷)" is **29.5%**.
+- **The two tracks fail for different reasons, and only one of them is the floor.**
+  - *Multiply/Divide is identities.* At the top level 90% of questions come from the frontier itself, not review, and that level alone yields `n ÷ 1` or `n ÷ n` **28%** of the time. Level 11 is 27.6% `something × 1`. Level 7 is *labelled* "Harder tables only" and is still **20.4%** `1 × 6` / `1 × 8`, because `mkMul(1,5,6,10)` floors the hard operand at 6 and leaves the other free to be 1.
+  - *Add/Subtract is mostly the review band.* Levels 4a–5b really do draw both operands from `randInt(0, ceiling)` — floor zero — but two draws from 0–100 are rarely both small, so "both operands ≤ 2" measures at 0% there. The `1 + 1` seen at high difficulty is the review band doing its job: 20% of questions come from *earlier* levels, and at the top that is about 3% of all questions being genuinely easy. **A floor will not change those** — worth knowing before the CSV is designed. The frontier's own contribution is `n − 0` and `n + 0`, 1–2%.
+- **So a per-level min/max is necessary but not sufficient.** A floor of 2 on both operands fixes levels 7–12; identities like `8 ÷ 8` and `n ± 0` sit *inside* any sane range and need a separate rule; and the review band is a third, deliberate source that a range can't reach.
+- **`makeMath(op,min,max)` has no callers** — dead since the trails replaced free-play generation. It is the obvious thing to mistake for the live path when wiring the CSV up; the live generators are `ADDSUB_LEVELS` / `MULDIV_LEVELS`.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
@@ -156,6 +168,7 @@ The Spelling and Reading trails share one graded vocabulary — all **807 distin
 
 Open threads, roughly by how much they'd bite:
 
+- **The maths ladder is the last thing still hardcoded.** Both tracks' levels live in `ADDSUB_LEVELS` / `MULDIV_LEVELS` in `index.html`, and promotion falls back to the Spelling/Reading CSV figures because Maths has no table of its own. Moving it to a CSV with a min and a max per level is next; Phase 37 has the measurements it needs to fix, including the two things a range alone won't reach — identity operands, and the review band.
 - **The phoneme respellings still haven't been heard.** A first pass written on paper turned out to be 30% unspeakable (Phase 31); the rewrite is measured at 1%, but *measured* only against a rough test for whether a string can be said at all — not against whether it says the **right** sound. `tools/phonemes.html` exists now and takes about five minutes to run through. `ee` is the one to listen to first.
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
