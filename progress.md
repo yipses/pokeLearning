@@ -202,6 +202,16 @@ Laid out against what comparable apps actually do, rather than from taste. The c
 - **The bar exists because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and a bare "Level 3" implies they are.
 - **Below the buttons, deliberately.** That is the play-first rule, and it is the one thing here worth defending: the panel is for the parent and the child's own sense of movement, not a gate in front of Start. Verified that Start Playing is fully on screen at 360×640, the smallest size checked.
 
+## Phase 43 — Everything above the fold, and one thing that gives way
+
+- **Order settled as HUD, wordmark, levels, Pokémon, buttons.** Phase 42 had put the levels *below* the buttons on the play-first principle; that was overruled, and the panel moved up. The play-first property is kept a different way — by making sure **Start Playing!** is still on screen without scrolling.
+- **The fold became the real constraint**, and it needed something to be elastic. The HUD, the wordmark, four levels and two buttons all have to be legible at their size; the Pokémon is the only element that can be smaller and still say what it says. So `.showcase-frame` is sized from viewport **height** and shrinks from 196px to ~115px on a short screen, with the page's top padding giving way alongside it.
+- **Measured at four sizes** — 360×640, 390×844, 414×736, 768×1024 — no vertical scroll on any, and the last button clears the fold on all four. The 360×640 case needed the top padding fix: it was over by exactly 3px, all of it the page's fixed 28px top inset.
+- **The HUD came down in size.** At 1.15rem it was competing with the wordmark for the same job; at 0.92rem it reads as instrumentation, which is what a HUD is.
+- **The wordmark went to caps** through `text-transform` rather than by retyping it, so "POKÉ" keeps its accent.
+
+**Found, not fixed:** the Settings screen scrolls horizontally at 360px wide — about 115px of overflow, caused by the level `<select>` elements sizing to their longest option ("Within 100, with regrouping"). It predates this work (build 51 overflowed by 127px) and is untouched by it.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
@@ -216,6 +226,7 @@ Open threads, roughly by how much they'd bite:
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
 - **`fonts/OFL.txt` is missing.** The webfont is now served from `fonts/`, and the Open Font Licence requires its text to travel with the files. It could not be fetched from the sandbox the change was made in — `fonts/README.md` says where to get it. Nothing breaks without it; it is a licence obligation, not a runtime one.
+- **Settings overflows horizontally on a narrow phone.** ~115px at 360px wide, from the level `<select>` elements taking their width from the longest option text. Long-standing; a `max-width` and text-overflow on the selects would settle it.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
 
 Parked, not scheduled: a service worker for genuine offline install; moving the type chart to CSV if it ever needs editing; recorded phoneme audio instead of synthesised respellings; and two deferred Reading modes — **Rhyme Match**, which needs a real-word list and now has one in `word_levels.csv`, and **Clue Words**, which needs per-item colour/size/material data that doesn't exist.

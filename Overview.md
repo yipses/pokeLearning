@@ -175,7 +175,7 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 ## 8b. Home HUD
 
-A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the ⚙️ Settings button at the far right of the same line. The wordmark follows it, with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
+A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the ⚙️ Settings button at the far right of the same line. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
 The HUD is home-only. A round has its own progress bar and a Quit button, and a second row of counters there would be two things to read at once.
 
@@ -203,13 +203,17 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 ## 8d. Home Levels
 
-Below **Start Playing!**, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
+Directly under the wordmark, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
 
 **The bar is there because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and the number by itself implies they are.
 
-**It sits under the buttons, not over them.** The reference apps are consistent on this — play first, profile second: the primary action stays dominant and above the fold, and the stats are a panel to glance at rather than a gate to get past. A five-year-old opening the app is not there to read four progress bars, and Start Playing is fully on screen at 360×640 with the panel below it.
-
 A 2×2 grid rather than four rows: the same four facts at about half the height, scanned in one look instead of read down a list.
+
+### The fold is the constraint the whole screen is laid out against
+
+Order is HUD, wordmark, levels, Pokémon, buttons — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
+
+Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` is sized from viewport *height*, not width, and shrinks from 196px to about 115px on a short screen. The page's own top padding gives way with it. Measured at 360×640, 390×844, 414×736 and 768×1024: no vertical scroll on any of them.
 
 ## 9. Dashboard
 
