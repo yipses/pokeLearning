@@ -97,7 +97,7 @@
   }
 
   /* ---------- Title ---------- */
-  .brand{ text-align:center; margin: 6px 0 22px; }
+  .brand{ text-align:center; margin: 2px 0 16px; }
   .brand h1{
     margin:0; font-size: clamp(30px, 6vw, 46px); line-height:1.05;
     color:var(--white); letter-spacing:.5px; font-weight:800;
@@ -617,7 +617,7 @@
      because the icons already say it and a pre-reader wasn't reading "STREAK"
      anyway. Each is still a button; the numbers are what changed, not the
      destinations. */
-  .home-top{ display:flex; align-items:center; gap:6px; margin:2px 0 14px; }
+  .home-top{ display:flex; align-items:center; gap:6px; margin:0 0 2px; }
   .home-tiles{ display:flex; align-items:center; gap:6px; flex:1; min-width:0; flex-wrap:wrap; }
   .hud-item{
     display:inline-flex; align-items:center; gap:5px;
@@ -637,6 +637,31 @@
   .hud-item.streak .hud-val{ color:#e0812f; }
   .hud-item.dex .hud-val{ color:var(--berry-deep); }
   .hud-item.met .hud-val{ color:var(--leaf-deep); }
+
+  /* ---------- home levels ---------- */
+  /* Four trails, four tiles, two by two. A list of four rows would have been
+     taller than the Start button it sits under; a 2x2 grid of the same
+     information is about half the height and scans in one look.
+
+     Each tile is name, level, bar — the number says where you are and the bar
+     says how far along the trail that is, which the number alone can't: level 3
+     of 25 and level 3 of 10 are not the same place. Reading it is optional;
+     Start Playing stays above it and above the fold. */
+  .levels-card{
+    margin-top:14px; padding:12px 12px 13px; border-radius:var(--radius);
+    background:rgba(255,255,255,.72); box-shadow:var(--shadow-sm);
+    display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+  }
+  .level-tile{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .level-name{
+    display:flex; align-items:center; gap:5px; font-size:.68rem; font-weight:800;
+    text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .level-num{ font-size:1rem; font-weight:900; color:var(--ink); line-height:1.1; }
+  .level-num .of{ font-size:.72rem; font-weight:700; color:var(--ink-soft); margin-left:3px; }
+  .level-bar{ height:6px; border-radius:999px; background:var(--cream-2); overflow:hidden; }
+  .level-fill{ display:block; height:100%; border-radius:999px; }
 
   /* ---------- home showcase ---------- */
   /* The middle band of the home screen: one of your own Pokémon, big enough to be
@@ -905,6 +930,11 @@
 <body>
 <div class="wrap">
 
+  <div class="home-top" id="homeTop">
+    <div class="home-tiles" id="homeTiles"></div>
+    <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
+  </div>
+
   <div class="brand">
     <h1>
       <svg class="pokeball" viewBox="0 0 100 100" aria-hidden="true">
@@ -916,16 +946,10 @@
       </svg>
       Poké Learning
     </h1>
-    <p>Spell, count, and catch!</p>
   </div>
 
   <!-- ============ SETUP ============ -->
   <section id="setup">
-
-    <div class="home-top">
-      <div class="home-tiles" id="homeTiles"></div>
-      <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
-    </div>
 
     <button class="showcase" id="homeShowcase" type="button"></button>
 
@@ -933,6 +957,8 @@
       <button class="btn green" id="startBtn"><span class="action-icon">▶</span>Start Playing!</button>
       <button class="btn berry" id="battleBtn"><span class="action-icon">⚔️</span>Pokémon Battle!</button>
     </div>
+
+    <div class="levels-card" id="homeLevels"></div>
 
   </section>
 
@@ -1143,7 +1169,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 51;
+const APP_BUILD = 52;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -1895,7 +1921,7 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
 
 /* The home screen's middle band: one of YOUR Pokémon, shown big — name, number,
    "Welcome back!". It is a trophy shelf, not a teaser: showing off a catch is
@@ -1984,6 +2010,38 @@ function renderTiles(el){
       else { renderDashboard(); show("dashboard"); }
     });
   });
+}
+
+/* Where each trail stands, on the home screen. The Pokémon and the counters say
+   how it is going; this says what is actually being learned, which is the thing
+   a parent opens the app to check and the thing the child feels moving.
+
+   Deliberately below Start Playing: every reference app puts play first and the
+   profile second, and a five-year-old opening this is not here to read four
+   progress bars. It is a panel to glance at, not a gate to get past. */
+const LEVEL_TRACKS = [
+  {id:"spelling", icon:"🔤", label:"Spelling",  color:"var(--sky-deep)"},
+  {id:"reading",  icon:"📖", label:"Reading",   color:"#9a6bd6"},
+  {id:"addsub",   icon:"➕", label:"Add / Sub", color:"var(--berry-deep)"},
+  {id:"muldiv",   icon:"✖️", label:"× and ÷",   color:"var(--sun-deep)"},
+];
+function renderHomeLevels(){
+  const el = $("#homeLevels");
+  if(!el) return;
+  el.innerHTML = LEVEL_TRACKS.map(({id, icon, label, color})=>{
+    const levels = trackLevels(id);
+    const level = currentLevel(id);
+    if(!levels.length || !level) return "";
+    const at = frontierIndex(id) + 1;
+    const pct = Math.round((at / levels.length) * 100);
+    return `<div class="level-tile">
+      <span class="level-name"><span aria-hidden="true">${icon}</span>${label}</span>
+      <span class="level-num">Level ${level.id}<span class="of">of ${levels.length}</span></span>
+      <span class="level-bar" role="img" aria-label="${label}: level ${level.id} of ${levels.length}">
+        <span class="level-fill" style="width:${pct}%; background:${color}"></span>
+      </span>
+    </div>`;
+  }).join("");
 }
 
 /* ---------------- game state ---------------- */
@@ -3854,6 +3912,10 @@ function finish(){
 /* ---------------- view switching ---------------- */
 function show(which){
   ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
+  // The HUD sits above the logo, which is outside #setup — so it is hidden by
+  // hand everywhere but home. A round has its own progress bar and a Quit
+  // button; a second row of counters there would be two things to read.
+  $("#homeTop").classList.toggle("hidden", which !== "setup");
   window.scrollTo({top:0, behavior:"smooth"});
   // Widths only exist once the section is displayed, so the tab strip is sized
   // here rather than in renderPokedex, which usually runs one line earlier.

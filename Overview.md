@@ -173,9 +173,11 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - **The evolution strip** shows one step back and every step forward, with the current entry highlighted. Relatives not yet caught appear as unlabelled silhouettes, and every member is tappable — so a three-stage line is two taps rather than a wall of sprites, and branching families (Eevee's eight) simply wrap. National Dex order puts 83% of families side by side already, but cross-generation evolutions can sit hundreds of slots apart (Pichu is #172, Pikachu #25), which is what this makes visible. Uncaught entries open too, but keep their secret — silhouette and type only, no name and no read-aloud — so browsing can't spoil what's still out there to find.
 - A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
 
-## 8b. Home Tiles
+## 8b. Home HUD
 
-A **HUD** across the top of the Start screen — icon and number, sitting straight on the background with no card around them — and the ⚙️ Settings button at the far right of the same line.
+A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the ⚙️ Settings button at the far right of the same line. The wordmark follows it, with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
+
+The HUD is home-only. A round has its own progress bar and a Quit button, and a second row of counters there would be two things to read at once.
 
 | Counter | Shows | Goes to |
 |---|---|---|
@@ -193,11 +195,21 @@ A "round" is one full session; how many questions make up a round, and how many 
 
 ## 8c. Home Showcase
 
-Below the tiles, the middle band of the Start screen shows **one of the child's own Pokémon**, big: artwork in a circular frame, its name, its Dex number, and **"Welcome back!"**. The whole card is a button — tapping it re-rolls the pick, as does every return to the home screen.
+Below the wordmark, the middle band of the Start screen shows **one of the child's own Pokémon**, big: artwork in a circular frame, its name, its Dex number, and **"Welcome back!"**. The whole card is a button — tapping it re-rolls the pick, as does every return to the home screen.
 
 It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
 
 **Before anything at all is caught** there is no trophy to show, so the band falls back to a silhouette and its **type badges** — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not.
+
+## 8d. Home Levels
+
+Below **Start Playing!**, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
+
+**The bar is there because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and the number by itself implies they are.
+
+**It sits under the buttons, not over them.** The reference apps are consistent on this — play first, profile second: the primary action stays dominant and above the fold, and the stats are a panel to glance at rather than a gate to get past. A five-year-old opening the app is not there to read four progress bars, and Start Playing is fully on screen at 360×640 with the panel below it.
+
+A 2×2 grid rather than four rows: the same four facts at about half the height, scanned in one look instead of read down a list.
 
 ## 9. Dashboard
 
@@ -227,7 +239,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 11. Results Screen
 
-- A heading — **"Round finished!"** — and the same three status tiles as the Start screen, so finishing a round shows the progress it just moved.
+- A heading — **"Round finished!"** — and the same HUD as the Start screen, centred, so finishing a round shows the progress it just moved.
 - **What was caught this round**, as large tappable cards that open the full detail popup — the reward is the point of this screen, so the artwork is sized to be looked at. Three fit a row at any phone width; more wrap. When nothing was caught, a plain line says so rather than inventing a consolation prize.
 - **Play Again**, which starts another round at the length set in Settings, and **Go Back**.
 

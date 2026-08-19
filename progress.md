@@ -192,6 +192,16 @@ Investigated, not fixed: the maths ladder is moving to a CSV with a min and a ma
 - **The ⚙️ button sits at the far right of the same line**, same footprint as a counter, and the home footer went. The same renderer feeds the results screen, so the HUD lands there too — centred, to match that card.
 - **"My Progress" lost its subtitle** and became "My progress".
 
+## Phase 42 — Putting the home screen in the order the genre uses
+
+Laid out against what comparable apps actually do, rather than from taste. The consistent findings across Duolingo write-ups and kids-app design guidance: **play first, profile second** — the primary action stays dominant, stats are secondary; card-based grouping for multi-subject; and progress shown as something tangible, a bar or a set of checkpoints, not a bare number.
+
+- **The HUD moved to the very first line**, above the wordmark. It had to leave `#setup` to get there, since the brand block is shared by every screen, so `show()` hides it by hand everywhere but home — a round already has a progress bar and a Quit button, and a second row of counters would be two things to read at once.
+- **The tagline went.** "Spell, count, and catch!" was a sentence for whoever installed the app: read once, then permanently in the way of the thing it introduced.
+- **Four trail levels now show on home**, in a 2×2 grid under Start Playing — icon, level, total, and a coloured bar. Four rows would have been taller than the button above them; the grid is about half the height and scans in one look.
+- **The bar exists because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and a bare "Level 3" implies they are.
+- **Below the buttons, deliberately.** That is the play-first rule, and it is the one thing here worth defending: the panel is for the parent and the child's own sense of movement, not a gate in front of Start. Verified that Start Playing is fully on screen at 360×640, the smallest size checked.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
