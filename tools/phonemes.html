@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Phoneme audit — Poké Learning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body{ font:16px/1.5 system-ui, sans-serif; margin:0; padding:24px; background:#f7f7f2; color:#33312b; }
+  h1{ font-size:1.3rem; margin:0 0 4px; }
+  p.sub{ margin:0 0 18px; color:#6d6a5f; max-width:60ch; }
+  .bar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  button{ font:inherit; cursor:pointer; border-radius:8px; border:1px solid #cfcabc;
+          background:#fff; padding:6px 12px; }
+  button.primary{ background:#4e9d63; color:#fff; border-color:#4e9d63; }
+  table{ border-collapse:collapse; width:100%; max-width:900px; background:#fff; }
+  th,td{ text-align:left; padding:7px 10px; border-bottom:1px solid #eee; }
+  th{ font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:#6d6a5f; }
+  tr.risky{ background:#fff8e6; }
+  tr.flagged{ background:#fdecef; }
+  code{ background:#f0eee6; padding:1px 5px; border-radius:4px; }
+  .chunk{ font-weight:700; font-size:1.05rem; }
+  textarea{ width:100%; max-width:900px; height:130px; font:14px/1.4 ui-monospace, monospace;
+            margin-top:14px; padding:10px; border-radius:8px; border:1px solid #cfcabc; }
+</style>
+<h1>Phoneme audit</h1>
+<p class="sub">Every row of <code>data/phonemes.csv</code>, said out loud exactly as the app says it.
+Listen for two failures: a respelling the voice <em>spells out</em> (“see-aitch” instead of /ch/), and one
+that says the wrong sound. Rows shaded amber are ones a rough check thinks might not be pronounceable —
+that check is only a guess, so trust your ears over the shading. Mark anything wrong and copy the list out
+at the bottom.</p>
+<div class="bar">
+  <button class="primary" id="playAll">▶ Play all</button>
+  <button id="playRisky">▶ Play only the amber ones</button>
+  <button id="stop">■ Stop</button>
+</div>
+<table><thead><tr>
+  <th>Chunk</th><th>Context</th><th>Says</th><th>Notes</th><th></th><th></th>
+</tr></thead><tbody id="rows"></tbody></table>
+<textarea id="out" readonly placeholder="Anything you mark as wrong shows up here."></textarea>
+
+<script>
+// Same voice settings the app uses, or this audits something the child never hears.
+function say(text){
+  if(!text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = 0.8; u.pitch = 1.1;
+  speechSynthesis.speak(u);
+}
+// A respelling with no vowel, or the same letter repeated, is one a synthesiser
+// tends to spell out. Only a hint — "ee" trips it and is probably fine.
+const risky = s => !!s && (!/[aeiouy]/.test(s) || /^(.)\1+$/.test(s));
+
+function parseCsv(text){
+  const rows = []; let row = [], field = "", quoted = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(quoted){
+      if(c === '"' && text[i+1] === '"'){ field += '"'; i++; }
+      else if(c === '"') quoted = false;
+      else field += c;
+    } else if(c === '"') quoted = true;
+    else if(c === ","){ row.push(field); field = ""; }
+    else if(c === "\n"){ row.push(field); rows.push(row); row = []; field = ""; }
+    else if(c !== "\r") field += c;
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  const head = rows.shift();
+  return rows.filter(r => r.length && r.some(x => x !== ""))
+             .map(r => Object.fromEntries(head.map((h,i) => [h.trim(), (r[i]||"").trim()])));
+}
+
+const flagged = new Set();
+let all = [];
+
+fetch("../data/phonemes.csv").then(r => r.text()).then(text => {
+  all = parseCsv(text);
+  const tb = document.getElementById("rows");
+  all.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    if(risky(r.say_as)) tr.classList.add("risky");
+    tr.innerHTML = `
+      <td class="chunk">${r.chunk}</td>
+      <td>${r.context}</td>
+      <td>${r.say_as ? `<code>${r.say_as}</code>` : "<em>silent</em>"}</td>
+      <td>${r.notes || ""}</td>
+      <td><button data-play="${i}">▶</button></td>
+      <td><button data-flag="${i}">sounds wrong</button></td>`;
+    tb.appendChild(tr);
+  });
+  tb.addEventListener("click", e => {
+    const play = e.target.dataset.play, flag = e.target.dataset.flag;
+    if(play !== undefined) say(all[play].say_as);
+    if(flag !== undefined){
+      const r = all[flag];
+      const key = `${r.chunk},${r.context}`;
+      flagged.has(key) ? flagged.delete(key) : flagged.add(key);
+      e.target.closest("tr").classList.toggle("flagged", flagged.has(key));
+      document.getElementById("out").value =
+        [...flagged].map(k => `${k} — says "${all.find(x => `${x.chunk},${x.context}` === k).say_as}"`).join("\n");
+    }
+  });
+});
+
+// Walks a list with a gap, since speak() cancels whatever is mid-flight.
+let timer = null;
+function playList(list){
+  clearTimeout(timer);
+  let i = 0;
+  (function next(){
+    if(i >= list.length) return;
+    const r = list[i++];
+    say(r.say_as);
+    timer = setTimeout(next, 1100);
+  })();
+}
+document.getElementById("playAll").onclick   = ()=> playList(all.filter(r => r.say_as));
+document.getElementById("playRisky").onclick = ()=> playList(all.filter(r => risky(r.say_as)));
+document.getElementById("stop").onclick      = ()=>{ clearTimeout(timer); speechSynthesis.cancel(); };
+</script>
