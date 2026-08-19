@@ -167,6 +167,13 @@ Investigated, not fixed: the maths ladder is moving to a CSV with a min and a ma
 - **Latin subset only, four weights, 87 KB.** M PLUS Rounded 1c is a Japanese family whose full webfont spans roughly 590 subset files and runs to megabytes. Nothing in `index.html` or `data/*.csv` uses a character above U+00FF — checked, not assumed — so no other subset would ever be requested. Weights were taken from what the CSS actually asks for: 400, 700, 800, 900. The 500 that the old link requested was never used.
 - **The page now makes no external requests at all**, verified by loading it with every non-local host blocked at the route level: zero failed requests, and `document.fonts` showing the family genuinely loaded rather than silently falling through.
 
+## Phase 39 — Saying the name of the thing you just caught
+
+- **A name a child has only ever read is a name they can't yet use.** The catch popup showed the name and offered a 🔊 button; it now says it, once, 350ms after the card appears so the name lands on a picture that is already there.
+- **Once per catch, not once per render.** The obvious place — `renderPokeModal` — is wrong: `backPokeModal` re-renders an entry from its stored opts, so walking to an evolution and back would repeat it. It lives in `showCatchModal`, which only `revealGrassCatch` calls. Verified: catching speaks, walking to an evolution is silent, walking back is silent, opening a Pokédex entry is silent, and the 🔊 button still works.
+- **`speak()` cancels whatever is mid-flight**, so the risk was the catch talking over the word the child had just spelled. Traced with a stubbed voice taking a realistic 900ms per utterance: the blend-back ends at 3464ms and the catch name starts at 4267ms — 800ms of clearance, because the blend-back's own `onend` gates the advance. Nothing real is cut.
+- Uses `speak(sayAs(name))` rather than `speakName()`, which pops an `alert` when there is no speech synthesis — tolerable on a button press, not on something that fires by itself.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
