@@ -833,8 +833,8 @@
         <input type="number" id="roundsGoal" min="1" max="20" value="2">
       </div>
       <div class="field">
-        <label>Wild Pok&eacute;mon rate
-          <span class="hint">Chance a question hides a Pok&eacute;mon in the grass to catch</span>
+        <label>Expected drop
+          <span class="hint">Out of 100 questions, about this many hide a Pok&eacute;mon</span>
         </label>
         <span class="op-max"><input type="number" id="grassRate" min="0" max="100" value="10"> %</span>
       </div>
@@ -1019,7 +1019,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 34;
+const APP_BUILD = 35;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -1946,6 +1946,42 @@ function currentGenPool(collected){
   return uncaught.length>0 ? uncaught : null;
 }
 
+/* Wild encounters: a per-question roll, plus a pity timer that guarantees one
+   the moment a drought runs past the average wait.
+
+   The Settings field is the **outcome**, not the dice roll. That distinction is
+   the whole design: a guarantee adds encounters on top of the roll, so a raw
+   roll of R always produces more than R. "Longer than average" sounds like bad
+   luck but happens about one time in three, so the pity fires often enough to
+   move the result several points — a 25% roll with this pity lands at 33%.
+   Earlier versions ignored that and the setting drifted badly: one forced at
+   (average - 1), which at 50% is the very next question, so every question
+   produced an encounter no matter what the field said.
+
+   So the roll is solved for instead of used directly. For a drought capped at
+   `k`, the mean gap between encounters is (1 - (1-p)^k) / p, so the encounter
+   rate is p / (1 - (1-p)^k) — increasing in p, which makes it a clean binary
+   search for the p that lands on the number in the field. At a 25% setting the
+   raw roll is 11.2%, and the pity makes up the difference. */
+function grassPityAt(pct){
+  // One question past the average wait, which is 100/pct questions.
+  return Math.max(2, Math.round(100 / pct) + 1);
+}
+const grassRollCache = new Map();
+function grassRoll(pct){
+  if(grassRollCache.has(pct)) return grassRollCache.get(pct);
+  const target = pct / 100, k = grassPityAt(pct);
+  let lo = 0, hi = target;
+  for(let i = 0; i < 50; i++){
+    const p = (lo + hi) / 2;
+    const rate = p / (1 - Math.pow(1 - p, k));   // p > 0 here, so never 0/0
+    if(rate < target) lo = p; else hi = p;
+  }
+  const roll = (lo + hi) / 2;
+  grassRollCache.set(pct, roll);
+  return roll;
+}
+
 function maybeStartGrassEncounter(){
   grassEncounter = null;
   hideCatchModal();
@@ -1955,23 +1991,10 @@ function maybeStartGrassEncounter(){
   const pct = clampInt($("#grassRate").value, 0, 100, 10);
   if(pct <= 0) return;
 
-  /* Pity timer. A pure per-question roll can go cold for a long stretch, which
-     to a young child reads as the feature being broken rather than unlucky — so
-     an encounter is forced once the drought reaches `pityAt`.
-
-     It has to sit out in the tail. At rate R the wait is geometric with mean
-     100/R, so forcing anywhere near that mean doesn't cap a rare drought, it
-     replaces most of the distribution: an earlier version forced at (mean - 1)
-     and turned a 25% setting into 43% and a 50% setting into 100% — every
-     question, since (mean - 1) is 1 there. Twice the mean moves little enough
-     probability that the setting still means what it says (10% measures 11%,
-     50% measures 53%) while capping the drought at double the expected wait:
-     20 questions at 10%, 4 at 50%. Counted since the last encounter or the
-     start of the round, whichever is later. */
-  const pityAt = Math.max(2, Math.round(200 / pct));
+  const pityAt = grassPityAt(pct);
   sinceEncounter++;
   const forced = sinceEncounter >= pityAt;
-  if(!forced && rand(100) >= pct) return;
+  if(!forced && Math.random() >= grassRoll(pct)) return;
 
   const collected = loadCollection();
   let pool = currentGenPool(collected);
