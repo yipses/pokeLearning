@@ -106,6 +106,13 @@ Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped
 - **And that refactor introduced a name collision that hid itself.** Both renderers had a `placeChunk`, so the later declaration silently won: every tap in Full Spelling reached Missing Letter's copy, found no `missingState`, and returned with no sound, no error and no mark on screen. Renamed, and a check for duplicate top-level function names now takes one grep. That is the **second** collision this session after `.tiles` — in a single-file app with one global namespace, the check belongs in the routine, not in hindsight.
 - **`tools/phonemes.html` exists now**, deferred once and overdue: every row with a play button, amber shading on anything the pronounceability test doubts, and a collector for whatever sounds wrong. It would have caught all of this in five minutes.
 
+## Phase 32 — Let the word finish
+
+- **The blend-back was being talked over by its own advance.** It spoke at 700ms and the next question replaced the screen at 850 — so a child heard about a syllable and a half. Reported as "a bit too sudden", which it was.
+- **`lockAndAdvance()` takes an optional waiter now.** Callers that have something to finish hand it a function and the round stays open until it calls back; everything else keeps the fixed beat. Spelling and Missing Letter use it, and the word is followed by a short pause so the change doesn't snap.
+- **Reading says the word too**, once the right one is found, and waits the same way. This isn't a breach of "words are never read aloud" — that rule guards the *prompt*, and by the time it speaks the child has already answered, so it confirms rather than tells.
+- **It can't hang on a voice.** `onend` isn't reliable everywhere, so a 3s timeout backs it up (advance at ~4s worst case), and where `speechSynthesis` is missing entirely `speak()` calls back immediately and the round continues at ~1s. Both paths tested by stubbing a voice that never finishes and by deleting `speechSynthesis` outright.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.

@@ -86,7 +86,7 @@ The ladder is nine tiers of three, and within a tier only **`hinted_pct`** chang
 
 **The sound depends on the word, not just the letter.** `a` is one sound in `cat`, another in `cake`, and a third in `car`. The chunker has already made `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free; that leaves lone vowels, and the rule reads the word around them — a vowel followed by one consonant and a final `e` is long, otherwise short. The final `e` says nothing at all, which is the correct thing to teach.
 
-**When the word is complete it is spoken whole** — /k/ /a/ /t/ … "cat". Sounding out, then blending back.
+**When the word is complete it is spoken whole** — /k/ /a/ /t/ … "cat". Sounding out, then blending back. **The round waits for it to finish** before moving on, rather than talking over its own advance; a beat follows so the change isn't abrupt. If the browser never reports the utterance ending, a timeout takes over, and with no speech support at all the round simply continues — it can't hang on a voice that isn't there.
 
 Respellings live in `data/phonemes.csv` (§13), keyed by chunk and context, because a speech synthesiser can't be handed a bare phoneme. Every one must be a **pronounceable syllable**: a synthesiser given `ch` or `lll` spells them out — "see-aitch", "ell ell ell" — so they are written `chuh` and `luh`. The schwa on a continuant is the standard phonics compromise; a synthesiser cannot produce a clean /l/. Anything with no row stays **silent** rather than guessing: a wrong sound teaches a wrong thing.
 
@@ -113,6 +113,8 @@ Difficulty ramps on two columns of its own:
 - **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. It always points at or above the level's own row, so decoys are drawn from a superset of the target pool and the child meets harder words as options before ever being asked to read them. This replaced an older "tricky distractor" flag: difficulty now comes from pool breadth rather than from hand-picking same-length decoys.
 
 **Read-aloud rule: pictures may be named aloud; words never are.** Read & Choose prompts with a picture, which a child may not recognize, so a 🔊 Say it names it — resolving the prompt while leaving the written options to be read. Reverse Read & Choose prompts with the written word and therefore has no speaker on the prompt at all; each picture option carries its own instead. In both modes the child must connect a spoken name to a written one, and nothing ever reads a word aloud to them. There are no hints on either mode.
+
+**Finding the right word speaks it**, and the round waits for that too. This doesn't breach the rule above: the rule guards the *prompt*, and by the time it's spoken the child has already answered, so it confirms rather than tells.
 
 A Reading answer is **clean** when the first tap was the correct one. Using a picture's speaker does not affect cleanliness.
 
