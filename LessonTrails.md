@@ -2,7 +2,7 @@
 
 > **Status:** This is the original curriculum design document (originally published as a Claude artifact, "Poké Learning — Lesson Trails," v2). All four trails described below — Add/Subtract, Multiply↔Divide, Spelling, and Reading — plus the Dashboard have since been fully built; this file is kept as detailed design reference (exact word lists, level tables, promotion rules) that isn't fully duplicated in `Overview.md`'s higher-level summary. For current build status, see `progress.md`.
 
-Math splits into two independent strands — **Add/Subtract** and an interleaved **Multiply↔Divide** — plus **Spelling**, which starts with real, phonetically-patterned words before moving into Pokémon-name fluency, plus **Reading**, its own ladder built to fix a real flaw in the old Match mode (since removed). Each trail has its own frontier and advances on its own schedule.
+Math splits into two independent strands — **Add/Subtract** and an interleaved **Multiply↔Divide** — plus **Spelling** and **Reading**, which share one graded vocabulary but climb it at their own pace. Each trail has its own frontier and advances on its own schedule.
 
 20 questions/day, split across all 4 tracks — about **5 questions/day per track**. Multiply↔Divide counts as one track for this split (it shares a single frontier), so each of its ~5 daily picks independently rolls whether it lands on a × or ÷ step.
 
@@ -14,7 +14,7 @@ Nothing here is a hard gate a kid must fully clear before moving on — see the 
 
 **Two ways to promote.** Tracking **clean** answers only (right on the first try, no hints) — **5/5** clean in a row promotes instantly; otherwise **8/10** (80%) clean in the rolling window promotes. Whichever hits first. No demotion — Review keeps old levels sharp instead.
 
-These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. Both gates live in one place in the code (`PROMOTE`), and the Dashboard's labels and gate lines are drawn from it, so re-tuning is a one-line change.
+These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. The percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code; Math has no CSV yet and falls back to the same figures. The Dashboard's labels and gate lines are drawn from whichever row the track is on.
 
 **You can place the pin.** The frontier is editable in Settings, in either direction — up if a kid's already ahead, down if a level was set too high. Moving it resets that track's Last 5 / Last 10 windows.
 
@@ -76,7 +76,7 @@ Both trails now sit on one vocabulary grading, and both are defined entirely in 
 
 ### What replaced Phases A and B
 
-The old Spelling trail was nine "Phase A" phonics levels using 100 hand-picked single-word items, then five "Phase B" fluency levels using Pokémon names graded by length. That structure bundled four independent things into the word "Phase" — where words came from, how they were graded, which task was used, and whether the generation gate applied — and it had a hard fault at the seam: Phase A ended on *Refrigerator* (12 letters) and Phase B began on a 3-letter cap, which in Gen 1 meant `mew` and `muk`. The ladder went hard, then trivial, then climbed again.
+Spelling used to run nine phonics levels over 100 hand-picked single-word items, then five fluency levels over Pokémon names graded by length. The word "phase" bundled four independent things — where words came from, how they were graded, which task was used, and whether the generation gate applied — and the seam was broken: the phonics half ended on *Refrigerator* (12 letters) and the fluency half began on a 3-letter cap, which in Gen 1 means `mew` and `muk`. Hard, then trivial, then climbing again. It also reached only 100 of 909 usable item names, because the rest are multi-word and it had no way to grade them. The four things are four columns now, and one ladder runs end to end.
 
 It also wasted the catalogue. Only 100 of 909 usable item names were reachable, because the other 809 are multi-word and the phonics ladder had no way to grade them.
 
@@ -121,6 +121,16 @@ Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the
 Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
 
 Level 1 is a single rung rather than three, so the opening six words are five questions rather than fifteen.
+
+**Both tasks answer by tapping a tile**, and Missing Letter's tiles are whole chunks — a tile reading `CK` is one sound. Input method and difficulty are deliberately independent: `hinted_pct` is the difficulty knob, and how a child answers should have nothing to do with it. The earlier split (tiles for one task, a typed box for the other) welded them together and put an on-screen keyboard over most of the ladder.
+
+### Sounding out
+
+A correct placement plays the sound of the chunk it just completed; a wrong one is silent, because a child who finds that tapping makes noises will tap for noises. Completing the word speaks it whole — sound out, then blend back, which is the actual phonics move.
+
+The sound has to come from the word, not the letter: `a` differs in `cat`, `cake` and `car`. The chunker already makes `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free; only lone vowels need deciding, by the shape of the word around them — vowel, one consonant, final `e` is long, otherwise short. The final `e` says nothing, which is the correct thing to teach. Respellings live in `data/phonemes.csv`, and a chunk with no row is **silent by design**: a wrong sound teaches a wrong thing, silence teaches nothing.
+
+**Pokémon-branded item names are excluded from Spelling.** `Hoppip water bottle` and `Pikachu doll` carry a phonics level like anything else, but it is fiction — an invented proper noun is memorised, not decoded, so producing one letter by letter isn't spelling practice. Reading keeps them, since recognising a name a child knows by sight is fair, and the names stay reachable as Pokémon proper under the generation gate.
 
 ### Reading — 10 levels
 
