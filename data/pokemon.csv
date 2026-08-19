@@ -433,7 +433,7 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 436,bronzor,steel,psychic,300,,
 437,bronzong,steel,psychic,500,,bronzor
 438,bonsly,rock,,290,,
-439,mime-jr,psychic,fairy,310,,
+439,mime jr,psychic,fairy,310,,
 440,happiny,normal,,220,,
 441,chatot,normal,flying,411,,
 442,spiritomb,ghost,dark,485,,
@@ -766,8 +766,8 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 769,sandygast,ghost,ground,320,,
 770,palossand,ghost,ground,480,,sandygast
 771,pyukumuku,water,,410,,
-772,type-null,normal,,534,legendary,
-773,silvally,normal,,570,legendary,type-null
+772,type null,normal,,534,legendary,
+773,silvally,normal,,570,legendary,type null
 774,minior,rock,flying,440,,
 775,komala,normal,,480,,
 776,turtonator,fire,dragon,485,,
@@ -779,10 +779,10 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 782,jangmo-o,dragon,,300,,
 783,hakamo-o,dragon,fighting,420,,jangmo-o
 784,kommo-o,dragon,fighting,600,,hakamo-o
-785,tapu-koko,electric,fairy,570,legendary,
-786,tapu-lele,psychic,fairy,570,legendary,
-787,tapu-bulu,grass,fairy,570,legendary,
-788,tapu-fini,water,fairy,570,legendary,
+785,tapu koko,electric,fairy,570,legendary,
+786,tapu lele,psychic,fairy,570,legendary,
+787,tapu bulu,grass,fairy,570,legendary,
+788,tapu fini,water,fairy,570,legendary,
 789,cosmog,psychic,,200,legendary,
 790,cosmoem,psychic,,400,legendary,cosmog
 791,solgaleo,psychic,steel,680,legendary,cosmoem
@@ -860,7 +860,7 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 863,perrserker,steel,,440,,meowth
 864,cursola,ghost,,510,,corsola
 865,sirfetchd,fighting,,507,,
-866,mr-rime,ice,psychic,520,,
+866,mr rime,ice,psychic,520,,
 867,runerigus,ground,ghost,483,,yamask
 868,milcery,fairy,,270,,
 869,alcremie,fairy,,495,,milcery
@@ -978,18 +978,18 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 981,farigiraf,normal,psychic,520,,girafarig
 982,dudunsparce,normal,,520,,dunsparce
 983,kingambit,dark,steel,550,,bisharp
-984,great-tusk,ground,fighting,570,,
-985,scream-tail,fairy,psychic,570,,
-986,brute-bonnet,grass,dark,570,,
-987,flutter-mane,ghost,fairy,570,,
-988,slither-wing,bug,fighting,570,,
-989,sandy-shocks,electric,ground,570,,
-990,iron-treads,ground,steel,570,,
-991,iron-bundle,ice,water,570,,
-992,iron-hands,fighting,electric,570,,
-993,iron-jugulis,dark,flying,570,,
-994,iron-moth,fire,poison,570,,
-995,iron-thorns,rock,electric,570,,
+984,great tusk,ground,fighting,570,,
+985,scream tail,fairy,psychic,570,,
+986,brute bonnet,grass,dark,570,,
+987,flutter mane,ghost,fairy,570,,
+988,slither wing,bug,fighting,570,,
+989,sandy shocks,electric,ground,570,,
+990,iron treads,ground,steel,570,,
+991,iron bundle,ice,water,570,,
+992,iron hands,fighting,electric,570,,
+993,iron jugulis,dark,flying,570,,
+994,iron moth,fire,poison,570,,
+995,iron thorns,rock,electric,570,,
 996,frigibax,dragon,ice,320,,
 997,arctibax,dragon,ice,423,,frigibax
 998,baxcalibur,dragon,ice,600,,arctibax
@@ -999,12 +999,12 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 1002,chien-pao,dark,ice,570,legendary,
 1003,ting-lu,dark,ground,570,legendary,
 1004,chi-yu,dark,fire,570,legendary,
-1005,roaring-moon,dragon,dark,590,,
-1006,iron-valiant,fairy,fighting,590,,
+1005,roaring moon,dragon,dark,590,,
+1006,iron valiant,fairy,fighting,590,,
 1007,koraidon,fighting,dragon,670,legendary,
 1008,miraidon,electric,dragon,670,legendary,
-1009,walking-wake,water,dragon,590,,
-1010,iron-leaves,grass,psychic,590,,
+1009,walking wake,water,dragon,590,,
+1010,iron leaves,grass,psychic,590,,
 1011,dipplin,grass,dragon,485,,applin
 1012,poltchageist,grass,ghost,308,,
 1013,sinistcha,grass,ghost,508,,poltchageist
@@ -1014,9 +1014,9 @@ id,name,type1,type2,base_stat_total,rarity,evolves_from
 1017,ogerpon,grass,,550,legendary,
 1018,archaludon,steel,dragon,600,,duraludon
 1019,hydrapple,grass,dragon,540,,dipplin
-1020,gouging-fire,fire,dragon,590,,
-1021,raging-bolt,electric,dragon,590,,
-1022,iron-boulder,rock,psychic,590,,
-1023,iron-crown,steel,psychic,590,,
+1020,gouging fire,fire,dragon,590,,
+1021,raging bolt,electric,dragon,590,,
+1022,iron boulder,rock,psychic,590,,
+1023,iron crown,steel,psychic,590,,
 1024,terapagos,normal,,450,legendary,
 1025,pecharunt,poison,ghost,600,mythical,

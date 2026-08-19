@@ -53,7 +53,7 @@ Each core skill has its own **track** — an ordered sequence of levels — that
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
-**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on 10 clean in a row, or 16 of the last 20, whichever lands first. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
+**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on **100% of the last 5, or 80% of the last 10**, whichever lands first — short windows, so a child who has the level isn't made to prove it twenty times, and one they haven't got comes back through the Review band anyway. Both percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code; Math has no CSV yet and uses those same figures as its fallback. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
 
 **Manual placement.** Every frontier is editable in Settings in either direction. Moving one resets that track's rolling window.
 
@@ -61,35 +61,42 @@ Each core skill has its own **track** — an ordered sequence of levels — that
 
 ### 7.1 Spelling Trail
 
-One graduated trail of 14 levels across two phases.
+**25 levels, defined entirely in `data/spelling_levels.csv`.** Nothing about the ladder lives in code: each row names the pools its level draws from and how much help it gives.
 
-**Phase A — Phonics Ladder (9 levels)**, using real, audited single-word items from the Pokopia catalog. Not generation-gated: a pattern's words are available as soon as its level unlocks.
+Every row selects words three ways at once:
 
-The nine patterns run CVC → floss-rule doubles → blends → digraphs → silent-e → vowel teams → r-controlled → compound words → multisyllabic. Level detail, including how many real words back each pattern, is in `LessonTrails.md`.
+| Column | Selects |
+|---|---|
+| `word_level` | single-word items graded at or below this phonics level (1–9) |
+| `compound_level` | multi-word items whose hardest component word is at or below this; `0` switches compounds off |
+| `pokemon_letters` | Pokémon names up to this many letters, generation-gated as ever |
 
-The easiest patterns have genuinely small pools (a few real words each), so the generator never repeats the immediately-previous word for a given pattern.
+Pokémon are gated by length rather than by phonics level because invented names have no decoding pattern to grade — length is the only honest measure for them. Item words do have one: the grading lives in `data/word_levels.csv` and is rolled up per item in `data/item_levels.csv` (§13).
 
-**Phase B — Fluency (5 levels)**, practicing Pokémon names the child already knows by ear, generation-gated the same way grass encounters are. Each level staggers two task types:
+The ladder is nine tiers of three, and within a tier only **`hinted_pct`** changes — the share of the word given away, 50% → 25% → 0%:
 
-- **Full Spelling** — the mystery Pokémon's artwork is shown and the player spells its name from shuffled letter tiles (tap) or the keyboard. Controls: 🔊 (a speaker on the picture, speaks the name), 💡 Hint (reveals the next correct letter; greys out once the allowance is spent), Backspace, Clear. Wrong letters are rejected immediately with a shake; correct letters lock into a slot.
-- **Missing Letter** — the word is mostly shown with blanks to fill and no hints at all. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams, and r-controlled vowels as single atomic units, so a blank never splits a sound.
+- **Above 0% it's Missing Letter** — the word appears with that share of its letters showing and the rest as blanks. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
+- **At 0% it's Full Spelling** — empty tiles, the whole word built from shuffled letters (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear.
 
-Each Phase B level sets its own Full Spelling length ceiling, hint allowance, Missing Letter length ceiling and blank count. Hints tighten as levels rise (3 → 3 → 2 → 2 → 1), and Missing Letter's ceiling runs ahead of Full Spelling's at the earlier levels, since blanking part of a shown word is easier than spelling it from nothing. Per-level parameters are in `LessonTrails.md`.
+**`max_hints`** is per level and applies to both tasks. It rises as `hinted_pct` falls, so the level that gives away least of the word offers most help finding the rest. A hint costs the answer its "clean" status either way.
 
-Phase A words use the default allowance of 3 hints.
+The earliest levels have single-figure pools, so the generator never repeats the immediately-previous word for a track when there's an alternative.
 
 ### 7.2 Reading Trail
 
-Two fixed 5-choice formats, so difficulty stays constant round to round rather than shrinking as a round progresses:
+**10 levels, defined entirely in `data/reading_levels.csv`,** selecting words by exactly the same three columns as Spelling — one vocabulary grading feeds both trails, so a word met in Reading at level 4 is a word Spelling asks for at level 4. The two frontiers move independently, which lets Reading run ahead: recognising a word is easier than producing it.
 
-- **Read & Choose** — one picture, five word options.
-- **Reverse Read & Choose** — one written word, five picture options.
+Two formats, picked at random per question:
 
-Draws from a combined pool of Pokémon (generation-gated, same as Phase B) and Pokopia items (not gated — items aren't part of the Pokédex collection loop). Ramps on two independent axes: word length, and distractor difficulty ("easy" = random, "tricky" = the four wrong options share the target's first letter or length, falling back to random when the gated pool is too small to find four tricky matches).
+- **Read & Choose** — one picture, N word options.
+- **Reverse Read & Choose** — one written word, N picture options.
 
-Six levels: word length holds at 3–6 letters through level 4 then jumps to 7–10, while distractors go from easy to tricky. Levels 1–4 are single-mode and alternate; 5–6 mix both. Full table in `LessonTrails.md`.
+Difficulty ramps on two columns of its own:
 
-**Read-aloud rule: pictures may be named aloud; words never are.** Read & Choose prompts with a picture, which a child may not recognize, so a 🔊 Say it names it — resolving the prompt while leaving the five written options to be read. Reverse Read & Choose prompts with the written word and therefore has no speaker on the prompt at all; each of its five picture options carries its own instead. In both modes the child must connect a spoken name to a written one, and nothing ever reads a word aloud to them. There are no hints on either mode.
+- **`wrong_answers`** — how many decoys, so the choice count is 3 at level 1, 4 at level 2, and 5 from level 3 on.
+- **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. It always points at or above the level's own row, so decoys are drawn from a superset of the target pool and the child meets harder words as options before ever being asked to read them. This replaced an older "tricky distractor" flag: difficulty now comes from pool breadth rather than from hand-picking same-length decoys.
+
+**Read-aloud rule: pictures may be named aloud; words never are.** Read & Choose prompts with a picture, which a child may not recognize, so a 🔊 Say it names it — resolving the prompt while leaving the written options to be read. Reverse Read & Choose prompts with the written word and therefore has no speaker on the prompt at all; each picture option carries its own instead. In both modes the child must connect a spoken name to a written one, and nothing ever reads a word aloud to them. There are no hints on either mode.
 
 A Reading answer is **clean** when the first tap was the correct one. Using a picture's speaker does not affect cleanliness.
 
@@ -157,7 +164,7 @@ Reached from "📊 My Progress" on the home screen. One card per Lesson Trail, e
 - The track's current level, in plain language.
 - Days at the current level.
 - Last-10 and Last-20 clean-answer progress bars.
-- A live SVG trend chart of rolling accuracy, with gate lines at 80% and 100%, a gold star marker at each instant 10/10 promotion, and a dashed "Leveled up" line at each 16/20 promotion.
+- A live SVG trend chart of rolling accuracy, with gate lines at 80% and 100%, a gold star marker at each instant 5/5 promotion, and a dashed "Leveled up" line at each 8/10 promotion.
 
 ## 10. Battle Mode
 
@@ -195,10 +202,16 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/pokemon.csv` | 1,021 | `id`, `name`, `type1`, `type2`, `base_stat_total`, `rarity` |
 | `data/items.csv` | 922 | `name`, `image`, `category` |
 | `data/pronunciations.csv` | 184 | `name`, `say_as`, `source` |
+| `data/word_levels.csv` | 807 | `word`, `level`, `pattern`, `letters`, `syllables`, `compound_parts`, `also_matches`, `used_in_items`, `previous_level`, `review` |
+| `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `letters`, `longest_word`, `spellable` |
+| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_pct`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
+| `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
 
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). 984 of the 1,021 names are plain single words suitable for the tile-spelling mechanic; the other 37 (Ho-Oh, the Tapu guardians, most Gen 9 Paradox Pokémon) are excluded from Spelling specifically but usable everywhere else. `rarity` marks **71 legendary** and **23 mythical** species.
 - **Pokopia items**: **922** items across 12 categories. 108 are plain single words; 100 of those are placed across the Phonics Ladder's 9 patterns. The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
 - **Offline, but served**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path, and nothing is fetched from PokéAPI, GitHub or any fan site at runtime. Because the CSVs are fetched, though, the page must be **served over http(s)** — browsers block `fetch` on `file://` as cross-origin, so opening `index.html` by double-clicking it shows a load error instead. Once loaded, the browser cache covers repeat visits.
+- **The ladders are data, not code.** `index.html` holds no level list, no word list and no promotion constant — it reads all four from CSV at boot. There is deliberately no fallback copy compiled in: a ladder that exists in two places drifts, and the spreadsheet is the one that gets edited.
+- **Word grading**: `word_levels.csv` grades every distinct word in the item catalogue against the nine phonics patterns; `item_levels.csv` is the derived per-item view, where a single-word item takes its own level and a multi-word item takes its hardest component's. Both are regenerated by `tools/classify_words.py`. `word_levels.csv` is the file to correct — the item view follows from it.
 - **Failure is loud**: a missing or empty CSV replaces the page with a legible error rather than booting an app with silently empty pools.
 - **Storage keys**: Lesson Trails progress, the Pokédex collection, the set of caught-but-not-yet-viewed Pokémon, the play streak, and general settings each persist under their own `localStorage` key.
 
