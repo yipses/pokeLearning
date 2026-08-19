@@ -146,6 +146,13 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **Flagged in the data rather than special-cased in code.** `tools/classify_words.py` cross-references `data/pokemon.csv` and writes a `proper_noun` column into both `word_levels.csv` and `item_levels.csv`; the app reads it. Spelling skips those items; Reading keeps them, since recognising a name a child knows by sight is a fair reading task and the names stay reachable as Pokémon proper, under the generation gate.
 - **Cost is negligible**: the largest pool loses 25 of 1,056. Verified with 600 spelling questions at each of 25 levels — zero proper nouns served — while Reading still offers all 25.
 
+## Phase 29 — A wider catch card, and a catch worth celebrating
+
+- **The card was 280px and felt cramped**, especially with an evolution strip under the name. Widened to 360px, which gives a ~292px interior — enough to put the evolution chips back up to 62px (they had been shrunk to 54px to stop a three-stage line wrapping) with room to spare.
+- **Catches are celebrated now**: 22 confetti pieces falling through the card, plus one soft burst of light behind the artwork. Rarity gets 34 pieces and a gold palette rather than a different animation — a five-year-old reads the fuss, not the word "Legendary" on the chip.
+- **Fires on catches only.** The same card opens whenever a Pokédex entry is tapped, and confetti on every browse would be wallpaper. It's an explicit `celebrate` flag, set by the catch reveal and by the results screen's caught-this-round chips, and cleared whenever the card re-renders — so walking to an evolution relative drops the burst rather than stacking another.
+- No library: plain spans with per-piece drift, spin and timing as CSS custom properties, removed once the longest finishes. Hidden entirely under `prefers-reduced-motion`, alongside the caption pop.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.

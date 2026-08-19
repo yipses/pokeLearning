@@ -404,6 +404,8 @@
   @media (prefers-reduced-motion: reduce){
     .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p{ animation:none; }
     .grass-strip.shaking, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
+    .confetti-layer, .catch-shine{ display:none; }
+    .catch-card.celebrating .catch-caption{ animation:none; }
   }
 
   /* visual math */
@@ -463,10 +465,49 @@
   }
   @keyframes modalFadeIn{ from{opacity:0} to{opacity:1} }
   .catch-card{
+    position:relative;                       /* the confetti layer pins to this */
     background:linear-gradient(180deg,var(--white),var(--cream));
     border-radius:var(--radius); box-shadow:var(--shadow); border:4px solid var(--white);
-    padding:26px 30px; text-align:center; max-width:280px;
+    padding:26px 30px; text-align:center; width:100%; max-width:360px;
   }
+  /* Celebration, catch reveals only — browsing the Pokédex opens this same card
+     dozens of times and confetti every time would be noise. Purely decorative:
+     a clipped layer inside the card, pointer-events off, and switched off
+     entirely for anyone who asked for reduced motion. */
+  .confetti-layer{
+    position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    border-radius:inherit; z-index:2;
+  }
+  .confetti{
+    position:absolute; top:-12px; width:9px; height:14px; border-radius:2px;
+    opacity:0; animation: confettiFall var(--dur) cubic-bezier(.2,.6,.5,1) var(--delay) forwards;
+  }
+  @keyframes confettiFall{
+    0%   { transform:translate3d(0,0,0) rotate(0deg); opacity:0; }
+    12%  { opacity:1; }
+    100% { transform:translate3d(var(--x), 420px, 0) rotate(var(--spin)); opacity:0; }
+  }
+  /* One soft burst behind the artwork, so the eye lands on the Pokémon first. */
+  .catch-shine{
+    position:absolute; left:50%; top:118px; width:230px; height:230px; margin:-115px 0 0 -115px;
+    border-radius:50%; pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(255,214,107,.85) 0%, rgba(255,214,107,.35) 42%, transparent 68%);
+    animation: shineBurst .75s ease-out forwards;
+  }
+  @keyframes shineBurst{
+    0%   { transform:scale(.25); opacity:0; }
+    35%  { opacity:1; }
+    100% { transform:scale(1.35); opacity:0; }
+  }
+  .catch-card.celebrating .catch-caption{ animation: captionPop .55s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes captionPop{
+    0%   { transform:scale(.4); opacity:0; }
+    60%  { transform:scale(1.12); opacity:1; }
+    100% { transform:scale(1); opacity:1; }
+  }
+  /* Everything above the shine, so the burst reads as behind the Pokémon. */
+  .catch-card > *:not(.confetti-layer):not(.catch-shine){ position:relative; z-index:1; }
+
   .catch-caption{ margin:0 0 8px; font-weight:900; font-size:1.4rem; letter-spacing:.02em; color:var(--leaf-deep); text-transform:uppercase; }
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
@@ -656,22 +697,23 @@
   .dex-rare.mythical{ background:#d9b6f0; }
   .rare-count{ color:var(--sun-deep); }
   /* Sized so a three-stage line — the common case — fits one row inside the
-     card's 220px interior. Branching families (Eevee) still wrap, which is fine. */
+     card's ~292px interior with room to spare. Branching families (Eevee) still
+     wrap, which is fine. */
   .evo-row{
     display:flex; align-items:center; justify-content:center; gap:3px;
     flex-wrap:wrap; margin:10px 0 2px;
   }
   .evo{
     display:flex; flex-direction:column; align-items:center; gap:1px;
-    width:54px; padding:4px 1px; font:inherit; cursor:pointer;
+    width:62px; padding:5px 2px; font:inherit; cursor:pointer;
     background:var(--white); border:2px solid var(--cream-2); border-radius:12px;
   }
   .evo:hover:not(:disabled){ border-color:var(--sun-deep); }
   .evo.current{ border-color:var(--leaf); background:var(--cream); cursor:default; }
-  .evo img{ width:36px; height:36px; object-fit:contain; }
+  .evo img{ width:42px; height:42px; object-fit:contain; }
   .evo img.silhouette{ filter:brightness(0) opacity(.28); }
-  .evo span{ font-size:.58rem; font-weight:800; color:var(--ink-soft); text-transform:capitalize;
-    max-width:50px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .evo span{ font-size:.62rem; font-weight:800; color:var(--ink-soft); text-transform:capitalize;
+    max-width:58px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .evo.current span{ color:var(--ink); }
   .evo-arrow{ color:var(--ink-soft); font-size:.66rem; }
   .rarity-chip{
@@ -997,7 +1039,7 @@
   </section>
 
   <div class="modal-overlay hidden" id="catchModal">
-    <div class="catch-card">
+    <div class="catch-card" id="catchCard">
       <p class="catch-caption" id="catchCaption">🎉 Caught!</p>
       <div class="frame-wrap">
         <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
@@ -1022,7 +1064,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 37;
+const APP_BUILD = 38;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -2056,9 +2098,52 @@ function backPokeModal(){
   renderPokeModal(prev.poke, prev.opts);
 }
 
+/* Confetti and a burst of light, fired only on an actual catch. Rarer catches
+   get more of it and a gold palette — the rarity chip says "Legendary" but a
+   five-year-old reads the fuss, not the word. Pieces are plain spans with their
+   drift, spin and timing set per piece, so there's no library and nothing to
+   clean up beyond emptying the layer. */
+const CONFETTI_COLOURS = ["#ef7d8e", "#7cc47f", "#7ec9dd", "#ffd66b", "#c9a3ec", "#ffffff"];
+const CONFETTI_GOLD    = ["#ffd66b", "#f2b03d", "#fff3c9", "#ffe38a", "#ffffff"];
+function celebrateCatch(rarity){
+  const card = $("#catchCard");
+  card.classList.add("celebrating");
+  const layer = document.createElement("div");
+  layer.className = "confetti-layer";
+  const rare = !!RARITY_LABEL[rarity];
+  const colours = rare ? CONFETTI_GOLD : CONFETTI_COLOURS;
+  const count = rare ? 34 : 22;
+  for(let i = 0; i < count; i++){
+    const bit = document.createElement("span");
+    bit.className = "confetti";
+    bit.style.left = (Math.random() * 100) + "%";
+    bit.style.background = colours[i % colours.length];
+    bit.style.setProperty("--x", (Math.random() * 120 - 60).toFixed(0) + "px");
+    bit.style.setProperty("--spin", (Math.random() * 900 - 450).toFixed(0) + "deg");
+    bit.style.setProperty("--dur", (1.5 + Math.random() * 1.1).toFixed(2) + "s");
+    bit.style.setProperty("--delay", (Math.random() * .45).toFixed(2) + "s");
+    if(i % 3 === 0){ bit.style.borderRadius = "50%"; bit.style.height = "9px"; }
+    layer.appendChild(bit);
+  }
+  const shine = document.createElement("span");
+  shine.className = "catch-shine";
+  card.appendChild(shine);
+  card.appendChild(layer);
+  // Tidy up once the longest piece has finished, so reopening starts clean.
+  setTimeout(()=>{ layer.remove(); shine.remove(); }, 2600);
+}
+function clearCelebration(){
+  const card = $("#catchCard");
+  card.classList.remove("celebrating");
+  card.querySelectorAll(".confetti-layer, .catch-shine").forEach(el => el.remove());
+}
+
 function renderPokeModal(poke, opts){
   modalCurrent = { poke, opts };
-  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false } = opts || {};
+  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false,
+          celebrate = false } = opts || {};
+  // Walking to a relative re-renders this card; the previous burst goes with it.
+  clearCelebration();
   $("#catchCaption").textContent = caption;
   $("#catchCaption").classList.toggle("hidden", !caption);
   $("#catchGreet").textContent = greet;
@@ -2088,6 +2173,7 @@ function renderPokeModal(poke, opts){
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   modal.classList.remove("hidden");
+  if(celebrate) celebrateCatch(poke.rarity);
 }
 const RARITY_LABEL = { legendary: "Legendary", mythical: "Mythical" };
 function catchCaption(poke){
@@ -2136,9 +2222,10 @@ function renderEvoRow(poke){
   row.classList.remove("hidden");
 }
 
-function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke) }); }
+function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke), celebrate: true }); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
+  clearCelebration();
   modalTrail = [];
   modalCurrent = null;
 }
@@ -3305,7 +3392,7 @@ function finish(){
       btn.addEventListener("click", ()=>{
         const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
         markSeen(poke.id);
-        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true });
+        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true, celebrate: true });
       });
     });
   } else {
