@@ -93,13 +93,16 @@
 
   .wrap{
     position:relative; z-index:1;
-    max-width: 760px; margin:0 auto; padding: 28px 18px 80px;
+    /* Top padding gives way on a short screen, so the home screen's last button
+       clears the fold at 360x640 rather than costing the page a scrollbar. */
+    max-width: 760px; margin:0 auto; padding: clamp(12px, 3vh, 28px) 18px 80px;
   }
 
   /* ---------- Title ---------- */
-  .brand{ text-align:center; margin: 6px 0 22px; }
-  .brand h1{
-    margin:0; font-size: clamp(30px, 6vw, 46px); line-height:1.05;
+  .brand{ text-align:center; margin: 2px 0 16px; }
+  /* Uppercase via CSS, not by retyping the word: "POKÉ" keeps its accent that way. */
+  .brand h1{ text-transform:uppercase;
+    margin:0; font-size: clamp(28px, 5.6vw, 42px); line-height:1.05;
     color:var(--white); letter-spacing:.5px; font-weight:800;
     text-shadow: 0 3px 0 var(--leaf-deep), 0 6px 16px rgba(0,0,0,.18);
   }
@@ -617,7 +620,7 @@
      because the icons already say it and a pre-reader wasn't reading "STREAK"
      anyway. Each is still a button; the numbers are what changed, not the
      destinations. */
-  .home-top{ display:flex; align-items:center; gap:6px; margin:2px 0 14px; }
+  .home-top{ display:flex; align-items:center; gap:6px; margin:0 0 2px; }
   .home-tiles{ display:flex; align-items:center; gap:6px; flex:1; min-width:0; flex-wrap:wrap; }
   .hud-item{
     display:inline-flex; align-items:center; gap:5px;
@@ -627,9 +630,9 @@
   }
   .hud-item:hover{ background:rgba(255,255,255,.55); }
   .hud-item:active{ transform:translateY(1px); }
-  .hud-icon{ font-size:1.3rem; line-height:1; }
+  .hud-icon{ font-size:1.05rem; line-height:1; }
   .hud-val{
-    font-size:1.15rem; font-weight:900; line-height:1;
+    font-size:.92rem; font-weight:900; line-height:1;
     font-variant-numeric:tabular-nums; color:var(--ink-soft);
   }
   /* Colour carries the meaning the labels used to. Today goes green on the day
@@ -638,6 +641,31 @@
   .hud-item.dex .hud-val{ color:var(--berry-deep); }
   .hud-item.met .hud-val{ color:var(--leaf-deep); }
 
+  /* ---------- home levels ---------- */
+  /* Four trails, four tiles, two by two. A list of four rows would have been
+     taller than the Start button it sits under; a 2x2 grid of the same
+     information is about half the height and scans in one look.
+
+     Each tile is name, level, bar — the number says where you are and the bar
+     says how far along the trail that is, which the number alone can't: level 3
+     of 25 and level 3 of 10 are not the same place. Reading it is optional;
+     Start Playing stays above it and above the fold. */
+  .levels-card{
+    margin:0 0 14px; padding:15px 16px 17px; border-radius:var(--radius);
+    background:rgba(255,255,255,.72); box-shadow:var(--shadow-sm);
+    display:grid; grid-template-columns:repeat(2,1fr); gap:15px 18px;
+  }
+  .level-tile{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .level-name{
+    display:flex; align-items:center; gap:5px; font-size:.68rem; font-weight:800;
+    text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .level-num{ font-size:1rem; font-weight:900; color:var(--ink); line-height:1.1; }
+  .level-num .of{ font-size:.72rem; font-weight:700; color:var(--ink-soft); margin-left:3px; }
+  .level-bar{ height:6px; border-radius:999px; background:var(--cream-2); overflow:hidden; }
+  .level-fill{ display:block; height:100%; border-radius:999px; }
+
   /* ---------- home showcase ---------- */
   /* The middle band of the home screen: one of your own Pokémon, big enough to be
      the reason a child taps Start. Only ever a caught one, unless nothing is
@@ -645,7 +673,7 @@
      button; tapping re-rolls the pick. */
   .showcase{
     display:flex; flex-direction:column; align-items:center; gap:1px;
-    width:100%; margin:0 0 14px; padding:12px 12px 14px; font:inherit; cursor:pointer;
+    width:100%; margin:0 0 14px; padding:clamp(8px,1.4vh,12px) 12px clamp(9px,1.6vh,14px); font:inherit; cursor:pointer;
     background:linear-gradient(180deg,var(--white),var(--cream));
     border:3px solid rgba(255,255,255,.9); border-radius:var(--radius);
     box-shadow:var(--shadow-sm); text-align:center;
@@ -653,8 +681,13 @@
     -webkit-tap-highlight-color:transparent;
   }
   .showcase:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  /* Everything else on the home screen is a fixed cost — the HUD, the wordmark,
+     four levels, two buttons. The Pokémon is the one thing that can be smaller
+     without losing what it says, so it is the part that gives way: the frame is
+     sized off viewport height and shrinks on a short screen so the buttons stay
+     above the fold. */
   .showcase-frame{
-    width:196px; height:196px; border-radius:50%;
+    width:clamp(104px, 20vh, 196px); height:clamp(104px, 20vh, 196px); border-radius:50%;
     background:radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
     box-shadow:var(--shadow-sm), inset 0 0 0 5px rgba(255,255,255,.7);
     display:grid; place-items:center; overflow:hidden;
@@ -665,7 +698,7 @@
     filter:drop-shadow(0 6px 8px rgba(0,0,0,.15));
   }
   .showcase-frame img.silhouette{ filter:brightness(0) opacity(.28); }
-  .showcase-name{ font-size:1.2rem; font-weight:900; color:var(--ink); margin-top:8px; line-height:1.2; }
+  .showcase-name{ font-size:clamp(1rem, 2.4vh, 1.2rem); font-weight:900; color:var(--ink); margin-top:6px; line-height:1.2; }
   .showcase-num{ font-size:.78rem; font-weight:800; color:var(--ink-soft); line-height:1.3; }
   .showcase-greet{ font-size:.9rem; font-weight:800; color:var(--leaf-deep); margin-top:2px; line-height:1.3; }
   /* Stands in for the name block when nothing is caught yet, so the card keeps
@@ -682,7 +715,7 @@
   /* Same footprint as a HUD counter, at the far end of the line. */
   .gear-btn{
     flex:0 0 auto; margin-left:auto; padding:5px 8px; border:0; border-radius:999px;
-    background:transparent; cursor:pointer; font:inherit; font-size:1.3rem; line-height:1;
+    background:transparent; cursor:pointer; font:inherit; font-size:1.05rem; line-height:1;
     display:grid; place-items:center; -webkit-tap-highlight-color:transparent;
     transition: transform .06s, background-color .15s;
   }
@@ -866,7 +899,7 @@
 
   @media (max-width:480px){
     .poke-frame{ width:180px; height:180px; }
-    .showcase-frame{ width:170px; height:170px; }
+    .showcase-frame{ width:clamp(96px, 18vh, 170px); height:clamp(96px, 18vh, 170px); }
     .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
     .slot-word{ gap:6px; }
@@ -905,6 +938,11 @@
 <body>
 <div class="wrap">
 
+  <div class="home-top" id="homeTop">
+    <div class="home-tiles" id="homeTiles"></div>
+    <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
+  </div>
+
   <div class="brand">
     <h1>
       <svg class="pokeball" viewBox="0 0 100 100" aria-hidden="true">
@@ -916,16 +954,12 @@
       </svg>
       Poké Learning
     </h1>
-    <p>Spell, count, and catch!</p>
   </div>
 
   <!-- ============ SETUP ============ -->
   <section id="setup">
 
-    <div class="home-top">
-      <div class="home-tiles" id="homeTiles"></div>
-      <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
-    </div>
+    <div class="levels-card" id="homeLevels"></div>
 
     <button class="showcase" id="homeShowcase" type="button"></button>
 
@@ -1143,7 +1177,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 51;
+const APP_BUILD = 53;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -1895,7 +1929,7 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
 
 /* The home screen's middle band: one of YOUR Pokémon, shown big — name, number,
    "Welcome back!". It is a trophy shelf, not a teaser: showing off a catch is
@@ -1984,6 +2018,38 @@ function renderTiles(el){
       else { renderDashboard(); show("dashboard"); }
     });
   });
+}
+
+/* Where each trail stands, on the home screen. The Pokémon and the counters say
+   how it is going; this says what is actually being learned, which is the thing
+   a parent opens the app to check and the thing the child feels moving.
+
+   Deliberately below Start Playing: every reference app puts play first and the
+   profile second, and a five-year-old opening this is not here to read four
+   progress bars. It is a panel to glance at, not a gate to get past. */
+const LEVEL_TRACKS = [
+  {id:"spelling", icon:"🔤", label:"Spelling",  color:"var(--sky-deep)"},
+  {id:"reading",  icon:"📖", label:"Reading",   color:"#9a6bd6"},
+  {id:"addsub",   icon:"➕", label:"Add / Sub", color:"var(--berry-deep)"},
+  {id:"muldiv",   icon:"✖️", label:"× and ÷",   color:"var(--sun-deep)"},
+];
+function renderHomeLevels(){
+  const el = $("#homeLevels");
+  if(!el) return;
+  el.innerHTML = LEVEL_TRACKS.map(({id, icon, label, color})=>{
+    const levels = trackLevels(id);
+    const level = currentLevel(id);
+    if(!levels.length || !level) return "";
+    const at = frontierIndex(id) + 1;
+    const pct = Math.round((at / levels.length) * 100);
+    return `<div class="level-tile">
+      <span class="level-name"><span aria-hidden="true">${icon}</span>${label}</span>
+      <span class="level-num">Level ${level.id}<span class="of">of ${levels.length}</span></span>
+      <span class="level-bar" role="img" aria-label="${label}: level ${level.id} of ${levels.length}">
+        <span class="level-fill" style="width:${pct}%; background:${color}"></span>
+      </span>
+    </div>`;
+  }).join("");
 }
 
 /* ---------------- game state ---------------- */
@@ -3854,6 +3920,10 @@ function finish(){
 /* ---------------- view switching ---------------- */
 function show(which){
   ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
+  // The HUD sits above the logo, which is outside #setup — so it is hidden by
+  // hand everywhere but home. A round has its own progress bar and a Quit
+  // button; a second row of counters there would be two things to read.
+  $("#homeTop").classList.toggle("hidden", which !== "setup");
   window.scrollTo({top:0, behavior:"smooth"});
   // Widths only exist once the section is displayed, so the tab strip is sized
   // here rather than in renderPokedex, which usually runs one line earlier.
