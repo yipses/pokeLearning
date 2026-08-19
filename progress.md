@@ -114,7 +114,7 @@ The Spelling and Reading trails share one graded vocabulary — all **807 distin
 
 Open threads, roughly by how much they'd bite:
 
-- **The phoneme respellings have never been heard.** `data/phonemes.csv` was written on paper, and this project's whole pronunciation history is a warning about assuming how a synthesiser reads something. One is known wrong already: short `o` and long `o` are both `oh`, so `hot` and `rope` say the same thing. An audit page was deliberately deferred.
+- **The phoneme respellings still haven't been heard.** A first pass written on paper turned out to be 30% unspeakable (Phase 31); the rewrite is measured at 1%, but *measured* only against a rough test for whether a string can be said at all — not against whether it says the **right** sound. `tools/phonemes.html` exists now and takes about five minutes to run through. `ee` is the one to listen to first.
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches like the "Bill"/CD one. Easier now that it's a spreadsheet.
