@@ -39,7 +39,7 @@ Seven top-level screens, all within one `index.html`:
 | **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
 | **Pokédex** | Every Pokémon, one generation per tab, caught ones in color, uncaught ones as grey silhouettes |
-| **Dashboard** | One progress card per Lesson Trail |
+| **My progress** | A 7-day rounds chart, then one progress card per Lesson Trail |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
 
@@ -175,13 +175,14 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 ## 8b. Home Tiles
 
-Three tiles across the top of the Start screen, each tappable:
+Two tappable boxes across the top of the Start screen, with the ⚙️ Settings button sharing the row, flush right.
 
-| Tile | Shows | Goes to |
+| Box | Shows | Goes to |
 |---|---|---|
-| 🎯 **Rounds Today** | rounds finished today, against the daily goal; turns green once met | Dashboard |
+| 🎯 **Today** / 🔥 **Streak** | rounds finished today against the daily goal — the box turns green once met — and, below a divider, consecutive days that met it | My progress |
 | 📕 **Pokémon** | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
-| 🔥 **Day Streak** | consecutive days that met the rounds goal | Dashboard |
+
+**Today and Streak are one box, not two.** They are the same daily fact seen twice and they open the same screen, so two boxes meant two ways to reach one place. The same pair appears on the results screen; the ⚙️ button is home-only.
 
 A "round" is one full session; how many questions make up a round, and how many rounds a day the streak needs, are both Settings values.
 
@@ -197,7 +198,13 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 ## 9. Dashboard
 
-Reached from "📊 My Progress" on the home screen. One card per Lesson Trail, each showing:
+Reached from either home box. Headed **"My progress"**, with no subtitle.
+
+**This week** comes first: a bar chart of rounds played on each of the last 7 days, today last, with a dashed line at the daily goal and a count above each bar. Days that met the goal are green, days that fell short are blue, and days with no play are left as an empty slot rather than dropped — the gaps are the point. Above it, the week's total and how many days it was spread over.
+
+The streak tile answers *am I still going*; this answers *how has the week gone*, which a single day counter cannot show — two quiet days and one strong day read identically from one number. It uses the same `{date: rounds}` record the streak is computed from, which has always been kept in full rather than pruned to a window, so the chart is correct from the day it ships rather than starting empty.
+
+Then one card per Lesson Trail, each showing:
 
 - The track's current level, in plain language.
 - Days at the current level.

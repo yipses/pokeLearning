@@ -610,9 +610,12 @@
      ever lands here. */
   /* Named `home-tiles`, not `tiles`: the spelling letter bank owns `.tiles`
      already, and a grid rule here silently reflowed that bank into 3 columns. */
-  .home-tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:0 0 14px; }
+  /* Today and Streak are one box: both are the same daily fact and both go to
+     the same screen, so two boxes was two taps to reach one place. */
+  .home-top{ display:flex; align-items:center; gap:9px; margin:0 0 14px; }
+  .home-tiles{ display:grid; grid-template-columns:repeat(2,1fr); gap:9px; flex:1; min-width:0; }
   .tile-card{
-    display:flex; flex-direction:column; align-items:center; gap:1px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
     padding:9px 4px; font:inherit; cursor:pointer; text-align:center;
     background:linear-gradient(180deg,var(--white),var(--cream));
     border:3px solid rgba(255,255,255,.9); border-radius:var(--radius-sm);
@@ -622,6 +625,11 @@
   .tile-card:hover{ border-color:var(--sun-deep); }
   .tile-card:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
   .tile-card.done{ border-color:var(--leaf); background:linear-gradient(180deg,#f5fbf5,#e8f5ea); }
+  /* A box can carry more than one stat; the rule keeps them from reading as one. */
+  .tile-stat{ display:flex; flex-direction:column; align-items:center; gap:1px; }
+  .tile-stat + .tile-stat{
+    margin-top:7px; padding-top:7px; border-top:1px dashed var(--cream-2); width:82%;
+  }
   .tile-top{ display:flex; align-items:center; justify-content:center; gap:5px; }
   .tile-icon{ font-size:clamp(1.1rem, 5vw, 1.45rem); line-height:1; }
   .tile-big{
@@ -674,9 +682,8 @@
     padding:14px 8px; font-size:clamp(.95rem, 3.9vw, 1.15rem); line-height:1.2; text-align:center;
   }
   .action-icon{ font-size:1.35rem; line-height:1; }
-  .home-footer{ display:flex; justify-content:center; margin-top:18px; }
   .gear-btn{
-    width:46px; height:46px; border-radius:50%; border:none; cursor:pointer;
+    width:46px; height:46px; flex:0 0 auto; border-radius:50%; border:none; cursor:pointer;
     font:inherit; font-size:1.35rem; line-height:1; background:var(--white);
     box-shadow:0 3px 0 var(--cream-2), var(--shadow-sm);
     display:grid; place-items:center; -webkit-tap-highlight-color:transparent;
@@ -816,6 +823,12 @@
   .window-val{ width:44px; flex:0 0 auto; text-align:right; font-weight:800; font-size:.85rem; color:var(--ink); }
   .trend-wrap{ margin-top:14px; }
   .trend-chart{ width:100%; height:auto; overflow:visible; }
+  .days-chart{ width:100%; height:auto; overflow:visible; }
+  .day-base{ fill:var(--cream-2); }
+  .day-bar{ fill:var(--sky-deep); }
+  .day-bar.met{ fill:var(--leaf); }
+  .day-val{ font-size:9px; font-weight:800; fill:var(--ink); }
+  .axis-label.today{ font-weight:800; fill:var(--ink); }
   .grid-line{ stroke:var(--cream-2); stroke-width:1; }
   .axis-label{ font-size:8px; fill:var(--ink-soft); }
   .threshold-line{ stroke:var(--sun-deep); stroke-width:1; stroke-dasharray:4 3; opacity:.6; }
@@ -911,7 +924,10 @@
   <!-- ============ SETUP ============ -->
   <section id="setup">
 
-    <div class="home-tiles" id="homeTiles"></div>
+    <div class="home-top">
+      <div class="home-tiles" id="homeTiles"></div>
+      <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
+    </div>
 
     <button class="showcase" id="homeShowcase" type="button"></button>
 
@@ -920,9 +936,6 @@
       <button class="btn berry" id="battleBtn"><span class="action-icon">⚔️</span>Pokémon Battle!</button>
     </div>
 
-    <div class="home-footer">
-      <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
-    </div>
   </section>
 
   <!-- ============ SETTINGS ============ -->
@@ -1101,8 +1114,7 @@
       <button class="quit" id="dashboardBackBtn">← Back</button>
     </div>
     <div class="card" style="text-align:center;">
-      <h2 style="justify-content:center;"><span class="chip">📊</span> My Progress</h2>
-      <p class="sub">Where each Lesson Trail stands right now.</p>
+      <h2 style="justify-content:center;"><span class="chip">📊</span> My progress</h2>
     </div>
     <div id="dashboardGrid"></div>
   </section>
@@ -1133,7 +1145,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 49;
+const APP_BUILD = 50;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -1953,16 +1965,22 @@ function renderTiles(el){
     dexBig = `${collected.length}`; dexSmall = "Complete";
   }
 
-  const tile = (id, icon, big, label, done) => `
+  // One box may hold several stats. Today and Streak share one: they are the same
+  // daily fact seen twice, and they open the same screen.
+  const box = (id, stats, done) => `
     <button class="tile-card${done ? " done" : ""}" type="button" data-go="${id}">
-      <span class="tile-top"><span class="tile-big">${big}</span><span class="tile-icon">${icon}</span></span>
-      <span class="tile-label">${label}</span>
+      ${stats.map(st => `<span class="tile-stat">
+        <span class="tile-top"><span class="tile-big">${st.big}</span><span class="tile-icon">${st.icon}</span></span>
+        <span class="tile-label">${st.label}</span>
+      </span>`).join("")}
     </button>`;
 
   el.innerHTML =
-    tile("dashboard", "🎯", `${done}/${goal}`, "Rounds", done >= goal) +
-    tile("pokedex", "📕", dexBig, dexSmall, false) +
-    tile("dashboard", "🔥", currentStreak(), "Streak", false);
+    box("dashboard", [
+      { icon:"🎯", big:`${done}/${goal}`, label:"Today" },
+      { icon:"🔥", big:currentStreak(),   label:"Streak" },
+    ], done >= goal) +
+    box("pokedex", [{ icon:"📕", big:dexBig, label:dexSmall }], false);
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;
@@ -2499,9 +2517,79 @@ const DASHBOARD_TRACKS = [
   {id:"reading",  label:"Reading",            color:"#9a6bd6"},
 ];
 
+/* Rounds played on each of the last 7 days, today last. The streak tile answers
+   "am I still going"; this answers "how has the week gone", which is the thing
+   a day counter can't show — two quiet days and a strong one all look identical
+   from a single number.
+
+   Days with no play are drawn as empty slots rather than dropped, because the
+   gaps are the point. The goal line is the same figure the streak is judged on,
+   so a bar reaching it and a day counting toward the streak are the same
+   statement made twice. */
+function lastNDays(n){
+  const data = loadStreak(), goal = roundsGoal(), out = [];
+  for(let i=n-1; i>=0; i--){
+    const d = new Date();
+    d.setDate(d.getDate()-i);
+    const count = data[dateKey(d)] || 0;
+    out.push({ date:d, label:dateLabel(d), count, met: count >= goal, today: i===0 });
+  }
+  return out;
+}
+
+function renderDailyRoundsChart(days){
+  const W=320, H=150, xL=24, xR=310, yTop=18, yBot=118;
+  const goal = roundsGoal();
+  const top = Math.max(goal, ...days.map(d=>d.count));
+  const yAt = v => yBot - (v/top)*(yBot-yTop);
+  const slot = (xR-xL)/days.length;
+  const bw = Math.min(30, slot*0.62);
+
+  let svg = `<svg class="days-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Rounds played on each of the last ${days.length} days">`;
+  [0, top].forEach(v=>{
+    const y = yAt(v).toFixed(1);
+    svg += `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" class="grid-line"/>`;
+    svg += `<text x="${xL-5}" y="${Number(y)+3}" class="axis-label" text-anchor="end">${v}</text>`;
+  });
+  if(goal > 0 && goal < top){
+    const yG = yAt(goal).toFixed(1);
+    svg += `<line x1="${xL}" y1="${yG}" x2="${xR}" y2="${yG}" class="threshold-line"/>`;
+    svg += `<text x="${xR}" y="${Number(yG)-4}" class="threshold-label" text-anchor="end">${goal}/day goal</text>`;
+  }
+  days.forEach((d,i)=>{
+    const cx = xL + slot*(i+0.5);
+    const x = (cx - bw/2).toFixed(1);
+    const y = yAt(d.count).toFixed(1);
+    const h = Math.max(0, yBot - Number(y)).toFixed(1);
+    svg += `<rect x="${x}" y="${yBot-2}" width="${bw.toFixed(1)}" height="2" rx="1" class="day-base"/>`;
+    if(d.count > 0){
+      svg += `<rect x="${x}" y="${y}" width="${bw.toFixed(1)}" height="${h}" rx="3" class="day-bar${d.met ? " met" : ""}">`
+           + `<title>${d.label}: ${d.count} round${d.count===1?"":"s"}</title></rect>`;
+      svg += `<text x="${cx.toFixed(1)}" y="${(Number(y)-4).toFixed(1)}" class="day-val" text-anchor="middle">${d.count}</text>`;
+    }
+    svg += `<text x="${cx.toFixed(1)}" y="${yBot+15}" class="axis-label${d.today ? " today" : ""}" text-anchor="middle">${d.today ? "Today" : d.label}</text>`;
+  });
+  svg += `</svg>`;
+  return svg;
+}
+
 function renderDashboard(){
   const grid = $("#dashboardGrid");
   grid.innerHTML = "";
+
+  const days = lastNDays(7);
+  const played = days.filter(d => d.count > 0).length;
+  const weekCard = document.createElement("div");
+  weekCard.className = "card dash-card";
+  weekCard.innerHTML = `
+    <div class="dash-top">
+      <div><div class="dash-track">This week</div>
+           <div class="dash-level">${days.reduce((a,d)=>a+d.count,0)} rounds over ${played} day${played===1?"":"s"}</div></div>
+    </div>
+    <div class="trend-wrap">${renderDailyRoundsChart(days)}</div>
+  `;
+  grid.appendChild(weekCard);
+
   DASHBOARD_TRACKS.forEach(({id, label, color})=>{
     const p = progress[id];
     const level = currentLevel(id);

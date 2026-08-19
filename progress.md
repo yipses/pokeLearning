@@ -182,6 +182,15 @@ Investigated, not fixed: the maths ladder is moving to a CSV with a min and a ma
 - **An uncaught entry says nothing**, which falls out of the same `revealed` flag that already hides its name, silhouettes its artwork and hides its speaker. Verified against a real uncaught relative: silent, nameless, silhouetted, no speaker.
 - Checked across all seven paths — caught dex entry speaks, uncaught dex entry silent, opening speaks, evolution tap speaks, Back silent, catch speaks exactly once, 🔊 still works. Respellings apply: `ivysaur` says "eye vee sore".
 
+## Phase 41 — A week you can look at
+
+- **"There's no way to track my previous X days progress."** The home screen showed rounds-today and a streak count; neither says how the week went. Two quiet days and one strong day read identically from a single number.
+- **This week now leads My progress**: rounds per day over the last 7 days, today last, goal line dashed across it, count above each bar. Green where the day met the goal, blue where it fell short, and **days with no play left as empty slots** rather than dropped — the gaps are the whole point of looking.
+- **No new storage was needed.** `pokeLearningDailyStars` has always kept `{date: rounds}` for every day, uncapped, precisely because pruning to a window would have silently capped the streak at the window's length. That decision paid off here: the chart is correct from the day it ships instead of starting empty.
+- **Today and Streak merged into one box.** They are the same daily fact seen twice and both opened the same screen, so two boxes were two ways to reach one place. "Rounds" became "Today", which is what the number actually means.
+- **The ⚙️ button moved into that row, flush right**, and the home footer went with it. The same tile renderer feeds the results screen, so the merge lands there too; the gear is home-only.
+- **"My Progress" lost its subtitle** and became "My progress".
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
