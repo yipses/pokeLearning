@@ -160,6 +160,13 @@ Investigated, not fixed: the maths ladder is moving to a CSV with a min and a ma
 - **So a per-level min/max is necessary but not sufficient.** A floor of 2 on both operands fixes levels 7–12; identities like `8 ÷ 8` and `n ± 0` sit *inside* any sane range and need a separate rule; and the review band is a third, deliberate source that a range can't reach.
 - **`makeMath(op,min,max)` has no callers** — dead since the trails replaced free-play generation. It is the obvious thing to mistake for the live path when wiring the CSV up; the live generators are `ADDSUB_LEVELS` / `MULDIV_LEVELS`.
 
+## Phase 38 — The font nobody had actually seen
+
+- **The webfont was never loading in the sandbox.** Chromium here doesn't use the proxy that `curl` does, so the Google Fonts stylesheet failed with `ERR_CONNECTION_RESET` on every run. The app was fine — the URL returns 200 from a real network and the fallback stack is rounded — but it meant **every screenshot taken this session rendered in a fallback face**, including the ones used to sign off the type-matching work. Nothing verified numerically was affected; nothing verified by eye was worth much.
+- **Fixed by self-hosting**, which was the better answer anyway: an app for a child on a tablet should not need a network for its lettering.
+- **Latin subset only, four weights, 87 KB.** M PLUS Rounded 1c is a Japanese family whose full webfont spans roughly 590 subset files and runs to megabytes. Nothing in `index.html` or `data/*.csv` uses a character above U+00FF — checked, not assumed — so no other subset would ever be requested. Weights were taken from what the CSS actually asks for: 400, 700, 800, 900. The 500 that the old link requested was never used.
+- **The page now makes no external requests at all**, verified by loading it with every non-local host blocked at the route level: zero failed requests, and `document.fonts` showing the family genuinely loaded rather than silently falling through.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
@@ -173,6 +180,7 @@ Open threads, roughly by how much they'd bite:
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
+- **`fonts/OFL.txt` is missing.** The webfont is now served from `fonts/`, and the Open Font Licence requires its text to travel with the files. It could not be fetched from the sandbox the change was made in — `fonts/README.md` says where to get it. Nothing breaks without it; it is a licence obligation, not a runtime one.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
 
 Parked, not scheduled: a service worker for genuine offline install; moving the type chart to CSV if it ever needs editing; recorded phoneme audio instead of synthesised respellings; and two deferred Reading modes — **Rhyme Match**, which needs a real-word list and now has one in `word_levels.csv`, and **Clue Words**, which needs per-item colour/size/material data that doesn't exist.

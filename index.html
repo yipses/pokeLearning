@@ -10,12 +10,39 @@
 <!-- The Pokémon Switch games set their UI in FOT-Rodin, a rounded Japanese
      gothic. M PLUS Rounded 1c is the closest freely-licensed match: same soft
      terminals, same even stroke, and it carries a 900 weight for the big
-     numbers. Loaded with display=swap so the page never waits on it, and the
-     fallback stack stays rounded if the request fails. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap">
+     numbers. Served from fonts/ rather than Google's CDN: this is an app for a
+     child on a tablet, and a typeface is not something to need a network for.
+     The fallback stack stays rounded regardless.
+
+     Latin subset only, four weights, 87 KB in total. M PLUS Rounded 1c is a
+     Japanese family whose full webfont runs to megabytes across ~590 subset
+     files; nothing in the page or in data/*.csv uses a character above U+00FF,
+     so the other subsets would never be requested. If that ever changes, pull
+     the matching subset from Google's css2 endpoint the same way — the
+     unicode-range below is theirs, unedited.
+
+     Licence: SIL Open Font License 1.1 (fonts/OFL.txt). -->
 <style>
+  @font-face{
+    font-family:"M PLUS Rounded 1c"; font-style:normal; font-weight:400; font-display:swap;
+    src:url("fonts/mplus-rounded-1c-latin-400.woff2") format("woff2");
+    unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face{
+    font-family:"M PLUS Rounded 1c"; font-style:normal; font-weight:700; font-display:swap;
+    src:url("fonts/mplus-rounded-1c-latin-700.woff2") format("woff2");
+    unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face{
+    font-family:"M PLUS Rounded 1c"; font-style:normal; font-weight:800; font-display:swap;
+    src:url("fonts/mplus-rounded-1c-latin-800.woff2") format("woff2");
+    unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face{
+    font-family:"M PLUS Rounded 1c"; font-style:normal; font-weight:900; font-display:swap;
+    src:url("fonts/mplus-rounded-1c-latin-900.woff2") format("woff2");
+    unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
   :root{
     /* Pokopia-inspired cozy pastel palette */
     --leaf:      #7cc47f;
@@ -1106,7 +1133,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 46;
+const APP_BUILD = 47;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
