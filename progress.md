@@ -139,6 +139,30 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **Not introduced by the ladder rebuild, but exposed by it.** `git log -S` puts that rule in the initial commit, and a correctly typed chunk has always locked lowercase. What changed is how often it's on screen: Missing Letter gained hints (a hint fills a whole chunk at once), and blank counts now come from `hinted_pct`, so at 50% about half the word sits in filled boxes instead of one.
 - Checked while in there: no question renders with a blank already filled (1,020 across all 25 levels), and chunking still holds a sound together — `black glasses` splits `bl · a · ck · ␣ · gl · a · s · s · e · s`.
 
+## Phase 28 — Pokémon names hiding in the item vocabulary
+
+- **Reported as "typing P won't work" on a picture of a pink water bottle.** Not a bug: the item is `Hoppip water bottle`, not "Pocket water bottle" — the tile bank has three P's and no C or K, which settles it. Verified from the keyboard: `p` is correctly rejected at slot 1, `h` lands, `o` and `p` follow.
+- **What it exposed is real.** 21 item words are Pokémon names, in 25 items, and the classifier graded them like ordinary vocabulary — `pikachu` filed under Digraphs at level 4, so `Pikachu doll` could be asked four rungs into the ladder on the strength of its `ch`. That grading is fiction: an invented proper noun is memorised, not decoded.
+- **Flagged in the data rather than special-cased in code.** `tools/classify_words.py` cross-references `data/pokemon.csv` and writes a `proper_noun` column into both `word_levels.csv` and `item_levels.csv`; the app reads it. Spelling skips those items; Reading keeps them, since recognising a name a child knows by sight is a fair reading task and the names stay reachable as Pokémon proper, under the generation gate.
+- **Cost is negligible**: the largest pool loses 25 of 1,056. Verified with 600 spelling questions at each of 25 levels — zero proper nouns served — while Reading still offers all 25.
+
+## Phase 29 — A wider catch card, and a catch worth celebrating
+
+- **The card was 280px and felt cramped**, especially with an evolution strip under the name. Widened to 360px, which gives a ~292px interior — enough to put the evolution chips back up to 62px (they had been shrunk to 54px to stop a three-stage line wrapping) with room to spare.
+- **Catches are celebrated now**: 22 confetti pieces falling through the card, plus one soft burst of light behind the artwork. Rarity gets 34 pieces and a gold palette rather than a different animation — a five-year-old reads the fuss, not the word "Legendary" on the chip.
+- **Fires on catches only.** The same card opens whenever a Pokédex entry is tapped, and confetti on every browse would be wallpaper. It's an explicit `celebrate` flag, set by the catch reveal and by the results screen's caught-this-round chips, and cleared whenever the card re-renders — so walking to an evolution relative drops the burst rather than stacking another.
+- No library: plain spans with per-piece drift, spin and timing as CSS custom properties, removed once the longest finishes. Hidden entirely under `prefers-reduced-motion`, alongside the caption pop.
+
+## Phase 30 — One way to answer, and the sounds to go with it
+
+- **Missing Letter answers by tapping now, like Full Spelling.** It had been typed `<input>` boxes since the first build — two input mechanics under one "Spelling" heading, and since 17 of the 25 levels are that task, an on-screen keyboard covering half a tablet for most of the ladder. Input method and difficulty were accidentally welded together; the level's `hinted_pct` is the difficulty knob, and how you answer should have nothing to do with it.
+- **Its tiles are chunks, not letters.** A tile reading `CK` is one sound, which is the whole point: tapping it plays /k/ rather than implying c and k are separate. About a fifth of blanks are multi-letter chunks, so it shows up constantly.
+- **A correct placement speaks; a wrong one is silent.** A five-year-old who discovers that tapping makes noises will tap for noise, so a miss shakes and says nothing. In Full Spelling a tile is a single letter, so the sound waits for the letter that *finishes* a chunk — `shutter` says /sh/ when the h lands, never /s/ then /h/.
+- **The sound comes from the word, not the letter.** `a` differs in `cat`, `cake` and `car`. The chunker already makes `ar` one unit, so only lone vowels need deciding: a vowel followed by one consonant and a final `e` is long, otherwise short, and the final `e` itself says nothing. Verified: `cat` gives ah, `cake` gives ay, `car` gives ar, `sock` says the ck once.
+- **Completing a word speaks it whole** — sounding out, then blending back, which is the actual phonics move.
+- **`data/phonemes.csv` holds the respellings**, keyed by chunk and context. A synthesiser can't take a bare phoneme, so `b` is written `buh`. A chunk with no row is silent by design.
+- **Unverified by ear, and that matters.** These are respellings chosen on paper. This project has been burned before by assuming how a synthesiser reads something — the whole `pronunciations.csv` saga. Short `o` and long `o` are both `oh` right now, which is certainly wrong for one of them. An audit page was deliberately deferred.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.

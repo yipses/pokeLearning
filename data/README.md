@@ -66,6 +66,7 @@ Every distinct word in the item catalogue, split on spaces and hyphens, graded 1
 | `letters`, `syllables` | reference only |
 | `compound_parts` | the split found for a closed compound (`bath + tub`), blank otherwise |
 | `also_matches` | every pattern the word hit, so a grading can be second-guessed |
+| `proper_noun` | `yes` if the word is a Pokémon name (`hoppip`, `pikachu`). Its phonics level is fiction — an invented name is memorised, not decoded — so Spelling skips any item containing one. Set automatically by cross-referencing `pokemon.csv` |
 | `used_in_items` | how many item names use it — a correction here moves that many items |
 | `previous_level`, `review` | what the original hand-graded list said, and `differs` where the two disagree |
 
@@ -79,6 +80,7 @@ Derived from `word_levels.csv`; regenerate rather than edit. A single-word item 
 | `level` | 1–9, or blank for unspellable |
 | `kind` | `single` or `compound` — a space or hyphen makes it compound |
 | `components`, `component_levels` | the parts and their levels, for checking the roll-up |
+| `proper_noun` | `yes` if any component is a Pokémon name. Excluded from Spelling, kept in Reading |
 | `longest_word` | reference only |
 
 ## `spelling_levels.csv` and `reading_levels.csv` — the ladders
@@ -107,3 +109,16 @@ Use `tools/pronounce.html` to try a respelling by ear before committing it.
 Because the app fetches these, `index.html` must be **served over http(s)**, not
 opened as a file — browsers block `fetch` on `file://` as cross-origin. GitHub
 Pages serves it fine; double-clicking the file will show a load error instead.
+
+## `phonemes.csv` — what each chunk says out loud
+
+Spoken when a child places a letter or chunk correctly. Keyed on `chunk` **and** `context`, because a letter's sound depends on the word it's in.
+
+| Column | Notes |
+|---|---|
+| `chunk` | the letter or chunk, lowercase — matches what `chunkWord()` produces |
+| `context` | `any` for consonants, digraphs, blends, vowel teams and r-controlled vowels, which the chunker has already made into single units. Lone vowels take `short`, `long` or `silent`, chosen from the word around them |
+| `say_as` | a respelling, not a phoneme — a speech synthesiser handed `b` says "bee", so it gets `buh`. **Blank means silent**, which is how the final `e` is taught |
+| `notes` | free text, ignored by the app |
+
+Traps: a chunk with no row is **silent**, deliberately — a wrong sound teaches a wrong thing, silence teaches nothing, so leave a row out rather than guess. And these have not been checked by ear; they are respellings chosen on paper, and a synthesiser may not say them the way they read. `o` short and `o` long are both `oh` at the moment, which is very likely wrong for one of them.

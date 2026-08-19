@@ -273,17 +273,19 @@
     content:""; width:16px; height:5px; border-radius:3px;
     background:var(--sky-deep); align-self:flex-end; margin-bottom:10px;
   }
-  .mw-blank{
-    height:52px; font:inherit; font-weight:800; font-size:1.6rem; text-align:center;
-    /* Uppercase to match the given letters beside it, and the spelling tiles
-       everywhere else. Display only — the answer check lowercases the value, so
-       it doesn't matter what the child actually types. */
-    text-transform:uppercase; border-radius:12px; border:3px solid var(--berry);
-    background:var(--white); color:var(--ink); outline:none; padding:0 2px;
+  /* A slot waiting for its chunk tile. Uppercase to match the given letters
+     beside it, and the tiles everywhere else. */
+  .mw-slot{
+    height:52px; display:inline-flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1.6rem; text-transform:uppercase;
+    border-radius:12px; border:3px solid var(--berry); background:var(--white);
+    color:var(--ink); padding:0 2px;
   }
-  .mw-blank:focus{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
-  .mw-blank.mw-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
-  .mw-blank.shake{ animation: shake .42s; }
+  .mw-slot.current{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
+  .mw-slot.mw-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
+  /* A chunk tile holds a whole sound, so it has to grow past the letter tiles. */
+  .tile.chunk{ width:auto; min-width:54px; padding:0 12px; text-transform:uppercase; }
+  .tile.shake{ animation: shake .42s; }
 
   /* reading: Read & Choose / Reverse Read & Choose */
   .reading-word{ font-size: clamp(28px, 7vw, 44px); font-weight:800; color:var(--ink); margin:8px 0 18px; text-transform:capitalize; }
@@ -404,6 +406,8 @@
   @media (prefers-reduced-motion: reduce){
     .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p{ animation:none; }
     .grass-strip.shaking, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
+    .confetti-layer, .catch-shine{ display:none; }
+    .catch-card.celebrating .catch-caption{ animation:none; }
   }
 
   /* visual math */
@@ -463,10 +467,49 @@
   }
   @keyframes modalFadeIn{ from{opacity:0} to{opacity:1} }
   .catch-card{
+    position:relative;                       /* the confetti layer pins to this */
     background:linear-gradient(180deg,var(--white),var(--cream));
     border-radius:var(--radius); box-shadow:var(--shadow); border:4px solid var(--white);
-    padding:26px 30px; text-align:center; max-width:280px;
+    padding:26px 30px; text-align:center; width:100%; max-width:360px;
   }
+  /* Celebration, catch reveals only — browsing the Pokédex opens this same card
+     dozens of times and confetti every time would be noise. Purely decorative:
+     a clipped layer inside the card, pointer-events off, and switched off
+     entirely for anyone who asked for reduced motion. */
+  .confetti-layer{
+    position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    border-radius:inherit; z-index:2;
+  }
+  .confetti{
+    position:absolute; top:-12px; width:9px; height:14px; border-radius:2px;
+    opacity:0; animation: confettiFall var(--dur) cubic-bezier(.2,.6,.5,1) var(--delay) forwards;
+  }
+  @keyframes confettiFall{
+    0%   { transform:translate3d(0,0,0) rotate(0deg); opacity:0; }
+    12%  { opacity:1; }
+    100% { transform:translate3d(var(--x), 420px, 0) rotate(var(--spin)); opacity:0; }
+  }
+  /* One soft burst behind the artwork, so the eye lands on the Pokémon first. */
+  .catch-shine{
+    position:absolute; left:50%; top:118px; width:230px; height:230px; margin:-115px 0 0 -115px;
+    border-radius:50%; pointer-events:none; z-index:0;
+    background:radial-gradient(circle, rgba(255,214,107,.85) 0%, rgba(255,214,107,.35) 42%, transparent 68%);
+    animation: shineBurst .75s ease-out forwards;
+  }
+  @keyframes shineBurst{
+    0%   { transform:scale(.25); opacity:0; }
+    35%  { opacity:1; }
+    100% { transform:scale(1.35); opacity:0; }
+  }
+  .catch-card.celebrating .catch-caption{ animation: captionPop .55s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes captionPop{
+    0%   { transform:scale(.4); opacity:0; }
+    60%  { transform:scale(1.12); opacity:1; }
+    100% { transform:scale(1); opacity:1; }
+  }
+  /* Everything above the shine, so the burst reads as behind the Pokémon. */
+  .catch-card > *:not(.confetti-layer):not(.catch-shine){ position:relative; z-index:1; }
+
   .catch-caption{ margin:0 0 8px; font-weight:900; font-size:1.4rem; letter-spacing:.02em; color:var(--leaf-deep); text-transform:uppercase; }
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
@@ -656,22 +699,23 @@
   .dex-rare.mythical{ background:#d9b6f0; }
   .rare-count{ color:var(--sun-deep); }
   /* Sized so a three-stage line — the common case — fits one row inside the
-     card's 220px interior. Branching families (Eevee) still wrap, which is fine. */
+     card's ~292px interior with room to spare. Branching families (Eevee) still
+     wrap, which is fine. */
   .evo-row{
     display:flex; align-items:center; justify-content:center; gap:3px;
     flex-wrap:wrap; margin:10px 0 2px;
   }
   .evo{
     display:flex; flex-direction:column; align-items:center; gap:1px;
-    width:54px; padding:4px 1px; font:inherit; cursor:pointer;
+    width:62px; padding:5px 2px; font:inherit; cursor:pointer;
     background:var(--white); border:2px solid var(--cream-2); border-radius:12px;
   }
   .evo:hover:not(:disabled){ border-color:var(--sun-deep); }
   .evo.current{ border-color:var(--leaf); background:var(--cream); cursor:default; }
-  .evo img{ width:36px; height:36px; object-fit:contain; }
+  .evo img{ width:42px; height:42px; object-fit:contain; }
   .evo img.silhouette{ filter:brightness(0) opacity(.28); }
-  .evo span{ font-size:.58rem; font-weight:800; color:var(--ink-soft); text-transform:capitalize;
-    max-width:50px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .evo span{ font-size:.62rem; font-weight:800; color:var(--ink-soft); text-transform:capitalize;
+    max-width:58px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .evo.current span{ color:var(--ink); }
   .evo-arrow{ color:var(--ink-soft); font-size:.66rem; }
   .rarity-chip{
@@ -757,7 +801,8 @@
     .mw-letter{ width:28px; height:44px; font-size:1.3rem; }
     .mw-sep{ width:18px; height:44px; font-size:1.3rem; }
     .mw-sep:empty::before{ width:12px; margin-bottom:8px; }
-    .mw-blank{ height:44px; font-size:1.3rem; }
+    .mw-slot{ height:44px; font-size:1.3rem; }
+    .tile.chunk{ min-width:46px; padding:0 9px; }
     .reading-opt-img img{ width:48px; height:48px; }
     .reading-say-mini{ width:26px; height:26px; font-size:12px; }
     .reading-opt-word{ font-size:.95rem; }
@@ -997,7 +1042,7 @@
   </section>
 
   <div class="modal-overlay hidden" id="catchModal">
-    <div class="catch-card">
+    <div class="catch-card" id="catchCard">
       <p class="catch-caption" id="catchCaption">🎉 Caught!</p>
       <div class="frame-wrap">
         <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
@@ -1022,7 +1067,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 36;
+const APP_BUILD = 39;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -1058,6 +1103,7 @@ let SPELLABLE_ITEMS = [];
    is deliberately no copy baked into the code: a ladder that lives in two places
    drifts, and the spreadsheet is the one that gets edited. */
 let GRADED_ITEMS = [];
+let PHONEMES = {};
 let SPELLING_ROWS = [];
 let READING_ROWS = [];
 
@@ -1121,13 +1167,14 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 const isMultiWord = n => n.includes(" ");
 
 async function loadData(){
-  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows] = await Promise.all([
+  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, phonemeRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
     fetchCsv("data/item_levels.csv"),
     fetchCsv("data/spelling_levels.csv"),
     fetchCsv("data/reading_levels.csv"),
+    fetchCsv("data/phonemes.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -1160,9 +1207,17 @@ async function loadData(){
     levelOf[r.item] = Number(r.level);
     kindOf[r.item] = r.kind;
   }
+  // `proper_noun` marks item names built from a Pokémon name — "Hoppip water
+  // bottle", "Pikachu doll". Their phonics level is fiction: they're invented
+  // proper nouns, learned by memory rather than decoded, so Spelling skips them.
+  // Reading keeps them: recognising a word the child already knows by sight is a
+  // fair reading task, and it's the only place they'd otherwise appear as items.
+  const properOf = {};
+  for(const r of itemLevelRows) properOf[r.item] = !!r.proper_noun;
   for(const it of ITEMS){
     it.lvl = levelOf[it.n] || 0;
     it.multi = kindOf[it.n] === "compound";
+    it.proper = !!properOf[it.n];
   }
   GRADED_ITEMS = ITEMS.filter(it => it.lvl > 0 && SPELLABLE_RE.test(it.n));
 
@@ -1178,6 +1233,10 @@ async function loadData(){
     distractorLevel: n(r.distractor_level),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
+
+  // Keyed chunk|context. A blank say_as is meaningful — the silent e says nothing.
+  PHONEMES = {};
+  for(const r of phonemeRows) PHONEMES[`${r.chunk}|${r.context}`] = r.say_as || "";
 
   if(!POKEMON.length) throw new Error("data/pokemon.csv is empty");
   if(!ITEMS.length) throw new Error("data/items.csv is empty");
@@ -1451,12 +1510,18 @@ const MULDIV_LEVELS = [
    answer — and each picture option carries its own speaker instead.
    "Clean" (for promotion) means the first tap was the correct one. */
 
-// Items eligible at a row: single words up to its word level, multi-word items
-// up to its compound level.
-function itemsForRow(row){
-  return GRADED_ITEMS.filter(it => it.multi
-    ? (row.compoundLevel > 0 && it.lvl <= row.compoundLevel)
-    : it.lvl <= row.wordLevel);
+/* Items eligible at a row: single words up to its word level, multi-word items
+   up to its compound level. `skipProper` drops names built from a Pokémon name
+   — Spelling sets it, because asking a child to *produce* "Hoppip" is memory,
+   not phonics, and those names are already reachable through the Pokémon pool
+   under the generation gate. Reading leaves them in. */
+function itemsForRow(row, skipProper){
+  return GRADED_ITEMS.filter(it => {
+    if(skipProper && it.proper) return false;
+    return it.multi
+      ? (row.compoundLevel > 0 && it.lvl <= row.compoundLevel)
+      : it.lvl <= row.wordLevel;
+  });
 }
 function genGatedSpellablePokemon(){
   const genRange = currentGenRange(loadCollection());
@@ -1470,8 +1535,8 @@ function pokemonForRow(row){
 /* The whole pool for a row. Items and Pokémon are pooled rather than picked from
    in fixed proportion: the mix shifts naturally as the ladder climbs, since the
    generation gate opens Pokémon slowly while the word levels open items fast. */
-function poolForRow(row){
-  const pool = itemsForRow(row).concat(pokemonForRow(row));
+function poolForRow(row, skipProper){
+  const pool = itemsForRow(row, skipProper).concat(pokemonForRow(row));
   return pool.length ? pool : GRADED_ITEMS;   // never hand back nothing
 }
 
@@ -1498,7 +1563,7 @@ function blanksFor(word, hintedPct){
 }
 
 function mkSpelling(row){
-  const poke = pickFrom(poolForRow(row), "spelling");
+  const poke = pickFrom(poolForRow(row, true), "spelling");
   if(row.hintedPct <= 0){
     return {kind:"spell", task:"full", poke, hintLimit: row.maxHints};
   }
@@ -2042,9 +2107,52 @@ function backPokeModal(){
   renderPokeModal(prev.poke, prev.opts);
 }
 
+/* Confetti and a burst of light, fired only on an actual catch. Rarer catches
+   get more of it and a gold palette — the rarity chip says "Legendary" but a
+   five-year-old reads the fuss, not the word. Pieces are plain spans with their
+   drift, spin and timing set per piece, so there's no library and nothing to
+   clean up beyond emptying the layer. */
+const CONFETTI_COLOURS = ["#ef7d8e", "#7cc47f", "#7ec9dd", "#ffd66b", "#c9a3ec", "#ffffff"];
+const CONFETTI_GOLD    = ["#ffd66b", "#f2b03d", "#fff3c9", "#ffe38a", "#ffffff"];
+function celebrateCatch(rarity){
+  const card = $("#catchCard");
+  card.classList.add("celebrating");
+  const layer = document.createElement("div");
+  layer.className = "confetti-layer";
+  const rare = !!RARITY_LABEL[rarity];
+  const colours = rare ? CONFETTI_GOLD : CONFETTI_COLOURS;
+  const count = rare ? 34 : 22;
+  for(let i = 0; i < count; i++){
+    const bit = document.createElement("span");
+    bit.className = "confetti";
+    bit.style.left = (Math.random() * 100) + "%";
+    bit.style.background = colours[i % colours.length];
+    bit.style.setProperty("--x", (Math.random() * 120 - 60).toFixed(0) + "px");
+    bit.style.setProperty("--spin", (Math.random() * 900 - 450).toFixed(0) + "deg");
+    bit.style.setProperty("--dur", (1.5 + Math.random() * 1.1).toFixed(2) + "s");
+    bit.style.setProperty("--delay", (Math.random() * .45).toFixed(2) + "s");
+    if(i % 3 === 0){ bit.style.borderRadius = "50%"; bit.style.height = "9px"; }
+    layer.appendChild(bit);
+  }
+  const shine = document.createElement("span");
+  shine.className = "catch-shine";
+  card.appendChild(shine);
+  card.appendChild(layer);
+  // Tidy up once the longest piece has finished, so reopening starts clean.
+  setTimeout(()=>{ layer.remove(); shine.remove(); }, 2600);
+}
+function clearCelebration(){
+  const card = $("#catchCard");
+  card.classList.remove("celebrating");
+  card.querySelectorAll(".confetti-layer, .catch-shine").forEach(el => el.remove());
+}
+
 function renderPokeModal(poke, opts){
   modalCurrent = { poke, opts };
-  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false } = opts || {};
+  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false,
+          celebrate = false } = opts || {};
+  // Walking to a relative re-renders this card; the previous burst goes with it.
+  clearCelebration();
   $("#catchCaption").textContent = caption;
   $("#catchCaption").classList.toggle("hidden", !caption);
   $("#catchGreet").textContent = greet;
@@ -2074,6 +2182,7 @@ function renderPokeModal(poke, opts){
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   modal.classList.remove("hidden");
+  if(celebrate) celebrateCatch(poke.rarity);
 }
 const RARITY_LABEL = { legendary: "Legendary", mythical: "Mythical" };
 function catchCaption(poke){
@@ -2122,9 +2231,10 @@ function renderEvoRow(poke){
   row.classList.remove("hidden");
 }
 
-function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke) }); }
+function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke), celebrate: true }); }
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
+  clearCelebration();
   modalTrail = [];
   modalCurrent = null;
 }
@@ -2440,7 +2550,18 @@ function renderSpell(p){
     tilesEl.appendChild(t);
   });
 
-  const state = { name, target, slotEls, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p };
+  /* A tile is one letter, but a sound is one chunk — so "shutter" must say /sh/
+     when the h lands, not /s/ then /h/. This maps each letter position to the
+     chunk it finishes, and only those positions speak. */
+  const chunks = chunkWord(name);
+  const chunkEndAt = {};
+  let li = 0;
+  chunks.forEach((c, ci)=>{
+    if(isSeparator(c)) return;
+    li += c.length;
+    chunkEndAt[li-1] = ci;
+  });
+  const state = { name, target, slotEls, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p, chunks, chunkEndAt };
   spellState = state;
   refreshSlots();
 
@@ -2574,6 +2695,11 @@ function placeLetter(ch, tileEl){
   spellState.filled.push({ch, tile:tileEl});
   refreshSlots();
   if(ch !== spellState.target[pos]){ markWrong(); return; } // wrong letter — tell them right away
+  // Right letter: say the sound it just completed. Wrong taps stay silent — a
+  // child who taps for the noise would otherwise be rewarded for guessing.
+  if(spellState.chunkEndAt && spellState.chunkEndAt[pos] !== undefined){
+    speakChunk(spellState.chunks, spellState.chunkEndAt[pos]);
+  }
   if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
@@ -2592,6 +2718,13 @@ function clearSpell(){
   refreshSlots();
 }
 
+/* Sounds out, then blends back: /k/ /a/ /t/ ... "cat". Waits for the last
+   phoneme to finish, because speak() cancels whatever is mid-flight and would
+   otherwise cut it off. */
+function blendBack(name){
+  setTimeout(()=> speakName(name), 700);
+}
+
 function checkSpell(){
   const guess = spellState.filled.map(f=>f.ch).join("");
   const fb = $("#feedback");
@@ -2600,6 +2733,7 @@ function checkSpell(){
     if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, !spellState.p._notClean);
     fb.className="feedback good";
     fb.textContent = `✅ Yes! It's ${cap(spellState.name)}!`;
+    blendBack(spellState.name);
     lockAndAdvance();
   } else {
     markWrong();   // safety net; per-letter checking usually catches it first
@@ -2645,6 +2779,41 @@ function chunkWord(word){
   }
   return chunks;
 }
+/* What a chunk says *in this word*. Consonants, digraphs, blends, vowel teams
+   and r-controlled vowels are context-free — the chunker has already made each
+   of them one unit, so "car" is c + ar and never asks what a bare "a" says.
+
+   That leaves the single vowels, which are the whole difficulty: `a` is one
+   sound in cat, another in cake. The rule reads the word around it — a vowel
+   followed by a single consonant and a final `e` is long, otherwise short — so
+   the same letter gets the right sound in the same word, which grading by level
+   alone could never do. The final `e` itself says nothing, which is the correct
+   thing to teach.
+
+   Anything with no row in data/phonemes.csv stays silent rather than guessing:
+   a wrong sound teaches a wrong thing, and silence teaches nothing. */
+const VOWELS = "aeiou";
+function chunkSound(chunks, i){
+  const chunk = chunks[i];
+  if(!chunk || isSeparator(chunk)) return "";
+  if(chunk.length > 1 || !VOWELS.includes(chunk)) return PHONEMES[`${chunk}|any`] || "";
+
+  // a lone vowel: decide long, short, or the silent e that makes it long
+  const rest = chunks.slice(i+1).filter(c => !isSeparator(c));
+  const isWordEnd = chunks.slice(i+1).every(c => isSeparator(c) || false) || rest.length === 0;
+  if(chunk === "e" && isWordEnd && i > 0) return PHONEMES["e|silent"] || "";
+  const magicE = rest.length === 2 && rest[0].length === 1 && !VOWELS.includes(rest[0]) && rest[1] === "e";
+  return PHONEMES[`${chunk}|${magicE ? "long" : "short"}`] || "";
+}
+/* Speaks a phoneme. Cancels whatever is mid-flight first: a child taps faster
+   than the synthesiser talks, and a queue of backed-up sounds is worse than
+   none. Falls silent for chunks the CSV leaves blank. */
+function speakChunk(chunks, i){
+  const say = chunkSound(chunks, i);
+  if(!say) return;
+  speak(say);
+}
+
 // picks which chunk *indices* go blank, always leaving at least one letter chunk
 // visible. Separator chunks are shown, never blanked — they are defined, not
 // spelled — so they are excluded from both the candidates and the count.
@@ -2669,6 +2838,15 @@ function pickBlankChunks(chunks, blankLetters){
 
 let missingState = null;
 
+/* Missing Letter now answers the same way Full Spelling does: tap a tile. It
+   used to be typed <input> boxes, which meant two input mechanics under one
+   "Spelling" tag, and — since 17 of the 25 levels are this task — an on-screen
+   keyboard covering half a tablet for most of the ladder.
+
+   The tiles are whole chunks, not letters. That is the point: a tile reading CK
+   is one sound, so tapping it plays /k/ rather than teaching that c and k are
+   separate. Tapping the right chunk places it and says its sound; tapping a
+   wrong one shakes and stays silent, so nothing rewards tapping for noise. */
 function renderMissingLetter(p){
   const name = p.poke.n.toLowerCase();
   const img = p.poke.img || artwork(p.poke.id);
@@ -2682,11 +2860,12 @@ function renderMissingLetter(p){
       <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
     </div>
     <div class="missing-word" id="missingWord"></div>
+    <div class="tiles" id="missingTiles"></div>
     <div class="feedback" id="feedback"></div>
     <div class="actions" id="missingActions"></div>
   `;
   const wordEl = $("#missingWord");
-  const blanks = [];
+  const slots = [];
   chunks.forEach((chunk,i)=>{
     if(isSeparator(chunk)){
       const sep = document.createElement("span");
@@ -2694,14 +2873,13 @@ function renderMissingLetter(p){
       sep.textContent = chunk === "-" ? "-" : "";
       wordEl.appendChild(sep);
     } else if(blankIdx.has(i)){
-      const inp = document.createElement("input");
-      inp.className = "mw-blank";
-      inp.maxLength = chunk.length;
-      inp.autocomplete = "off";
-      inp.style.width = (chunk.length*30+18) + "px";
-      inp.dataset.answer = chunk;
-      wordEl.appendChild(inp);
-      blanks.push(inp);
+      const slot = document.createElement("span");
+      slot.className = "mw-slot";
+      slot.style.width = (chunk.length*30+18) + "px";
+      slot.dataset.answer = chunk;
+      slot.dataset.chunk = String(i);
+      wordEl.appendChild(slot);
+      slots.push(slot);
     } else {
       chunk.split("").forEach(ch=>{
         const s = document.createElement("span");
@@ -2710,9 +2888,22 @@ function renderMissingLetter(p){
       });
     }
   });
+
+  // The bank holds exactly the missing chunks, shuffled — same bargain as Full
+  // Spelling's letter bank, where the last tile is likewise a free gift.
+  const bankEl = $("#missingTiles");
+  const order = shuffle(slots.map(sl => sl.dataset.answer));
+  order.forEach(chunk=>{
+    const t = document.createElement("button");
+    t.className = "tile chunk"; t.textContent = chunk; t.dataset.chunk = chunk;
+    t.addEventListener("click", ()=> placeChunk(chunk, t));
+    bankEl.appendChild(t);
+  });
+
   const hintLimit = p.hintLimit || 0;
-  missingState = { name, p, blanks, filledCount:0, hintsUsed:0, hintLimit };
-  blanks.forEach((inp,i)=> inp.addEventListener("input", ()=> checkMissingBlank(inp, i)));
+  missingState = { name, p, chunks, slots, filledCount:0, hintsUsed:0, hintLimit };
+  if(slots[0]) slots[0].classList.add("current");
+
   // Missing Letter used to refuse hints on the grounds that most of the word is
   // already showing. That held when it blanked one chunk; at 25% shown it can be
   // most of the word, so the level's own allowance applies here too.
@@ -2723,49 +2914,62 @@ function renderMissingLetter(p){
     btn.addEventListener("click", missingHint);
     $("#missingActions").appendChild(btn);
   }
-  blanks[0].focus();
   $("#say").addEventListener("click", ()=> speakName(name));
 }
 
-// Fills the first empty blank outright, same bargain as the spelling hint: it
-// costs an allowance and the answer stops counting as clean.
+function nextMissingSlot(){
+  return missingState ? missingState.slots.find(sl => !sl.classList.contains("mw-correct")) : null;
+}
+
+function placeChunk(chunk, tileEl){
+  const st = missingState;
+  if(!st) return;
+  const slot = nextMissingSlot();
+  if(!slot) return;
+  const fb = $("#feedback");
+  if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
+
+  if(chunk !== slot.dataset.answer){
+    st.p._notClean = true;
+    tileEl.classList.add("shake");
+    setTimeout(()=> tileEl.classList.remove("shake"), 450);
+    fb.className="feedback bad";
+    fb.textContent = "❌ Not that one — try again!";
+    return;                                   // deliberately silent on a miss
+  }
+  fillMissingSlot(slot, tileEl);
+}
+
+function fillMissingSlot(slot, tileEl){
+  const st = missingState;
+  slot.textContent = slot.dataset.answer;
+  slot.classList.add("mw-correct");
+  slot.classList.remove("current");
+  if(tileEl) tileEl.classList.add("used");
+  st.filledCount++;
+  speakChunk(st.chunks, Number(slot.dataset.chunk));
+  const next = nextMissingSlot();
+  if(next) next.classList.add("current");
+  if(st.filledCount === st.slots.length) finishMissingLetter();
+}
+
+// Fills the next slot outright, same bargain as the spelling hint: it costs an
+// allowance and the answer stops counting as clean.
 function missingHint(){
   const st = missingState;
   if(!st || st.hintsUsed >= st.hintLimit) return;
-  const inp = st.blanks.find(b => !b.disabled && b.value.toLowerCase() !== b.dataset.answer);
-  if(!inp) return;
+  const slot = nextMissingSlot();
+  if(!slot) return;
   st.hintsUsed++;
-  st.p._notClean = true;          // a hinted answer isn't a clean one, same as Spelling
-  inp.value = inp.dataset.answer;
-  checkMissingBlank(inp, st.blanks.indexOf(inp));
+  st.p._notClean = true;
+  const tile = [...$("#missingTiles").children]
+    .find(t => t.dataset.chunk === slot.dataset.answer && !t.classList.contains("used"));
+  fillMissingSlot(slot, tile);
   const btn = $("#missHint");
   if(btn){
     const left = st.hintLimit - st.hintsUsed;
     btn.textContent = `💡 Hint (${left} left)`;
     btn.disabled = left === 0;
-  }
-}
-
-function checkMissingBlank(inp, i){
-  if(!missingState || inp.disabled) return;
-  const val = inp.value.toLowerCase();
-  if(val.length < inp.maxLength) return;
-  const fb = $("#feedback");
-  if(val === inp.dataset.answer){
-    inp.disabled = true;
-    inp.classList.add("mw-correct");
-    missingState.filledCount++;
-    fb.textContent=""; fb.className="feedback";
-    const next = missingState.blanks[i+1];
-    if(next) next.focus();
-    if(missingState.filledCount === missingState.blanks.length) finishMissingLetter();
-  } else {
-    missingState.p._notClean = true;
-    inp.value="";
-    inp.classList.add("shake");
-    setTimeout(()=> inp.classList.remove("shake"), 450);
-    fb.className="feedback bad";
-    fb.textContent = "❌ Not that one — try again!";
   }
 }
 
@@ -2776,6 +2980,7 @@ function finishMissingLetter(){
   const fb = $("#feedback");
   fb.className="feedback good";
   fb.textContent = `✅ Yes! It's ${cap(missingState.name)}!`;
+  blendBack(missingState.name);
   lockAndAdvance();
 }
 
@@ -3291,7 +3496,7 @@ function finish(){
       btn.addEventListener("click", ()=>{
         const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
         markSeen(poke.id);
-        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true });
+        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true, celebrate: true });
       });
     });
   } else {
