@@ -174,6 +174,14 @@ Investigated, not fixed: the maths ladder is moving to a CSV with a min and a ma
 - **`speak()` cancels whatever is mid-flight**, so the risk was the catch talking over the word the child had just spelled. Traced with a stubbed voice taking a realistic 900ms per utterance: the blend-back ends at 3464ms and the catch name starts at 4267ms — 800ms of clearance, because the blend-back's own `onend` gates the advance. Nothing real is cut.
 - Uses `speak(sayAs(name))` rather than `speakName()`, which pops an `alert` when there is no speech synthesis — tolerable on a button press, not on something that fires by itself.
 
+## Phase 40 — One rule for saying a name, instead of one for catching
+
+- **"Same goes when you tap a Pokémon to view in the Pokédex."** Phase 39 had put the speech in `showCatchModal`, which was right for a catch and wrong as a general answer — it named the moment rather than the behaviour.
+- **Moved to the two ways *in*: `showPokeModal` and `navPokeModal`.** That covers tapping a Pokédex cell, tapping a relative in the evolution family, tapping a catch on the results screen, and the catch popup, in one place — and `showCatchModal` goes back to the one-liner it was.
+- **`backPokeModal` deliberately stays silent.** It re-renders the entry you came from, and a name repeated on the way out of an evolution is noise rather than teaching. Hanging the speech off *opening* rather than *rendering* is what makes that distinction expressible at all.
+- **An uncaught entry says nothing**, which falls out of the same `revealed` flag that already hides its name, silhouettes its artwork and hides its speaker. Verified against a real uncaught relative: silent, nameless, silhouetted, no speaker.
+- Checked across all seven paths — caught dex entry speaks, uncaught dex entry silent, opening speaks, evolution tap speaks, Back silent, catch speaks exactly once, 🔊 still works. Respellings apply: `ivysaur` says "eye vee sore".
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
