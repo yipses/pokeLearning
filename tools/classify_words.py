@@ -141,6 +141,13 @@ common |= {"tub","pit","cork","drift","weed","rail","pad","post","dust","bench",
            "sand","bags","spot","sky","hay","mat","rug","ore","orb","kit","log","cot","fin","fir"}
 vocab |= common
 
+# Pokémon names that turn up as item words ("Hoppip water bottle", "Pikachu
+# doll"). They carry a phonics level like anything else, but it is fiction: they
+# are invented proper nouns learned by memory, not decoded by pattern. Flagged
+# here so the Spelling trail can leave them alone — they are already reachable as
+# Pokémon names proper, gated by generation.
+POKE_NAMES = {r["name"].lower() for r in csv.DictReader(open("data/pokemon.csv"))}
+
 HAND = {
  1:["Fan","Mug","Sink"], 2:["Bell","Moss"], 3:["Brick","Fluff","Glass","Gravel"],
  4:["Shutter","Torch","Perch","Wheat","Charcoal","Sandwiches"],
@@ -177,6 +184,7 @@ for w in sorted(uses):
         "syllables": syl,
         "compound_parts": comp[0][9:-1].replace("+"," + ") if comp else "",
         "also_matches": ", ".join(m for m in matched if not m.startswith("compound(")),
+        "proper_noun": "yes" if w in POKE_NAMES else "",
         "used_in_items": uses[w],
         "previous_level": hand.get(w, ""),
         "review": "differs" if (w in hand and hand[w] != lvl) else "",
@@ -197,6 +205,7 @@ print(f"\ntotal {len(rows)} words -> data/word_levels.csv")
 # The per-item view: every catalogue name with the level it lands on. Derived
 # from word_levels.csv, so correcting a word there re-grades every item using it.
 word_level = {r["word"]: r["level"] for r in rows}
+proper = {r["word"] for r in rows if r["proper_noun"]}
 out = []
 for name in items:
     spellable = bool(re.fullmatch(r"[A-Za-z]+([ -][A-Za-z]+)*", name))
@@ -209,6 +218,7 @@ for name in items:
         "words": len(parts) if spellable else "",
         "components": " + ".join(parts) if len(parts) > 1 else "",
         "component_levels": " + ".join(str(l) for l in lvls) if len(parts) > 1 else "",
+        "proper_noun": "yes" if any(p in proper for p in parts) else "",
         "letters": len(re.sub(r"[^A-Za-z]", "", name)),
         "longest_word": max((len(p) for p in parts), default=""),
         "spellable": "yes" if spellable else "no",
@@ -219,6 +229,7 @@ with open("data/item_levels.csv", "w", newline="") as f:
     wtr.writeheader(); wtr.writerows(out)
 
 byl = collections.Counter(r["level"] for r in out if r["level"] != "")
+print(f"   proper-noun items (excluded from Spelling): {sum(1 for r in out if r['proper_noun'])}")
 print(f"\ndata/item_levels.csv: {len(out)} items ({sum(1 for r in out if r['spellable']=='no')} unspellable, kept with a blank level)")
 print("items per level:", {k: byl[k] for k in sorted(byl)})
 for probe in ["Sea glass fragments", "Charcoal", "Copper ore", "Log bed"]:

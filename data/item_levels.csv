@@ -1,923 +1,923 @@
-item,level,kind,words,components,component_levels,letters,longest_word,spellable
-Damp Rock,1,compound,2,damp + rock,1 + 1,8,4,yes
-Fan,1,single,1,,,3,3,yes
-Felt mat,1,compound,2,felt + mat,1 + 1,7,4,yes
-Log bed,1,compound,2,log + bed,1 + 1,6,3,yes
-Mug,1,single,1,,,3,3,yes
-Pink hut kit,1,compound,3,pink + hut + kit,1 + 1 + 1,10,4,yes
-Red rock,1,compound,2,red + rock,1 + 1,7,4,yes
-Sand den kit,1,compound,3,sand + den + kit,1 + 1 + 1,10,4,yes
-Sand hut kit,1,compound,3,sand + hut + kit,1 + 1 + 1,10,4,yes
-Sign,1,single,1,,,4,4,yes
-Sink,1,single,1,,,4,4,yes
-Soft Sand,1,compound,2,soft + sand,1 + 1,8,4,yes
-Soft mat,1,compound,2,soft + mat,1 + 1,7,4,yes
-Bell,2,single,1,,,4,4,yes
-Gold wall,2,compound,2,gold + wall,1 + 2,8,4,yes
-Moss,2,single,1,,,4,4,yes
-Big drum,3,compound,2,big + drum,1 + 3,7,4,yes
-Black Belt,3,compound,2,black + belt,3 + 1,9,5,yes
-Black Glasses,3,compound,2,black + glasses,3 + 3,12,7,yes
-Black Sludge,3,compound,2,black + sludge,3 + 3,11,6,yes
-Black cliff rock,3,compound,3,black + cliff + rock,3 + 3 + 1,14,5,yes
-Black rock,3,compound,2,black + rock,3 + 1,9,5,yes
-Brick,3,single,1,,,5,5,yes
-Brick steps,3,compound,2,brick + steps,3 + 3,10,5,yes
-Brick wall,3,compound,2,brick + wall,3 + 2,9,5,yes
-Bridge planks,3,compound,2,bridge + planks,3 + 3,12,6,yes
-Bronze wall,3,compound,2,bronze + wall,3 + 2,10,6,yes
-Cliff rock,3,compound,2,cliff + rock,3 + 1,9,5,yes
-Crystal ball,3,compound,2,crystal + ball,3 + 2,11,7,yes
-Crystal fragment,3,compound,2,crystal + fragment,3 + 3,15,8,yes
-Crystal wall,3,compound,2,crystal + wall,3 + 2,11,7,yes
-Dragon Fang,3,compound,2,dragon + fang,3 + 1,10,6,yes
-Dry tall grass,3,compound,3,dry + tall + grass,3 + 2 + 3,12,5,yes
-Fluff,3,single,1,,,5,5,yes
-Frying pan,3,compound,2,frying + pan,3 + 1,9,6,yes
-Glass,3,single,1,,,5,5,yes
-Gravel,3,single,1,,,6,6,yes
-Grubby rags,3,compound,2,grubby + rags,3 + 1,10,6,yes
-Pink tall grass,3,compound,3,pink + tall + grass,1 + 2 + 3,13,5,yes
-Red cliff rock,3,compound,3,red + cliff + rock,1 + 3 + 1,12,5,yes
-Red crystal fragment,3,compound,3,red + crystal + fragment,1 + 3 + 3,18,8,yes
-Red tall grass,3,compound,3,red + tall + grass,1 + 2 + 3,12,5,yes
-Small log,3,compound,2,small + log,3 + 1,8,5,yes
-Spell Tag,3,compound,2,spell + tag,3 + 1,8,5,yes
-Sticky web,3,compound,2,sticky + web,3 + 1,9,6,yes
-Strange strings,3,compound,2,strange + strings,3 + 3,14,7,yes
-Striped wall,3,compound,2,striped + wall,3 + 2,11,7,yes
-Study desk,3,compound,2,study + desk,3 + 1,9,5,yes
-Tall grass,3,compound,2,tall + grass,2 + 3,9,5,yes
-Arch bridge,4,compound,2,arch + bridge,4 + 3,10,6,yes
-Beach chair,4,compound,2,beach + chair,4 + 4,10,5,yes
-Beach sand,4,compound,2,beach + sand,4 + 1,9,5,yes
-Cell phone,4,compound,2,cell + phone,2 + 4,9,5,yes
-Chansey plant,4,compound,2,chansey + plant,4 + 3,12,7,yes
-Charcoal,4,single,1,,,8,8,yes
-Charizard rug,4,compound,2,charizard + rug,4 + 1,12,9,yes
-Cloth wall,4,compound,2,cloth + wall,4 + 2,9,5,yes
-Cushy wall,4,compound,2,cushy + wall,4 + 2,9,5,yes
-Deck chair,4,compound,2,deck + chair,1 + 4,9,5,yes
-Gold Teeth,4,compound,2,gold + teeth,1 + 4,9,5,yes
-Grubby cell phone,4,compound,3,grubby + cell + phone,3 + 2 + 4,15,6,yes
-Houndstooth print,4,compound,2,houndstooth + print,4 + 3,16,11,yes
-Log chair,4,compound,2,log + chair,1 + 4,8,5,yes
-Lunch box,4,compound,2,lunch + box,4 + 1,8,5,yes
-Mushroom lamp,4,compound,2,mushroom + lamp,4 + 1,12,8,yes
-Perch,4,single,1,,,5,5,yes
-Pikachu doll,4,compound,2,pikachu + doll,4 + 2,11,7,yes
-Pitcher-plant pot,4,compound,3,pitcher + plant + pot,4 + 3 + 1,15,7,yes
-Raichu sign,4,compound,2,raichu + sign,4 + 1,10,6,yes
-Sandwiches,4,single,1,,,10,10,yes
-Shell lamp,4,compound,2,shell + lamp,4 + 1,9,5,yes
-Shutter,4,single,1,,,7,7,yes
-Smooth Rock,4,compound,2,smooth + rock,4 + 1,10,6,yes
-South Province,4,compound,2,south + province,4 + 3,13,8,yes
-Strength rock,4,compound,2,strength + rock,4 + 1,12,8,yes
-Stylish bronze wall,4,compound,3,stylish + bronze + wall,4 + 3 + 2,17,7,yes
-Stylish frying pan,4,compound,3,stylish + frying + pan,4 + 3 + 1,16,7,yes
-Stylish gold wall,4,compound,3,stylish + gold + wall,4 + 1 + 2,15,7,yes
-Stylish steps,4,compound,2,stylish + steps,4 + 3,12,7,yes
-Torch,4,single,1,,,5,5,yes
-Wall switch,4,compound,2,wall + switch,2 + 4,10,6,yes
-Wall torch,4,compound,2,wall + torch,2 + 4,9,5,yes
-Wheat,4,single,1,,,5,5,yes
-Wheat plant,4,compound,2,wheat + plant,4 + 3,10,5,yes
-Wheelbarrow,4,single,1,,,11,11,yes
-White rock,4,compound,2,white + rock,4 + 1,9,5,yes
-Bike,5,single,1,,,4,4,yes
-Cave mushrooms,5,compound,2,cave + mushrooms,5 + 4,13,9,yes
-Cave rock,5,compound,2,cave + rock,5 + 1,8,4,yes
-Chili sauce,5,compound,2,chili + sauce,4 + 5,10,5,yes
-Cute bed,5,compound,2,cute + bed,5 + 1,7,4,yes
-Cute chair,5,compound,2,cute + chair,5 + 4,9,5,yes
-Cute lamp,5,compound,2,cute + lamp,5 + 1,8,4,yes
-Frame,5,single,1,,,5,5,yes
-Glass pane,5,compound,2,glass + pane,3 + 5,9,5,yes
-Gold ore,5,compound,2,gold + ore,1 + 5,7,4,yes
-Ice,5,single,1,,,3,3,yes
-Juice trio,5,compound,2,juice + trio,5 + 3,9,5,yes
-Jump rope trophy,5,compound,3,jump + rope + trophy,1 + 5 + 4,14,6,yes
-Lace rug,5,compound,2,lace + rug,5 + 1,7,4,yes
-Photo frame,5,compound,2,photo + frame,4 + 5,10,5,yes
-Plate,5,single,1,,,5,5,yes
-Rare Bone,5,compound,2,rare + bone,5 + 5,8,4,yes
-Rope,5,single,1,,,4,4,yes
-Sand house kit,5,compound,3,sand + house + kit,1 + 5 + 1,12,5,yes
-Scrap cube,5,compound,2,scrap + cube,3 + 5,9,5,yes
-Shaved ice,5,compound,2,shaved + ice,4 + 5,9,6,yes
-Slide,5,single,1,,,5,5,yes
-Small square rug,5,compound,3,small + square + rug,3 + 5 + 1,14,6,yes
-Small stage,5,compound,2,small + stage,3 + 5,10,5,yes
-Small vase,5,compound,2,small + vase,3 + 5,9,5,yes
-Square plant,5,compound,2,square + plant,5 + 3,11,6,yes
-Stone,5,single,1,,,5,5,yes
-Stone bench,5,compound,2,stone + bench,5 + 4,10,5,yes
-Stone brick wall,5,compound,3,stone + brick + wall,5 + 3 + 2,14,5,yes
-Stone den kit,5,compound,3,stone + den + kit,5 + 1 + 1,11,5,yes
-Stone fragments,5,compound,2,stone + fragments,5 + 3,14,9,yes
-Stone house kit,5,compound,3,stone + house + kit,5 + 5 + 1,13,5,yes
-Stone hut kit,5,compound,3,stone + hut + kit,5 + 1 + 1,11,5,yes
-Stone steps,5,compound,2,stone + steps,5 + 3,10,5,yes
-Tires,5,single,1,,,5,5,yes
-Traffic cone,5,compound,2,traffic + cone,3 + 5,11,7,yes
-Twine,5,single,1,,,5,5,yes
-Vine print,5,compound,2,vine + print,5 + 3,9,5,yes
-Vine rope,5,compound,2,vine + rope,5 + 5,8,4,yes
-Vines,5,single,1,,,5,5,yes
-Wall photo frame,5,compound,3,wall + photo + frame,2 + 4 + 5,14,5,yes
-Weather vane,5,compound,2,weather + vane,4 + 5,11,7,yes
-Wide Lens,5,compound,2,wide + lens,5 + 1,8,4,yes
-Wire,5,single,1,,,4,4,yes
-Asphalt road,6,compound,2,asphalt + road,4 + 6,11,7,yes
-Balloons,6,single,1,,,8,8,yes
-Bean,6,single,1,,,4,4,yes
-Bean plant,6,compound,2,bean + plant,6 + 3,9,5,yes
-Big Root,6,compound,2,big + root,1 + 6,7,4,yes
-Black paint,6,compound,2,black + paint,3 + 6,10,5,yes
-Blue paint,6,compound,2,blue + paint,6 + 6,9,5,yes
-Blue-green shoots,6,compound,3,blue + green + shoots,6 + 6 + 4,15,6,yes
-Book,6,single,1,,,4,4,yes
-Bread bowl,6,compound,2,bread + bowl,6 + 6,9,5,yes
-Brick roof valley,6,compound,3,brick + roof + valley,3 + 6 + 6,15,6,yes
-Broken window pane,6,compound,3,broken + window + pane,3 + 6 + 5,16,6,yes
-Canoe,6,single,1,,,5,5,yes
-Chocolate cookies,6,compound,2,chocolate + cookies,4 + 6,16,9,yes
-Clay,6,single,1,,,4,4,yes
-Cube light,6,compound,2,cube + light,5 + 6,9,5,yes
-Desk light,6,compound,2,desk + light,1 + 6,9,5,yes
-Dry blue-green shoots,6,compound,4,dry + blue + green + shoots,3 + 6 + 6 + 4,18,6,yes
-Dry field grass,6,compound,3,dry + field + grass,3 + 6 + 3,13,5,yes
-Dry green shoots,6,compound,3,dry + green + shoots,3 + 6 + 4,14,6,yes
-Dry yellow-green shoots,6,compound,4,dry + yellow + green + shoots,3 + 6 + 6 + 4,20,6,yes
-Eevee doll,6,compound,2,eevee + doll,6 + 2,9,5,yes
-Field grass,6,compound,2,field + grass,6 + 3,10,5,yes
-Flat brick roof,6,compound,3,flat + brick + roof,3 + 3 + 6,13,5,yes
-Flat stone roof,6,compound,3,flat + stone + roof,3 + 5 + 6,13,5,yes
-Flat tent roof,6,compound,3,flat + tent + roof,3 + 1 + 6,12,4,yes
-Flat-leaf plant,6,compound,3,flat + leaf + plant,3 + 6 + 3,13,5,yes
-Fluffy bread,6,compound,2,fluffy + bread,3 + 6,11,6,yes
-Fountain plaza kit,6,compound,3,fountain + plaza + kit,6 + 3 + 1,16,8,yes
-Freezing Chambers kit,6,compound,3,freezing + chambers + kit,6 + 4 + 1,19,8,yes
-Glass window,6,compound,2,glass + window,3 + 6,11,6,yes
-Glossy awning,6,compound,2,glossy + awning,3 + 6,12,6,yes
-Gray hut kit,6,compound,3,gray + hut + kit,6 + 1 + 1,10,4,yes
-Green paint,6,compound,2,green + paint,6 + 6,10,5,yes
-Green shoots,6,compound,2,green + shoots,6 + 4,11,6,yes
-Grubby book,6,compound,2,grubby + book,3 + 6,10,6,yes
-Hatch window,6,compound,2,hatch + window,4 + 6,11,6,yes
-Healthy soup,6,compound,2,healthy + soup,4 + 6,11,7,yes
-Heat Rock,6,compound,2,heat + rock,6 + 1,8,4,yes
-Honey,6,single,1,,,5,5,yes
-Hot-spring spout,6,compound,3,hot + spring + spout,1 + 3 + 6,14,6,yes
-Leaf,6,single,1,,,4,4,yes
-Leaf den kit,6,compound,3,leaf + den + kit,6 + 1 + 1,10,4,yes
-Leaf house kit,6,compound,3,leaf + house + kit,6 + 5 + 1,12,5,yes
-Leaf hut kit,6,compound,3,leaf + hut + kit,6 + 1 + 1,10,4,yes
-Leaf print,6,compound,2,leaf + print,6 + 3,9,5,yes
-Leafy plant,6,compound,2,leafy + plant,6 + 3,10,5,yes
-Levee,6,single,1,,,5,5,yes
-Light Clay,6,compound,2,light + clay,6 + 6,9,5,yes
-Light brown rock,6,compound,3,light + brown + rock,6 + 6 + 1,14,5,yes
-Light wooden wall,6,compound,3,light + wooden + wall,6 + 6 + 2,15,6,yes
-Loaded Dice,6,compound,2,loaded + dice,6 + 5,10,6,yes
-Moomoo Milk Coffee,6,compound,3,moomoo + milk + coffee,6 + 1 + 6,16,6,yes
-Mushroom soup,6,compound,2,mushroom + soup,4 + 6,12,8,yes
-Ocean rock,6,compound,2,ocean + rock,6 + 1,9,5,yes
-Palm tree stump,6,compound,3,palm + tree + stump,1 + 6 + 3,13,5,yes
-Pikachu fountain kit,6,compound,3,pikachu + fountain + kit,4 + 6 + 1,18,8,yes
-Pink paint,6,compound,2,pink + paint,1 + 6,9,5,yes
-Pitched brick roof,6,compound,3,pitched + brick + roof,4 + 3 + 6,16,7,yes
-Plain bed,6,compound,2,plain + bed,6 + 1,8,5,yes
-Plain chair,6,compound,2,plain + chair,6 + 4,10,5,yes
-Plain chest,6,compound,2,plain + chest,6 + 4,10,5,yes
-Plain closet,6,compound,2,plain + closet,6 + 3,11,6,yes
-Plain stand,6,compound,2,plain + stand,6 + 3,10,5,yes
-Plain stool,6,compound,2,plain + stool,6 + 6,10,5,yes
-Pointy tree,6,compound,2,pointy + tree,6 + 6,10,6,yes
-Pointy tree stump,6,compound,3,pointy + tree + stump,6 + 6 + 3,15,6,yes
-Pulley,6,single,1,,,6,6,yes
-Quick Claw,6,compound,2,quick + claw,6 + 6,9,5,yes
-Red paint,6,compound,2,red + paint,1 + 6,8,5,yes
-Rough wall,6,compound,2,rough + wall,6 + 2,9,5,yes
-Rowlet clock,6,compound,2,rowlet + clock,6 + 3,11,6,yes
-Sash window,6,compound,2,sash + window,4 + 6,10,6,yes
-Sea glass fragments,6,compound,3,sea + glass + fragments,6 + 3 + 3,17,9,yes
-Seedot lamp,6,compound,2,seedot + lamp,6 + 1,10,6,yes
-Sharp Beak,6,compound,2,sharp + beak,4 + 6,9,5,yes
-Sloped stone roof,6,compound,3,sloped + stone + roof,3 + 5 + 6,15,6,yes
-Sloped tent roof,6,compound,3,sloped + tent + roof,3 + 1 + 6,14,6,yes
-Slowpoke rug,6,compound,2,slowpoke + rug,6 + 1,11,8,yes
-Small round rug,6,compound,3,small + round + rug,3 + 6 + 1,13,5,yes
-Soft seat,6,compound,2,soft + seat,1 + 6,8,4,yes
-Squishy clay,6,compound,2,squishy + clay,4 + 6,11,7,yes
-Stone roof valley,6,compound,3,stone + roof + valley,5 + 6 + 6,15,6,yes
-Straw bed,6,compound,2,straw + bed,6 + 1,8,5,yes
-Straw stool,6,compound,2,straw + stool,6 + 6,10,5,yes
-String lights,6,compound,2,string + lights,3 + 6,12,6,yes
-Striped soil,6,compound,2,striped + soil,3 + 6,11,7,yes
-Stylish stool,6,compound,2,stylish + stool,4 + 6,12,7,yes
-Tea set,6,compound,2,tea + set,6 + 1,6,3,yes
-Tent roof valley,6,compound,3,tent + roof + valley,1 + 6 + 6,14,6,yes
-Throat Spray,6,compound,2,throat + spray,4 + 6,11,6,yes
-Tire toy,6,compound,2,tire + toy,5 + 6,7,4,yes
-Toilet,6,single,1,,,6,6,yes
-Towel rack,6,compound,2,towel + rack,6 + 1,9,5,yes
-Town map,6,compound,2,town + map,6 + 1,7,4,yes
-Toy blocks,6,compound,2,toy + blocks,6 + 3,9,6,yes
-Treasure,6,single,1,,,8,8,yes
-Twisted Spoon,6,compound,2,twisted + spoon,3 + 6,12,7,yes
-Upright log,6,compound,2,upright + log,6 + 1,10,7,yes
-Wall light,6,compound,2,wall + light,2 + 6,9,5,yes
-White paint,6,compound,2,white + paint,4 + 6,10,5,yes
-Window pane,6,compound,2,window + pane,6 + 5,10,6,yes
-Wooden bed,6,compound,2,wooden + bed,6 + 1,9,6,yes
-Wooden bench,6,compound,2,wooden + bench,6 + 4,11,6,yes
-Wooden crate,6,compound,2,wooden + crate,6 + 5,11,6,yes
-Wooden gate,6,compound,2,wooden + gate,6 + 5,10,6,yes
-Wooden path,6,compound,2,wooden + path,6 + 4,10,6,yes
-Wooden plate,6,compound,2,wooden + plate,6 + 5,11,6,yes
-Wooden steps,6,compound,2,wooden + steps,6 + 3,11,6,yes
-Wooden wall,6,compound,2,wooden + wall,6 + 2,10,6,yes
-Yellow hut kit,6,compound,3,yellow + hut + kit,6 + 1 + 1,12,6,yes
-Yellow paint,6,compound,2,yellow + paint,6 + 6,11,6,yes
-Yellow rock,6,compound,2,yellow + rock,6 + 1,10,6,yes
-Yellow tall grass,6,compound,3,yellow + tall + grass,6 + 2 + 3,15,6,yes
-Yellow-green shoots,6,compound,3,yellow + green + shoots,6 + 6 + 4,17,6,yes
-Zoom Lens,6,compound,2,zoom + lens,6 + 1,8,4,yes
-Alarm clock,7,compound,2,alarm + clock,7 + 3,10,5,yes
-Arcade machine,7,compound,2,arcade + machine,7 + 4,13,7,yes
-Arched barrier,7,compound,2,arched + barrier,4 + 7,13,7,yes
-Area Zero,7,compound,2,area + zero,7 + 7,8,4,yes
-Armor fragment,7,compound,2,armor + fragment,7 + 3,13,8,yes
-Arrow sign,7,compound,2,arrow + sign,7 + 1,9,5,yes
-Aspear Berry,7,compound,2,aspear + berry,7 + 7,11,6,yes
-Audio mixer,7,compound,2,audio + mixer,6 + 7,10,5,yes
-Balloon poster,7,compound,2,balloon + poster,6 + 7,13,7,yes
-Barrel,7,single,1,,,6,6,yes
-Barren striped soil,7,compound,3,barren + striped + soil,7 + 3 + 6,17,7,yes
-Bell Tower,7,compound,2,bell + tower,2 + 7,9,5,yes
-Berry bed,7,compound,2,berry + bed,7 + 1,8,5,yes
-Berry case,7,compound,2,berry + case,7 + 5,9,5,yes
-Berry chair,7,compound,2,berry + chair,7 + 4,10,5,yes
-Berry clock,7,compound,2,berry + clock,7 + 3,10,5,yes
-Berry print,7,compound,2,berry + print,7 + 3,10,5,yes
-Big storage box,7,compound,3,big + storage + box,1 + 7 + 1,13,7,yes
-Blue meteor lamp,7,compound,3,blue + meteor + lamp,6 + 7 + 1,14,6,yes
-Boat door,7,compound,2,boat + door,6 + 7,8,4,yes
-Brainy door,7,compound,2,brainy + door,6 + 7,10,6,yes
-Broken iron steps,7,compound,3,broken + iron + steps,3 + 7 + 3,15,6,yes
-Bruised berry,7,compound,2,bruised + berry,6 + 7,12,7,yes
-Card reader,7,compound,2,card + reader,7 + 7,10,6,yes
-Carrot bread,7,compound,2,carrot + bread,7 + 6,11,6,yes
-Cart,7,single,1,,,4,4,yes
-Carved coarse rock,7,compound,3,carved + coarse + rock,7 + 7 + 1,16,6,yes
-Carved red rock,7,compound,3,carved + red + rock,7 + 1 + 1,13,6,yes
-Carved white rock,7,compound,3,carved + white + rock,7 + 4 + 1,15,6,yes
-Carved yellow rock,7,compound,3,carved + yellow + rock,7 + 6 + 1,16,6,yes
-Chesto Berry,7,compound,2,chesto + berry,4 + 7,11,6,yes
-Clear Bell,7,compound,2,clear + bell,7 + 2,9,5,yes
-Coarse rock,7,compound,2,coarse + rock,7 + 1,10,6,yes
-Concert stage kit,7,compound,3,concert + stage + kit,7 + 5 + 1,15,7,yes
-Cool bass guitar,7,compound,3,cool + bass + guitar,6 + 2 + 7,14,6,yes
-Copper ore,7,compound,2,copper + ore,7 + 5,9,6,yes
-Counter,7,single,1,,,7,7,yes
-Crystal cluster,7,compound,2,crystal + cluster,3 + 7,14,7,yes
-Curry print,7,compound,2,curry + print,7 + 3,10,5,yes
-Curved eave,7,compound,2,curved + eave,7 + 5,10,6,yes
-Cute dresser,7,compound,2,cute + dresser,5 + 7,11,7,yes
-Cute flowers,7,compound,2,cute + flowers,5 + 7,11,7,yes
-Drink poster,7,compound,2,drink + poster,3 + 7,11,6,yes
-Dry verdant shoots,7,compound,3,dry + verdant + shoots,3 + 7 + 4,16,7,yes
-Fern,7,single,1,,,4,4,yes
-First aid kit,7,compound,3,first + aid + kit,7 + 6 + 1,11,5,yes
-Flame Orb,7,compound,2,flame + orb,5 + 7,8,5,yes
-Floor switch,7,compound,2,floor + switch,7 + 4,11,6,yes
-Flower cushion,7,compound,2,flower + cushion,7 + 4,13,7,yes
-Flower garland,7,compound,2,flower + garland,7 + 7,13,7,yes
-Flower print,7,compound,2,flower + print,7 + 3,11,6,yes
-Food counter,7,compound,2,food + counter,6 + 7,11,7,yes
-Food poster,7,compound,2,food + poster,6 + 7,10,6,yes
-Fresh Water,7,compound,2,fresh + water,4 + 7,10,5,yes
-Fresh carrot,7,compound,2,fresh + carrot,4 + 7,11,6,yes
-Furnace kit,7,compound,2,furnace + kit,7 + 1,10,7,yes
-Game Corner,7,compound,2,game + corner,5 + 7,10,6,yes
-Garbage bags,7,compound,2,garbage + bags,7 + 1,11,7,yes
-Garbage bin,7,compound,2,garbage + bin,7 + 1,10,7,yes
-Garden bench,7,compound,2,garden + bench,7 + 4,11,6,yes
-Garden chair,7,compound,2,garden + chair,7 + 4,11,6,yes
-Garden flowers,7,compound,2,garden + flowers,7 + 7,13,7,yes
-Garden light,7,compound,2,garden + light,7 + 6,11,6,yes
-Green meteor lamp,7,compound,3,green + meteor + lamp,6 + 7 + 1,15,6,yes
-Growth poster,7,compound,2,growth + poster,4 + 7,12,6,yes
-Grubby letter,7,compound,2,grubby + letter,3 + 7,12,6,yes
-Grubby papers,7,compound,2,grubby + papers,3 + 7,12,6,yes
-Hard Stone,7,compound,2,hard + stone,7 + 5,9,5,yes
-Heart Scale,7,compound,2,heart + scale,7 + 3,10,5,yes
-Horsea fountain,7,compound,2,horsea + fountain,7 + 6,14,8,yes
-Ice cream poster,7,compound,3,ice + cream + poster,5 + 6 + 7,14,6,yes
-Iron Ball,7,compound,2,iron + ball,7 + 2,8,4,yes
-Iron beam,7,compound,2,iron + beam,7 + 6,8,4,yes
-Iron bed,7,compound,2,iron + bed,7 + 1,7,4,yes
-Iron bench,7,compound,2,iron + bench,7 + 4,9,5,yes
-Iron chair,7,compound,2,iron + chair,7 + 4,9,5,yes
-Iron door,7,compound,2,iron + door,7 + 7,8,4,yes
-Iron gate,7,compound,2,iron + gate,7 + 5,8,4,yes
-Iron ladder,7,compound,2,iron + ladder,7 + 7,10,6,yes
-Iron ore,7,compound,2,iron + ore,7 + 5,7,4,yes
-Iron pillar,7,compound,2,iron + pillar,7 + 7,10,6,yes
-Iron pipes,7,compound,2,iron + pipes,7 + 5,9,5,yes
-Iron plating,7,compound,2,iron + plating,7 + 3,11,7,yes
-Iron rack,7,compound,2,iron + rack,7 + 1,8,4,yes
-Iron scaffold,7,compound,2,iron + scaffold,7 + 3,12,8,yes
-Iron stand,7,compound,2,iron + stand,7 + 3,9,5,yes
-Iron steps,7,compound,2,iron + steps,7 + 3,9,5,yes
-Iron wall,7,compound,2,iron + wall,7 + 2,8,4,yes
-Lantern,7,single,1,,,7,7,yes
-Large boulder,7,compound,2,large + boulder,7 + 7,12,7,yes
-Large mirror,7,compound,2,large + mirror,7 + 7,11,6,yes
-Large narrow rug,7,compound,3,large + narrow + rug,7 + 7 + 1,14,6,yes
-Large palm tree,7,compound,3,large + palm + tree,7 + 1 + 6,13,5,yes
-Large round rug,7,compound,3,large + round + rug,7 + 6 + 1,13,5,yes
-Large wooden door,7,compound,3,large + wooden + door,7 + 6 + 7,15,6,yes
-Laser sensor,7,compound,2,laser + sensor,7 + 7,11,6,yes
-Letter,7,single,1,,,6,6,yes
-Life Orb,7,compound,2,life + orb,5 + 7,7,4,yes
-Lift platform,7,compound,2,lift + platform,1 + 7,12,8,yes
-Lum Berry,7,compound,2,lum + berry,1 + 7,8,5,yes
-Lumber,7,single,1,,,6,6,yes
-Marble,7,single,1,,,6,6,yes
-Meadow poster,7,compound,2,meadow + poster,6 + 7,12,6,yes
-Mirror ball,7,compound,2,mirror + ball,7 + 2,10,6,yes
-Modern door,7,compound,2,modern + door,7 + 7,10,6,yes
-Modern sink,7,compound,2,modern + sink,7 + 1,10,6,yes
-Modern wall,7,compound,2,modern + wall,7 + 2,10,6,yes
-Mountain flowers,7,compound,2,mountain + flowers,6 + 7,15,8,yes
-Never-Melt Ice,7,compound,3,never + melt + ice,7 + 1 + 5,12,5,yes
-Ocean poster,7,compound,2,ocean + poster,6 + 7,11,6,yes
-Oil lantern,7,compound,2,oil + lantern,6 + 7,10,7,yes
-Orange hut kit,7,compound,3,orange + hut + kit,7 + 1 + 1,12,6,yes
-Orange meteor lamp,7,compound,3,orange + meteor + lamp,7 + 7 + 1,16,6,yes
-Paper,7,single,1,,,5,5,yes
-Paper party cups,7,compound,3,paper + party + cups,7 + 7 + 1,14,5,yes
-Papers,7,single,1,,,6,6,yes
-Party platter,7,compound,2,party + platter,7 + 7,12,7,yes
-Pecha Berry,7,compound,2,pecha + berry,4 + 7,10,5,yes
-Planter,7,single,1,,,7,7,yes
-Plaster wall,7,compound,2,plaster + wall,7 + 2,11,7,yes
-Poison Barb,7,compound,2,poison + barb,6 + 7,10,6,yes
-Pop art bed,7,compound,3,pop + art + bed,1 + 7 + 1,9,3,yes
-Pop art chair,7,compound,3,pop + art + chair,1 + 7 + 4,11,5,yes
-Pop art lamp,7,compound,3,pop + art + lamp,1 + 7 + 1,10,4,yes
-Printer,7,single,1,,,7,7,yes
-Push cart,7,compound,2,push + cart,4 + 7,8,4,yes
-Rawst Berry,7,compound,2,rawst + berry,6 + 7,10,5,yes
-Red crystal cluster,7,compound,3,red + crystal + cluster,1 + 3 + 7,17,7,yes
-Red meteor lamp,7,compound,3,red + meteor + lamp,1 + 7 + 1,13,6,yes
-Resort bed,7,compound,2,resort + bed,7 + 1,9,6,yes
-Resort chair,7,compound,2,resort + chair,7 + 4,11,6,yes
-Resort light,7,compound,2,resort + light,7 + 6,11,6,yes
-Resort stool,7,compound,2,resort + stool,7 + 6,11,6,yes
-Ring Target,7,compound,2,ring + target,1 + 7,10,6,yes
-Roof support,7,compound,2,roof + support,6 + 7,11,7,yes
-Rose Tower,7,compound,2,rose + tower,5 + 7,9,5,yes
-Silk Scarf,7,compound,2,silk + scarf,1 + 7,9,5,yes
-Silver Powder,7,compound,2,silver + powder,7 + 7,12,6,yes
-Small garbage can,7,compound,3,small + garbage + can,3 + 7 + 1,15,7,yes
-Small narrow rug,7,compound,3,small + narrow + rug,3 + 7 + 1,14,6,yes
-Smelting furnace,7,compound,2,smelting + furnace,3 + 7,15,8,yes
-Speaker,7,single,1,,,7,7,yes
-Sprinkler,7,single,1,,,9,9,yes
-Star Piece,7,compound,2,star + piece,7 + 5,9,5,yes
-Star print,7,compound,2,star + print,7 + 3,9,5,yes
-Sticky Barb,7,compound,2,sticky + barb,3 + 7,10,6,yes
-Storage box,7,compound,2,storage + box,7 + 1,10,7,yes
-Sturdy stick,7,compound,2,sturdy + stick,7 + 3,11,6,yes
-Stylish door,7,compound,2,stylish + door,4 + 7,11,7,yes
-Stylish iron wall,7,compound,3,stylish + iron + wall,4 + 7 + 2,15,7,yes
-Swirl print,7,compound,2,swirl + print,7 + 3,10,5,yes
-Tartan print,7,compound,2,tartan + print,7 + 3,11,6,yes
-Technology poster,7,compound,2,technology + poster,4 + 7,16,10,yes
-Verdant shoots,7,compound,2,verdant + shoots,7 + 4,13,7,yes
-Wall mirror,7,compound,2,wall + mirror,2 + 7,10,6,yes
-Wall storage box,7,compound,3,wall + storage + box,2 + 7 + 1,14,7,yes
-Warning wall,7,compound,2,warning + wall,7 + 2,11,7,yes
-Water pillar quarter,7,compound,3,water + pillar + quarter,7 + 7 + 7,18,7,yes
-Wild Area,7,compound,2,wild + area,1 + 7,8,4,yes
-Winter print,7,compound,2,winter + print,7 + 3,11,6,yes
-Wooden ladder,7,compound,2,wooden + ladder,6 + 7,12,6,yes
-Worn lumber,7,compound,2,worn + lumber,7 + 7,10,6,yes
-Worn wooden crate,7,compound,3,worn + wooden + crate,7 + 6 + 5,15,6,yes
-Yellow meteor lamp,7,compound,3,yellow + meteor + lamp,6 + 7 + 1,16,6,yes
-Afternoon tea set,8,compound,3,afternoon + tea + set,8 + 6 + 1,15,9,yes
-Antique bed,8,compound,2,antique + bed,8 + 1,10,7,yes
-Antique chair,8,compound,2,antique + chair,8 + 4,12,7,yes
-Antique chandelier,8,compound,2,antique + chandelier,8 + 4,17,10,yes
-Antique chest,8,compound,2,antique + chest,8 + 4,12,7,yes
-Antique clock,8,compound,2,antique + clock,8 + 3,12,7,yes
-Antique closet,8,compound,2,antique + closet,8 + 3,13,7,yes
-Antique dresser,8,compound,2,antique + dresser,8 + 7,14,7,yes
-Bathtime set,8,compound,2,bathtime + set,8 + 1,11,8,yes
-Bathtub,8,single,1,,,7,7,yes
-Beach parasol,8,compound,2,beach + parasol,4 + 8,12,7,yes
-Berry hanging lamp,8,compound,3,berry + hanging + lamp,7 + 8 + 1,16,7,yes
-Black spotted cliff rock,8,compound,4,black + spotted + cliff + rock,3 + 8 + 3 + 1,21,7,yes
-Boat railing,8,compound,2,boat + railing,6 + 8,11,7,yes
-Bonfire,8,single,1,,,7,7,yes
-Bookcase,8,single,1,,,8,8,yes
-Bouncy blue bathtub,8,compound,3,bouncy + blue + bathtub,6 + 6 + 8,17,7,yes
-Brick flooring,8,compound,2,brick + flooring,3 + 8,13,8,yes
-Campfire,8,single,1,,,8,8,yes
-Camping cooking pot,8,compound,3,camping + cooking + pot,8 + 8 + 1,17,7,yes
-Castform weather charm,8,compound,3,castform + weather + charm,8 + 4 + 4,20,8,yes
-Charging station kit,8,compound,3,charging + station + kit,4 + 8 + 1,18,8,yes
-Chic streetlight,8,compound,2,chic + streetlight,4 + 8,15,11,yes
-Cleaning supplies,8,compound,2,cleaning + supplies,8 + 6,16,8,yes
-Community box,8,compound,2,community + box,8 + 1,12,9,yes
-Construction supplies,8,compound,2,construction + supplies,8 + 6,20,12,yes
-Cooking pot,8,compound,2,cooking + pot,8 + 1,10,7,yes
-Cooking stove,8,compound,2,cooking + stove,8 + 5,12,7,yes
-Corkboard,8,single,1,,,9,9,yes
-Cracked sandstone,8,compound,2,cracked + sandstone,3 + 8,16,9,yes
-Crisscross wooden flooring,8,compound,3,crisscross + wooden + flooring,3 + 6 + 8,24,10,yes
-Cyber flooring,8,compound,2,cyber + flooring,7 + 8,13,8,yes
-Damaged asphalt road,8,compound,3,damaged + asphalt + road,8 + 4 + 6,18,7,yes
-Damaged wooden flooring,8,compound,3,damaged + wooden + flooring,8 + 6 + 8,21,8,yes
-Dark marble flooring,8,compound,3,dark + marble + flooring,7 + 7 + 8,18,8,yes
-Destiny Knot,8,compound,2,destiny + knot,8 + 1,11,7,yes
-Double streetlight,8,compound,2,double + streetlight,6 + 8,17,11,yes
-Dowsing Machine,8,compound,2,dowsing + machine,8 + 4,14,7,yes
-Driftwood,8,single,1,,,9,9,yes
-Dry seashore grass,8,compound,3,dry + seashore + grass,3 + 8 + 3,16,8,yes
-Duckweed,8,single,1,,,8,8,yes
-Exhibition stand,8,compound,2,exhibition + stand,8 + 3,15,10,yes
-Fairy Feather,8,compound,2,fairy + feather,7 + 8,12,7,yes
-Firepit,8,single,1,,,7,7,yes
-Fishing rod,8,compound,2,fishing + rod,8 + 1,10,7,yes
-Flower backpack,8,compound,2,flower + backpack,7 + 8,14,8,yes
-Flowering duckweed,8,compound,2,flowering + duckweed,8 + 8,17,9,yes
-Fluffy flooring,8,compound,2,fluffy + flooring,3 + 8,14,8,yes
-Folding chair,8,compound,2,folding + chair,8 + 4,12,7,yes
-Glowing mushrooms,8,compound,2,glowing + mushrooms,8 + 4,16,9,yes
-Glowing stone,8,compound,2,glowing + stone,8 + 5,12,7,yes
-Grass flooring,8,compound,2,grass + flooring,3 + 8,13,8,yes
-Grate flooring,8,compound,2,grate + flooring,5 + 8,13,8,yes
-Gravestone,8,single,1,,,10,10,yes
-Gray circle flooring,8,compound,3,gray + circle + flooring,6 + 7 + 8,18,8,yes
-Grubby newspaper,8,compound,2,grubby + newspaper,3 + 8,15,9,yes
-Grubby notepad,8,compound,2,grubby + notepad,3 + 8,13,7,yes
-Handcar,8,single,1,,,7,7,yes
-Handrail,8,single,1,,,8,8,yes
-Hanging banner,8,compound,2,hanging + banner,8 + 7,13,7,yes
-Hanging scroll,8,compound,2,hanging + scroll,8 + 3,13,7,yes
-Harbor streetlight,8,compound,2,harbor + streetlight,7 + 8,17,11,yes
-Hardwood flooring,8,compound,2,hardwood + flooring,8 + 8,16,8,yes
-Iron-plate flooring,8,compound,3,iron + plate + flooring,7 + 5 + 8,17,8,yes
-Leftovers,8,single,1,,,9,9,yes
-Light marble flooring,8,compound,3,light + marble + flooring,6 + 7 + 8,19,8,yes
-Limestone,8,single,1,,,9,9,yes
-Mailbox,8,single,1,,,7,7,yes
-Microscope,8,single,1,,,10,10,yes
-Modern carpeting,8,compound,2,modern + carpeting,7 + 8,15,9,yes
-Moonlight poster,8,compound,2,moonlight + poster,8 + 7,15,9,yes
-Mushroom streetlight,8,compound,2,mushroom + streetlight,4 + 8,19,11,yes
-Newspaper,8,single,1,,,9,9,yes
-Notepad,8,single,1,,,7,7,yes
-Offering dish,8,compound,2,offering + dish,8 + 4,12,8,yes
-Office chair,8,compound,2,office + chair,8 + 4,11,6,yes
-Office desk,8,compound,2,office + desk,8 + 1,10,6,yes
-Office locker,8,compound,2,office + locker,8 + 7,12,6,yes
-Office shelf,8,compound,2,office + shelf,8 + 4,11,6,yes
-Oil painting poster,8,compound,3,oil + painting + poster,6 + 8 + 7,17,8,yes
-Painted wall,8,compound,2,painted + wall,8 + 2,11,7,yes
-Party cooking pot,8,compound,3,party + cooking + pot,7 + 8 + 1,15,7,yes
-Party popper,8,compound,2,party + popper,7 + 8,11,6,yes
-Passionate poster,8,compound,2,passionate + poster,8 + 7,16,10,yes
-Photo cutout board,8,compound,3,photo + cutout + board,4 + 8 + 7,16,6,yes
-Pinwheels,8,single,1,,,9,9,yes
-Punching bag,8,compound,2,punching + bag,8 + 1,11,8,yes
-Punching game,8,compound,2,punching + game,8 + 5,12,8,yes
-Railway track,8,compound,2,railway + track,8 + 3,12,7,yes
-Rainbow Feather,8,compound,2,rainbow + feather,8 + 8,14,7,yes
-Red spotted cliff rock,8,compound,4,red + spotted + cliff + rock,1 + 8 + 3 + 1,19,7,yes
-Reddish-brown cave rock,8,compound,4,reddish + brown + cave + rock,8 + 6 + 5 + 1,20,7,yes
-Relaxing park kit,8,compound,3,relaxing + park + kit,8 + 7 + 1,15,8,yes
-Room Service,8,compound,2,room + service,6 + 8,11,7,yes
-Sandbags,8,single,1,,,8,8,yes
-Sandbox,8,single,1,,,7,7,yes
-Sandstone,8,single,1,,,9,9,yes
-Seashell,8,single,1,,,8,8,yes
-Seashell soil,8,compound,2,seashell + soil,8 + 6,12,8,yes
-Seashore flowers,8,compound,2,seashore + flowers,8 + 7,15,8,yes
-Seashore grass,8,compound,2,seashore + grass,8 + 3,13,8,yes
-Seaweed,8,single,1,,,7,7,yes
-Seaweed soup,8,compound,2,seaweed + soup,8 + 6,11,7,yes
-Shop flooring,8,compound,2,shop + flooring,4 + 8,12,8,yes
-Sideways log,8,compound,2,sideways + log,8 + 1,11,8,yes
-Signpost,8,single,1,,,8,8,yes
-Silver Feather,8,compound,2,silver + feather,7 + 8,13,7,yes
-Skyland cliff rock,8,compound,3,skyland + cliff + rock,8 + 3 + 1,16,7,yes
-Skyland flowers,8,compound,2,skyland + flowers,8 + 7,14,7,yes
-Skyland sand,8,compound,2,skyland + sand,8 + 1,11,7,yes
-Skyland sandstone,8,compound,2,skyland + sandstone,8 + 8,16,9,yes
-Skyland spotted cliff rock,8,compound,4,skyland + spotted + cliff + rock,8 + 8 + 3 + 1,23,7,yes
-Skylight,8,single,1,,,8,8,yes
-Small office kit,8,compound,3,small + office + kit,3 + 8 + 1,14,6,yes
-Soft carpeting,8,compound,2,soft + carpeting,1 + 8,13,9,yes
-Spaceship,8,single,1,,,9,9,yes
-Spacesuit,8,single,1,,,9,9,yes
-Spotlight,8,single,1,,,9,9,yes
-Spotted cliff rock,8,compound,3,spotted + cliff + rock,8 + 3 + 1,16,7,yes
-Standing mic,8,compound,2,standing + mic,8 + 1,11,8,yes
-Stardust,8,single,1,,,8,8,yes
-Stepping stones,8,compound,2,stepping + stones,8 + 5,14,8,yes
-Stone fireplace,8,compound,2,stone + fireplace,5 + 8,14,9,yes
-Stone flooring,8,compound,2,stone + flooring,5 + 8,13,8,yes
-Stylish cooking pot,8,compound,3,stylish + cooking + pot,4 + 8 + 1,17,7,yes
-Stylish stone flooring,8,compound,3,stylish + stone + flooring,4 + 5 + 8,20,8,yes
-Super Training,8,compound,2,super + training,7 + 8,13,8,yes
-Surface light,8,compound,2,surface + light,8 + 6,12,7,yes
-Tabletop mic,8,compound,2,tabletop + mic,8 + 1,11,8,yes
-Town streetlight,8,compound,2,town + streetlight,6 + 8,15,11,yes
-Townscape poster,8,compound,2,townscape + poster,8 + 7,15,9,yes
-Underground hatch,8,compound,2,underground + hatch,8 + 4,16,11,yes
-Walkway,8,single,1,,,7,7,yes
-Washing machine,8,compound,2,washing + machine,8 + 4,14,7,yes
-Wastepaper,8,single,1,,,10,10,yes
-Watercolor poster,8,compound,2,watercolor + poster,8 + 7,16,10,yes
-Waterproof seat,8,compound,2,waterproof + seat,8 + 6,14,10,yes
-Waterwheel kit,8,compound,2,waterwheel + kit,8 + 1,13,10,yes
-Wildflower,8,single,1,,,10,10,yes
-Windmill kit,8,compound,2,windmill + kit,8 + 1,11,8,yes
-Windmill poster,8,compound,2,windmill + poster,8 + 7,14,8,yes
-Wooden birdhouse,8,compound,2,wooden + birdhouse,6 + 8,15,9,yes
-Wooden flooring,8,compound,2,wooden + flooring,6 + 8,14,8,yes
-Wooden handrail,8,compound,2,wooden + handrail,6 + 8,14,8,yes
-Workbench,8,single,1,,,9,9,yes
-Abandoned Power Plant kit,9,compound,4,abandoned + power + plant + kit,9 + 7 + 3 + 1,22,9,yes
-Ability Shield,9,compound,2,ability + shield,9 + 4,13,7,yes
-Acrylic poster,9,compound,2,acrylic + poster,9 + 7,13,7,yes
-Adorable hedge,9,compound,2,adorable + hedge,9 + 9,13,8,yes
-Adrenaline Orb,9,compound,2,adrenaline + orb,9 + 7,13,10,yes
-Aether Paradise,9,compound,2,aether + paradise,4 + 9,14,8,yes
-Aged-stone wall,9,compound,3,aged + stone + wall,9 + 5 + 2,13,5,yes
-Air conditioner,9,compound,2,air + conditioner,7 + 9,14,11,yes
-Alpine grass,9,compound,2,alpine + grass,9 + 3,11,6,yes
-Altar of Flame kit,9,compound,4,altar + of + flame + kit,7 + 9 + 5 + 1,15,5,yes
-Antique sofa,9,compound,2,antique + sofa,8 + 9,11,7,yes
-Antique table,9,compound,2,antique + table,8 + 9,12,7,yes
-Arcanine doll,9,compound,2,arcanine + doll,9 + 2,12,8,yes
-Arched tiling,9,compound,2,arched + tiling,4 + 9,12,6,yes
-Argyle print,9,compound,2,argyle + print,9 + 3,11,6,yes
-Armor Fossil,9,compound,2,armor + fossil,7 + 9,11,6,yes
-Auspicious Armor,9,compound,2,auspicious + armor,9 + 7,15,10,yes
-Automatic doors,9,compound,2,automatic + doors,9 + 7,14,9,yes
-Avalugg table,9,compound,2,avalugg + table,9 + 9,12,7,yes
-Barren ordinary soil,9,compound,3,barren + ordinary + soil,7 + 9 + 6,18,8,yes
-Beautiful flower,9,compound,2,beautiful + flower,9 + 7,15,9,yes
-Berry basket,9,compound,2,berry + basket,7 + 9,11,6,yes
-Berry table,9,compound,2,berry + table,7 + 9,10,5,yes
-Berry table lamp,9,compound,3,berry + table + lamp,7 + 9 + 1,14,5,yes
-Berry wall decoration,9,compound,3,berry + wall + decoration,7 + 2 + 9,19,10,yes
-Big Nugget,9,compound,2,big + nugget,1 + 9,9,6,yes
-Bitter hamburger steak,9,compound,3,bitter + hamburger + steak,7 + 9 + 6,20,9,yes
-Blank canvas,9,compound,2,blank + canvas,3 + 9,11,6,yes
-Boo-in-the-box,9,compound,4,boo + in + the + box,6 + 9 + 4 + 1,11,3,yes
-Book pile,9,compound,2,book + pile,6 + 9,8,4,yes
-Bouldery Badge,9,compound,2,bouldery + badge,9 + 9,13,8,yes
-Boutique,9,single,1,,,8,8,yes
-Box sofa,9,compound,2,box + sofa,1 + 9,7,4,yes
-Bread oven,9,compound,2,bread + oven,6 + 9,9,5,yes
-Brick hipped roof,9,compound,3,brick + hipped + roof,3 + 9 + 6,15,6,yes
-Brick roof decoration,9,compound,3,brick + roof + decoration,3 + 6 + 9,19,10,yes
-Bubble print,9,compound,2,bubble + print,9 + 3,11,6,yes
-Bumpy beach sand,9,compound,3,bumpy + beach + sand,9 + 4 + 1,14,5,yes
-CD,9,single,1,,,2,2,yes
-CD player,9,compound,2,cd + player,9 + 7,8,6,yes
-CD rack,9,compound,2,cd + rack,9 + 1,6,4,yes
-Cannon,9,single,1,,,6,6,yes
-Cardboard boxes,9,compound,2,cardboard + boxes,8 + 9,14,9,yes
-Cascade-like Badge,9,compound,3,cascade + like + badge,9 + 5 + 9,16,7,yes
-Cash register,9,compound,2,cash + register,4 + 9,12,8,yes
-Ceiling fan,9,compound,2,ceiling + fan,9 + 1,10,7,yes
-Cerulean City,9,compound,2,cerulean + city,9 + 9,12,8,yes
-Chic sofa,9,compound,2,chic + sofa,4 + 9,8,4,yes
-Chic table,9,compound,2,chic + table,4 + 9,9,5,yes
-City cottage kit,9,compound,3,city + cottage + kit,9 + 9 + 1,14,7,yes
-City den kit,9,compound,3,city + den + kit,9 + 1 + 1,10,4,yes
-City house kit,9,compound,3,city + house + kit,9 + 5 + 1,12,5,yes
-City hut kit,9,compound,3,city + hut + kit,9 + 1 + 1,10,4,yes
-Clear Amulet,9,compound,2,clear + amulet,7 + 9,11,6,yes
-Clefairy doll,9,compound,2,clefairy + doll,9 + 2,12,8,yes
-Cloud cannon,9,compound,2,cloud + cannon,6 + 9,11,6,yes
-Cobblestone wall,9,compound,2,cobblestone + wall,9 + 2,15,11,yes
-Common candy,9,compound,2,common + candy,8 + 9,11,6,yes
-Computer,9,single,1,,,8,8,yes
-Concrete,9,single,1,,,8,8,yes
-Concrete mixer,9,compound,2,concrete + mixer,9 + 7,13,8,yes
-Concrete pipe,9,compound,2,concrete + pipe,9 + 5,12,8,yes
-Concrete slab,9,compound,2,concrete + slab,9 + 3,12,8,yes
-Concrete steps,9,compound,2,concrete + steps,9 + 3,13,8,yes
-Concrete wall,9,compound,2,concrete + wall,9 + 2,12,8,yes
-Contest Spectacular,9,compound,2,contest + spectacular,8 + 9,18,11,yes
-Control unit,9,compound,2,control + unit,9 + 9,11,7,yes
-Cool electric guitar,9,compound,3,cool + electric + guitar,6 + 9 + 7,18,8,yes
-Cooled molten rock,9,compound,3,cooled + molten + rock,6 + 9 + 1,16,6,yes
-Copper ingot,9,compound,2,copper + ingot,7 + 9,11,6,yes
-Corrugated metal,9,compound,2,corrugated + metal,9 + 9,15,10,yes
-Cotton Spores,9,compound,2,cotton + spores,9 + 3,12,6,yes
-Crouton salad,9,compound,2,crouton + salad,6 + 9,12,7,yes
-Crushed-berry salad,9,compound,3,crushed + berry + salad,4 + 7 + 9,17,7,yes
-Curry and rice,9,compound,3,curry + and + rice,7 + 9 + 5,12,5,yes
-Cute sofa,9,compound,2,cute + sofa,5 + 9,8,4,yes
-Cute table,9,compound,2,cute + table,5 + 9,9,5,yes
-Cutting board,9,compound,2,cutting + board,9 + 7,12,7,yes
-Cyan paint,9,compound,2,cyan + paint,9 + 6,9,5,yes
-Damaged arched tiling,9,compound,3,damaged + arched + tiling,8 + 4 + 9,19,7,yes
-Damaged mosaic tiling,9,compound,3,damaged + mosaic + tiling,8 + 6 + 9,19,7,yes
-Damaged square tiling,9,compound,3,damaged + square + tiling,8 + 5 + 9,19,7,yes
-Damp hedge,9,compound,2,damp + hedge,1 + 9,9,5,yes
-Dance poster,9,compound,2,dance + poster,9 + 7,11,6,yes
-Dandy flowers,9,compound,2,dandy + flowers,9 + 7,12,7,yes
-Decorative bookshelf,9,compound,2,decorative + bookshelf,9 + 8,19,10,yes
-Demolition kit,9,compound,2,demolition + kit,9 + 1,13,10,yes
-Dense vines,9,compound,2,dense + vines,9 + 5,10,5,yes
-Diagonal wooden flooring,9,compound,3,diagonal + wooden + flooring,9 + 6 + 8,22,8,yes
-Dining cabinet,9,compound,2,dining + cabinet,9 + 9,13,7,yes
-Diploma,9,single,1,,,7,7,yes
-Ditto doll,9,compound,2,ditto + doll,9 + 2,9,5,yes
-Ditto flag,9,compound,2,ditto + flag,9 + 3,9,5,yes
-Ditto rug,9,compound,2,ditto + rug,9 + 1,8,5,yes
-Dormered brick roof,9,compound,3,dormered + brick + roof,9 + 3 + 6,17,8,yes
-Dragonite doll,9,compound,2,dragonite + doll,9 + 2,13,9,yes
-Driftveil City,9,compound,2,driftveil + city,3 + 9,13,9,yes
-Dry alpine grass,9,compound,3,dry + alpine + grass,3 + 9 + 3,14,6,yes
-Earth Badge,9,compound,2,earth + badge,4 + 9,10,5,yes
-Ecruteak City,9,compound,2,ecruteak + city,9 + 9,12,8,yes
-Eerie candle,9,compound,2,eerie + candle,7 + 9,11,6,yes
-Electrifying soup,9,compound,2,electrifying + soup,9 + 6,16,12,yes
-Elegant flower,9,compound,2,elegant + flower,9 + 7,13,7,yes
-Elevator platform,9,compound,2,elevator + platform,9 + 7,16,8,yes
-Excavation tools,9,compound,2,excavation + tools,9 + 6,15,10,yes
-Extravagant carpeting,9,compound,2,extravagant + carpeting,9 + 8,20,11,yes
-Extravagant flowers,9,compound,2,extravagant + flowers,9 + 7,18,11,yes
-Fancy chair,9,compound,2,fancy + chair,9 + 4,10,5,yes
-Fancy pen,9,compound,2,fancy + pen,9 + 1,8,5,yes
-Fiery Magby statue,9,compound,3,fiery + magby + statue,7 + 9 + 6,16,6,yes
-Fire hydrant,9,compound,2,fire + hydrant,5 + 9,11,7,yes
-Flat tiled roof,9,compound,3,flat + tiled + roof,3 + 9 + 6,13,5,yes
-Flavorful soup,9,compound,2,flavorful + soup,9 + 6,13,9,yes
-Flower table,9,compound,2,flower + table,7 + 9,11,6,yes
-Flowery table setting,9,compound,3,flowery + table + setting,9 + 9 + 9,19,7,yes
-Fluorescent light,9,compound,2,fluorescent + light,9 + 6,16,11,yes
-Fortree City,9,compound,2,fortree + city,8 + 9,11,7,yes
-Foundation,9,single,1,,,10,10,yes
-Fried potatoes,9,compound,2,fried + potatoes,6 + 9,13,8,yes
-Fuchsia City,9,compound,2,fuchsia + city,4 + 9,11,7,yes
-Funky diffuser,9,compound,2,funky + diffuser,9 + 8,13,8,yes
-Game Boy system,9,compound,3,game + boy + system,5 + 6 + 9,13,6,yes
-Gaming PC,9,compound,2,gaming + pc,9 + 9,8,6,yes
-Gaming bed,9,compound,2,gaming + bed,9 + 1,9,6,yes
-Gaming chair,9,compound,2,gaming + chair,9 + 4,11,6,yes
-Gaming fridge,9,compound,2,gaming + fridge,9 + 3,12,6,yes
-Gaming light,9,compound,2,gaming + light,9 + 6,11,6,yes
-Garden ornament,9,compound,2,garden + ornament,7 + 9,14,8,yes
-Garden table,9,compound,2,garden + table,7 + 9,11,6,yes
-Gingham print,9,compound,2,gingham + print,9 + 3,12,7,yes
-Gold Bottle Cap,9,compound,3,gold + bottle + cap,1 + 9 + 1,13,6,yes
-Gold deposit,9,compound,2,gold + deposit,1 + 9,11,7,yes
-Gold ingot,9,compound,2,gold + ingot,1 + 9,9,5,yes
-Golden poster,9,compound,2,golden + poster,9 + 7,12,6,yes
-Grate fencing,9,compound,2,grate + fencing,5 + 9,12,7,yes
-Gray cottage kit,9,compound,3,gray + cottage + kit,6 + 9 + 1,14,7,yes
-Grubby tablet,9,compound,2,grubby + tablet,3 + 9,12,6,yes
-Gym emblem statue,9,compound,3,gym + emblem + statue,9 + 9 + 6,15,6,yes
-Harbor pole,9,compound,2,harbor + pole,7 + 9,10,6,yes
-Hay pile,9,compound,2,hay + pile,6 + 9,7,4,yes
-Healthy hedge,9,compound,2,healthy + hedge,4 + 9,12,7,yes
-Hexagonal flooring,9,compound,2,hexagonal + flooring,9 + 8,17,9,yes
-Hoppip water bottle,9,compound,3,hoppip + water + bottle,9 + 7 + 9,17,6,yes
-Humidifier,9,single,1,,,10,10,yes
-Icicles,9,single,1,,,7,7,yes
-Icy Rock,9,compound,2,icy + rock,9 + 1,7,4,yes
-Indigo meteor lamp,9,compound,3,indigo + meteor + lamp,9 + 7 + 1,16,6,yes
-Industrial bed,9,compound,2,industrial + bed,9 + 1,13,10,yes
-Industrial bench,9,compound,2,industrial + bench,9 + 4,15,10,yes
-Industrial chair,9,compound,2,industrial + chair,9 + 4,15,10,yes
-Industrial desk,9,compound,2,industrial + desk,9 + 1,14,10,yes
-Inflatable Sudowoodo,9,compound,2,inflatable + sudowoodo,9 + 9,19,10,yes
-Inflatable boat,9,compound,2,inflatable + boat,9 + 6,14,10,yes
-Information board,9,compound,2,information + board,9 + 7,16,11,yes
-Iron column,9,compound,2,iron + column,7 + 9,10,6,yes
-Iron deposit,9,compound,2,iron + deposit,7 + 9,11,7,yes
-Iron enclosure,9,compound,2,iron + enclosure,7 + 9,13,9,yes
-Iron ingot,9,compound,2,iron + ingot,7 + 9,9,5,yes
-Iron table,9,compound,2,iron + table,7 + 9,9,5,yes
-Iron tiling,9,compound,2,iron + tiling,7 + 9,10,6,yes
-Jaw Fossil,9,compound,2,jaw + fossil,6 + 9,9,6,yes
-Jubilife Village,9,compound,2,jubilife + village,9 + 9,15,8,yes
-Jumbled cords,9,compound,2,jumbled + cords,9 + 7,12,7,yes
-Kitchen table,9,compound,2,kitchen + table,8 + 9,12,7,yes
-Knitting supplies,9,compound,2,knitting + supplies,9 + 6,16,8,yes
-Lagging Tail,9,compound,2,lagging + tail,9 + 6,11,7,yes
-Laptop,9,single,1,,,6,6,yes
-Large lost relic,9,compound,3,large + lost + relic,7 + 1 + 9,14,5,yes
-Large ventilation fan,9,compound,3,large + ventilation + fan,7 + 9 + 1,19,11,yes
-Lava rock,9,compound,2,lava + rock,9 + 1,8,4,yes
-Leaf cottage kit,9,compound,3,leaf + cottage + kit,6 + 9 + 1,14,7,yes
-Leppa Berry,9,compound,2,leppa + berry,9 + 7,10,5,yes
-Leppa bread,9,compound,2,leppa + bread,9 + 6,10,5,yes
-Leppa salad,9,compound,2,leppa + salad,9 + 9,10,5,yes
-Leppa tree,9,compound,2,leppa + tree,9 + 6,9,5,yes
-Leppa tree stump,9,compound,3,leppa + tree + stump,9 + 6 + 3,14,5,yes
-Log cabin kit,9,compound,3,log + cabin + kit,1 + 9 + 1,11,5,yes
-Log table,9,compound,2,log + table,1 + 9,8,5,yes
-Lucky Egg,9,compound,2,lucky + egg,9 + 9,8,5,yes
-Luxury bed,9,compound,2,luxury + bed,9 + 1,9,6,yes
-Luxury chair,9,compound,2,luxury + chair,9 + 4,11,6,yes
-Luxury dresser,9,compound,2,luxury + dresser,9 + 7,13,7,yes
-Luxury lamp,9,compound,2,luxury + lamp,9 + 1,10,6,yes
-Luxury sofa,9,compound,2,luxury + sofa,9 + 9,10,6,yes
-Luxury table,9,compound,2,luxury + table,9 + 9,11,6,yes
-Magazine rack,9,compound,2,magazine + rack,9 + 1,12,8,yes
-Magikarp decoration,9,compound,2,magikarp + decoration,9 + 9,18,10,yes
-Malicious Armor,9,compound,2,malicious + armor,9 + 7,14,9,yes
-Marshy Badge,9,compound,2,marshy + badge,4 + 9,11,6,yes
-Menu board,9,compound,2,menu + board,9 + 7,9,5,yes
-Metal Coat,9,compound,2,metal + coat,9 + 6,9,5,yes
-Metal Powder,9,compound,2,metal + powder,9 + 7,11,6,yes
-Metal chain,9,compound,2,metal + chain,9 + 4,10,5,yes
-Metal drum,9,compound,2,metal + drum,9 + 3,9,5,yes
-Metal fencing,9,compound,2,metal + fencing,9 + 9,12,7,yes
-Metallic smelting furnace,9,compound,3,metallic + smelting + furnace,9 + 3 + 7,23,8,yes
-Microwave oven,9,compound,2,microwave + oven,8 + 9,13,9,yes
-Mini bookcase,9,compound,2,mini + bookcase,9 + 8,12,8,yes
-Mini floodgate,9,compound,2,mini + floodgate,9 + 8,13,9,yes
-Mini generator,9,compound,2,mini + generator,9 + 9,13,9,yes
-Mini plain bed,9,compound,3,mini + plain + bed,9 + 6 + 1,12,5,yes
-Miracle Seed,9,compound,2,miracle + seed,9 + 6,11,7,yes
-Model planet,9,compound,2,model + planet,9 + 3,11,6,yes
-Model space shuttle,9,compound,3,model + space + shuttle,9 + 5 + 4,17,7,yes
-Molten rock,9,compound,2,molten + rock,9 + 1,10,6,yes
-Moonlight dance statue kit,9,compound,4,moonlight + dance + statue + kit,8 + 9 + 6 + 1,23,9,yes
-Mosaic tiling,9,compound,2,mosaic + tiling,6 + 9,12,6,yes
-Mossy Stone,9,compound,2,mossy + stone,9 + 5,10,5,yes
-Mossy boulder,9,compound,2,mossy + boulder,9 + 7,12,7,yes
-Mossy soil,9,compound,2,mossy + soil,9 + 6,9,5,yes
-Mushroom hamburger steak,9,compound,3,mushroom + hamburger + steak,4 + 9 + 6,22,9,yes
-Mysterious Goggles,9,compound,2,mysterious + goggles,9 + 9,17,10,yes
-Mysterious pedestal,9,compound,2,mysterious + pedestal,9 + 9,18,10,yes
-Mysterious slate,9,compound,2,mysterious + slate,9 + 5,15,10,yes
-Mysterious statue,9,compound,2,mysterious + statue,9 + 6,16,10,yes
-Mysterious stone,9,compound,2,mysterious + stone,9 + 5,15,10,yes
-Mystic Water,9,compound,2,mystic + water,9 + 7,11,6,yes
-Naptime bed,9,compound,2,naptime + bed,9 + 1,10,7,yes
-Neo-Dowsing Machine,9,compound,3,neo + dowsing + machine,9 + 8 + 4,17,7,yes
-Neon flooring,9,compound,2,neon + flooring,9 + 8,12,8,yes
-Ninja poster,9,compound,2,ninja + poster,9 + 7,11,6,yes
-Nonburnable garbage,9,compound,2,nonburnable + garbage,9 + 7,18,11,yes
-Nugget,9,single,1,,,6,6,yes
-Oblong rug,9,compound,2,oblong + rug,9 + 1,9,6,yes
-Office cabinet,9,compound,2,office + cabinet,8 + 9,13,7,yes
-Office table,9,compound,2,office + table,8 + 9,11,6,yes
-Open book,9,compound,2,open + book,9 + 6,8,4,yes
-Orange cottage kit,9,compound,3,orange + cottage + kit,7 + 9 + 1,16,7,yes
-Ordinary sand,9,compound,2,ordinary + sand,9 + 1,12,8,yes
-Ordinary soil,9,compound,2,ordinary + soil,9 + 6,12,8,yes
-Pallet Town,9,compound,2,pallet + town,9 + 6,10,6,yes
-Party bunting,9,compound,2,party + bunting,7 + 9,12,7,yes
-Patterned aged-stone wall,9,compound,4,patterned + aged + stone + wall,9 + 9 + 5 + 2,22,9,yes
-Pencil holder,9,compound,2,pencil + holder,9 + 7,12,6,yes
-Pewter City,9,compound,2,pewter + city,7 + 9,10,6,yes
-Picnic basket,9,compound,2,picnic + basket,9 + 9,12,6,yes
-Picnic blanket,9,compound,2,picnic + blanket,9 + 3,13,7,yes
-Pikachu sofa,9,compound,2,pikachu + sofa,4 + 9,11,7,yes
-Pink cottage kit,9,compound,3,pink + cottage + kit,1 + 9 + 1,14,7,yes
-Pizza,9,single,1,,,5,5,yes
-Plain sofa,9,compound,2,plain + sofa,6 + 9,9,5,yes
-Plain table,9,compound,2,plain + table,6 + 9,10,5,yes
-Polygonal shelf,9,compound,2,polygonal + shelf,9 + 4,14,9,yes
-Pop art sofa,9,compound,3,pop + art + sofa,1 + 7 + 9,10,4,yes
-Pop art table,9,compound,3,pop + art + table,1 + 7 + 9,11,5,yes
-Potato,9,single,1,,,6,6,yes
-Potato hamburger steak,9,compound,3,potato + hamburger + steak,9 + 9 + 6,20,9,yes
-Potato plant,9,compound,2,potato + plant,9 + 3,11,6,yes
-Protruding wall,9,compound,2,protruding + wall,9 + 2,14,10,yes
-Public seat,9,compound,2,public + seat,9 + 6,10,6,yes
-Rainbowish Badge,9,compound,2,rainbowish + badge,4 + 9,15,10,yes
-Rare Candy,9,compound,2,rare + candy,5 + 9,9,5,yes
-Recycled bread,9,compound,2,recycled + bread,9 + 6,13,8,yes
-Recycling bin,9,compound,2,recycling + bin,9 + 1,12,9,yes
-Refrigerator,9,single,1,,,12,12,yes
-Repel,9,single,1,,,5,5,yes
-Resort hammock,9,compound,2,resort + hammock,7 + 9,13,7,yes
-Resort sofa,9,compound,2,resort + sofa,7 + 9,10,6,yes
-Resort table,9,compound,2,resort + table,7 + 9,11,6,yes
-Ribbon cake,9,compound,2,ribbon + cake,9 + 5,10,6,yes
-Robust flower,9,compound,2,robust + flower,9 + 7,12,6,yes
-Rocket Hideout,9,compound,2,rocket + hideout,9 + 8,13,7,yes
-Roserade Tea,9,compound,2,roserade + tea,9 + 6,11,8,yes
-Rusted iron-plate flooring,9,compound,4,rusted + iron + plate + flooring,9 + 7 + 5 + 8,23,8,yes
-Rustic door,9,compound,2,rustic + door,9 + 7,10,6,yes
-Sail Fossil,9,compound,2,sail + fossil,6 + 9,10,6,yes
-Sand cottage kit,9,compound,3,sand + cottage + kit,1 + 9 + 1,14,7,yes
-Science experiment,9,compound,2,science + experiment,6 + 9,17,10,yes
-Seaweed salad,9,compound,2,seaweed + salad,8 + 9,12,7,yes
-Security camera,9,compound,2,security + camera,9 + 9,14,8,yes
-Sewer-hole cover,9,compound,3,sewer + hole + cover,7 + 9 + 7,14,5,yes
-Shredded salad,9,compound,2,shredded + salad,4 + 9,13,8,yes
-Side table,9,compound,2,side + table,5 + 9,9,5,yes
-Silver Bottle Cap,9,compound,3,silver + bottle + cap,7 + 9 + 1,15,6,yes
-Simple bread,9,compound,2,simple + bread,9 + 6,11,6,yes
-Simple cushion,9,compound,2,simple + cushion,9 + 4,13,7,yes
-Simple door,9,compound,2,simple + door,9 + 7,10,6,yes
-Simple flooring,9,compound,2,simple + flooring,9 + 8,14,8,yes
-Simple hamburger steak,9,compound,3,simple + hamburger + steak,9 + 9 + 6,20,9,yes
-Simple pillar quarter,9,compound,3,simple + pillar + quarter,9 + 7 + 7,19,7,yes
-Simple salad,9,compound,2,simple + salad,9 + 9,11,6,yes
-Simple soup,9,compound,2,simple + soup,9 + 6,10,6,yes
-Simple square tiling,9,compound,3,simple + square + tiling,9 + 5 + 9,18,6,yes
-Skull Fossil,9,compound,2,skull + fossil,3 + 9,11,6,yes
-Slender candle,9,compound,2,slender + candle,7 + 9,13,7,yes
-Sloped tiled roof,9,compound,3,sloped + tiled + roof,3 + 9 + 6,15,6,yes
-Small lost relic,9,compound,3,small + lost + relic,3 + 1 + 9,14,5,yes
-Snowbelle City,9,compound,2,snowbelle + city,8 + 9,13,9,yes
-Soda Pop,9,compound,2,soda + pop,9 + 1,7,4,yes
-Soda float,9,compound,2,soda + float,9 + 6,9,5,yes
-Sootopolis City,9,compound,2,sootopolis + city,9 + 9,14,10,yes
-Soul-like Badge,9,compound,3,soul + like + badge,6 + 5 + 9,13,5,yes
-Spectator chair,9,compound,2,spectator + chair,9 + 4,14,9,yes
-Square tiling,9,compound,2,square + tiling,5 + 9,12,6,yes
-Stalactites,9,single,1,,,11,11,yes
-Stalagmites,9,single,1,,,11,11,yes
-Stone cottage kit,9,compound,3,stone + cottage + kit,5 + 9 + 1,15,7,yes
-Stone debris,9,compound,2,stone + debris,5 + 9,11,6,yes
-Stone fencing,9,compound,2,stone + fencing,5 + 9,12,7,yes
-Stone hipped roof,9,compound,3,stone + hipped + roof,5 + 9 + 6,15,6,yes
-Stone roof decoration,9,compound,3,stone + roof + decoration,5 + 6 + 9,19,10,yes
-Stone table,9,compound,2,stone + table,5 + 9,10,5,yes
-Stone tiling,9,compound,2,stone + tiling,5 + 9,11,6,yes
-Straw table,9,compound,2,straw + table,6 + 9,10,5,yes
-Stylish hedge,9,compound,2,stylish + hedge,4 + 9,12,7,yes
-Stylish tiling,9,compound,2,stylish + tiling,4 + 9,13,7,yes
-Substitute doll,9,compound,2,substitute + doll,9 + 2,14,10,yes
-Sunny poster,9,compound,2,sunny + poster,9 + 7,11,6,yes
-Table setting,9,compound,2,table + setting,9 + 9,12,7,yes
-Tablet,9,single,1,,,6,6,yes
-Tall potted plant,9,compound,3,tall + potted + plant,2 + 9 + 3,15,6,yes
-Tatami mat,9,compound,2,tatami + mat,9 + 1,9,6,yes
-Team Rocket wall hanging,9,compound,4,team + rocket + wall + hanging,6 + 9 + 2 + 8,21,7,yes
-Television,9,single,1,,,10,10,yes
-Tent hipped roof,9,compound,3,tent + hipped + roof,1 + 9 + 6,14,6,yes
-Terrain Extender,9,compound,2,terrain + extender,7 + 9,15,8,yes
-Thunderish Badge,9,compound,2,thunderish + badge,4 + 9,15,10,yes
-Tiled hipped roof,9,compound,3,tiled + hipped + roof,9 + 9 + 6,15,6,yes
-Tiled roof decoration,9,compound,3,tiled + roof + decoration,9 + 6 + 9,19,10,yes
-Tiled roof valley,9,compound,3,tiled + roof + valley,9 + 6 + 6,15,6,yes
-Tinkagear,9,single,1,,,9,9,yes
-Tomato,9,single,1,,,6,6,yes
-Tomato hamburger steak,9,compound,3,tomato + hamburger + steak,9 + 9 + 6,20,9,yes
-Tomato plant,9,compound,2,tomato + plant,9 + 3,11,6,yes
-Triangle-design flooring,9,compound,3,triangle + design + flooring,8 + 9 + 8,22,8,yes
-Twisted potted plant,9,compound,3,twisted + potted + plant,3 + 9 + 3,18,7,yes
-Ultra Ruin,9,compound,2,ultra + ruin,9 + 6,9,5,yes
-Union Cave,9,compound,2,union + cave,9 + 5,9,5,yes
-Utility pole,9,compound,2,utility + pole,9 + 9,11,7,yes
-Vending machine,9,compound,2,vending + machine,9 + 4,14,7,yes
-Vermilion City,9,compound,2,vermilion + city,9 + 9,13,9,yes
-Vibrant hamburger steak,9,compound,3,vibrant + hamburger + steak,9 + 9 + 6,21,9,yes
-Vine wall decoration,9,compound,3,vine + wall + decoration,5 + 2 + 9,18,10,yes
-Violet meteor lamp,9,compound,3,violet + meteor + lamp,9 + 7 + 1,16,6,yes
-Viridian City,9,compound,2,viridian + city,9 + 9,12,8,yes
-Volcanic ash,9,compound,2,volcanic + ash,9 + 4,11,8,yes
-Volcanic rock,9,compound,2,volcanic + rock,9 + 1,12,8,yes
-Volcanoey Badge,9,compound,2,volcanoey + badge,9 + 9,14,9,yes
-Wall calendar,9,compound,2,wall + calendar,2 + 9,12,8,yes
-Wall monitor,9,compound,2,wall + monitor,2 + 9,11,7,yes
-Water basin,9,compound,2,water + basin,7 + 9,10,5,yes
-Weakness Policy,9,compound,2,weakness + policy,6 + 9,14,8,yes
-Wiggly mirror,9,compound,2,wiggly + mirror,9 + 7,12,6,yes
-Wireless power transmitter,9,compound,3,wireless + power + transmitter,8 + 7 + 9,24,11,yes
-Wireless power-transmitter switch,9,compound,4,wireless + power + transmitter + switch,8 + 7 + 9 + 4,30,11,yes
-Wobbuffet wobbler,9,compound,2,wobbuffet + wobbler,9 + 7,16,9,yes
-Wooden enclosure,9,compound,2,wooden + enclosure,6 + 9,15,9,yes
-Wooden fencing,9,compound,2,wooden + fencing,6 + 9,13,7,yes
-Wooden partition,9,compound,2,wooden + partition,6 + 9,15,9,yes
-Wooden posts,9,compound,2,wooden + posts,6 + 9,11,6,yes
-Wooden table,9,compound,2,wooden + table,6 + 9,11,6,yes
-Woven carpeting,9,compound,2,woven + carpeting,9 + 8,14,9,yes
-Wyndon,9,single,1,,,6,6,yes
-Yellow cottage kit,9,compound,3,yellow + cottage + kit,6 + 9 + 1,16,7,yes
-Hau'oli City,,,,,,10,,no
-Mt. Coronet,,,,,,9,,no
-Mt. Moon,,,,,,6,,no
-Pokémetal,,,,,,8,,no
-Pokémetal fragment,,,,,,16,,no
-Pokémon Center counter,,,,,,19,,no
-Professor's treasure trove,,,,,,23,,no
-Rare Pokémetal,,,,,,12,,no
-Rare Pokémetal fragment,,,,,,20,,no
-Route 209,,,,,,5,,no
-Ship’s wheel,,,,,,10,,no
-Silph Co.,,,,,,7,,no
-Stylish café kit,,,,,,13,,no
+item,level,kind,words,components,component_levels,proper_noun,letters,longest_word,spellable
+Damp Rock,1,compound,2,damp + rock,1 + 1,,8,4,yes
+Fan,1,single,1,,,,3,3,yes
+Felt mat,1,compound,2,felt + mat,1 + 1,,7,4,yes
+Log bed,1,compound,2,log + bed,1 + 1,,6,3,yes
+Mug,1,single,1,,,,3,3,yes
+Pink hut kit,1,compound,3,pink + hut + kit,1 + 1 + 1,,10,4,yes
+Red rock,1,compound,2,red + rock,1 + 1,,7,4,yes
+Sand den kit,1,compound,3,sand + den + kit,1 + 1 + 1,,10,4,yes
+Sand hut kit,1,compound,3,sand + hut + kit,1 + 1 + 1,,10,4,yes
+Sign,1,single,1,,,,4,4,yes
+Sink,1,single,1,,,,4,4,yes
+Soft Sand,1,compound,2,soft + sand,1 + 1,,8,4,yes
+Soft mat,1,compound,2,soft + mat,1 + 1,,7,4,yes
+Bell,2,single,1,,,,4,4,yes
+Gold wall,2,compound,2,gold + wall,1 + 2,,8,4,yes
+Moss,2,single,1,,,,4,4,yes
+Big drum,3,compound,2,big + drum,1 + 3,,7,4,yes
+Black Belt,3,compound,2,black + belt,3 + 1,,9,5,yes
+Black Glasses,3,compound,2,black + glasses,3 + 3,,12,7,yes
+Black Sludge,3,compound,2,black + sludge,3 + 3,,11,6,yes
+Black cliff rock,3,compound,3,black + cliff + rock,3 + 3 + 1,,14,5,yes
+Black rock,3,compound,2,black + rock,3 + 1,,9,5,yes
+Brick,3,single,1,,,,5,5,yes
+Brick steps,3,compound,2,brick + steps,3 + 3,,10,5,yes
+Brick wall,3,compound,2,brick + wall,3 + 2,,9,5,yes
+Bridge planks,3,compound,2,bridge + planks,3 + 3,,12,6,yes
+Bronze wall,3,compound,2,bronze + wall,3 + 2,,10,6,yes
+Cliff rock,3,compound,2,cliff + rock,3 + 1,,9,5,yes
+Crystal ball,3,compound,2,crystal + ball,3 + 2,,11,7,yes
+Crystal fragment,3,compound,2,crystal + fragment,3 + 3,,15,8,yes
+Crystal wall,3,compound,2,crystal + wall,3 + 2,,11,7,yes
+Dragon Fang,3,compound,2,dragon + fang,3 + 1,,10,6,yes
+Dry tall grass,3,compound,3,dry + tall + grass,3 + 2 + 3,,12,5,yes
+Fluff,3,single,1,,,,5,5,yes
+Frying pan,3,compound,2,frying + pan,3 + 1,,9,6,yes
+Glass,3,single,1,,,,5,5,yes
+Gravel,3,single,1,,,,6,6,yes
+Grubby rags,3,compound,2,grubby + rags,3 + 1,,10,6,yes
+Pink tall grass,3,compound,3,pink + tall + grass,1 + 2 + 3,,13,5,yes
+Red cliff rock,3,compound,3,red + cliff + rock,1 + 3 + 1,,12,5,yes
+Red crystal fragment,3,compound,3,red + crystal + fragment,1 + 3 + 3,,18,8,yes
+Red tall grass,3,compound,3,red + tall + grass,1 + 2 + 3,,12,5,yes
+Small log,3,compound,2,small + log,3 + 1,,8,5,yes
+Spell Tag,3,compound,2,spell + tag,3 + 1,,8,5,yes
+Sticky web,3,compound,2,sticky + web,3 + 1,,9,6,yes
+Strange strings,3,compound,2,strange + strings,3 + 3,,14,7,yes
+Striped wall,3,compound,2,striped + wall,3 + 2,,11,7,yes
+Study desk,3,compound,2,study + desk,3 + 1,,9,5,yes
+Tall grass,3,compound,2,tall + grass,2 + 3,,9,5,yes
+Arch bridge,4,compound,2,arch + bridge,4 + 3,,10,6,yes
+Beach chair,4,compound,2,beach + chair,4 + 4,,10,5,yes
+Beach sand,4,compound,2,beach + sand,4 + 1,,9,5,yes
+Cell phone,4,compound,2,cell + phone,2 + 4,,9,5,yes
+Chansey plant,4,compound,2,chansey + plant,4 + 3,yes,12,7,yes
+Charcoal,4,single,1,,,,8,8,yes
+Charizard rug,4,compound,2,charizard + rug,4 + 1,yes,12,9,yes
+Cloth wall,4,compound,2,cloth + wall,4 + 2,,9,5,yes
+Cushy wall,4,compound,2,cushy + wall,4 + 2,,9,5,yes
+Deck chair,4,compound,2,deck + chair,1 + 4,,9,5,yes
+Gold Teeth,4,compound,2,gold + teeth,1 + 4,,9,5,yes
+Grubby cell phone,4,compound,3,grubby + cell + phone,3 + 2 + 4,,15,6,yes
+Houndstooth print,4,compound,2,houndstooth + print,4 + 3,,16,11,yes
+Log chair,4,compound,2,log + chair,1 + 4,,8,5,yes
+Lunch box,4,compound,2,lunch + box,4 + 1,,8,5,yes
+Mushroom lamp,4,compound,2,mushroom + lamp,4 + 1,,12,8,yes
+Perch,4,single,1,,,,5,5,yes
+Pikachu doll,4,compound,2,pikachu + doll,4 + 2,yes,11,7,yes
+Pitcher-plant pot,4,compound,3,pitcher + plant + pot,4 + 3 + 1,,15,7,yes
+Raichu sign,4,compound,2,raichu + sign,4 + 1,yes,10,6,yes
+Sandwiches,4,single,1,,,,10,10,yes
+Shell lamp,4,compound,2,shell + lamp,4 + 1,,9,5,yes
+Shutter,4,single,1,,,,7,7,yes
+Smooth Rock,4,compound,2,smooth + rock,4 + 1,,10,6,yes
+South Province,4,compound,2,south + province,4 + 3,,13,8,yes
+Strength rock,4,compound,2,strength + rock,4 + 1,,12,8,yes
+Stylish bronze wall,4,compound,3,stylish + bronze + wall,4 + 3 + 2,,17,7,yes
+Stylish frying pan,4,compound,3,stylish + frying + pan,4 + 3 + 1,,16,7,yes
+Stylish gold wall,4,compound,3,stylish + gold + wall,4 + 1 + 2,,15,7,yes
+Stylish steps,4,compound,2,stylish + steps,4 + 3,,12,7,yes
+Torch,4,single,1,,,,5,5,yes
+Wall switch,4,compound,2,wall + switch,2 + 4,,10,6,yes
+Wall torch,4,compound,2,wall + torch,2 + 4,,9,5,yes
+Wheat,4,single,1,,,,5,5,yes
+Wheat plant,4,compound,2,wheat + plant,4 + 3,,10,5,yes
+Wheelbarrow,4,single,1,,,,11,11,yes
+White rock,4,compound,2,white + rock,4 + 1,,9,5,yes
+Bike,5,single,1,,,,4,4,yes
+Cave mushrooms,5,compound,2,cave + mushrooms,5 + 4,,13,9,yes
+Cave rock,5,compound,2,cave + rock,5 + 1,,8,4,yes
+Chili sauce,5,compound,2,chili + sauce,4 + 5,,10,5,yes
+Cute bed,5,compound,2,cute + bed,5 + 1,,7,4,yes
+Cute chair,5,compound,2,cute + chair,5 + 4,,9,5,yes
+Cute lamp,5,compound,2,cute + lamp,5 + 1,,8,4,yes
+Frame,5,single,1,,,,5,5,yes
+Glass pane,5,compound,2,glass + pane,3 + 5,,9,5,yes
+Gold ore,5,compound,2,gold + ore,1 + 5,,7,4,yes
+Ice,5,single,1,,,,3,3,yes
+Juice trio,5,compound,2,juice + trio,5 + 3,,9,5,yes
+Jump rope trophy,5,compound,3,jump + rope + trophy,1 + 5 + 4,,14,6,yes
+Lace rug,5,compound,2,lace + rug,5 + 1,,7,4,yes
+Photo frame,5,compound,2,photo + frame,4 + 5,,10,5,yes
+Plate,5,single,1,,,,5,5,yes
+Rare Bone,5,compound,2,rare + bone,5 + 5,,8,4,yes
+Rope,5,single,1,,,,4,4,yes
+Sand house kit,5,compound,3,sand + house + kit,1 + 5 + 1,,12,5,yes
+Scrap cube,5,compound,2,scrap + cube,3 + 5,,9,5,yes
+Shaved ice,5,compound,2,shaved + ice,4 + 5,,9,6,yes
+Slide,5,single,1,,,,5,5,yes
+Small square rug,5,compound,3,small + square + rug,3 + 5 + 1,,14,6,yes
+Small stage,5,compound,2,small + stage,3 + 5,,10,5,yes
+Small vase,5,compound,2,small + vase,3 + 5,,9,5,yes
+Square plant,5,compound,2,square + plant,5 + 3,,11,6,yes
+Stone,5,single,1,,,,5,5,yes
+Stone bench,5,compound,2,stone + bench,5 + 4,,10,5,yes
+Stone brick wall,5,compound,3,stone + brick + wall,5 + 3 + 2,,14,5,yes
+Stone den kit,5,compound,3,stone + den + kit,5 + 1 + 1,,11,5,yes
+Stone fragments,5,compound,2,stone + fragments,5 + 3,,14,9,yes
+Stone house kit,5,compound,3,stone + house + kit,5 + 5 + 1,,13,5,yes
+Stone hut kit,5,compound,3,stone + hut + kit,5 + 1 + 1,,11,5,yes
+Stone steps,5,compound,2,stone + steps,5 + 3,,10,5,yes
+Tires,5,single,1,,,,5,5,yes
+Traffic cone,5,compound,2,traffic + cone,3 + 5,,11,7,yes
+Twine,5,single,1,,,,5,5,yes
+Vine print,5,compound,2,vine + print,5 + 3,,9,5,yes
+Vine rope,5,compound,2,vine + rope,5 + 5,,8,4,yes
+Vines,5,single,1,,,,5,5,yes
+Wall photo frame,5,compound,3,wall + photo + frame,2 + 4 + 5,,14,5,yes
+Weather vane,5,compound,2,weather + vane,4 + 5,,11,7,yes
+Wide Lens,5,compound,2,wide + lens,5 + 1,,8,4,yes
+Wire,5,single,1,,,,4,4,yes
+Asphalt road,6,compound,2,asphalt + road,4 + 6,,11,7,yes
+Balloons,6,single,1,,,,8,8,yes
+Bean,6,single,1,,,,4,4,yes
+Bean plant,6,compound,2,bean + plant,6 + 3,,9,5,yes
+Big Root,6,compound,2,big + root,1 + 6,,7,4,yes
+Black paint,6,compound,2,black + paint,3 + 6,,10,5,yes
+Blue paint,6,compound,2,blue + paint,6 + 6,,9,5,yes
+Blue-green shoots,6,compound,3,blue + green + shoots,6 + 6 + 4,,15,6,yes
+Book,6,single,1,,,,4,4,yes
+Bread bowl,6,compound,2,bread + bowl,6 + 6,,9,5,yes
+Brick roof valley,6,compound,3,brick + roof + valley,3 + 6 + 6,,15,6,yes
+Broken window pane,6,compound,3,broken + window + pane,3 + 6 + 5,,16,6,yes
+Canoe,6,single,1,,,,5,5,yes
+Chocolate cookies,6,compound,2,chocolate + cookies,4 + 6,,16,9,yes
+Clay,6,single,1,,,,4,4,yes
+Cube light,6,compound,2,cube + light,5 + 6,,9,5,yes
+Desk light,6,compound,2,desk + light,1 + 6,,9,5,yes
+Dry blue-green shoots,6,compound,4,dry + blue + green + shoots,3 + 6 + 6 + 4,,18,6,yes
+Dry field grass,6,compound,3,dry + field + grass,3 + 6 + 3,,13,5,yes
+Dry green shoots,6,compound,3,dry + green + shoots,3 + 6 + 4,,14,6,yes
+Dry yellow-green shoots,6,compound,4,dry + yellow + green + shoots,3 + 6 + 6 + 4,,20,6,yes
+Eevee doll,6,compound,2,eevee + doll,6 + 2,yes,9,5,yes
+Field grass,6,compound,2,field + grass,6 + 3,,10,5,yes
+Flat brick roof,6,compound,3,flat + brick + roof,3 + 3 + 6,,13,5,yes
+Flat stone roof,6,compound,3,flat + stone + roof,3 + 5 + 6,,13,5,yes
+Flat tent roof,6,compound,3,flat + tent + roof,3 + 1 + 6,,12,4,yes
+Flat-leaf plant,6,compound,3,flat + leaf + plant,3 + 6 + 3,,13,5,yes
+Fluffy bread,6,compound,2,fluffy + bread,3 + 6,,11,6,yes
+Fountain plaza kit,6,compound,3,fountain + plaza + kit,6 + 3 + 1,,16,8,yes
+Freezing Chambers kit,6,compound,3,freezing + chambers + kit,6 + 4 + 1,,19,8,yes
+Glass window,6,compound,2,glass + window,3 + 6,,11,6,yes
+Glossy awning,6,compound,2,glossy + awning,3 + 6,,12,6,yes
+Gray hut kit,6,compound,3,gray + hut + kit,6 + 1 + 1,,10,4,yes
+Green paint,6,compound,2,green + paint,6 + 6,,10,5,yes
+Green shoots,6,compound,2,green + shoots,6 + 4,,11,6,yes
+Grubby book,6,compound,2,grubby + book,3 + 6,,10,6,yes
+Hatch window,6,compound,2,hatch + window,4 + 6,,11,6,yes
+Healthy soup,6,compound,2,healthy + soup,4 + 6,,11,7,yes
+Heat Rock,6,compound,2,heat + rock,6 + 1,,8,4,yes
+Honey,6,single,1,,,,5,5,yes
+Hot-spring spout,6,compound,3,hot + spring + spout,1 + 3 + 6,,14,6,yes
+Leaf,6,single,1,,,,4,4,yes
+Leaf den kit,6,compound,3,leaf + den + kit,6 + 1 + 1,,10,4,yes
+Leaf house kit,6,compound,3,leaf + house + kit,6 + 5 + 1,,12,5,yes
+Leaf hut kit,6,compound,3,leaf + hut + kit,6 + 1 + 1,,10,4,yes
+Leaf print,6,compound,2,leaf + print,6 + 3,,9,5,yes
+Leafy plant,6,compound,2,leafy + plant,6 + 3,,10,5,yes
+Levee,6,single,1,,,,5,5,yes
+Light Clay,6,compound,2,light + clay,6 + 6,,9,5,yes
+Light brown rock,6,compound,3,light + brown + rock,6 + 6 + 1,,14,5,yes
+Light wooden wall,6,compound,3,light + wooden + wall,6 + 6 + 2,,15,6,yes
+Loaded Dice,6,compound,2,loaded + dice,6 + 5,,10,6,yes
+Moomoo Milk Coffee,6,compound,3,moomoo + milk + coffee,6 + 1 + 6,,16,6,yes
+Mushroom soup,6,compound,2,mushroom + soup,4 + 6,,12,8,yes
+Ocean rock,6,compound,2,ocean + rock,6 + 1,,9,5,yes
+Palm tree stump,6,compound,3,palm + tree + stump,1 + 6 + 3,,13,5,yes
+Pikachu fountain kit,6,compound,3,pikachu + fountain + kit,4 + 6 + 1,yes,18,8,yes
+Pink paint,6,compound,2,pink + paint,1 + 6,,9,5,yes
+Pitched brick roof,6,compound,3,pitched + brick + roof,4 + 3 + 6,,16,7,yes
+Plain bed,6,compound,2,plain + bed,6 + 1,,8,5,yes
+Plain chair,6,compound,2,plain + chair,6 + 4,,10,5,yes
+Plain chest,6,compound,2,plain + chest,6 + 4,,10,5,yes
+Plain closet,6,compound,2,plain + closet,6 + 3,,11,6,yes
+Plain stand,6,compound,2,plain + stand,6 + 3,,10,5,yes
+Plain stool,6,compound,2,plain + stool,6 + 6,,10,5,yes
+Pointy tree,6,compound,2,pointy + tree,6 + 6,,10,6,yes
+Pointy tree stump,6,compound,3,pointy + tree + stump,6 + 6 + 3,,15,6,yes
+Pulley,6,single,1,,,,6,6,yes
+Quick Claw,6,compound,2,quick + claw,6 + 6,,9,5,yes
+Red paint,6,compound,2,red + paint,1 + 6,,8,5,yes
+Rough wall,6,compound,2,rough + wall,6 + 2,,9,5,yes
+Rowlet clock,6,compound,2,rowlet + clock,6 + 3,yes,11,6,yes
+Sash window,6,compound,2,sash + window,4 + 6,,10,6,yes
+Sea glass fragments,6,compound,3,sea + glass + fragments,6 + 3 + 3,,17,9,yes
+Seedot lamp,6,compound,2,seedot + lamp,6 + 1,yes,10,6,yes
+Sharp Beak,6,compound,2,sharp + beak,4 + 6,,9,5,yes
+Sloped stone roof,6,compound,3,sloped + stone + roof,3 + 5 + 6,,15,6,yes
+Sloped tent roof,6,compound,3,sloped + tent + roof,3 + 1 + 6,,14,6,yes
+Slowpoke rug,6,compound,2,slowpoke + rug,6 + 1,yes,11,8,yes
+Small round rug,6,compound,3,small + round + rug,3 + 6 + 1,,13,5,yes
+Soft seat,6,compound,2,soft + seat,1 + 6,,8,4,yes
+Squishy clay,6,compound,2,squishy + clay,4 + 6,,11,7,yes
+Stone roof valley,6,compound,3,stone + roof + valley,5 + 6 + 6,,15,6,yes
+Straw bed,6,compound,2,straw + bed,6 + 1,,8,5,yes
+Straw stool,6,compound,2,straw + stool,6 + 6,,10,5,yes
+String lights,6,compound,2,string + lights,3 + 6,,12,6,yes
+Striped soil,6,compound,2,striped + soil,3 + 6,,11,7,yes
+Stylish stool,6,compound,2,stylish + stool,4 + 6,,12,7,yes
+Tea set,6,compound,2,tea + set,6 + 1,,6,3,yes
+Tent roof valley,6,compound,3,tent + roof + valley,1 + 6 + 6,,14,6,yes
+Throat Spray,6,compound,2,throat + spray,4 + 6,,11,6,yes
+Tire toy,6,compound,2,tire + toy,5 + 6,,7,4,yes
+Toilet,6,single,1,,,,6,6,yes
+Towel rack,6,compound,2,towel + rack,6 + 1,,9,5,yes
+Town map,6,compound,2,town + map,6 + 1,,7,4,yes
+Toy blocks,6,compound,2,toy + blocks,6 + 3,,9,6,yes
+Treasure,6,single,1,,,,8,8,yes
+Twisted Spoon,6,compound,2,twisted + spoon,3 + 6,,12,7,yes
+Upright log,6,compound,2,upright + log,6 + 1,,10,7,yes
+Wall light,6,compound,2,wall + light,2 + 6,,9,5,yes
+White paint,6,compound,2,white + paint,4 + 6,,10,5,yes
+Window pane,6,compound,2,window + pane,6 + 5,,10,6,yes
+Wooden bed,6,compound,2,wooden + bed,6 + 1,,9,6,yes
+Wooden bench,6,compound,2,wooden + bench,6 + 4,,11,6,yes
+Wooden crate,6,compound,2,wooden + crate,6 + 5,,11,6,yes
+Wooden gate,6,compound,2,wooden + gate,6 + 5,,10,6,yes
+Wooden path,6,compound,2,wooden + path,6 + 4,,10,6,yes
+Wooden plate,6,compound,2,wooden + plate,6 + 5,,11,6,yes
+Wooden steps,6,compound,2,wooden + steps,6 + 3,,11,6,yes
+Wooden wall,6,compound,2,wooden + wall,6 + 2,,10,6,yes
+Yellow hut kit,6,compound,3,yellow + hut + kit,6 + 1 + 1,,12,6,yes
+Yellow paint,6,compound,2,yellow + paint,6 + 6,,11,6,yes
+Yellow rock,6,compound,2,yellow + rock,6 + 1,,10,6,yes
+Yellow tall grass,6,compound,3,yellow + tall + grass,6 + 2 + 3,,15,6,yes
+Yellow-green shoots,6,compound,3,yellow + green + shoots,6 + 6 + 4,,17,6,yes
+Zoom Lens,6,compound,2,zoom + lens,6 + 1,,8,4,yes
+Alarm clock,7,compound,2,alarm + clock,7 + 3,,10,5,yes
+Arcade machine,7,compound,2,arcade + machine,7 + 4,,13,7,yes
+Arched barrier,7,compound,2,arched + barrier,4 + 7,,13,7,yes
+Area Zero,7,compound,2,area + zero,7 + 7,,8,4,yes
+Armor fragment,7,compound,2,armor + fragment,7 + 3,,13,8,yes
+Arrow sign,7,compound,2,arrow + sign,7 + 1,,9,5,yes
+Aspear Berry,7,compound,2,aspear + berry,7 + 7,,11,6,yes
+Audio mixer,7,compound,2,audio + mixer,6 + 7,,10,5,yes
+Balloon poster,7,compound,2,balloon + poster,6 + 7,,13,7,yes
+Barrel,7,single,1,,,,6,6,yes
+Barren striped soil,7,compound,3,barren + striped + soil,7 + 3 + 6,,17,7,yes
+Bell Tower,7,compound,2,bell + tower,2 + 7,,9,5,yes
+Berry bed,7,compound,2,berry + bed,7 + 1,,8,5,yes
+Berry case,7,compound,2,berry + case,7 + 5,,9,5,yes
+Berry chair,7,compound,2,berry + chair,7 + 4,,10,5,yes
+Berry clock,7,compound,2,berry + clock,7 + 3,,10,5,yes
+Berry print,7,compound,2,berry + print,7 + 3,,10,5,yes
+Big storage box,7,compound,3,big + storage + box,1 + 7 + 1,,13,7,yes
+Blue meteor lamp,7,compound,3,blue + meteor + lamp,6 + 7 + 1,,14,6,yes
+Boat door,7,compound,2,boat + door,6 + 7,,8,4,yes
+Brainy door,7,compound,2,brainy + door,6 + 7,,10,6,yes
+Broken iron steps,7,compound,3,broken + iron + steps,3 + 7 + 3,,15,6,yes
+Bruised berry,7,compound,2,bruised + berry,6 + 7,,12,7,yes
+Card reader,7,compound,2,card + reader,7 + 7,,10,6,yes
+Carrot bread,7,compound,2,carrot + bread,7 + 6,,11,6,yes
+Cart,7,single,1,,,,4,4,yes
+Carved coarse rock,7,compound,3,carved + coarse + rock,7 + 7 + 1,,16,6,yes
+Carved red rock,7,compound,3,carved + red + rock,7 + 1 + 1,,13,6,yes
+Carved white rock,7,compound,3,carved + white + rock,7 + 4 + 1,,15,6,yes
+Carved yellow rock,7,compound,3,carved + yellow + rock,7 + 6 + 1,,16,6,yes
+Chesto Berry,7,compound,2,chesto + berry,4 + 7,,11,6,yes
+Clear Bell,7,compound,2,clear + bell,7 + 2,,9,5,yes
+Coarse rock,7,compound,2,coarse + rock,7 + 1,,10,6,yes
+Concert stage kit,7,compound,3,concert + stage + kit,7 + 5 + 1,,15,7,yes
+Cool bass guitar,7,compound,3,cool + bass + guitar,6 + 2 + 7,,14,6,yes
+Copper ore,7,compound,2,copper + ore,7 + 5,,9,6,yes
+Counter,7,single,1,,,,7,7,yes
+Crystal cluster,7,compound,2,crystal + cluster,3 + 7,,14,7,yes
+Curry print,7,compound,2,curry + print,7 + 3,,10,5,yes
+Curved eave,7,compound,2,curved + eave,7 + 5,,10,6,yes
+Cute dresser,7,compound,2,cute + dresser,5 + 7,,11,7,yes
+Cute flowers,7,compound,2,cute + flowers,5 + 7,,11,7,yes
+Drink poster,7,compound,2,drink + poster,3 + 7,,11,6,yes
+Dry verdant shoots,7,compound,3,dry + verdant + shoots,3 + 7 + 4,,16,7,yes
+Fern,7,single,1,,,,4,4,yes
+First aid kit,7,compound,3,first + aid + kit,7 + 6 + 1,,11,5,yes
+Flame Orb,7,compound,2,flame + orb,5 + 7,,8,5,yes
+Floor switch,7,compound,2,floor + switch,7 + 4,,11,6,yes
+Flower cushion,7,compound,2,flower + cushion,7 + 4,,13,7,yes
+Flower garland,7,compound,2,flower + garland,7 + 7,,13,7,yes
+Flower print,7,compound,2,flower + print,7 + 3,,11,6,yes
+Food counter,7,compound,2,food + counter,6 + 7,,11,7,yes
+Food poster,7,compound,2,food + poster,6 + 7,,10,6,yes
+Fresh Water,7,compound,2,fresh + water,4 + 7,,10,5,yes
+Fresh carrot,7,compound,2,fresh + carrot,4 + 7,,11,6,yes
+Furnace kit,7,compound,2,furnace + kit,7 + 1,,10,7,yes
+Game Corner,7,compound,2,game + corner,5 + 7,,10,6,yes
+Garbage bags,7,compound,2,garbage + bags,7 + 1,,11,7,yes
+Garbage bin,7,compound,2,garbage + bin,7 + 1,,10,7,yes
+Garden bench,7,compound,2,garden + bench,7 + 4,,11,6,yes
+Garden chair,7,compound,2,garden + chair,7 + 4,,11,6,yes
+Garden flowers,7,compound,2,garden + flowers,7 + 7,,13,7,yes
+Garden light,7,compound,2,garden + light,7 + 6,,11,6,yes
+Green meteor lamp,7,compound,3,green + meteor + lamp,6 + 7 + 1,,15,6,yes
+Growth poster,7,compound,2,growth + poster,4 + 7,,12,6,yes
+Grubby letter,7,compound,2,grubby + letter,3 + 7,,12,6,yes
+Grubby papers,7,compound,2,grubby + papers,3 + 7,,12,6,yes
+Hard Stone,7,compound,2,hard + stone,7 + 5,,9,5,yes
+Heart Scale,7,compound,2,heart + scale,7 + 3,,10,5,yes
+Horsea fountain,7,compound,2,horsea + fountain,7 + 6,yes,14,8,yes
+Ice cream poster,7,compound,3,ice + cream + poster,5 + 6 + 7,,14,6,yes
+Iron Ball,7,compound,2,iron + ball,7 + 2,,8,4,yes
+Iron beam,7,compound,2,iron + beam,7 + 6,,8,4,yes
+Iron bed,7,compound,2,iron + bed,7 + 1,,7,4,yes
+Iron bench,7,compound,2,iron + bench,7 + 4,,9,5,yes
+Iron chair,7,compound,2,iron + chair,7 + 4,,9,5,yes
+Iron door,7,compound,2,iron + door,7 + 7,,8,4,yes
+Iron gate,7,compound,2,iron + gate,7 + 5,,8,4,yes
+Iron ladder,7,compound,2,iron + ladder,7 + 7,,10,6,yes
+Iron ore,7,compound,2,iron + ore,7 + 5,,7,4,yes
+Iron pillar,7,compound,2,iron + pillar,7 + 7,,10,6,yes
+Iron pipes,7,compound,2,iron + pipes,7 + 5,,9,5,yes
+Iron plating,7,compound,2,iron + plating,7 + 3,,11,7,yes
+Iron rack,7,compound,2,iron + rack,7 + 1,,8,4,yes
+Iron scaffold,7,compound,2,iron + scaffold,7 + 3,,12,8,yes
+Iron stand,7,compound,2,iron + stand,7 + 3,,9,5,yes
+Iron steps,7,compound,2,iron + steps,7 + 3,,9,5,yes
+Iron wall,7,compound,2,iron + wall,7 + 2,,8,4,yes
+Lantern,7,single,1,,,,7,7,yes
+Large boulder,7,compound,2,large + boulder,7 + 7,,12,7,yes
+Large mirror,7,compound,2,large + mirror,7 + 7,,11,6,yes
+Large narrow rug,7,compound,3,large + narrow + rug,7 + 7 + 1,,14,6,yes
+Large palm tree,7,compound,3,large + palm + tree,7 + 1 + 6,,13,5,yes
+Large round rug,7,compound,3,large + round + rug,7 + 6 + 1,,13,5,yes
+Large wooden door,7,compound,3,large + wooden + door,7 + 6 + 7,,15,6,yes
+Laser sensor,7,compound,2,laser + sensor,7 + 7,,11,6,yes
+Letter,7,single,1,,,,6,6,yes
+Life Orb,7,compound,2,life + orb,5 + 7,,7,4,yes
+Lift platform,7,compound,2,lift + platform,1 + 7,,12,8,yes
+Lum Berry,7,compound,2,lum + berry,1 + 7,,8,5,yes
+Lumber,7,single,1,,,,6,6,yes
+Marble,7,single,1,,,,6,6,yes
+Meadow poster,7,compound,2,meadow + poster,6 + 7,,12,6,yes
+Mirror ball,7,compound,2,mirror + ball,7 + 2,,10,6,yes
+Modern door,7,compound,2,modern + door,7 + 7,,10,6,yes
+Modern sink,7,compound,2,modern + sink,7 + 1,,10,6,yes
+Modern wall,7,compound,2,modern + wall,7 + 2,,10,6,yes
+Mountain flowers,7,compound,2,mountain + flowers,6 + 7,,15,8,yes
+Never-Melt Ice,7,compound,3,never + melt + ice,7 + 1 + 5,,12,5,yes
+Ocean poster,7,compound,2,ocean + poster,6 + 7,,11,6,yes
+Oil lantern,7,compound,2,oil + lantern,6 + 7,,10,7,yes
+Orange hut kit,7,compound,3,orange + hut + kit,7 + 1 + 1,,12,6,yes
+Orange meteor lamp,7,compound,3,orange + meteor + lamp,7 + 7 + 1,,16,6,yes
+Paper,7,single,1,,,,5,5,yes
+Paper party cups,7,compound,3,paper + party + cups,7 + 7 + 1,,14,5,yes
+Papers,7,single,1,,,,6,6,yes
+Party platter,7,compound,2,party + platter,7 + 7,,12,7,yes
+Pecha Berry,7,compound,2,pecha + berry,4 + 7,,10,5,yes
+Planter,7,single,1,,,,7,7,yes
+Plaster wall,7,compound,2,plaster + wall,7 + 2,,11,7,yes
+Poison Barb,7,compound,2,poison + barb,6 + 7,,10,6,yes
+Pop art bed,7,compound,3,pop + art + bed,1 + 7 + 1,,9,3,yes
+Pop art chair,7,compound,3,pop + art + chair,1 + 7 + 4,,11,5,yes
+Pop art lamp,7,compound,3,pop + art + lamp,1 + 7 + 1,,10,4,yes
+Printer,7,single,1,,,,7,7,yes
+Push cart,7,compound,2,push + cart,4 + 7,,8,4,yes
+Rawst Berry,7,compound,2,rawst + berry,6 + 7,,10,5,yes
+Red crystal cluster,7,compound,3,red + crystal + cluster,1 + 3 + 7,,17,7,yes
+Red meteor lamp,7,compound,3,red + meteor + lamp,1 + 7 + 1,,13,6,yes
+Resort bed,7,compound,2,resort + bed,7 + 1,,9,6,yes
+Resort chair,7,compound,2,resort + chair,7 + 4,,11,6,yes
+Resort light,7,compound,2,resort + light,7 + 6,,11,6,yes
+Resort stool,7,compound,2,resort + stool,7 + 6,,11,6,yes
+Ring Target,7,compound,2,ring + target,1 + 7,,10,6,yes
+Roof support,7,compound,2,roof + support,6 + 7,,11,7,yes
+Rose Tower,7,compound,2,rose + tower,5 + 7,,9,5,yes
+Silk Scarf,7,compound,2,silk + scarf,1 + 7,,9,5,yes
+Silver Powder,7,compound,2,silver + powder,7 + 7,,12,6,yes
+Small garbage can,7,compound,3,small + garbage + can,3 + 7 + 1,,15,7,yes
+Small narrow rug,7,compound,3,small + narrow + rug,3 + 7 + 1,,14,6,yes
+Smelting furnace,7,compound,2,smelting + furnace,3 + 7,,15,8,yes
+Speaker,7,single,1,,,,7,7,yes
+Sprinkler,7,single,1,,,,9,9,yes
+Star Piece,7,compound,2,star + piece,7 + 5,,9,5,yes
+Star print,7,compound,2,star + print,7 + 3,,9,5,yes
+Sticky Barb,7,compound,2,sticky + barb,3 + 7,,10,6,yes
+Storage box,7,compound,2,storage + box,7 + 1,,10,7,yes
+Sturdy stick,7,compound,2,sturdy + stick,7 + 3,,11,6,yes
+Stylish door,7,compound,2,stylish + door,4 + 7,,11,7,yes
+Stylish iron wall,7,compound,3,stylish + iron + wall,4 + 7 + 2,,15,7,yes
+Swirl print,7,compound,2,swirl + print,7 + 3,,10,5,yes
+Tartan print,7,compound,2,tartan + print,7 + 3,,11,6,yes
+Technology poster,7,compound,2,technology + poster,4 + 7,,16,10,yes
+Verdant shoots,7,compound,2,verdant + shoots,7 + 4,,13,7,yes
+Wall mirror,7,compound,2,wall + mirror,2 + 7,,10,6,yes
+Wall storage box,7,compound,3,wall + storage + box,2 + 7 + 1,,14,7,yes
+Warning wall,7,compound,2,warning + wall,7 + 2,,11,7,yes
+Water pillar quarter,7,compound,3,water + pillar + quarter,7 + 7 + 7,,18,7,yes
+Wild Area,7,compound,2,wild + area,1 + 7,,8,4,yes
+Winter print,7,compound,2,winter + print,7 + 3,,11,6,yes
+Wooden ladder,7,compound,2,wooden + ladder,6 + 7,,12,6,yes
+Worn lumber,7,compound,2,worn + lumber,7 + 7,,10,6,yes
+Worn wooden crate,7,compound,3,worn + wooden + crate,7 + 6 + 5,,15,6,yes
+Yellow meteor lamp,7,compound,3,yellow + meteor + lamp,6 + 7 + 1,,16,6,yes
+Afternoon tea set,8,compound,3,afternoon + tea + set,8 + 6 + 1,,15,9,yes
+Antique bed,8,compound,2,antique + bed,8 + 1,,10,7,yes
+Antique chair,8,compound,2,antique + chair,8 + 4,,12,7,yes
+Antique chandelier,8,compound,2,antique + chandelier,8 + 4,,17,10,yes
+Antique chest,8,compound,2,antique + chest,8 + 4,,12,7,yes
+Antique clock,8,compound,2,antique + clock,8 + 3,,12,7,yes
+Antique closet,8,compound,2,antique + closet,8 + 3,,13,7,yes
+Antique dresser,8,compound,2,antique + dresser,8 + 7,,14,7,yes
+Bathtime set,8,compound,2,bathtime + set,8 + 1,,11,8,yes
+Bathtub,8,single,1,,,,7,7,yes
+Beach parasol,8,compound,2,beach + parasol,4 + 8,,12,7,yes
+Berry hanging lamp,8,compound,3,berry + hanging + lamp,7 + 8 + 1,,16,7,yes
+Black spotted cliff rock,8,compound,4,black + spotted + cliff + rock,3 + 8 + 3 + 1,,21,7,yes
+Boat railing,8,compound,2,boat + railing,6 + 8,,11,7,yes
+Bonfire,8,single,1,,,,7,7,yes
+Bookcase,8,single,1,,,,8,8,yes
+Bouncy blue bathtub,8,compound,3,bouncy + blue + bathtub,6 + 6 + 8,,17,7,yes
+Brick flooring,8,compound,2,brick + flooring,3 + 8,,13,8,yes
+Campfire,8,single,1,,,,8,8,yes
+Camping cooking pot,8,compound,3,camping + cooking + pot,8 + 8 + 1,,17,7,yes
+Castform weather charm,8,compound,3,castform + weather + charm,8 + 4 + 4,yes,20,8,yes
+Charging station kit,8,compound,3,charging + station + kit,4 + 8 + 1,,18,8,yes
+Chic streetlight,8,compound,2,chic + streetlight,4 + 8,,15,11,yes
+Cleaning supplies,8,compound,2,cleaning + supplies,8 + 6,,16,8,yes
+Community box,8,compound,2,community + box,8 + 1,,12,9,yes
+Construction supplies,8,compound,2,construction + supplies,8 + 6,,20,12,yes
+Cooking pot,8,compound,2,cooking + pot,8 + 1,,10,7,yes
+Cooking stove,8,compound,2,cooking + stove,8 + 5,,12,7,yes
+Corkboard,8,single,1,,,,9,9,yes
+Cracked sandstone,8,compound,2,cracked + sandstone,3 + 8,,16,9,yes
+Crisscross wooden flooring,8,compound,3,crisscross + wooden + flooring,3 + 6 + 8,,24,10,yes
+Cyber flooring,8,compound,2,cyber + flooring,7 + 8,,13,8,yes
+Damaged asphalt road,8,compound,3,damaged + asphalt + road,8 + 4 + 6,,18,7,yes
+Damaged wooden flooring,8,compound,3,damaged + wooden + flooring,8 + 6 + 8,,21,8,yes
+Dark marble flooring,8,compound,3,dark + marble + flooring,7 + 7 + 8,,18,8,yes
+Destiny Knot,8,compound,2,destiny + knot,8 + 1,,11,7,yes
+Double streetlight,8,compound,2,double + streetlight,6 + 8,,17,11,yes
+Dowsing Machine,8,compound,2,dowsing + machine,8 + 4,,14,7,yes
+Driftwood,8,single,1,,,,9,9,yes
+Dry seashore grass,8,compound,3,dry + seashore + grass,3 + 8 + 3,,16,8,yes
+Duckweed,8,single,1,,,,8,8,yes
+Exhibition stand,8,compound,2,exhibition + stand,8 + 3,,15,10,yes
+Fairy Feather,8,compound,2,fairy + feather,7 + 8,,12,7,yes
+Firepit,8,single,1,,,,7,7,yes
+Fishing rod,8,compound,2,fishing + rod,8 + 1,,10,7,yes
+Flower backpack,8,compound,2,flower + backpack,7 + 8,,14,8,yes
+Flowering duckweed,8,compound,2,flowering + duckweed,8 + 8,,17,9,yes
+Fluffy flooring,8,compound,2,fluffy + flooring,3 + 8,,14,8,yes
+Folding chair,8,compound,2,folding + chair,8 + 4,,12,7,yes
+Glowing mushrooms,8,compound,2,glowing + mushrooms,8 + 4,,16,9,yes
+Glowing stone,8,compound,2,glowing + stone,8 + 5,,12,7,yes
+Grass flooring,8,compound,2,grass + flooring,3 + 8,,13,8,yes
+Grate flooring,8,compound,2,grate + flooring,5 + 8,,13,8,yes
+Gravestone,8,single,1,,,,10,10,yes
+Gray circle flooring,8,compound,3,gray + circle + flooring,6 + 7 + 8,,18,8,yes
+Grubby newspaper,8,compound,2,grubby + newspaper,3 + 8,,15,9,yes
+Grubby notepad,8,compound,2,grubby + notepad,3 + 8,,13,7,yes
+Handcar,8,single,1,,,,7,7,yes
+Handrail,8,single,1,,,,8,8,yes
+Hanging banner,8,compound,2,hanging + banner,8 + 7,,13,7,yes
+Hanging scroll,8,compound,2,hanging + scroll,8 + 3,,13,7,yes
+Harbor streetlight,8,compound,2,harbor + streetlight,7 + 8,,17,11,yes
+Hardwood flooring,8,compound,2,hardwood + flooring,8 + 8,,16,8,yes
+Iron-plate flooring,8,compound,3,iron + plate + flooring,7 + 5 + 8,,17,8,yes
+Leftovers,8,single,1,,,,9,9,yes
+Light marble flooring,8,compound,3,light + marble + flooring,6 + 7 + 8,,19,8,yes
+Limestone,8,single,1,,,,9,9,yes
+Mailbox,8,single,1,,,,7,7,yes
+Microscope,8,single,1,,,,10,10,yes
+Modern carpeting,8,compound,2,modern + carpeting,7 + 8,,15,9,yes
+Moonlight poster,8,compound,2,moonlight + poster,8 + 7,,15,9,yes
+Mushroom streetlight,8,compound,2,mushroom + streetlight,4 + 8,,19,11,yes
+Newspaper,8,single,1,,,,9,9,yes
+Notepad,8,single,1,,,,7,7,yes
+Offering dish,8,compound,2,offering + dish,8 + 4,,12,8,yes
+Office chair,8,compound,2,office + chair,8 + 4,,11,6,yes
+Office desk,8,compound,2,office + desk,8 + 1,,10,6,yes
+Office locker,8,compound,2,office + locker,8 + 7,,12,6,yes
+Office shelf,8,compound,2,office + shelf,8 + 4,,11,6,yes
+Oil painting poster,8,compound,3,oil + painting + poster,6 + 8 + 7,,17,8,yes
+Painted wall,8,compound,2,painted + wall,8 + 2,,11,7,yes
+Party cooking pot,8,compound,3,party + cooking + pot,7 + 8 + 1,,15,7,yes
+Party popper,8,compound,2,party + popper,7 + 8,,11,6,yes
+Passionate poster,8,compound,2,passionate + poster,8 + 7,,16,10,yes
+Photo cutout board,8,compound,3,photo + cutout + board,4 + 8 + 7,,16,6,yes
+Pinwheels,8,single,1,,,,9,9,yes
+Punching bag,8,compound,2,punching + bag,8 + 1,,11,8,yes
+Punching game,8,compound,2,punching + game,8 + 5,,12,8,yes
+Railway track,8,compound,2,railway + track,8 + 3,,12,7,yes
+Rainbow Feather,8,compound,2,rainbow + feather,8 + 8,,14,7,yes
+Red spotted cliff rock,8,compound,4,red + spotted + cliff + rock,1 + 8 + 3 + 1,,19,7,yes
+Reddish-brown cave rock,8,compound,4,reddish + brown + cave + rock,8 + 6 + 5 + 1,,20,7,yes
+Relaxing park kit,8,compound,3,relaxing + park + kit,8 + 7 + 1,,15,8,yes
+Room Service,8,compound,2,room + service,6 + 8,,11,7,yes
+Sandbags,8,single,1,,,,8,8,yes
+Sandbox,8,single,1,,,,7,7,yes
+Sandstone,8,single,1,,,,9,9,yes
+Seashell,8,single,1,,,,8,8,yes
+Seashell soil,8,compound,2,seashell + soil,8 + 6,,12,8,yes
+Seashore flowers,8,compound,2,seashore + flowers,8 + 7,,15,8,yes
+Seashore grass,8,compound,2,seashore + grass,8 + 3,,13,8,yes
+Seaweed,8,single,1,,,,7,7,yes
+Seaweed soup,8,compound,2,seaweed + soup,8 + 6,,11,7,yes
+Shop flooring,8,compound,2,shop + flooring,4 + 8,,12,8,yes
+Sideways log,8,compound,2,sideways + log,8 + 1,,11,8,yes
+Signpost,8,single,1,,,,8,8,yes
+Silver Feather,8,compound,2,silver + feather,7 + 8,,13,7,yes
+Skyland cliff rock,8,compound,3,skyland + cliff + rock,8 + 3 + 1,,16,7,yes
+Skyland flowers,8,compound,2,skyland + flowers,8 + 7,,14,7,yes
+Skyland sand,8,compound,2,skyland + sand,8 + 1,,11,7,yes
+Skyland sandstone,8,compound,2,skyland + sandstone,8 + 8,,16,9,yes
+Skyland spotted cliff rock,8,compound,4,skyland + spotted + cliff + rock,8 + 8 + 3 + 1,,23,7,yes
+Skylight,8,single,1,,,,8,8,yes
+Small office kit,8,compound,3,small + office + kit,3 + 8 + 1,,14,6,yes
+Soft carpeting,8,compound,2,soft + carpeting,1 + 8,,13,9,yes
+Spaceship,8,single,1,,,,9,9,yes
+Spacesuit,8,single,1,,,,9,9,yes
+Spotlight,8,single,1,,,,9,9,yes
+Spotted cliff rock,8,compound,3,spotted + cliff + rock,8 + 3 + 1,,16,7,yes
+Standing mic,8,compound,2,standing + mic,8 + 1,,11,8,yes
+Stardust,8,single,1,,,,8,8,yes
+Stepping stones,8,compound,2,stepping + stones,8 + 5,,14,8,yes
+Stone fireplace,8,compound,2,stone + fireplace,5 + 8,,14,9,yes
+Stone flooring,8,compound,2,stone + flooring,5 + 8,,13,8,yes
+Stylish cooking pot,8,compound,3,stylish + cooking + pot,4 + 8 + 1,,17,7,yes
+Stylish stone flooring,8,compound,3,stylish + stone + flooring,4 + 5 + 8,,20,8,yes
+Super Training,8,compound,2,super + training,7 + 8,,13,8,yes
+Surface light,8,compound,2,surface + light,8 + 6,,12,7,yes
+Tabletop mic,8,compound,2,tabletop + mic,8 + 1,,11,8,yes
+Town streetlight,8,compound,2,town + streetlight,6 + 8,,15,11,yes
+Townscape poster,8,compound,2,townscape + poster,8 + 7,,15,9,yes
+Underground hatch,8,compound,2,underground + hatch,8 + 4,,16,11,yes
+Walkway,8,single,1,,,,7,7,yes
+Washing machine,8,compound,2,washing + machine,8 + 4,,14,7,yes
+Wastepaper,8,single,1,,,,10,10,yes
+Watercolor poster,8,compound,2,watercolor + poster,8 + 7,,16,10,yes
+Waterproof seat,8,compound,2,waterproof + seat,8 + 6,,14,10,yes
+Waterwheel kit,8,compound,2,waterwheel + kit,8 + 1,,13,10,yes
+Wildflower,8,single,1,,,,10,10,yes
+Windmill kit,8,compound,2,windmill + kit,8 + 1,,11,8,yes
+Windmill poster,8,compound,2,windmill + poster,8 + 7,,14,8,yes
+Wooden birdhouse,8,compound,2,wooden + birdhouse,6 + 8,,15,9,yes
+Wooden flooring,8,compound,2,wooden + flooring,6 + 8,,14,8,yes
+Wooden handrail,8,compound,2,wooden + handrail,6 + 8,,14,8,yes
+Workbench,8,single,1,,,,9,9,yes
+Abandoned Power Plant kit,9,compound,4,abandoned + power + plant + kit,9 + 7 + 3 + 1,,22,9,yes
+Ability Shield,9,compound,2,ability + shield,9 + 4,,13,7,yes
+Acrylic poster,9,compound,2,acrylic + poster,9 + 7,,13,7,yes
+Adorable hedge,9,compound,2,adorable + hedge,9 + 9,,13,8,yes
+Adrenaline Orb,9,compound,2,adrenaline + orb,9 + 7,,13,10,yes
+Aether Paradise,9,compound,2,aether + paradise,4 + 9,,14,8,yes
+Aged-stone wall,9,compound,3,aged + stone + wall,9 + 5 + 2,,13,5,yes
+Air conditioner,9,compound,2,air + conditioner,7 + 9,,14,11,yes
+Alpine grass,9,compound,2,alpine + grass,9 + 3,,11,6,yes
+Altar of Flame kit,9,compound,4,altar + of + flame + kit,7 + 9 + 5 + 1,,15,5,yes
+Antique sofa,9,compound,2,antique + sofa,8 + 9,,11,7,yes
+Antique table,9,compound,2,antique + table,8 + 9,,12,7,yes
+Arcanine doll,9,compound,2,arcanine + doll,9 + 2,yes,12,8,yes
+Arched tiling,9,compound,2,arched + tiling,4 + 9,,12,6,yes
+Argyle print,9,compound,2,argyle + print,9 + 3,,11,6,yes
+Armor Fossil,9,compound,2,armor + fossil,7 + 9,,11,6,yes
+Auspicious Armor,9,compound,2,auspicious + armor,9 + 7,,15,10,yes
+Automatic doors,9,compound,2,automatic + doors,9 + 7,,14,9,yes
+Avalugg table,9,compound,2,avalugg + table,9 + 9,yes,12,7,yes
+Barren ordinary soil,9,compound,3,barren + ordinary + soil,7 + 9 + 6,,18,8,yes
+Beautiful flower,9,compound,2,beautiful + flower,9 + 7,,15,9,yes
+Berry basket,9,compound,2,berry + basket,7 + 9,,11,6,yes
+Berry table,9,compound,2,berry + table,7 + 9,,10,5,yes
+Berry table lamp,9,compound,3,berry + table + lamp,7 + 9 + 1,,14,5,yes
+Berry wall decoration,9,compound,3,berry + wall + decoration,7 + 2 + 9,,19,10,yes
+Big Nugget,9,compound,2,big + nugget,1 + 9,,9,6,yes
+Bitter hamburger steak,9,compound,3,bitter + hamburger + steak,7 + 9 + 6,,20,9,yes
+Blank canvas,9,compound,2,blank + canvas,3 + 9,,11,6,yes
+Boo-in-the-box,9,compound,4,boo + in + the + box,6 + 9 + 4 + 1,,11,3,yes
+Book pile,9,compound,2,book + pile,6 + 9,,8,4,yes
+Bouldery Badge,9,compound,2,bouldery + badge,9 + 9,,13,8,yes
+Boutique,9,single,1,,,,8,8,yes
+Box sofa,9,compound,2,box + sofa,1 + 9,,7,4,yes
+Bread oven,9,compound,2,bread + oven,6 + 9,,9,5,yes
+Brick hipped roof,9,compound,3,brick + hipped + roof,3 + 9 + 6,,15,6,yes
+Brick roof decoration,9,compound,3,brick + roof + decoration,3 + 6 + 9,,19,10,yes
+Bubble print,9,compound,2,bubble + print,9 + 3,,11,6,yes
+Bumpy beach sand,9,compound,3,bumpy + beach + sand,9 + 4 + 1,,14,5,yes
+CD,9,single,1,,,,2,2,yes
+CD player,9,compound,2,cd + player,9 + 7,,8,6,yes
+CD rack,9,compound,2,cd + rack,9 + 1,,6,4,yes
+Cannon,9,single,1,,,,6,6,yes
+Cardboard boxes,9,compound,2,cardboard + boxes,8 + 9,,14,9,yes
+Cascade-like Badge,9,compound,3,cascade + like + badge,9 + 5 + 9,,16,7,yes
+Cash register,9,compound,2,cash + register,4 + 9,,12,8,yes
+Ceiling fan,9,compound,2,ceiling + fan,9 + 1,,10,7,yes
+Cerulean City,9,compound,2,cerulean + city,9 + 9,,12,8,yes
+Chic sofa,9,compound,2,chic + sofa,4 + 9,,8,4,yes
+Chic table,9,compound,2,chic + table,4 + 9,,9,5,yes
+City cottage kit,9,compound,3,city + cottage + kit,9 + 9 + 1,,14,7,yes
+City den kit,9,compound,3,city + den + kit,9 + 1 + 1,,10,4,yes
+City house kit,9,compound,3,city + house + kit,9 + 5 + 1,,12,5,yes
+City hut kit,9,compound,3,city + hut + kit,9 + 1 + 1,,10,4,yes
+Clear Amulet,9,compound,2,clear + amulet,7 + 9,,11,6,yes
+Clefairy doll,9,compound,2,clefairy + doll,9 + 2,yes,12,8,yes
+Cloud cannon,9,compound,2,cloud + cannon,6 + 9,,11,6,yes
+Cobblestone wall,9,compound,2,cobblestone + wall,9 + 2,,15,11,yes
+Common candy,9,compound,2,common + candy,8 + 9,,11,6,yes
+Computer,9,single,1,,,,8,8,yes
+Concrete,9,single,1,,,,8,8,yes
+Concrete mixer,9,compound,2,concrete + mixer,9 + 7,,13,8,yes
+Concrete pipe,9,compound,2,concrete + pipe,9 + 5,,12,8,yes
+Concrete slab,9,compound,2,concrete + slab,9 + 3,,12,8,yes
+Concrete steps,9,compound,2,concrete + steps,9 + 3,,13,8,yes
+Concrete wall,9,compound,2,concrete + wall,9 + 2,,12,8,yes
+Contest Spectacular,9,compound,2,contest + spectacular,8 + 9,,18,11,yes
+Control unit,9,compound,2,control + unit,9 + 9,,11,7,yes
+Cool electric guitar,9,compound,3,cool + electric + guitar,6 + 9 + 7,,18,8,yes
+Cooled molten rock,9,compound,3,cooled + molten + rock,6 + 9 + 1,,16,6,yes
+Copper ingot,9,compound,2,copper + ingot,7 + 9,,11,6,yes
+Corrugated metal,9,compound,2,corrugated + metal,9 + 9,,15,10,yes
+Cotton Spores,9,compound,2,cotton + spores,9 + 3,,12,6,yes
+Crouton salad,9,compound,2,crouton + salad,6 + 9,,12,7,yes
+Crushed-berry salad,9,compound,3,crushed + berry + salad,4 + 7 + 9,,17,7,yes
+Curry and rice,9,compound,3,curry + and + rice,7 + 9 + 5,,12,5,yes
+Cute sofa,9,compound,2,cute + sofa,5 + 9,,8,4,yes
+Cute table,9,compound,2,cute + table,5 + 9,,9,5,yes
+Cutting board,9,compound,2,cutting + board,9 + 7,,12,7,yes
+Cyan paint,9,compound,2,cyan + paint,9 + 6,,9,5,yes
+Damaged arched tiling,9,compound,3,damaged + arched + tiling,8 + 4 + 9,,19,7,yes
+Damaged mosaic tiling,9,compound,3,damaged + mosaic + tiling,8 + 6 + 9,,19,7,yes
+Damaged square tiling,9,compound,3,damaged + square + tiling,8 + 5 + 9,,19,7,yes
+Damp hedge,9,compound,2,damp + hedge,1 + 9,,9,5,yes
+Dance poster,9,compound,2,dance + poster,9 + 7,,11,6,yes
+Dandy flowers,9,compound,2,dandy + flowers,9 + 7,,12,7,yes
+Decorative bookshelf,9,compound,2,decorative + bookshelf,9 + 8,,19,10,yes
+Demolition kit,9,compound,2,demolition + kit,9 + 1,,13,10,yes
+Dense vines,9,compound,2,dense + vines,9 + 5,,10,5,yes
+Diagonal wooden flooring,9,compound,3,diagonal + wooden + flooring,9 + 6 + 8,,22,8,yes
+Dining cabinet,9,compound,2,dining + cabinet,9 + 9,,13,7,yes
+Diploma,9,single,1,,,,7,7,yes
+Ditto doll,9,compound,2,ditto + doll,9 + 2,yes,9,5,yes
+Ditto flag,9,compound,2,ditto + flag,9 + 3,yes,9,5,yes
+Ditto rug,9,compound,2,ditto + rug,9 + 1,yes,8,5,yes
+Dormered brick roof,9,compound,3,dormered + brick + roof,9 + 3 + 6,,17,8,yes
+Dragonite doll,9,compound,2,dragonite + doll,9 + 2,yes,13,9,yes
+Driftveil City,9,compound,2,driftveil + city,3 + 9,,13,9,yes
+Dry alpine grass,9,compound,3,dry + alpine + grass,3 + 9 + 3,,14,6,yes
+Earth Badge,9,compound,2,earth + badge,4 + 9,,10,5,yes
+Ecruteak City,9,compound,2,ecruteak + city,9 + 9,,12,8,yes
+Eerie candle,9,compound,2,eerie + candle,7 + 9,,11,6,yes
+Electrifying soup,9,compound,2,electrifying + soup,9 + 6,,16,12,yes
+Elegant flower,9,compound,2,elegant + flower,9 + 7,,13,7,yes
+Elevator platform,9,compound,2,elevator + platform,9 + 7,,16,8,yes
+Excavation tools,9,compound,2,excavation + tools,9 + 6,,15,10,yes
+Extravagant carpeting,9,compound,2,extravagant + carpeting,9 + 8,,20,11,yes
+Extravagant flowers,9,compound,2,extravagant + flowers,9 + 7,,18,11,yes
+Fancy chair,9,compound,2,fancy + chair,9 + 4,,10,5,yes
+Fancy pen,9,compound,2,fancy + pen,9 + 1,,8,5,yes
+Fiery Magby statue,9,compound,3,fiery + magby + statue,7 + 9 + 6,yes,16,6,yes
+Fire hydrant,9,compound,2,fire + hydrant,5 + 9,,11,7,yes
+Flat tiled roof,9,compound,3,flat + tiled + roof,3 + 9 + 6,,13,5,yes
+Flavorful soup,9,compound,2,flavorful + soup,9 + 6,,13,9,yes
+Flower table,9,compound,2,flower + table,7 + 9,,11,6,yes
+Flowery table setting,9,compound,3,flowery + table + setting,9 + 9 + 9,,19,7,yes
+Fluorescent light,9,compound,2,fluorescent + light,9 + 6,,16,11,yes
+Fortree City,9,compound,2,fortree + city,8 + 9,,11,7,yes
+Foundation,9,single,1,,,,10,10,yes
+Fried potatoes,9,compound,2,fried + potatoes,6 + 9,,13,8,yes
+Fuchsia City,9,compound,2,fuchsia + city,4 + 9,,11,7,yes
+Funky diffuser,9,compound,2,funky + diffuser,9 + 8,,13,8,yes
+Game Boy system,9,compound,3,game + boy + system,5 + 6 + 9,,13,6,yes
+Gaming PC,9,compound,2,gaming + pc,9 + 9,,8,6,yes
+Gaming bed,9,compound,2,gaming + bed,9 + 1,,9,6,yes
+Gaming chair,9,compound,2,gaming + chair,9 + 4,,11,6,yes
+Gaming fridge,9,compound,2,gaming + fridge,9 + 3,,12,6,yes
+Gaming light,9,compound,2,gaming + light,9 + 6,,11,6,yes
+Garden ornament,9,compound,2,garden + ornament,7 + 9,,14,8,yes
+Garden table,9,compound,2,garden + table,7 + 9,,11,6,yes
+Gingham print,9,compound,2,gingham + print,9 + 3,,12,7,yes
+Gold Bottle Cap,9,compound,3,gold + bottle + cap,1 + 9 + 1,,13,6,yes
+Gold deposit,9,compound,2,gold + deposit,1 + 9,,11,7,yes
+Gold ingot,9,compound,2,gold + ingot,1 + 9,,9,5,yes
+Golden poster,9,compound,2,golden + poster,9 + 7,,12,6,yes
+Grate fencing,9,compound,2,grate + fencing,5 + 9,,12,7,yes
+Gray cottage kit,9,compound,3,gray + cottage + kit,6 + 9 + 1,,14,7,yes
+Grubby tablet,9,compound,2,grubby + tablet,3 + 9,,12,6,yes
+Gym emblem statue,9,compound,3,gym + emblem + statue,9 + 9 + 6,,15,6,yes
+Harbor pole,9,compound,2,harbor + pole,7 + 9,,10,6,yes
+Hay pile,9,compound,2,hay + pile,6 + 9,,7,4,yes
+Healthy hedge,9,compound,2,healthy + hedge,4 + 9,,12,7,yes
+Hexagonal flooring,9,compound,2,hexagonal + flooring,9 + 8,,17,9,yes
+Hoppip water bottle,9,compound,3,hoppip + water + bottle,9 + 7 + 9,yes,17,6,yes
+Humidifier,9,single,1,,,,10,10,yes
+Icicles,9,single,1,,,,7,7,yes
+Icy Rock,9,compound,2,icy + rock,9 + 1,,7,4,yes
+Indigo meteor lamp,9,compound,3,indigo + meteor + lamp,9 + 7 + 1,,16,6,yes
+Industrial bed,9,compound,2,industrial + bed,9 + 1,,13,10,yes
+Industrial bench,9,compound,2,industrial + bench,9 + 4,,15,10,yes
+Industrial chair,9,compound,2,industrial + chair,9 + 4,,15,10,yes
+Industrial desk,9,compound,2,industrial + desk,9 + 1,,14,10,yes
+Inflatable Sudowoodo,9,compound,2,inflatable + sudowoodo,9 + 9,yes,19,10,yes
+Inflatable boat,9,compound,2,inflatable + boat,9 + 6,,14,10,yes
+Information board,9,compound,2,information + board,9 + 7,,16,11,yes
+Iron column,9,compound,2,iron + column,7 + 9,,10,6,yes
+Iron deposit,9,compound,2,iron + deposit,7 + 9,,11,7,yes
+Iron enclosure,9,compound,2,iron + enclosure,7 + 9,,13,9,yes
+Iron ingot,9,compound,2,iron + ingot,7 + 9,,9,5,yes
+Iron table,9,compound,2,iron + table,7 + 9,,9,5,yes
+Iron tiling,9,compound,2,iron + tiling,7 + 9,,10,6,yes
+Jaw Fossil,9,compound,2,jaw + fossil,6 + 9,,9,6,yes
+Jubilife Village,9,compound,2,jubilife + village,9 + 9,,15,8,yes
+Jumbled cords,9,compound,2,jumbled + cords,9 + 7,,12,7,yes
+Kitchen table,9,compound,2,kitchen + table,8 + 9,,12,7,yes
+Knitting supplies,9,compound,2,knitting + supplies,9 + 6,,16,8,yes
+Lagging Tail,9,compound,2,lagging + tail,9 + 6,,11,7,yes
+Laptop,9,single,1,,,,6,6,yes
+Large lost relic,9,compound,3,large + lost + relic,7 + 1 + 9,,14,5,yes
+Large ventilation fan,9,compound,3,large + ventilation + fan,7 + 9 + 1,,19,11,yes
+Lava rock,9,compound,2,lava + rock,9 + 1,,8,4,yes
+Leaf cottage kit,9,compound,3,leaf + cottage + kit,6 + 9 + 1,,14,7,yes
+Leppa Berry,9,compound,2,leppa + berry,9 + 7,,10,5,yes
+Leppa bread,9,compound,2,leppa + bread,9 + 6,,10,5,yes
+Leppa salad,9,compound,2,leppa + salad,9 + 9,,10,5,yes
+Leppa tree,9,compound,2,leppa + tree,9 + 6,,9,5,yes
+Leppa tree stump,9,compound,3,leppa + tree + stump,9 + 6 + 3,,14,5,yes
+Log cabin kit,9,compound,3,log + cabin + kit,1 + 9 + 1,,11,5,yes
+Log table,9,compound,2,log + table,1 + 9,,8,5,yes
+Lucky Egg,9,compound,2,lucky + egg,9 + 9,,8,5,yes
+Luxury bed,9,compound,2,luxury + bed,9 + 1,,9,6,yes
+Luxury chair,9,compound,2,luxury + chair,9 + 4,,11,6,yes
+Luxury dresser,9,compound,2,luxury + dresser,9 + 7,,13,7,yes
+Luxury lamp,9,compound,2,luxury + lamp,9 + 1,,10,6,yes
+Luxury sofa,9,compound,2,luxury + sofa,9 + 9,,10,6,yes
+Luxury table,9,compound,2,luxury + table,9 + 9,,11,6,yes
+Magazine rack,9,compound,2,magazine + rack,9 + 1,,12,8,yes
+Magikarp decoration,9,compound,2,magikarp + decoration,9 + 9,yes,18,10,yes
+Malicious Armor,9,compound,2,malicious + armor,9 + 7,,14,9,yes
+Marshy Badge,9,compound,2,marshy + badge,4 + 9,,11,6,yes
+Menu board,9,compound,2,menu + board,9 + 7,,9,5,yes
+Metal Coat,9,compound,2,metal + coat,9 + 6,,9,5,yes
+Metal Powder,9,compound,2,metal + powder,9 + 7,,11,6,yes
+Metal chain,9,compound,2,metal + chain,9 + 4,,10,5,yes
+Metal drum,9,compound,2,metal + drum,9 + 3,,9,5,yes
+Metal fencing,9,compound,2,metal + fencing,9 + 9,,12,7,yes
+Metallic smelting furnace,9,compound,3,metallic + smelting + furnace,9 + 3 + 7,,23,8,yes
+Microwave oven,9,compound,2,microwave + oven,8 + 9,,13,9,yes
+Mini bookcase,9,compound,2,mini + bookcase,9 + 8,,12,8,yes
+Mini floodgate,9,compound,2,mini + floodgate,9 + 8,,13,9,yes
+Mini generator,9,compound,2,mini + generator,9 + 9,,13,9,yes
+Mini plain bed,9,compound,3,mini + plain + bed,9 + 6 + 1,,12,5,yes
+Miracle Seed,9,compound,2,miracle + seed,9 + 6,,11,7,yes
+Model planet,9,compound,2,model + planet,9 + 3,,11,6,yes
+Model space shuttle,9,compound,3,model + space + shuttle,9 + 5 + 4,,17,7,yes
+Molten rock,9,compound,2,molten + rock,9 + 1,,10,6,yes
+Moonlight dance statue kit,9,compound,4,moonlight + dance + statue + kit,8 + 9 + 6 + 1,,23,9,yes
+Mosaic tiling,9,compound,2,mosaic + tiling,6 + 9,,12,6,yes
+Mossy Stone,9,compound,2,mossy + stone,9 + 5,,10,5,yes
+Mossy boulder,9,compound,2,mossy + boulder,9 + 7,,12,7,yes
+Mossy soil,9,compound,2,mossy + soil,9 + 6,,9,5,yes
+Mushroom hamburger steak,9,compound,3,mushroom + hamburger + steak,4 + 9 + 6,,22,9,yes
+Mysterious Goggles,9,compound,2,mysterious + goggles,9 + 9,,17,10,yes
+Mysterious pedestal,9,compound,2,mysterious + pedestal,9 + 9,,18,10,yes
+Mysterious slate,9,compound,2,mysterious + slate,9 + 5,,15,10,yes
+Mysterious statue,9,compound,2,mysterious + statue,9 + 6,,16,10,yes
+Mysterious stone,9,compound,2,mysterious + stone,9 + 5,,15,10,yes
+Mystic Water,9,compound,2,mystic + water,9 + 7,,11,6,yes
+Naptime bed,9,compound,2,naptime + bed,9 + 1,,10,7,yes
+Neo-Dowsing Machine,9,compound,3,neo + dowsing + machine,9 + 8 + 4,,17,7,yes
+Neon flooring,9,compound,2,neon + flooring,9 + 8,,12,8,yes
+Ninja poster,9,compound,2,ninja + poster,9 + 7,,11,6,yes
+Nonburnable garbage,9,compound,2,nonburnable + garbage,9 + 7,,18,11,yes
+Nugget,9,single,1,,,,6,6,yes
+Oblong rug,9,compound,2,oblong + rug,9 + 1,,9,6,yes
+Office cabinet,9,compound,2,office + cabinet,8 + 9,,13,7,yes
+Office table,9,compound,2,office + table,8 + 9,,11,6,yes
+Open book,9,compound,2,open + book,9 + 6,,8,4,yes
+Orange cottage kit,9,compound,3,orange + cottage + kit,7 + 9 + 1,,16,7,yes
+Ordinary sand,9,compound,2,ordinary + sand,9 + 1,,12,8,yes
+Ordinary soil,9,compound,2,ordinary + soil,9 + 6,,12,8,yes
+Pallet Town,9,compound,2,pallet + town,9 + 6,,10,6,yes
+Party bunting,9,compound,2,party + bunting,7 + 9,,12,7,yes
+Patterned aged-stone wall,9,compound,4,patterned + aged + stone + wall,9 + 9 + 5 + 2,,22,9,yes
+Pencil holder,9,compound,2,pencil + holder,9 + 7,,12,6,yes
+Pewter City,9,compound,2,pewter + city,7 + 9,,10,6,yes
+Picnic basket,9,compound,2,picnic + basket,9 + 9,,12,6,yes
+Picnic blanket,9,compound,2,picnic + blanket,9 + 3,,13,7,yes
+Pikachu sofa,9,compound,2,pikachu + sofa,4 + 9,yes,11,7,yes
+Pink cottage kit,9,compound,3,pink + cottage + kit,1 + 9 + 1,,14,7,yes
+Pizza,9,single,1,,,,5,5,yes
+Plain sofa,9,compound,2,plain + sofa,6 + 9,,9,5,yes
+Plain table,9,compound,2,plain + table,6 + 9,,10,5,yes
+Polygonal shelf,9,compound,2,polygonal + shelf,9 + 4,,14,9,yes
+Pop art sofa,9,compound,3,pop + art + sofa,1 + 7 + 9,,10,4,yes
+Pop art table,9,compound,3,pop + art + table,1 + 7 + 9,,11,5,yes
+Potato,9,single,1,,,,6,6,yes
+Potato hamburger steak,9,compound,3,potato + hamburger + steak,9 + 9 + 6,,20,9,yes
+Potato plant,9,compound,2,potato + plant,9 + 3,,11,6,yes
+Protruding wall,9,compound,2,protruding + wall,9 + 2,,14,10,yes
+Public seat,9,compound,2,public + seat,9 + 6,,10,6,yes
+Rainbowish Badge,9,compound,2,rainbowish + badge,4 + 9,,15,10,yes
+Rare Candy,9,compound,2,rare + candy,5 + 9,,9,5,yes
+Recycled bread,9,compound,2,recycled + bread,9 + 6,,13,8,yes
+Recycling bin,9,compound,2,recycling + bin,9 + 1,,12,9,yes
+Refrigerator,9,single,1,,,,12,12,yes
+Repel,9,single,1,,,,5,5,yes
+Resort hammock,9,compound,2,resort + hammock,7 + 9,,13,7,yes
+Resort sofa,9,compound,2,resort + sofa,7 + 9,,10,6,yes
+Resort table,9,compound,2,resort + table,7 + 9,,11,6,yes
+Ribbon cake,9,compound,2,ribbon + cake,9 + 5,,10,6,yes
+Robust flower,9,compound,2,robust + flower,9 + 7,,12,6,yes
+Rocket Hideout,9,compound,2,rocket + hideout,9 + 8,,13,7,yes
+Roserade Tea,9,compound,2,roserade + tea,9 + 6,yes,11,8,yes
+Rusted iron-plate flooring,9,compound,4,rusted + iron + plate + flooring,9 + 7 + 5 + 8,,23,8,yes
+Rustic door,9,compound,2,rustic + door,9 + 7,,10,6,yes
+Sail Fossil,9,compound,2,sail + fossil,6 + 9,,10,6,yes
+Sand cottage kit,9,compound,3,sand + cottage + kit,1 + 9 + 1,,14,7,yes
+Science experiment,9,compound,2,science + experiment,6 + 9,,17,10,yes
+Seaweed salad,9,compound,2,seaweed + salad,8 + 9,,12,7,yes
+Security camera,9,compound,2,security + camera,9 + 9,,14,8,yes
+Sewer-hole cover,9,compound,3,sewer + hole + cover,7 + 9 + 7,,14,5,yes
+Shredded salad,9,compound,2,shredded + salad,4 + 9,,13,8,yes
+Side table,9,compound,2,side + table,5 + 9,,9,5,yes
+Silver Bottle Cap,9,compound,3,silver + bottle + cap,7 + 9 + 1,,15,6,yes
+Simple bread,9,compound,2,simple + bread,9 + 6,,11,6,yes
+Simple cushion,9,compound,2,simple + cushion,9 + 4,,13,7,yes
+Simple door,9,compound,2,simple + door,9 + 7,,10,6,yes
+Simple flooring,9,compound,2,simple + flooring,9 + 8,,14,8,yes
+Simple hamburger steak,9,compound,3,simple + hamburger + steak,9 + 9 + 6,,20,9,yes
+Simple pillar quarter,9,compound,3,simple + pillar + quarter,9 + 7 + 7,,19,7,yes
+Simple salad,9,compound,2,simple + salad,9 + 9,,11,6,yes
+Simple soup,9,compound,2,simple + soup,9 + 6,,10,6,yes
+Simple square tiling,9,compound,3,simple + square + tiling,9 + 5 + 9,,18,6,yes
+Skull Fossil,9,compound,2,skull + fossil,3 + 9,,11,6,yes
+Slender candle,9,compound,2,slender + candle,7 + 9,,13,7,yes
+Sloped tiled roof,9,compound,3,sloped + tiled + roof,3 + 9 + 6,,15,6,yes
+Small lost relic,9,compound,3,small + lost + relic,3 + 1 + 9,,14,5,yes
+Snowbelle City,9,compound,2,snowbelle + city,8 + 9,,13,9,yes
+Soda Pop,9,compound,2,soda + pop,9 + 1,,7,4,yes
+Soda float,9,compound,2,soda + float,9 + 6,,9,5,yes
+Sootopolis City,9,compound,2,sootopolis + city,9 + 9,,14,10,yes
+Soul-like Badge,9,compound,3,soul + like + badge,6 + 5 + 9,,13,5,yes
+Spectator chair,9,compound,2,spectator + chair,9 + 4,,14,9,yes
+Square tiling,9,compound,2,square + tiling,5 + 9,,12,6,yes
+Stalactites,9,single,1,,,,11,11,yes
+Stalagmites,9,single,1,,,,11,11,yes
+Stone cottage kit,9,compound,3,stone + cottage + kit,5 + 9 + 1,,15,7,yes
+Stone debris,9,compound,2,stone + debris,5 + 9,,11,6,yes
+Stone fencing,9,compound,2,stone + fencing,5 + 9,,12,7,yes
+Stone hipped roof,9,compound,3,stone + hipped + roof,5 + 9 + 6,,15,6,yes
+Stone roof decoration,9,compound,3,stone + roof + decoration,5 + 6 + 9,,19,10,yes
+Stone table,9,compound,2,stone + table,5 + 9,,10,5,yes
+Stone tiling,9,compound,2,stone + tiling,5 + 9,,11,6,yes
+Straw table,9,compound,2,straw + table,6 + 9,,10,5,yes
+Stylish hedge,9,compound,2,stylish + hedge,4 + 9,,12,7,yes
+Stylish tiling,9,compound,2,stylish + tiling,4 + 9,,13,7,yes
+Substitute doll,9,compound,2,substitute + doll,9 + 2,,14,10,yes
+Sunny poster,9,compound,2,sunny + poster,9 + 7,,11,6,yes
+Table setting,9,compound,2,table + setting,9 + 9,,12,7,yes
+Tablet,9,single,1,,,,6,6,yes
+Tall potted plant,9,compound,3,tall + potted + plant,2 + 9 + 3,,15,6,yes
+Tatami mat,9,compound,2,tatami + mat,9 + 1,,9,6,yes
+Team Rocket wall hanging,9,compound,4,team + rocket + wall + hanging,6 + 9 + 2 + 8,,21,7,yes
+Television,9,single,1,,,,10,10,yes
+Tent hipped roof,9,compound,3,tent + hipped + roof,1 + 9 + 6,,14,6,yes
+Terrain Extender,9,compound,2,terrain + extender,7 + 9,,15,8,yes
+Thunderish Badge,9,compound,2,thunderish + badge,4 + 9,,15,10,yes
+Tiled hipped roof,9,compound,3,tiled + hipped + roof,9 + 9 + 6,,15,6,yes
+Tiled roof decoration,9,compound,3,tiled + roof + decoration,9 + 6 + 9,,19,10,yes
+Tiled roof valley,9,compound,3,tiled + roof + valley,9 + 6 + 6,,15,6,yes
+Tinkagear,9,single,1,,,,9,9,yes
+Tomato,9,single,1,,,,6,6,yes
+Tomato hamburger steak,9,compound,3,tomato + hamburger + steak,9 + 9 + 6,,20,9,yes
+Tomato plant,9,compound,2,tomato + plant,9 + 3,,11,6,yes
+Triangle-design flooring,9,compound,3,triangle + design + flooring,8 + 9 + 8,,22,8,yes
+Twisted potted plant,9,compound,3,twisted + potted + plant,3 + 9 + 3,,18,7,yes
+Ultra Ruin,9,compound,2,ultra + ruin,9 + 6,,9,5,yes
+Union Cave,9,compound,2,union + cave,9 + 5,,9,5,yes
+Utility pole,9,compound,2,utility + pole,9 + 9,,11,7,yes
+Vending machine,9,compound,2,vending + machine,9 + 4,,14,7,yes
+Vermilion City,9,compound,2,vermilion + city,9 + 9,,13,9,yes
+Vibrant hamburger steak,9,compound,3,vibrant + hamburger + steak,9 + 9 + 6,,21,9,yes
+Vine wall decoration,9,compound,3,vine + wall + decoration,5 + 2 + 9,,18,10,yes
+Violet meteor lamp,9,compound,3,violet + meteor + lamp,9 + 7 + 1,,16,6,yes
+Viridian City,9,compound,2,viridian + city,9 + 9,,12,8,yes
+Volcanic ash,9,compound,2,volcanic + ash,9 + 4,,11,8,yes
+Volcanic rock,9,compound,2,volcanic + rock,9 + 1,,12,8,yes
+Volcanoey Badge,9,compound,2,volcanoey + badge,9 + 9,,14,9,yes
+Wall calendar,9,compound,2,wall + calendar,2 + 9,,12,8,yes
+Wall monitor,9,compound,2,wall + monitor,2 + 9,,11,7,yes
+Water basin,9,compound,2,water + basin,7 + 9,,10,5,yes
+Weakness Policy,9,compound,2,weakness + policy,6 + 9,,14,8,yes
+Wiggly mirror,9,compound,2,wiggly + mirror,9 + 7,,12,6,yes
+Wireless power transmitter,9,compound,3,wireless + power + transmitter,8 + 7 + 9,,24,11,yes
+Wireless power-transmitter switch,9,compound,4,wireless + power + transmitter + switch,8 + 7 + 9 + 4,,30,11,yes
+Wobbuffet wobbler,9,compound,2,wobbuffet + wobbler,9 + 7,yes,16,9,yes
+Wooden enclosure,9,compound,2,wooden + enclosure,6 + 9,,15,9,yes
+Wooden fencing,9,compound,2,wooden + fencing,6 + 9,,13,7,yes
+Wooden partition,9,compound,2,wooden + partition,6 + 9,,15,9,yes
+Wooden posts,9,compound,2,wooden + posts,6 + 9,,11,6,yes
+Wooden table,9,compound,2,wooden + table,6 + 9,,11,6,yes
+Woven carpeting,9,compound,2,woven + carpeting,9 + 8,,14,9,yes
+Wyndon,9,single,1,,,,6,6,yes
+Yellow cottage kit,9,compound,3,yellow + cottage + kit,6 + 9 + 1,,16,7,yes
+Hau'oli City,,,,,,,10,,no
+Mt. Coronet,,,,,,,9,,no
+Mt. Moon,,,,,,,6,,no
+Pokémetal,,,,,,,8,,no
+Pokémetal fragment,,,,,,,16,,no
+Pokémon Center counter,,,,,,,19,,no
+Professor's treasure trove,,,,,,,23,,no
+Rare Pokémetal,,,,,,,12,,no
+Rare Pokémetal fragment,,,,,,,20,,no
+Route 209,,,,,,,5,,no
+Ship’s wheel,,,,,,,10,,no
+Silph Co.,,,,,,,7,,no
+Stylish café kit,,,,,,,13,,no

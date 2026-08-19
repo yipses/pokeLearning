@@ -66,6 +66,7 @@ Every distinct word in the item catalogue, split on spaces and hyphens, graded 1
 | `letters`, `syllables` | reference only |
 | `compound_parts` | the split found for a closed compound (`bath + tub`), blank otherwise |
 | `also_matches` | every pattern the word hit, so a grading can be second-guessed |
+| `proper_noun` | `yes` if the word is a Pokémon name (`hoppip`, `pikachu`). Its phonics level is fiction — an invented name is memorised, not decoded — so Spelling skips any item containing one. Set automatically by cross-referencing `pokemon.csv` |
 | `used_in_items` | how many item names use it — a correction here moves that many items |
 | `previous_level`, `review` | what the original hand-graded list said, and `differs` where the two disagree |
 
@@ -79,6 +80,7 @@ Derived from `word_levels.csv`; regenerate rather than edit. A single-word item 
 | `level` | 1–9, or blank for unspellable |
 | `kind` | `single` or `compound` — a space or hyphen makes it compound |
 | `components`, `component_levels` | the parts and their levels, for checking the roll-up |
+| `proper_noun` | `yes` if any component is a Pokémon name. Excluded from Spelling, kept in Reading |
 | `longest_word` | reference only |
 
 ## `spelling_levels.csv` and `reading_levels.csv` — the ladders

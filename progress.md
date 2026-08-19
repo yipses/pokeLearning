@@ -139,6 +139,13 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **Not introduced by the ladder rebuild, but exposed by it.** `git log -S` puts that rule in the initial commit, and a correctly typed chunk has always locked lowercase. What changed is how often it's on screen: Missing Letter gained hints (a hint fills a whole chunk at once), and blank counts now come from `hinted_pct`, so at 50% about half the word sits in filled boxes instead of one.
 - Checked while in there: no question renders with a blank already filled (1,020 across all 25 levels), and chunking still holds a sound together — `black glasses` splits `bl · a · ck · ␣ · gl · a · s · s · e · s`.
 
+## Phase 28 — Pokémon names hiding in the item vocabulary
+
+- **Reported as "typing P won't work" on a picture of a pink water bottle.** Not a bug: the item is `Hoppip water bottle`, not "Pocket water bottle" — the tile bank has three P's and no C or K, which settles it. Verified from the keyboard: `p` is correctly rejected at slot 1, `h` lands, `o` and `p` follow.
+- **What it exposed is real.** 21 item words are Pokémon names, in 25 items, and the classifier graded them like ordinary vocabulary — `pikachu` filed under Digraphs at level 4, so `Pikachu doll` could be asked four rungs into the ladder on the strength of its `ch`. That grading is fiction: an invented proper noun is memorised, not decoded.
+- **Flagged in the data rather than special-cased in code.** `tools/classify_words.py` cross-references `data/pokemon.csv` and writes a `proper_noun` column into both `word_levels.csv` and `item_levels.csv`; the app reads it. Spelling skips those items; Reading keeps them, since recognising a name a child knows by sight is a fair reading task and the names stay reachable as Pokémon proper, under the generation gate.
+- **Cost is negligible**: the largest pool loses 25 of 1,056. Verified with 600 spelling questions at each of 25 levels — zero proper nouns served — while Reading still offers all 25.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.

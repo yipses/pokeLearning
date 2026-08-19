@@ -80,6 +80,8 @@ The ladder is nine tiers of three, and within a tier only **`hinted_pct`** chang
 
 **`max_hints`** is per level and applies to both tasks. It rises as `hinted_pct` falls, so the level that gives away least of the word offers most help finding the rest. A hint costs the answer its "clean" status either way.
 
+**Pokémon-branded items are excluded from Spelling.** 25 item names are built from a Pokémon name — `Hoppip water bottle`, `Pikachu doll` — and their phonics level is fiction: an invented proper noun is memorised, not decoded, so asking a child to produce one isn't spelling practice. They're flagged `proper_noun` in `data/item_levels.csv` and skipped here. Reading keeps them, because recognising a name the child already knows by sight is a fair reading task, and the names themselves remain reachable through the Pokémon pool under the generation gate.
+
 The earliest levels have single-figure pools, so the generator never repeats the immediately-previous word for a track when there's an alternative.
 
 ### 7.2 Reading Trail
