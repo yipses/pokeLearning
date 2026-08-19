@@ -84,7 +84,18 @@ The ladder is nine tiers of three, and within a tier only **`hinted_pct`** chang
 
 **A correct placement plays the sound of what was just completed**, and a wrong one is silent — a child who taps for the noise must not be rewarded for guessing. In Full Spelling a tile is one letter, so a sound plays only when that letter *finishes* a chunk: spelling `shutter` says /sh/ when the h lands, never /s/ then /h/.
 
-**The sound depends on the word, not just the letter.** `a` is one sound in `cat`, another in `cake`, and a third in `car`. The chunker has already made `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free; that leaves lone vowels, and the rule reads the word around them — a vowel followed by one consonant and a final `e` is long, otherwise short. The final `e` says nothing at all, which is the correct thing to teach.
+**The sound depends on the word, not just the letter.** `a` is one sound in `cat`, another in `cake`, and a third in `car`. The chunker has already made `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free. Four chunks are not, and each reads the letters around it:
+
+| chunk | rule |
+| --- | --- |
+| lone vowel | a vowel followed by one consonant and a final `e` is long, otherwise short. The final `e` says nothing at all, which is the correct thing to teach |
+| `c` | /s/ before `e`, `i` or `y` — `city`, `ice`, `dance`. Otherwise /k/ |
+| `y` | /ee/ ending a word that has another vowel (`berry`), /igh/ when it is the word's only vowel (`fly`), short /i/ inside a word (`crystal`), consonant /y/ at the start (`yamper`) |
+| `ow` | /oh/ at the end of a word — `snow`, `arrow`. /ow/ elsewhere — `flower` |
+
+Position is measured **within the word**, not the whole name, so the silent `e` in `Ice cream` is still at an end.
+
+`g` looks like it wants the same rule as `c` and deliberately doesn't have one: across the game's vocabulary soft-g would be wrong more often than right — `geodude`, `gengar`, `gyarados`, `gible` are all hard. `oo` and `ea` are genuinely ambiguous — `moon` vs `book`, `bead` vs `bread` — and English has no positional rule for either, so they keep one sound rather than guess.
 
 **When the word is complete it is spoken whole** — /k/ /a/ /t/ … "cat". Sounding out, then blending back. **The round waits for it to finish** before moving on, rather than talking over its own advance; a beat follows so the change isn't abrupt. If the browser never reports the utterance ending, a timeout takes over, and with no speech support at all the round simply continues — it can't hang on a voice that isn't there.
 
@@ -225,7 +236,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `letters`, `longest_word`, `spellable` |
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_pct`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
-| `data/phonemes.csv` | 86 | `chunk`, `context`, `say_as`, `notes` |
+| `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). **1,020 of the 1,021 are spellable** — a name may contain a space or a hyphen, so Iron Hands and Ho-Oh both work; only Type: Null is excluded, for its colon. `rarity` marks **71 legendary** and **23 mythical** species.
 - **Pokopia items**: **922** items across 12 categories, of which **909** can be spelt — the other 13 carry an apostrophe, accent, period or digit and are dropped from both word trails. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.

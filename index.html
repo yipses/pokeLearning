@@ -1070,8 +1070,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 42;
-const APP_BUILD_DATE = "18 Aug 2026";
+const APP_BUILD = 43;
+const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -2791,29 +2791,60 @@ function chunkWord(word){
   }
   return chunks;
 }
-/* What a chunk says *in this word*. Consonants, digraphs, blends, vowel teams
-   and r-controlled vowels are context-free — the chunker has already made each
-   of them one unit, so "car" is c + ar and never asks what a bare "a" says.
+/* What a chunk says *in this word*. Most chunks are context-free — the chunker
+   has already made each digraph, blend and vowel team one unit, so "car" is
+   c + ar and never asks what a bare "a" says.
 
-   That leaves the single vowels, which are the whole difficulty: `a` is one
-   sound in cat, another in cake. The rule reads the word around it — a vowel
-   followed by a single consonant and a final `e` is long, otherwise short — so
-   the same letter gets the right sound in the same word, which grading by level
-   alone could never do. The final `e` itself says nothing, which is the correct
-   thing to teach.
+   Four chunks are not, and each one reads the letters around it:
+
+     single vowels  `a` is one sound in cat, another in cake. A vowel followed
+                    by one consonant and a final `e` is long, otherwise short.
+                    The final `e` itself says nothing, which is what to teach.
+     c              /s/ before e, i or y — city, ice, dance. Otherwise /k/.
+     y              /ee/ ending a word that has another vowel (berry), /igh/
+                    when it is the only vowel (fly), short /i/ inside a word
+                    (crystal), and plain consonant /y/ at the start.
+     ow             /oh/ at the end of a word (snow, arrow), /ow/ elsewhere.
+
+   `g` looks like it wants the same treatment as `c` and must not get it: in
+   this vocabulary soft-g would be wrong more often than right (geodude, gengar,
+   gyarados, gible are all hard). `oo` and `ea` are genuinely ambiguous — moon
+   vs book, bead vs bread — and English has no positional rule for either, so
+   they keep one sound rather than guess.
 
    Anything with no row in data/phonemes.csv stays silent rather than guessing:
    a wrong sound teaches a wrong thing, and silence teaches nothing. */
 const VOWELS = "aeiou";
+/* The chunks of the one word `i` falls inside. Every rule below asks "where in
+   the word", never "where in the string", and item names are often several
+   words — without this the silent e in "Ice cream" is at no end at all and the
+   name comes out "ih-kuh-eh". */
+function wordWindow(chunks, i){
+  let a = i, b = i;
+  while(a > 0 && !isSeparator(chunks[a-1])) a--;
+  while(b < chunks.length - 1 && !isSeparator(chunks[b+1])) b++;
+  return { word: chunks.slice(a, b+1), at: i - a };
+}
+const hasVowelLetter = c => [...c].some(ch => VOWELS.includes(ch));
 function chunkSound(chunks, i){
   const chunk = chunks[i];
   if(!chunk || isSeparator(chunk)) return "";
+  const { word, at } = wordWindow(chunks, i);
+  const last = at === word.length - 1;
+  const next = word[at + 1] || "";
+
+  if(chunk === "c" && "eiy".includes(next[0])) return PHONEMES["c|soft"] || "";
+  if(chunk === "ow" && last) return PHONEMES["ow|end"] || "";
+  if(chunk === "y" && at > 0){
+    if(!last) return PHONEMES["y|short"] || "";
+    const carriesVowel = word.some((c, k) => k !== at && hasVowelLetter(c));
+    return PHONEMES[`y|${carriesVowel ? "ending" : "long"}`] || "";
+  }
   if(chunk.length > 1 || !VOWELS.includes(chunk)) return PHONEMES[`${chunk}|any`] || "";
 
   // a lone vowel: decide long, short, or the silent e that makes it long
-  const rest = chunks.slice(i+1).filter(c => !isSeparator(c));
-  const isWordEnd = chunks.slice(i+1).every(c => isSeparator(c) || false) || rest.length === 0;
-  if(chunk === "e" && isWordEnd && i > 0) return PHONEMES["e|silent"] || "";
+  const rest = word.slice(at + 1);
+  if(chunk === "e" && last && at > 0) return PHONEMES["e|silent"] || "";
   const magicE = rest.length === 2 && rest[0].length === 1 && !VOWELS.includes(rest[0]) && rest[1] === "e";
   return PHONEMES[`${chunk}|${magicE ? "long" : "short"}`] || "";
 }

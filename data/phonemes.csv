@@ -1,6 +1,7 @@
 chunk,context,say_as,notes
 b,any,buh,
-c,any,kuh,hard c; soft c before e/i/y is not distinguished
+c,any,kuh,hard c — cat; soft c is the c|soft row below
+c,soft,suh,soft c before e/i/y — city, ice, dance
 d,any,duh,
 f,any,fuh,
 g,any,guh,hard g
@@ -18,7 +19,10 @@ t,any,tuh,
 v,any,vuh,
 w,any,wuh,
 x,any,kuhs,x says /ks/; no way to write that as one syllable
-y,any,yuh,consonant y
+y,any,yuh,consonant y at the start of a word — yes, yamper
+y,ending,ee,y ending a word that already has a vowel — berry, city
+y,long,eye,y as the only vowel in the word — fly, my
+y,short,ih,y inside a word — crystal, gym
 z,any,zuh,
 a,short,ah,as in cat
 e,short,eh,as in bed
@@ -49,7 +53,8 @@ ee,any,ee,
 oa,any,oh,
 oo,any,ooh,
 ou,any,ow,
-ow,any,ow,
+ow,any,ow,as in cow
+ow,end,oh,ow ending a word — snow, arrow, rainbow
 oi,any,oy,
 oy,any,oy,
 ue,any,you,

@@ -113,6 +113,16 @@ Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped
 - **Reading says the word too**, once the right one is found, and waits the same way. This isn't a breach of "words are never read aloud" — that rule guards the *prompt*, and by the time it speaks the child has already answered, so it confirms rather than tells.
 - **It can't hang on a voice.** `onend` isn't reliable everywhere, so a 3s timeout backs it up (advance at ~4s worst case), and where `speechSynthesis` is missing entirely `speak()` calls back immediately and the round continues at ~1s. Both paths tested by stubbing a voice that never finishes and by deleting `speechSynthesis` outright.
 
+## Phase 33 — Four letters that read the word around them
+
+- **"Should we look at other sounds too, not just c?"** The `c` in `Ice`, `City` and `Dance poster` was saying "kuh". Before fixing it, all 1,840 pool words were chunked and every positional rule that might apply was counted, so the choice was made on numbers rather than on which rule came to mind first.
+- **`y` turned out to be worse than `c`.** It said "yuh" in all 171 words where it isn't the first letter — `berry`, `city`, `ability`, `crystal`, `cyndaquil`. Four rules shipped: `y` (95 words at the end, 76 inside), `c` (88), `ow` at a word end (16). 395 chunk instances now say something different.
+- **The rules that were measured and rejected matter as much as the ones that shipped.** `g` before e/i/y looks like an exact twin of `c` and matches 121 words, but in this vocabulary it would be wrong more often than right — `geodude`, `gengar`, `gyarados`, `gible`, `regirock` are all hard. `a` before `l` matched 70 and narrowed to four real hits. `oo` (78) and `ea` (72) are genuinely ambiguous with no positional rule in English, so they keep one sound. `ch` was checked and is already right in 86 of 87 words.
+- **A bug found while fixing the rules: context was measured against the whole name, not the word.** `chunkSound()` looked at every chunk after the current one, including the next word's, so no vowel in a multi-word item was ever at an end. `Ice cream` came out "ih-kuh-eh" — the silent `e` never fired and neither did magic-e. `wordWindow()` now clips to the word the chunk sits in, which every one of the new rules needed anyway.
+- **`kuh` stays.** A stop consonant can't be said without a vowel, and `ka` would be worse: the schwa in "kuh" fades, `a` is a full vowel a child then blends into *kaat*. The blend-back after the word is what repairs it.
+
+**Still open.** The single vowels are 30% of all chunk instances and the largest remaining source of wrong sounds: magic-e only fires when the vowel is third-from-last, so in a multi-syllable word every vowel falls back to short — `poster`, `open`, `ceiling`. Fixing it needs syllable stress, which is a much bigger piece of work. Also `porygon2` is in the spelling pool, digit and all; the `2` is silent and a child is being asked to spell a number.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
