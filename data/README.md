@@ -72,7 +72,7 @@ Every distinct word in the item catalogue, split on spaces and hyphens, graded 1
 
 ## `item_levels.csv` — the per-item view
 
-Derived from `word_levels.csv`; regenerate rather than edit. A single-word item takes its own word level; a multi-word item takes its **hardest component's**. Items with a blank `level` can't be spelt at all (apostrophes, accents, digits) and are dropped from both trails.
+Derived from `word_levels.csv`; regenerate rather than edit. A single-word item takes its own word level; a multi-word item takes its **hardest component's**. Items with a blank `level` can't be spelt at all (apostrophes, accents, digits) and are dropped from both trails, as are those flagged `shared_art`.
 
 | Column | Notes |
 |---|---|
@@ -81,6 +81,7 @@ Derived from `word_levels.csv`; regenerate rather than edit. A single-word item 
 | `kind` | `single` or `compound` — a space or hyphen makes it compound |
 | `components`, `component_levels` | the parts and their levels, for checking the roll-up |
 | `proper_noun` | `yes` if any component is a Pokémon name. Excluded from Spelling, kept in Reading |
+| `shared_art` | `yes` if this item's picture is byte-identical to another item's. **Excluded from both trails** — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same image and neither can be asked for. Set automatically by hashing every file in `items/`; 97 items, 90 of them otherwise usable |
 | `longest_word` | reference only |
 
 ## `spelling_levels.csv` and `reading_levels.csv` — the ladders

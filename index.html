@@ -1070,7 +1070,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 43;
+const APP_BUILD = 44;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -1214,14 +1214,27 @@ async function loadData(){
   // proper nouns, learned by memory rather than decoded, so Spelling skips them.
   // Reading keeps them: recognising a word the child already knows by sight is a
   // fair reading task, and it's the only place they'd otherwise appear as items.
-  const properOf = {};
-  for(const r of itemLevelRows) properOf[r.item] = !!r.proper_noun;
+  const properOf = {}, sharedArtOf = {};
+  for(const r of itemLevelRows){
+    properOf[r.item] = !!r.proper_noun;
+    sharedArtOf[r.item] = !!r.shared_art;
+  }
   for(const it of ITEMS){
     it.lvl = levelOf[it.n] || 0;
     it.multi = kindOf[it.n] === "compound";
     it.proper = !!properOf[it.n];
+    it.sharedArt = !!sharedArtOf[it.n];
   }
-  GRADED_ITEMS = ITEMS.filter(it => it.lvl > 0 && SPELLABLE_RE.test(it.n));
+  // Both trails rest on one property: the picture identifies the word. 97 items
+  // break it by sharing byte-identical artwork with another item — one generic
+  // building icon serves ten place names, so "Boutique" and "Snowbelle City"
+  // are the same picture and neither can be asked for. Some are plain mislabels
+  // ("Acrylic poster" and "Campfire" share art). Dropping every item that shares
+  // its artwork is one rule that needs no eyeballing and catches all of them; it
+  // costs 90 of 909 usable items, and it has to apply to Reading as much as to
+  // Spelling because an unidentifiable picture is worse as a prompt than as an
+  // answer. tools/classify_words.py hashes the PNGs and writes the column.
+  GRADED_ITEMS = ITEMS.filter(it => it.lvl > 0 && !it.sharedArt && SPELLABLE_RE.test(it.n));
 
   const n = v => Number(v);
   SPELLING_ROWS = spellRows.map(r => ({

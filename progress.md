@@ -123,18 +123,26 @@ Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped
 
 **Still open.** The single vowels are 30% of all chunk instances and the largest remaining source of wrong sounds: magic-e only fires when the vowel is third-from-last, so in a multi-syllable word every vowel falls back to short — `poster`, `open`, `ceiling`. Fixing it needs syllable stress, which is a much bigger piece of work. Also `porygon2` is in the spelling pool, digit and all; the `2` is silent and a child is being asked to spell a number.
 
+## Phase 34 — A picture that names two things names neither
+
+- **Reported from a screenshot:** the word was `Boutique` and the picture was a CD. Both trails rest on one property — the picture identifies the word — and this item didn't have it. The question asked was whether there were others like it.
+- **There were 97.** Hashing all 922 files in `items/` found 38 groups of byte-identical artwork. One generic building icon serves ten place names (`CD`, `Cerulean City`, `Mt. Moon`, `Pallet Town`, `Silph Co.`…); another serves four, which is why the reported screen offered `Boutique` and `Snowbelle City` as two answers to one image. Some are plain mislabels — `Acrylic poster` and `Campfire` are one file, as are `Sign` and `Triangle-design flooring`. A few are legitimate variants (`Green shoots` / `Dry green shoots`) that are still unaskable.
+- **One mechanical rule instead of 922 judgement calls:** drop any item that shares its artwork. It catches all three kinds, needs no eyeballing, and `tools/classify_words.py` writes the `shared_art` column so it stays true as the catalogue changes.
+- **It applies to Reading as much as to Spelling.** An unidentifiable picture is worse as a prompt than as an answer, so the filter sits on `GRADED_ITEMS` and both trails see the same catalogue.
+- **Cost: 90 of 909 usable items, just under 10%.** The pools barely move. Only one dropped item is graded below level 3 (`Sign`), so spelling level 1 goes from 6 candidates to 5 and levels 2–6 each lose one. Every level still has a pool it can draw from.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
 
-The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **909 item names** — climbed by **25 spelling levels** and **10 reading levels**, all four tables authored in a spreadsheet and read at boot. No ladder, word list or promotion gate remains in code.
+The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all four tables authored in a spreadsheet and read at boot. No ladder, word list or promotion gate remains in code.
 
 Open threads, roughly by how much they'd bite:
 
 - **The phoneme respellings still haven't been heard.** A first pass written on paper turned out to be 30% unspeakable (Phase 31); the rewrite is measured at 1%, but *measured* only against a rough test for whether a string can be said at all — not against whether it says the **right** sound. `tools/phonemes.html` exists now and takes about five minutes to run through. `ee` is the one to listen to first.
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
-- **~820 un-eyeballed Pokopia items**, for name/image mismatches like the "Bill"/CD one. Easier now that it's a spreadsheet.
+- **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
 
 Parked, not scheduled: a service worker for genuine offline install; moving the type chart to CSV if it ever needs editing; recorded phoneme audio instead of synthesised respellings; and two deferred Reading modes — **Rhyme Match**, which needs a real-word list and now has one in `word_levels.csv`, and **Clue Words**, which needs per-item colour/size/material data that doesn't exist.
