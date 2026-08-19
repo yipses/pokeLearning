@@ -123,6 +123,22 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **Stored frontiers are rescaled, not reset.** The ladders went 14 → 25 and 6 → 10 over different vocabulary, so a stored index would point somewhere arbitrary. It's rescaled by position — three-quarters up the old ladder starts three-quarters up the new one — stamped with a version so it happens once. Rolling windows are cleared, since they measured a different task.
 - **Verified by generating questions, not by reading code**: 400 spelling questions at each of 25 levels and 300 reading questions at each of 10, asserting every word fell inside its row's pools, every task type matched its `hinted_pct`, every hint allowance matched `max_hints`, every option count matched `wrong_answers`, and every decoy came from the declared distractor pool. Zero violations. Then the migration, both promotion paths, the settings dropdowns and a played round on screen.
 
+## Phase 26 — The drop rate setting now means what it says
+
+- **Setting the wild rate to 50% produced an encounter every single question.** Reported from play. The pity forced one at `round(100/R) - 1` questions, which at 50% is 1 — and the counter is incremented before the check, so every question was forced.
+- **Measuring showed the fault was general.** Across 20,000 questions per setting the observed rate was 8% at a 5% setting, 16% at 10%, 43% at 25% and 100% at anything from 50% up. The pity wasn't trimming the tail of the distribution, it was replacing the middle: at rate R the wait is geometric with mean 100/R, and forcing below that mean cuts in where most of the probability lives.
+- **A first fix — force at twice the mean — was built and pushed before it had been agreed**, which is exactly what the working agreement in `CLAUDE.md` now forbids. It measured well (10% → 11%, 50% → 53%) but it was not the design that was wanted, and it was not mine to choose.
+- **The agreed design separates the two questions.** *When* the pity fires is a felt-experience decision: one question past the average wait — the 11th at 10%, the 3rd at 50%. *What the Settings number means* is a separate decision: it is the **outcome**, not the roll.
+- **So the roll is solved for rather than used.** For a drought capped at `k`, the mean gap is `(1 - (1-p)^k) / p`, so the encounter rate is `p / (1 - (1-p)^k)` — monotonic in `p`, hence a 50-step binary search. A 25% setting runs a raw roll of 11.2% and the pity supplies the rest. Measured over 200,000 questions per setting: every value from 1% to 100% lands on itself, droughts cap at exactly average-plus-one, and 0% and 100% still mean never and always.
+- **The field is relabelled "Expected drop"** — *out of 100 questions, about this many hide a Pokémon* — because the old label ("Chance a question hides a Pokémon") described the roll, and under any pity timer the roll is never what happens.
+- **Worth remembering: "longer than average" is a one-in-three event.** That is the whole reason a pity timer set at the mean wrecks the rate, and it isn't obvious until it's measured.
+
+## Phase 27 — Filled blanks rendered in the wrong case
+
+- **A filled Missing Letter box showed lowercase next to uppercase given letters** — `BL` reading as `bl` beside `A C K`. One line: `.mw-blank` was `text-transform:lowercase` while `.mw-letter` is `uppercase`. Display only; the answer check lowercases the value, so nothing behavioural depended on it.
+- **Not introduced by the ladder rebuild, but exposed by it.** `git log -S` puts that rule in the initial commit, and a correctly typed chunk has always locked lowercase. What changed is how often it's on screen: Missing Letter gained hints (a hint fills a whole chunk at once), and blank counts now come from `hinted_pct`, so at 50% about half the word sits in filled boxes instead of one.
+- Checked while in there: no question renders with a blank already filled (1,020 across all 25 levels), and chunking still holds a sound together — `black glasses` splits `bl · a · ck · ␣ · gl · a · s · s · e · s`.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.
@@ -138,6 +154,7 @@ Parked, not scheduled: a service worker for genuine offline install; moving the 
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
+- `CLAUDE.md` — the working agreement, and where everything lives. Loaded automatically at the start of a session.
 - `progress.md` — this file: how it got here, and what's open.
 - `LessonTrails.md` — curriculum design rationale.
 - `data/README.md` — CSV columns and the editing traps that aren't obvious.
