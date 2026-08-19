@@ -139,6 +139,15 @@ Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped
 - **A pre-existing bug fell out of it.** `input[type="number"]` was styled unscoped for the Settings panel, and an attribute selector outranks a class, so `.math-input`'s 200px/2.4rem had *never* applied — every answer box in the game was rendering at settings size in 16px text. Scoped to `.field` and the answer boxes finally look like answer boxes.
 - **The pad hides when the answer is right** rather than greying out. Measured first: with it left in place the pad itself sat below the fold on a 390×844 phone and **Next** was 136px past the bottom on every screen. The Pokémon frame also shrinks to 96px on maths screens. Both fixes verified on iPhone and iPad viewports, before and after answering.
 
+## Phase 36 — A bank with only one tile in it
+
+- **Reported:** `MEW` blanks to `M` plus one gap, and the bank held exactly one tile. Nothing was decided; the child tapped the only thing there and was told they were right.
+- **It was not one word.** Generating 600 questions at every level put it at **9% of all Missing Letter questions and 45% of level 2**, with another 28% offering exactly two tiles. Nor was it only two-chunk words — `Mug`, `Fan`, `Sink`, `abra`, `Brick` all showed it, because the cause is general: the bank held exactly the missing chunks, and at 25–50% hinted a short word yields one blank.
+- **The bank is padded with decoys to a floor of four**, so one blank becomes a choice of four and four-or-more blanks get nothing extra — the trivial end is fixed without touching the hard end or the authored hinted percentages.
+- **Decoys share a phonics class with the chunk they sit beside.** Random decoys would let a child rule tiles out by shape: next to a vowel team, `str` is visibly wrong without knowing anything, `oo` is not. `MEW` now offers `EW OO OU OY`.
+- **Nothing else changed.** `placeMissingChunk` already shook a wrong tile, said "Not that one" and marked the answer unclean — that path simply had no wrong tile to fire on. The one addition was locking the bank when the word completes, since decoys outlive the answer and the blend-back holds the screen for about a second.
+- Verified over 10,200 generated questions: no bank under four tiles, no decoy sharing no class with an answer, no decoy already in the word, no duplicates. Driven on screen for the wrong tap, the right tap and the end-of-word lock.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.

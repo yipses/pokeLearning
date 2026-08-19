@@ -1106,7 +1106,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 45;
+const APP_BUILD = 46;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -2939,6 +2939,53 @@ let missingState = null;
    is one sound, so tapping it plays /k/ rather than teaching that c and k are
    separate. Tapping the right chunk places it and says its sound; tapping a
    wrong one shakes and stays silent, so nothing rewards tapping for noise. */
+/* Missing Letter's bank used to hold exactly the missing chunks, which meant a
+   word with one blank offered one tile: a guaranteed tap that decided nothing.
+   Measured across the ladder it was 9% of all Missing Letter questions and 45%
+   of level 2. The bank is padded with decoys instead, to a floor of four tiles —
+   so one blank becomes a choice of four and a word with four or more blanks,
+   already hard, gets nothing extra.
+
+   Decoys come from the same phonics class as the chunk they sit beside. A
+   random decoy would let a child rule tiles out by shape rather than by sound:
+   beside a vowel team, `str` is obviously wrong to the eye without knowing
+   anything. `oo` is not. */
+const MISSING_MIN_TILES = 4;
+const CHUNK_CLASSES = [
+  ["a","e","i","o","u"],
+  ["ai","ay","ea","ee","oa","oo","ou","ow","oi","oy","ue","ew","igh"],
+  ["ar","er","ir","or","ur"],
+  ["sh","ch","th","wh","ck","ph","ng","nk","tch","dge"],
+  ["bl","br","cl","cr","dr","fl","fr","gl","gr","pl","pr","sc","sk","sl","sm",
+   "sn","sp","st","sw","tr","tw","qu","scr","spl","spr","str"],
+  ["b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","y","z"],
+];
+const classOfChunk = chunk => CHUNK_CLASSES.find(cls => cls.includes(chunk)) || null;
+
+/* `want` decoys for a bank whose answers are `answers`, drawn from the classes
+   of those answers in turn so a two-blank word gets one decoy per class rather
+   than two for whichever came first. Nothing already in the word is offered —
+   every decoy is a chunk this word does not contain, so it is unambiguously
+   wrong. A class that runs dry just yields fewer tiles. */
+function decoyChunks(answers, chunks, want){
+  if(want <= 0) return [];
+  const taken = new Set([...chunks.filter(c => !isSeparator(c)), ...answers]);
+  const picked = [];
+  const pools = answers.map(a => shuffle((classOfChunk(a) || []).filter(c => !taken.has(c))));
+  let guard = 0;
+  while(picked.length < want && guard++ < 50){
+    let addedAny = false;
+    for(const pool of pools){
+      if(picked.length >= want) break;
+      const next = pool.shift();
+      if(next === undefined || taken.has(next)) continue;
+      taken.add(next); picked.push(next); addedAny = true;
+    }
+    if(!addedAny) break;
+  }
+  return picked;
+}
+
 function renderMissingLetter(p){
   const name = p.poke.n.toLowerCase();
   const img = p.poke.img || artwork(p.poke.id);
@@ -2981,10 +3028,11 @@ function renderMissingLetter(p){
     }
   });
 
-  // The bank holds exactly the missing chunks, shuffled — same bargain as Full
-  // Spelling's letter bank, where the last tile is likewise a free gift.
+  // The bank holds the missing chunks plus enough decoys to make a choice of it.
   const bankEl = $("#missingTiles");
-  const order = shuffle(slots.map(sl => sl.dataset.answer));
+  const answers = slots.map(sl => sl.dataset.answer);
+  const order = shuffle(answers.concat(
+    decoyChunks(answers, chunks, MISSING_MIN_TILES - answers.length)));
   order.forEach(chunk=>{
     const t = document.createElement("button");
     t.className = "tile chunk"; t.textContent = chunk; t.dataset.chunk = chunk;
@@ -3076,6 +3124,9 @@ function finishMissingLetter(){
   const fb = $("#feedback");
   fb.className="feedback good";
   fb.textContent = `✅ Yes! It's ${cap(missingState.name)}!`;
+  // Decoys outlive the answer, and the blend-back holds the screen for about a
+  // second — long enough for a stray tap to be told off about a finished word.
+  $("#missingTiles").querySelectorAll(".tile").forEach(t => t.classList.add("used"));
   const word = missingState.name;
   lockAndAdvance(done => blendBack(word, done));
 }
