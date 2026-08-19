@@ -84,9 +84,20 @@ The ladder is nine tiers of three, and within a tier only **`hinted_pct`** chang
 
 **A correct placement plays the sound of what was just completed**, and a wrong one is silent — a child who taps for the noise must not be rewarded for guessing. In Full Spelling a tile is one letter, so a sound plays only when that letter *finishes* a chunk: spelling `shutter` says /sh/ when the h lands, never /s/ then /h/.
 
-**The sound depends on the word, not just the letter.** `a` is one sound in `cat`, another in `cake`, and a third in `car`. The chunker has already made `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free; that leaves lone vowels, and the rule reads the word around them — a vowel followed by one consonant and a final `e` is long, otherwise short. The final `e` says nothing at all, which is the correct thing to teach.
+**The sound depends on the word, not just the letter.** `a` is one sound in `cat`, another in `cake`, and a third in `car`. The chunker has already made `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free. Four chunks are not, and each reads the letters around it:
 
-**When the word is complete it is spoken whole** — /k/ /a/ /t/ … "cat". Sounding out, then blending back.
+| chunk | rule |
+| --- | --- |
+| lone vowel | a vowel followed by one consonant and a final `e` is long, otherwise short. The final `e` says nothing at all, which is the correct thing to teach |
+| `c` | /s/ before `e`, `i` or `y` — `city`, `ice`, `dance`. Otherwise /k/ |
+| `y` | /ee/ ending a word that has another vowel (`berry`), /igh/ when it is the word's only vowel (`fly`), short /i/ inside a word (`crystal`), consonant /y/ at the start (`yamper`) |
+| `ow` | /oh/ at the end of a word — `snow`, `arrow`. /ow/ elsewhere — `flower` |
+
+Position is measured **within the word**, not the whole name, so the silent `e` in `Ice cream` is still at an end.
+
+`g` looks like it wants the same rule as `c` and deliberately doesn't have one: across the game's vocabulary soft-g would be wrong more often than right — `geodude`, `gengar`, `gyarados`, `gible` are all hard. `oo` and `ea` are genuinely ambiguous — `moon` vs `book`, `bead` vs `bread` — and English has no positional rule for either, so they keep one sound rather than guess.
+
+**When the word is complete it is spoken whole** — /k/ /a/ /t/ … "cat". Sounding out, then blending back. **The round waits for it to finish** before moving on, rather than talking over its own advance; a beat follows so the change isn't abrupt. If the browser never reports the utterance ending, a timeout takes over, and with no speech support at all the round simply continues — it can't hang on a voice that isn't there.
 
 Respellings live in `data/phonemes.csv` (§13), keyed by chunk and context, because a speech synthesiser can't be handed a bare phoneme. Every one must be a **pronounceable syllable**: a synthesiser given `ch` or `lll` spells them out — "see-aitch", "ell ell ell" — so they are written `chuh` and `luh`. The schwa on a continuant is the standard phonics compromise; a synthesiser cannot produce a clean /l/. Anything with no row stays **silent** rather than guessing: a wrong sound teaches a wrong thing.
 
@@ -113,6 +124,8 @@ Difficulty ramps on two columns of its own:
 - **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. It always points at or above the level's own row, so decoys are drawn from a superset of the target pool and the child meets harder words as options before ever being asked to read them. This replaced an older "tricky distractor" flag: difficulty now comes from pool breadth rather than from hand-picking same-length decoys.
 
 **Read-aloud rule: pictures may be named aloud; words never are.** Read & Choose prompts with a picture, which a child may not recognize, so a 🔊 Say it names it — resolving the prompt while leaving the written options to be read. Reverse Read & Choose prompts with the written word and therefore has no speaker on the prompt at all; each picture option carries its own instead. In both modes the child must connect a spoken name to a written one, and nothing ever reads a word aloud to them. There are no hints on either mode.
+
+**Finding the right word speaks it**, and the round waits for that too. This doesn't breach the rule above: the rule guards the *prompt*, and by the time it's spoken the child has already answered, so it confirms rather than tells.
 
 A Reading answer is **clean** when the first tap was the correct one. Using a picture's speaker does not affect cleanliness.
 
@@ -220,13 +233,13 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/items.csv` | 922 | `name`, `image`, `category` |
 | `data/pronunciations.csv` | 184 | `name`, `say_as`, `source` |
 | `data/word_levels.csv` | 807 | `word`, `level`, `pattern`, `letters`, `syllables`, `compound_parts`, `also_matches`, `proper_noun`, `used_in_items`, `previous_level`, `review` |
-| `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `letters`, `longest_word`, `spellable` |
+| `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `shared_art`, `letters`, `longest_word`, `spellable` |
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_pct`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
-| `data/phonemes.csv` | 86 | `chunk`, `context`, `say_as`, `notes` |
+| `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). **1,020 of the 1,021 are spellable** — a name may contain a space or a hyphen, so Iron Hands and Ho-Oh both work; only Type: Null is excluded, for its colon. `rarity` marks **71 legendary** and **23 mythical** species.
-- **Pokopia items**: **922** items across 12 categories, of which **909** can be spelt — the other 13 carry an apostrophe, accent, period or digit and are dropped from both word trails. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
+- **Pokopia items**: **922** items across 12 categories, of which **819** reach the word trails. 13 carry an apostrophe, accent, period or digit; **90 share their artwork with another item** and are dropped from both trails, because a picture that names two things names neither — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same picture. A few are plain mislabels: `Acrylic poster` and `Campfire` are one image. The rule is mechanical — `tools/classify_words.py` hashes every PNG and flags any file that appears twice — so it needs no eyeballing. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
 - **Offline, but served**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path, and nothing is fetched from PokéAPI, GitHub or any fan site at runtime. The one external request is the Google Fonts stylesheet (§14), which degrades to a fallback stack if it fails. Because the CSVs are fetched, though, the page must be **served over http(s)** — browsers block `fetch` on `file://` as cross-origin, so opening `index.html` by double-clicking it shows a load error instead. Once loaded, the browser cache covers repeat visits.
 - **The ladders are data, not code.** `index.html` holds no level list, no word list and no promotion constant — it reads all four from CSV at boot. There is deliberately no fallback copy compiled in: a ladder that exists in two places drifts, and the spreadsheet is the one that gets edited.
 - **Word grading**: `word_levels.csv` grades every distinct word in the item catalogue against the nine phonics patterns; `item_levels.csv` is the derived per-item view, where a single-word item takes its own level and a multi-word item takes its hardest component's. Both are regenerated by `tools/classify_words.py`. `word_levels.csv` is the file to correct — the item view follows from it.
@@ -262,4 +275,5 @@ The reader is five and still learning to read. Every word on a child-facing scre
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
 - **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all four tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.
 - **Assets**: local `pokemon/*.png` and `items/*.png`, referenced via relative paths from `index.html`. A Pokémon's artwork is found by `id` (`25` → `pokemon/25.png`); an item's by its `image` slug.
+- **`tools/phonemes.html`**: a development-only audit page for `data/phonemes.csv`. Every row with a play button, using the app's own voice settings so it audits what a child actually hears; a rough pronounceability test shades the doubtful ones amber and can play only those; anything marked wrong collects into a copyable list. Built after a third of all spoken sounds turned out to be respellings a synthesiser spells out rather than says.
 - **`tools/pronounce.html`**: a development-only audit page, not part of the app. Lists every name with a play button and collects the ones that sound wrong. It reads `POKEMON` and `SPEECH_OVERRIDES` out of a hidden `index.html` iframe, and provenance from `data/pronunciations.csv`, rather than keeping its own copy, so it cannot drift out of sync. Each row plays **Before** (the raw spelling) and **After** (the respelling) with an A/B comparison, and the respelling is editable so a fix can be tried by ear and copied back out.

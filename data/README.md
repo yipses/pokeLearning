@@ -72,7 +72,7 @@ Every distinct word in the item catalogue, split on spaces and hyphens, graded 1
 
 ## `item_levels.csv` — the per-item view
 
-Derived from `word_levels.csv`; regenerate rather than edit. A single-word item takes its own word level; a multi-word item takes its **hardest component's**. Items with a blank `level` can't be spelt at all (apostrophes, accents, digits) and are dropped from both trails.
+Derived from `word_levels.csv`; regenerate rather than edit. A single-word item takes its own word level; a multi-word item takes its **hardest component's**. Items with a blank `level` can't be spelt at all (apostrophes, accents, digits) and are dropped from both trails, as are those flagged `shared_art`.
 
 | Column | Notes |
 |---|---|
@@ -81,6 +81,7 @@ Derived from `word_levels.csv`; regenerate rather than edit. A single-word item 
 | `kind` | `single` or `compound` — a space or hyphen makes it compound |
 | `components`, `component_levels` | the parts and their levels, for checking the roll-up |
 | `proper_noun` | `yes` if any component is a Pokémon name. Excluded from Spelling, kept in Reading |
+| `shared_art` | `yes` if this item's picture is byte-identical to another item's. **Excluded from both trails** — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same image and neither can be asked for. Set automatically by hashing every file in `items/`; 97 items, 90 of them otherwise usable |
 | `longest_word` | reference only |
 
 ## `spelling_levels.csv` and `reading_levels.csv` — the ladders
@@ -117,8 +118,8 @@ Spoken when a child places a letter or chunk correctly. Keyed on `chunk` **and**
 | Column | Notes |
 |---|---|
 | `chunk` | the letter or chunk, lowercase — matches what `chunkWord()` produces |
-| `context` | `any` for consonants, digraphs, blends, vowel teams and r-controlled vowels, which the chunker has already made into single units. Lone vowels take `short`, `long` or `silent`, chosen from the word around them |
+| `context` | which sound of that chunk this row is. `any` covers everything the chunker has already made into a single unit — digraphs, blends, vowel teams, r-controlled vowels — and most consonants. The rest are chosen from the word around the chunk: lone vowels take `short`, `long` or `silent`; `c` takes `any` (hard) or `soft`; `y` takes `any` (consonant), `ending`, `long` or `short`; `ow` takes `any` or `end` |
 | `say_as` | a respelling, not a phoneme — a speech synthesiser handed `b` says "bee", so it gets `buh`. **Blank means silent**, which is how the final `e` is taught |
 | `notes` | free text, ignored by the app |
 
-Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed `ch` says "see-aitch" and handed `lll` says "ell ell ell" — a respelling needs a vowel in it, so /ch/ is written `chuh` and /l/ is `luh`. Check any edit with `tools/phonemes.html`, which plays each row aloud. A chunk with no row is **silent**, deliberately — a wrong sound teaches a wrong thing, silence teaches nothing, so leave a row out rather than guess. And they have still not all been checked by ear — `ee` is the one a rough test can't settle.
+Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed `ch` says "see-aitch" and handed `lll` says "ell ell ell" — a respelling needs a vowel in it, so /ch/ is written `chuh` and /l/ is `luh`. Check any edit with `tools/phonemes.html`, which plays each row aloud. A context the code never asks for is dead weight, and one it asks for with no row is **silent** — so the context names above are fixed by `chunkSound()` in `index.html` and cannot be invented here. A chunk with no row is silent, deliberately — a wrong sound teaches a wrong thing, silence teaches nothing, so leave a row out rather than guess. And they have still not all been checked by ear — `ee` is the one a rough test can't settle.

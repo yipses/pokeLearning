@@ -29,6 +29,16 @@ preference, and it has been broken more than once.
 - `data/*.csv` — the game's content **and** both lesson ladders. `index.html`
   holds no copy of either; the CSVs are authored from a design spreadsheet.
 
+# One file, one namespace
+
+`index.html` holds all the CSS and JS. There is no module scope and no tooling to
+warn you, so **before naming a new class or top-level function, grep for the name.**
+Both collisions this project has hit were silent: a `.tiles` rule reflowed the
+spelling letter bank into three columns, and a second `placeChunk` meant every tap
+in one mode reached the other mode's function and returned with no sound, no error
+and nothing on screen. `grep -o "^function [a-zA-Z0-9_]*" index.html | sort | uniq -d`
+catches the second kind in a second.
+
 # Running it
 
 The app fetches its CSVs, so it must be **served**, not opened from `file://`.

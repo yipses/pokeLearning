@@ -122,7 +122,7 @@ Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vow
 
 Level 1 is a single rung rather than three, so the opening six words are five questions rather than fifteen.
 
-**Both tasks answer by tapping a tile**, and Missing Letter's tiles are whole chunks — a tile reading `CK` is one sound. Input method and difficulty are deliberately independent: `hinted_pct` is the difficulty knob, and how a child answers should have nothing to do with it. The earlier split (tiles for one task, a typed box for the other) welded them together and put an on-screen keyboard over most of the ladder.
+**Both tasks answer the same way, in the same units:** tap a tile holding a chunk. `torch` is three slots and three tiles — `T`, `OR`, `CH` — whether it is being built from nothing or repaired. Input method and difficulty are deliberately independent: `hinted_pct` is the difficulty knob, and how a child answers should have nothing to do with it. Two earlier splits welded them together — first tiles for one task and a typed box for the other, which put an on-screen keyboard over most of the ladder; then chunk tiles on one screen and letter tiles on the other, so `CH` was one group in one place and two in another. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next.
 
 ### Sounding out
 

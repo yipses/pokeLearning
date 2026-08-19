@@ -18,7 +18,7 @@ not themselves item names. Fetch once:
 
 Usage:  python3 tools/classify_words.py [path-to-wordlist]   (run from the repo root)
 """
-import os
+import os, hashlib, collections as _collections
 WORDLIST = (__import__("sys").argv[1] if len(__import__("sys").argv) > 1
             else "/tmp/g10k.txt")
 
@@ -201,6 +201,20 @@ for lv in range(1,10):
     print(f"{lv:<6}{LEVELS[lv]:<20}{len(ws):>7}   {', '.join(ws[:6])}")
 print(f"\ntotal {len(rows)} words -> data/word_levels.csv")
 
+# ---------------- artwork that can't identify one item ----------------
+"""Both trails show a picture and ask for the word, so a picture shared by two
+items can't do its job: Spelling can't say which name is wanted, and Reading can
+put two identical-looking options on screen. It happens three ways — a generic
+disc icon standing in for ten different place names, real variants that look the
+same at icon size ("Green shoots" / "Dry green shoots"), and plain mislabels
+("Acrylic poster" / "Campfire"). One hash catches all three."""
+_by_hash = _collections.defaultdict(list)
+for r in csv.DictReader(open("data/items.csv")):
+    path = os.path.join("items", r["image"] + ".png")
+    if not os.path.exists(path): continue
+    _by_hash[hashlib.sha256(open(path, "rb").read()).hexdigest()].append(r["name"])
+SHARED_ART = {n for names in _by_hash.values() if len(names) > 1 for n in names}
+
 # ---------------- emit data/item_levels.csv ----------------
 # The per-item view: every catalogue name with the level it lands on. Derived
 # from word_levels.csv, so correcting a word there re-grades every item using it.
@@ -219,6 +233,7 @@ for name in items:
         "components": " + ".join(parts) if len(parts) > 1 else "",
         "component_levels": " + ".join(str(l) for l in lvls) if len(parts) > 1 else "",
         "proper_noun": "yes" if any(p in proper for p in parts) else "",
+        "shared_art": "yes" if name in SHARED_ART else "",
         "letters": len(re.sub(r"[^A-Za-z]", "", name)),
         "longest_word": max((len(p) for p in parts), default=""),
         "spellable": "yes" if spellable else "no",
@@ -230,6 +245,7 @@ with open("data/item_levels.csv", "w", newline="") as f:
 
 byl = collections.Counter(r["level"] for r in out if r["level"] != "")
 print(f"   proper-noun items (excluded from Spelling): {sum(1 for r in out if r['proper_noun'])}")
+print(f"   items sharing artwork (excluded from both trails): {sum(1 for r in out if r['shared_art'])}")
 print(f"\ndata/item_levels.csv: {len(out)} items ({sum(1 for r in out if r['spellable']=='no')} unspellable, kept with a blank level)")
 print("items per level:", {k: byl[k] for k in sorted(byl)})
 for probe in ["Sea glass fragments", "Charcoal", "Copper ore", "Log bed"]:
