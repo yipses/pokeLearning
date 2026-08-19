@@ -200,11 +200,24 @@
     background:linear-gradient(90deg, var(--leaf), var(--sun));
     border-radius:999px; transition: width .35s ease;
   }
+  /* Still in use: the Battle screen's win/loss record. The play screen's round
+     counter used to share it and no longer exists. */
   .count-badge{
     background:var(--white); border-radius:999px; padding:6px 14px; font-weight:800;
     color:var(--leaf-deep); box-shadow:var(--shadow-sm); white-space:nowrap;
   }
   .quit{ background:none; border:none; font: inherit; color:var(--ink-soft); cursor:pointer; text-decoration:underline; }
+  /* Quitting mid-round is an icon, not a word. The bar beside it already says
+     how far along the round is, so the count that used to sit here was the same
+     fact written twice — and neither number meant anything to a pre-reader. */
+  .quit-x{
+    width:34px; height:34px; flex:0 0 auto; padding:0; display:grid; place-items:center;
+    border-radius:50%; text-decoration:none; font-size:1rem; font-weight:800; line-height:1;
+    color:var(--ink-soft); background:var(--white); box-shadow:var(--shadow-sm);
+    -webkit-tap-highlight-color:transparent; transition:transform .06s, color .15s;
+  }
+  .quit-x:hover{ color:var(--ink); }
+  .quit-x:active{ transform:translateY(1px); }
 
   /* ---------- Problem area ---------- */
   .stage{ text-align:center; }
@@ -1090,9 +1103,8 @@
   <!-- ============ PLAY ============ -->
   <section id="play" class="hidden">
     <div class="topbar">
-      <button class="quit" id="quitBtn">← Quit</button>
+      <button class="quit quit-x" id="quitBtn" aria-label="Quit" title="Quit">&#10005;</button>
       <div class="progress"><i id="progFill"></i></div>
-      <div class="count-badge" id="countBadge">0 / 0</div>
     </div>
 
     <div class="grass-strip" id="grassStrip"></div>
@@ -1177,7 +1189,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 53;
+const APP_BUILD = 54;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -2065,7 +2077,6 @@ function startGame(){
 }
 
 function updateProgress(){
-  $("#countBadge").textContent = `${idx} / ${queue.length}`;
   $("#progFill").style.width = (idx/queue.length*100) + "%";
 }
 
@@ -3888,7 +3899,6 @@ function finishBattle(){
 function finish(){
   recordDailyCompletion();
   updateProgress();
-  $("#countBadge").textContent = `${queue.length} / ${queue.length}`;
   $("#progFill").style.width = "100%";
   // No score here: every mode retries until correct, so a finished round is
   // always 100% and a "perfect run" reward meant nothing. The reward is what

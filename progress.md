@@ -212,6 +212,12 @@ Laid out against what comparable apps actually do, rather than from taste. The c
 
 **Found, not fixed:** the Settings screen scrolls horizontally at 360px wide — about 115px of overflow, caused by the level `<select>` elements sizing to their longest option ("Within 100, with regrouping"). It predates this work (build 51 overflowed by 127px) and is untouched by it.
 
+## Phase 44 — Two things saying one thing
+
+- **The round's top bar lost its `3 / 10` chip.** The progress bar beside it already showed the same fact, and neither number meant anything to a child who cannot read them yet. The bar now runs nearly the full width.
+- **"← Quit" became a ✕.** An icon, with an `aria-label`, in a round button matching the rest of the chrome. The `← Back` links on Settings, Battle, Pokédex and My progress keep their wording — those are for whoever is navigating, not for a child mid-round.
+- **Nearly deleted a rule that was still in use.** `.count-badge` looked like the removed chip's own style; it is also the Battle screen's win/loss record, which would have lost its pill and shadow silently. Caught by grepping the class before removing it, which is the same check `CLAUDE.md` prescribes for function names — and the third time in this project that a shared name has nearly bitten. The rule stayed; only the play-screen element went.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.

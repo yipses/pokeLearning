@@ -35,7 +35,7 @@ Seven top-level screens, all within one `index.html`:
 |---|---|
 | **Start** | Three status tiles, one of your Pokémon shown big, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
-| **Play** | One challenge at a time, progress bar, grass encounter strip, quit button |
+| **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
 | **Pokédex** | Every Pokémon, one generation per tab, caught ones in color, uncaught ones as grey silhouettes |
@@ -177,7 +177,9 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the ⚙️ Settings button at the far right of the same line. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
-The HUD is home-only. A round has its own progress bar and a Quit button, and a second row of counters there would be two things to read at once.
+The HUD is home-only. A round has its own progress bar and a ✕, and a second row of counters there would be two things to read at once.
+
+**The round's top bar is a ✕ and a bar, nothing else.** It used to carry a `3 / 10` chip beside the bar; that was the same fact written twice, and neither number meant anything to a child who cannot yet read them — the bar's fill says how far along the round is. Quitting is an icon rather than the word "Quit" for the same reason. The ✕ keeps an `aria-label`, and the ← Back links on the other screens are unchanged: they are for whoever is navigating, not mid-round.
 
 | Counter | Shows | Goes to |
 |---|---|---|
