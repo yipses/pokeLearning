@@ -226,6 +226,9 @@
     font-size:1.9rem; font-weight:800; text-transform:uppercase; color:var(--ink);
     box-shadow:var(--shadow-sm);
   }
+  /* A chunk is one sound and gets one slot, so a slot has to fit up to three
+     letters — "str", "igh" — without the one-letter case looking stretched. */
+  .slot.chunk{ width:auto; min-width:52px; padding:0 8px; }
   .slot.active{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
   .slot.filled{ background:var(--cream); }
 
@@ -1067,7 +1070,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 40;
+const APP_BUILD = 41;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -2486,6 +2489,15 @@ function renderTrendChart(trend, color, gates){
 }
 
 /* ---------------- SPELLING ---------------- */
+/* Full Spelling. Slots and tiles both hold a *chunk*, not a letter: "torch" is
+   three slots — T, OR, CH — and three tiles. Two reasons. A chunk is the unit
+   with a sound, so a tile can say what it is; and Missing Letter already worked
+   this way, so CH was one thing on one screen and two on the other, which is
+   worse than either choice made consistently.
+
+   Typing still works. Keystrokes buffer until they complete the expected chunk,
+   so spelling "torch" on a keyboard is t-o-r-c-h exactly as before — the buffer
+   fills OR when the r lands and CH when the h does. */
 function renderSpell(p){
   const name = p.poke.n.toLowerCase();
   const img = p.poke.img || artwork(p.poke.id);
@@ -2507,21 +2519,21 @@ function renderSpell(p){
     </div>
   `;
 
-  // Separators are drawn in already resolved and get no slot, so `slotEls` holds
-  // exactly the letters the child has to supply and stays index-aligned with
-  // `target`. Each word also gets its own group, so a name like "sturdy stick"
-  // wraps between its words on a narrow screen rather than mid-word.
+  /* Separators are drawn in already resolved and get no slot, so `target` holds
+     exactly the chunks the child has to supply. Each word gets its own group, so
+     a name like "sturdy stick" wraps between its words rather than mid-word. */
+  const chunks = chunkWord(name);
   const slotsEl = $("#slots");
-  const slotEls = [];
+  const slotEls = [], target = [], chunkAt = [];
   let group = null;
-  for(const ch of name){
-    if(isSeparator(ch)){
+  chunks.forEach((chunk, ci)=>{
+    if(isSeparator(chunk)){
       const sep = document.createElement("div");
       sep.className = "slot-sep";
-      sep.textContent = ch === "-" ? "-" : "";
+      sep.textContent = chunk === "-" ? "-" : "";
       slotsEl.appendChild(sep);
       group = null;
-      continue;
+      return;
     }
     if(!group){
       group = document.createElement("div");
@@ -2529,45 +2541,141 @@ function renderSpell(p){
       slotsEl.appendChild(group);
     }
     const s = document.createElement("div");
-    s.className="slot"; s.dataset.i = slotEls.length;
+    s.className = "slot chunk"; s.dataset.i = slotEls.length;
     group.appendChild(s);
-    slotEls.push(s);
-  }
+    slotEls.push(s); target.push(chunk); chunkAt.push(ci);
+  });
 
-  const target = name.replace(/[^a-z]/g, "").split("");
-  let letters = shuffle(target);
+  let order = shuffle(target.slice());
   // make sure the jumble isn't accidentally the correct spelling
   let tries = 0;
-  while(target.length > 1 && letters.join("") === target.join("") && tries < 25){
-    letters = shuffle(target); tries++;
+  while(target.length > 1 && order.join("") === target.join("") && tries < 25){
+    order = shuffle(target.slice()); tries++;
   }
   const tilesEl = $("#tiles");
-  letters.forEach((ch,i)=>{
+  order.forEach((chunk,i)=>{
     const t = document.createElement("button");
-    t.className="tile"; t.textContent=ch; t.dataset.ti=i;
-    t.addEventListener("click", ()=> placeLetter(ch, t));
+    t.className = "tile chunk"; t.textContent = chunk; t.dataset.chunk = chunk; t.dataset.ti = i;
+    t.addEventListener("click", ()=> placeChunk(chunk, t));
     tilesEl.appendChild(t);
   });
 
-  /* A tile is one letter, but a sound is one chunk — so "shutter" must say /sh/
-     when the h lands, not /s/ then /h/. This maps each letter position to the
-     chunk it finishes, and only those positions speak. */
-  const chunks = chunkWord(name);
-  const chunkEndAt = {};
-  let li = 0;
-  chunks.forEach((c, ci)=>{
-    if(isSeparator(c)) return;
-    li += c.length;
-    chunkEndAt[li-1] = ci;
-  });
-  const state = { name, target, slotEls, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p, chunks, chunkEndAt };
-  spellState = state;
+  spellState = { name, chunks, target, chunkAt, slotEls, filled:[],
+                 tileEls:[...tilesEl.children], typed:"", hintsUsed:0, hintLimit, p };
   refreshSlots();
 
-  $("#backspace").addEventListener("click", backspaceLetter);
+  $("#backspace").addEventListener("click", backspaceChunk);
   $("#clear").addEventListener("click", clearSpell);
-  $("#hint").addEventListener("click", hintLetter);
+  $("#hint").addEventListener("click", hintChunk);
   $("#say").addEventListener("click", ()=> speakName(name));
+}
+
+function hintChunk(){
+  if(!spellState) return;
+  // Every hint in the allowance is usable. This guard used to fire on SPENDING
+  // the last one, which revealed the final chunk and then immediately locked the
+  // board and swapped the word — so a 3-hint word really gave 2.
+  if(spellState.hintsUsed >= spellState.hintLimit) return;
+  const target = spellState.target;
+  while(spellState.filled.some((f,i)=> f.chunk !== target[i])) backspaceChunk();
+  const pos = spellState.filled.length;
+  if(pos >= target.length) return;
+  const chunk = target[pos];
+  const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.dataset.chunk === chunk);
+  if(!tile) return;
+  const wasLast = pos === target.length - 1;
+  spellState.p._notClean = true;
+  spellState.typed = "";
+  placeChunk(chunk, tile);
+  if(wasLast) return;                    // that hint finished the word
+  spellState.hintsUsed++;
+  updateHintButton();
+}
+
+function updateHintButton(){
+  const btn = $("#hint");
+  if(!btn || !spellState) return;
+  const left = Math.max(0, spellState.hintLimit - spellState.hintsUsed);
+  btn.textContent = `💡 Hint (${left} left)`;
+  btn.disabled = left === 0;
+}
+
+let spellState=null;
+
+function refreshSlots(){
+  spellState.slotEls.forEach((s,i)=>{
+    s.textContent = spellState.filled[i] ? spellState.filled[i].chunk : "";
+    s.classList.toggle("filled", !!spellState.filled[i]);
+    s.classList.toggle("active", i===spellState.filled.length);
+  });
+}
+
+function placeChunk(chunk, tileEl){
+  if(!spellState) return;
+  if(spellState.filled.length >= spellState.target.length) return;
+  if(!tileEl){
+    tileEl = spellState.tileEls.find(t => !t.classList.contains("used") && t.dataset.chunk===chunk);
+    if(!tileEl) return;
+  }
+  const fb = $("#feedback");
+  if(fb && fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
+  const pos = spellState.filled.length;
+  tileEl.classList.add("used");
+  spellState.filled.push({chunk, tile:tileEl});
+  refreshSlots();
+  if(chunk !== spellState.target[pos]){ markWrong(); return; }
+  // Right chunk: say it. Wrong taps stay silent — a child who taps for the noise
+  // would otherwise be rewarded for guessing.
+  speakChunk(spellState.chunks, spellState.chunkAt[pos]);
+  if(spellState.filled.length === spellState.target.length) checkSpell();
+}
+
+function backspaceChunk(){
+  if(!spellState || spellState.filled.length===0) return;
+  spellState.typed = "";
+  const last = spellState.filled.pop();
+  last.tile.classList.remove("used");
+  $("#feedback").textContent=""; $("#feedback").className="feedback";
+  refreshSlots();
+}
+function clearSpell(){
+  if(!spellState) return;
+  spellState.filled.forEach(f=>f.tile.classList.remove("used"));
+  spellState.filled=[]; spellState.typed="";
+  $("#feedback").textContent=""; $("#feedback").className="feedback";
+  refreshSlots();
+}
+
+/* Sounds out, then blends back: /t/ /or/ /ch/ ... "torch". Waits for the last
+   phoneme to finish, because speak() cancels whatever is mid-flight and would
+   otherwise cut it off. */
+function blendBack(name){
+  setTimeout(()=> speakName(name), 700);
+}
+
+function checkSpell(){
+  const guess = spellState.filled.map(f=>f.chunk).join("");
+  const fb = $("#feedback");
+  if(guess === spellState.target.join("")){
+    correct++;
+    if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, !spellState.p._notClean);
+    fb.className="feedback good";
+    fb.textContent = `✅ Yes! It's ${cap(spellState.name)}!`;
+    blendBack(spellState.name);
+    lockAndAdvance();
+  } else {
+    markWrong();   // safety net; per-chunk checking usually catches it first
+  }
+}
+
+function markWrong(){
+  const fb = $("#feedback");
+  const slots = $("#slots");
+  slots.classList.add("shake");
+  setTimeout(()=>{ slots.classList.remove("shake"); }, 450);
+  if(spellState){ spellState.p._notClean = true; backspaceChunk(); }   // remove the wrong chunk, keep the correct ones before it
+  fb.className="feedback bad";
+  fb.textContent = "❌ Not that one — try again!";
 }
 
 /* ---------------- Pronunciation ----------------
@@ -2634,119 +2742,6 @@ function speak(text){
 function speakName(name){
   if(!("speechSynthesis" in window)){ alert("Sorry, your browser can't say names out loud."); return; }
   speak(sayAs(name));
-}
-
-function hintLetter(){
-  if(!spellState) return;
-  // Every hint in the allowance is usable. This guard used to fire on SPENDING
-  // the last one, which revealed the final letter and then immediately locked
-  // the board and swapped the word — so a 3-hint word really gave 2, and a
-  // 1-hint word gave none.
-  if(spellState.hintsUsed >= spellState.hintLimit) return;
-  const target = spellState.target;            // letters only — separators are never hinted
-  // undo any wrong letters so the filled prefix is correct before revealing the next one
-  while(spellState.filled.some((f,i)=> f.ch !== target[i])) backspaceLetter();
-  const pos = spellState.filled.length;
-  if(pos >= target.length) return;             // already complete
-  const ch = target[pos];
-  const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.textContent === ch);
-  if(!tile) return;
-  const wasLastLetter = pos === target.length - 1;
-  spellState.p._notClean = true;                // hint used — this attempt no longer counts as clean
-  placeLetter(ch, tile);
-  if(wasLastLetter) return;                     // that hint finished the word — checkSpell() already handled it
-  spellState.hintsUsed++;
-  updateHintButton();
-}
-
-function updateHintButton(){
-  const btn = $("#hint");
-  if(!btn || !spellState) return;
-  const left = Math.max(0, spellState.hintLimit - spellState.hintsUsed);
-  btn.textContent = `💡 Hint (${left} left)`;
-  btn.disabled = left === 0;
-}
-
-
-let spellState=null;
-
-function refreshSlots(){
-  const slots = spellState.slotEls;
-  slots.forEach((s,i)=>{
-    s.textContent = spellState.filled[i] ? spellState.filled[i].ch : "";
-    s.classList.toggle("filled", !!spellState.filled[i]);
-    s.classList.toggle("active", i===spellState.filled.length);
-  });
-}
-
-function placeLetter(ch, tileEl){
-  if(!spellState) return;
-  if(spellState.filled.length >= spellState.target.length) return;
-  // pick a specific unused tile matching this char (for keyboard typing tileEl may be null)
-  if(!tileEl){
-    tileEl = spellState.tileEls.find(t => !t.classList.contains("used") && t.textContent===ch);
-    if(!tileEl) return;
-  }
-  const fb = $("#feedback");
-  if(fb && fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
-  const pos = spellState.filled.length;                 // slot this letter goes into
-  tileEl.classList.add("used");
-  spellState.filled.push({ch, tile:tileEl});
-  refreshSlots();
-  if(ch !== spellState.target[pos]){ markWrong(); return; } // wrong letter — tell them right away
-  // Right letter: say the sound it just completed. Wrong taps stay silent — a
-  // child who taps for the noise would otherwise be rewarded for guessing.
-  if(spellState.chunkEndAt && spellState.chunkEndAt[pos] !== undefined){
-    speakChunk(spellState.chunks, spellState.chunkEndAt[pos]);
-  }
-  if(spellState.filled.length === spellState.target.length) checkSpell();
-}
-
-function backspaceLetter(){
-  if(!spellState || spellState.filled.length===0) return;
-  const last = spellState.filled.pop();
-  last.tile.classList.remove("used");
-  $("#feedback").textContent=""; $("#feedback").className="feedback";
-  refreshSlots();
-}
-function clearSpell(){
-  if(!spellState) return;
-  spellState.filled.forEach(f=>f.tile.classList.remove("used"));
-  spellState.filled=[];
-  $("#feedback").textContent=""; $("#feedback").className="feedback";
-  refreshSlots();
-}
-
-/* Sounds out, then blends back: /k/ /a/ /t/ ... "cat". Waits for the last
-   phoneme to finish, because speak() cancels whatever is mid-flight and would
-   otherwise cut it off. */
-function blendBack(name){
-  setTimeout(()=> speakName(name), 700);
-}
-
-function checkSpell(){
-  const guess = spellState.filled.map(f=>f.ch).join("");
-  const fb = $("#feedback");
-  if(guess === spellState.target.join("")){
-    correct++;
-    if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, !spellState.p._notClean);
-    fb.className="feedback good";
-    fb.textContent = `✅ Yes! It's ${cap(spellState.name)}!`;
-    blendBack(spellState.name);
-    lockAndAdvance();
-  } else {
-    markWrong();   // safety net; per-letter checking usually catches it first
-  }
-}
-
-function markWrong(){
-  const fb = $("#feedback");
-  const slots = $("#slots");
-  slots.classList.add("shake");
-  setTimeout(()=>{ slots.classList.remove("shake"); }, 450);
-  if(spellState){ spellState.p._notClean = true; backspaceLetter(); }   // remove the wrong letter, keeping the correct ones before it
-  fb.className="feedback bad";
-  fb.textContent = "❌ Not that one — try again!";
 }
 
 /* ---------------- MISSING LETTER (Spelling Phase B) ----------------
@@ -2895,7 +2890,7 @@ function renderMissingLetter(p){
   order.forEach(chunk=>{
     const t = document.createElement("button");
     t.className = "tile chunk"; t.textContent = chunk; t.dataset.chunk = chunk;
-    t.addEventListener("click", ()=> placeChunk(chunk, t));
+    t.addEventListener("click", ()=> placeMissingChunk(chunk, t));
     bankEl.appendChild(t);
   });
 
@@ -2920,7 +2915,11 @@ function nextMissingSlot(){
   return missingState ? missingState.slots.find(sl => !sl.classList.contains("mw-correct")) : null;
 }
 
-function placeChunk(chunk, tileEl){
+/* Named apart from Full Spelling's placeChunk deliberately: both renderers now
+   place chunks, and when they shared a name the later declaration silently won —
+   every tap in Full Spelling reached this function, found no missingState and
+   returned without a sound, an error, or a mark on screen. */
+function placeMissingChunk(chunk, tileEl){
   const st = missingState;
   if(!st) return;
   const slot = nextMissingSlot();
@@ -3284,16 +3283,25 @@ function lockAndAdvance(){
 document.addEventListener("keydown", e=>{
   if($("#play").classList.contains("hidden")) return;
   if(!spellState) return;
-  if(e.key==="Backspace"){ e.preventDefault(); backspaceLetter(); return; }
+  if(e.key==="Backspace"){ e.preventDefault(); backspaceChunk(); return; }
   // Separators are already placed, so typing one is a no-op — but swallow the key
   // anyway: on a two-word name a child WILL reach for the spacebar, and letting it
   // through scrolls the play screen out from under them.
   if(isSeparator(e.key)){ e.preventDefault(); return; }
   const ch = e.key.toLowerCase();
   if(ch.length===1 && ch>="a" && ch<="z"){
-    // only place if that letter is still available
-    const avail = spellState.tileEls.find(t=>!t.classList.contains("used") && t.textContent===ch);
-    if(avail) placeLetter(ch, avail);
+    // Buffer keystrokes until they complete the chunk that comes next, so typing
+    // t-o-r-c-h fills T, then OR, then CH.
+    const want = spellState.target[spellState.filled.length];
+    if(!want) return;
+    const buf = spellState.typed + ch;
+    if(want.startsWith(buf)){
+      spellState.typed = buf;
+      if(buf === want){ spellState.typed = ""; placeChunk(want, null); }
+    } else {
+      spellState.typed = "";
+      markWrong();
+    }
   }
 });
 

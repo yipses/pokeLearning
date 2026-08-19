@@ -97,6 +97,15 @@ Condensed. Where a later phase replaced one of these outright — the Phase A/B 
 - **`data/phonemes.csv` holds the respellings**, keyed by chunk and context. A synthesiser can't take a bare phoneme, so `b` is written `buh`. A chunk with no row is silent by design.
 - **Unverified by ear, and that matters.** These are respellings chosen on paper. This project has been burned before by assuming how a synthesiser reads something — the whole `pronunciations.csv` saga. Short `o` and long `o` are both `oh` right now, which is certainly wrong for one of them. An audit page was deliberately deferred.
 
+## Phase 31 — Three reports, one of them 30% of the feature
+
+Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped in `resort chair`. All three were real; the first two were the same fault.
+
+- **A third of every sound the app played was unpronounceable.** Measured across 1,056 words and 9,302 spoken events: **2,799 were gibberish**. The respellings I wrote had no vowel to hang a syllable on (`ch`, `th`, `ng`, `ks`) or were the same letter repeated (`lll`, `mmm`, `sss`, `rrr`), and a synthesiser spells those out. The worst were the commonest letters in English — `n` 547 times, `l` 543, `s` 331. Rewritten as real syllables (`chuh`, `luh`, `suh`, `ung`): **30% → 1%**, and the 1% is `ee`, which the test flags and probably shouldn't. The lesson is that this was catchable without ears: a respelling with no vowel in it was never going to be spoken as a syllable.
+- **`CH` wasn't grouped because Full Spelling still dealt in letters.** Not a chunking bug — `chunkWord("resort chair")` groups it correctly — but Missing Letter had moved to chunk tiles while Full Spelling hadn't, so `CH` was one thing on one screen and two on the other. Full Spelling now uses chunk slots and chunk tiles too: `torch` is `T` `OR` `CH`, three slots, three tiles. Typing still works — keystrokes buffer until they complete the chunk that comes next.
+- **And that refactor introduced a name collision that hid itself.** Both renderers had a `placeChunk`, so the later declaration silently won: every tap in Full Spelling reached Missing Letter's copy, found no `missingState`, and returned with no sound, no error and no mark on screen. Renamed, and a check for duplicate top-level function names now takes one grep. That is the **second** collision this session after `.tiles` — in a single-file app with one global namespace, the check belongs in the routine, not in hindsight.
+- **`tools/phonemes.html` exists now**, deferred once and overdue: every row with a play button, amber shading on anything the pronounceability test doubts, and a collector for whatever sounds wrong. It would have caught all of this in five minutes.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
