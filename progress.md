@@ -153,6 +153,16 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **Fires on catches only.** The same card opens whenever a Pokédex entry is tapped, and confetti on every browse would be wallpaper. It's an explicit `celebrate` flag, set by the catch reveal and by the results screen's caught-this-round chips, and cleared whenever the card re-renders — so walking to an evolution relative drops the burst rather than stacking another.
 - No library: plain spans with per-piece drift, spin and timing as CSS custom properties, removed once the longest finishes. Hidden entirely under `prefers-reduced-motion`, alongside the caption pop.
 
+## Phase 30 — One way to answer, and the sounds to go with it
+
+- **Missing Letter answers by tapping now, like Full Spelling.** It had been typed `<input>` boxes since the first build — two input mechanics under one "Spelling" heading, and since 17 of the 25 levels are that task, an on-screen keyboard covering half a tablet for most of the ladder. Input method and difficulty were accidentally welded together; the level's `hinted_pct` is the difficulty knob, and how you answer should have nothing to do with it.
+- **Its tiles are chunks, not letters.** A tile reading `CK` is one sound, which is the whole point: tapping it plays /k/ rather than implying c and k are separate. About a fifth of blanks are multi-letter chunks, so it shows up constantly.
+- **A correct placement speaks; a wrong one is silent.** A five-year-old who discovers that tapping makes noises will tap for noise, so a miss shakes and says nothing. In Full Spelling a tile is a single letter, so the sound waits for the letter that *finishes* a chunk — `shutter` says /sh/ when the h lands, never /s/ then /h/.
+- **The sound comes from the word, not the letter.** `a` differs in `cat`, `cake` and `car`. The chunker already makes `ar` one unit, so only lone vowels need deciding: a vowel followed by one consonant and a final `e` is long, otherwise short, and the final `e` itself says nothing. Verified: `cat` gives ah, `cake` gives ay, `car` gives ar, `sock` says the ck once.
+- **Completing a word speaks it whole** — sounding out, then blending back, which is the actual phonics move.
+- **`data/phonemes.csv` holds the respellings**, keyed by chunk and context. A synthesiser can't take a bare phoneme, so `b` is written `buh`. A chunk with no row is silent by design.
+- **Unverified by ear, and that matters.** These are respellings chosen on paper. This project has been burned before by assuming how a synthesiser reads something — the whole `pronunciations.csv` saga. Short `o` and long `o` are both `oh` right now, which is certainly wrong for one of them. An audit page was deliberately deferred.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.

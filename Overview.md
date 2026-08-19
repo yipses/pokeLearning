@@ -75,8 +75,20 @@ Pokémon are gated by length rather than by phonics level because invented names
 
 The ladder is nine tiers of three, and within a tier only **`hinted_pct`** changes — the share of the word given away, 50% → 25% → 0%:
 
-- **Above 0% it's Missing Letter** — the word appears with that share of its letters showing and the rest as blanks. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
+- **Above 0% it's Missing Letter** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of the missing **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
 - **At 0% it's Full Spelling** — empty tiles, the whole word built from shuffled letters (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear.
+
+**Both tasks answer the same way: tap a tile.** Missing Letter used to be typed `<input>` boxes, which meant two input mechanics under one heading and — since 17 of the 25 levels are that task — an on-screen keyboard covering half a tablet for most of the ladder. Its tiles hold whole chunks rather than letters, so a tile reads `CK`, which is one sound.
+
+### 7.1a Sounding out
+
+**A correct placement plays the sound of what was just completed**, and a wrong one is silent — a child who taps for the noise must not be rewarded for guessing. In Full Spelling a tile is one letter, so a sound plays only when that letter *finishes* a chunk: spelling `shutter` says /sh/ when the h lands, never /s/ then /h/.
+
+**The sound depends on the word, not just the letter.** `a` is one sound in `cat`, another in `cake`, and a third in `car`. The chunker has already made `ar` a single unit, so r-controlled vowels, vowel teams, digraphs and blends are context-free; that leaves lone vowels, and the rule reads the word around them — a vowel followed by one consonant and a final `e` is long, otherwise short. The final `e` says nothing at all, which is the correct thing to teach.
+
+**When the word is complete it is spoken whole** — /k/ /a/ /t/ … "cat". Sounding out, then blending back.
+
+Respellings live in `data/phonemes.csv` (§13), keyed by chunk and context, because a speech synthesiser can't be handed a bare phoneme. Anything with no row stays **silent** rather than guessing: a wrong sound teaches a wrong thing.
 
 **`max_hints`** is per level and applies to both tasks. It rises as `hinted_pct` falls, so the level that gives away least of the word offers most help finding the rest. A hint costs the answer its "clean" status either way.
 

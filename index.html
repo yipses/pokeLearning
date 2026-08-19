@@ -273,17 +273,19 @@
     content:""; width:16px; height:5px; border-radius:3px;
     background:var(--sky-deep); align-self:flex-end; margin-bottom:10px;
   }
-  .mw-blank{
-    height:52px; font:inherit; font-weight:800; font-size:1.6rem; text-align:center;
-    /* Uppercase to match the given letters beside it, and the spelling tiles
-       everywhere else. Display only — the answer check lowercases the value, so
-       it doesn't matter what the child actually types. */
-    text-transform:uppercase; border-radius:12px; border:3px solid var(--berry);
-    background:var(--white); color:var(--ink); outline:none; padding:0 2px;
+  /* A slot waiting for its chunk tile. Uppercase to match the given letters
+     beside it, and the tiles everywhere else. */
+  .mw-slot{
+    height:52px; display:inline-flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1.6rem; text-transform:uppercase;
+    border-radius:12px; border:3px solid var(--berry); background:var(--white);
+    color:var(--ink); padding:0 2px;
   }
-  .mw-blank:focus{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
-  .mw-blank.mw-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
-  .mw-blank.shake{ animation: shake .42s; }
+  .mw-slot.current{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
+  .mw-slot.mw-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
+  /* A chunk tile holds a whole sound, so it has to grow past the letter tiles. */
+  .tile.chunk{ width:auto; min-width:54px; padding:0 12px; text-transform:uppercase; }
+  .tile.shake{ animation: shake .42s; }
 
   /* reading: Read & Choose / Reverse Read & Choose */
   .reading-word{ font-size: clamp(28px, 7vw, 44px); font-weight:800; color:var(--ink); margin:8px 0 18px; text-transform:capitalize; }
@@ -799,7 +801,8 @@
     .mw-letter{ width:28px; height:44px; font-size:1.3rem; }
     .mw-sep{ width:18px; height:44px; font-size:1.3rem; }
     .mw-sep:empty::before{ width:12px; margin-bottom:8px; }
-    .mw-blank{ height:44px; font-size:1.3rem; }
+    .mw-slot{ height:44px; font-size:1.3rem; }
+    .tile.chunk{ min-width:46px; padding:0 9px; }
     .reading-opt-img img{ width:48px; height:48px; }
     .reading-say-mini{ width:26px; height:26px; font-size:12px; }
     .reading-opt-word{ font-size:.95rem; }
@@ -1064,7 +1067,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 38;
+const APP_BUILD = 39;
 const APP_BUILD_DATE = "18 Aug 2026";
 
 function renderAbout(){
@@ -1100,6 +1103,7 @@ let SPELLABLE_ITEMS = [];
    is deliberately no copy baked into the code: a ladder that lives in two places
    drifts, and the spreadsheet is the one that gets edited. */
 let GRADED_ITEMS = [];
+let PHONEMES = {};
 let SPELLING_ROWS = [];
 let READING_ROWS = [];
 
@@ -1163,13 +1167,14 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 const isMultiWord = n => n.includes(" ");
 
 async function loadData(){
-  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows] = await Promise.all([
+  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, phonemeRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
     fetchCsv("data/item_levels.csv"),
     fetchCsv("data/spelling_levels.csv"),
     fetchCsv("data/reading_levels.csv"),
+    fetchCsv("data/phonemes.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -1228,6 +1233,10 @@ async function loadData(){
     distractorLevel: n(r.distractor_level),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
+
+  // Keyed chunk|context. A blank say_as is meaningful — the silent e says nothing.
+  PHONEMES = {};
+  for(const r of phonemeRows) PHONEMES[`${r.chunk}|${r.context}`] = r.say_as || "";
 
   if(!POKEMON.length) throw new Error("data/pokemon.csv is empty");
   if(!ITEMS.length) throw new Error("data/items.csv is empty");
@@ -2541,7 +2550,18 @@ function renderSpell(p){
     tilesEl.appendChild(t);
   });
 
-  const state = { name, target, slotEls, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p };
+  /* A tile is one letter, but a sound is one chunk — so "shutter" must say /sh/
+     when the h lands, not /s/ then /h/. This maps each letter position to the
+     chunk it finishes, and only those positions speak. */
+  const chunks = chunkWord(name);
+  const chunkEndAt = {};
+  let li = 0;
+  chunks.forEach((c, ci)=>{
+    if(isSeparator(c)) return;
+    li += c.length;
+    chunkEndAt[li-1] = ci;
+  });
+  const state = { name, target, slotEls, filled:[], tileEls:[...tilesEl.children], hintsUsed:0, hintLimit, p, chunks, chunkEndAt };
   spellState = state;
   refreshSlots();
 
@@ -2675,6 +2695,11 @@ function placeLetter(ch, tileEl){
   spellState.filled.push({ch, tile:tileEl});
   refreshSlots();
   if(ch !== spellState.target[pos]){ markWrong(); return; } // wrong letter — tell them right away
+  // Right letter: say the sound it just completed. Wrong taps stay silent — a
+  // child who taps for the noise would otherwise be rewarded for guessing.
+  if(spellState.chunkEndAt && spellState.chunkEndAt[pos] !== undefined){
+    speakChunk(spellState.chunks, spellState.chunkEndAt[pos]);
+  }
   if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
@@ -2693,6 +2718,13 @@ function clearSpell(){
   refreshSlots();
 }
 
+/* Sounds out, then blends back: /k/ /a/ /t/ ... "cat". Waits for the last
+   phoneme to finish, because speak() cancels whatever is mid-flight and would
+   otherwise cut it off. */
+function blendBack(name){
+  setTimeout(()=> speakName(name), 700);
+}
+
 function checkSpell(){
   const guess = spellState.filled.map(f=>f.ch).join("");
   const fb = $("#feedback");
@@ -2701,6 +2733,7 @@ function checkSpell(){
     if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, !spellState.p._notClean);
     fb.className="feedback good";
     fb.textContent = `✅ Yes! It's ${cap(spellState.name)}!`;
+    blendBack(spellState.name);
     lockAndAdvance();
   } else {
     markWrong();   // safety net; per-letter checking usually catches it first
@@ -2746,6 +2779,41 @@ function chunkWord(word){
   }
   return chunks;
 }
+/* What a chunk says *in this word*. Consonants, digraphs, blends, vowel teams
+   and r-controlled vowels are context-free — the chunker has already made each
+   of them one unit, so "car" is c + ar and never asks what a bare "a" says.
+
+   That leaves the single vowels, which are the whole difficulty: `a` is one
+   sound in cat, another in cake. The rule reads the word around it — a vowel
+   followed by a single consonant and a final `e` is long, otherwise short — so
+   the same letter gets the right sound in the same word, which grading by level
+   alone could never do. The final `e` itself says nothing, which is the correct
+   thing to teach.
+
+   Anything with no row in data/phonemes.csv stays silent rather than guessing:
+   a wrong sound teaches a wrong thing, and silence teaches nothing. */
+const VOWELS = "aeiou";
+function chunkSound(chunks, i){
+  const chunk = chunks[i];
+  if(!chunk || isSeparator(chunk)) return "";
+  if(chunk.length > 1 || !VOWELS.includes(chunk)) return PHONEMES[`${chunk}|any`] || "";
+
+  // a lone vowel: decide long, short, or the silent e that makes it long
+  const rest = chunks.slice(i+1).filter(c => !isSeparator(c));
+  const isWordEnd = chunks.slice(i+1).every(c => isSeparator(c) || false) || rest.length === 0;
+  if(chunk === "e" && isWordEnd && i > 0) return PHONEMES["e|silent"] || "";
+  const magicE = rest.length === 2 && rest[0].length === 1 && !VOWELS.includes(rest[0]) && rest[1] === "e";
+  return PHONEMES[`${chunk}|${magicE ? "long" : "short"}`] || "";
+}
+/* Speaks a phoneme. Cancels whatever is mid-flight first: a child taps faster
+   than the synthesiser talks, and a queue of backed-up sounds is worse than
+   none. Falls silent for chunks the CSV leaves blank. */
+function speakChunk(chunks, i){
+  const say = chunkSound(chunks, i);
+  if(!say) return;
+  speak(say);
+}
+
 // picks which chunk *indices* go blank, always leaving at least one letter chunk
 // visible. Separator chunks are shown, never blanked — they are defined, not
 // spelled — so they are excluded from both the candidates and the count.
@@ -2770,6 +2838,15 @@ function pickBlankChunks(chunks, blankLetters){
 
 let missingState = null;
 
+/* Missing Letter now answers the same way Full Spelling does: tap a tile. It
+   used to be typed <input> boxes, which meant two input mechanics under one
+   "Spelling" tag, and — since 17 of the 25 levels are this task — an on-screen
+   keyboard covering half a tablet for most of the ladder.
+
+   The tiles are whole chunks, not letters. That is the point: a tile reading CK
+   is one sound, so tapping it plays /k/ rather than teaching that c and k are
+   separate. Tapping the right chunk places it and says its sound; tapping a
+   wrong one shakes and stays silent, so nothing rewards tapping for noise. */
 function renderMissingLetter(p){
   const name = p.poke.n.toLowerCase();
   const img = p.poke.img || artwork(p.poke.id);
@@ -2783,11 +2860,12 @@ function renderMissingLetter(p){
       <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
     </div>
     <div class="missing-word" id="missingWord"></div>
+    <div class="tiles" id="missingTiles"></div>
     <div class="feedback" id="feedback"></div>
     <div class="actions" id="missingActions"></div>
   `;
   const wordEl = $("#missingWord");
-  const blanks = [];
+  const slots = [];
   chunks.forEach((chunk,i)=>{
     if(isSeparator(chunk)){
       const sep = document.createElement("span");
@@ -2795,14 +2873,13 @@ function renderMissingLetter(p){
       sep.textContent = chunk === "-" ? "-" : "";
       wordEl.appendChild(sep);
     } else if(blankIdx.has(i)){
-      const inp = document.createElement("input");
-      inp.className = "mw-blank";
-      inp.maxLength = chunk.length;
-      inp.autocomplete = "off";
-      inp.style.width = (chunk.length*30+18) + "px";
-      inp.dataset.answer = chunk;
-      wordEl.appendChild(inp);
-      blanks.push(inp);
+      const slot = document.createElement("span");
+      slot.className = "mw-slot";
+      slot.style.width = (chunk.length*30+18) + "px";
+      slot.dataset.answer = chunk;
+      slot.dataset.chunk = String(i);
+      wordEl.appendChild(slot);
+      slots.push(slot);
     } else {
       chunk.split("").forEach(ch=>{
         const s = document.createElement("span");
@@ -2811,9 +2888,22 @@ function renderMissingLetter(p){
       });
     }
   });
+
+  // The bank holds exactly the missing chunks, shuffled — same bargain as Full
+  // Spelling's letter bank, where the last tile is likewise a free gift.
+  const bankEl = $("#missingTiles");
+  const order = shuffle(slots.map(sl => sl.dataset.answer));
+  order.forEach(chunk=>{
+    const t = document.createElement("button");
+    t.className = "tile chunk"; t.textContent = chunk; t.dataset.chunk = chunk;
+    t.addEventListener("click", ()=> placeChunk(chunk, t));
+    bankEl.appendChild(t);
+  });
+
   const hintLimit = p.hintLimit || 0;
-  missingState = { name, p, blanks, filledCount:0, hintsUsed:0, hintLimit };
-  blanks.forEach((inp,i)=> inp.addEventListener("input", ()=> checkMissingBlank(inp, i)));
+  missingState = { name, p, chunks, slots, filledCount:0, hintsUsed:0, hintLimit };
+  if(slots[0]) slots[0].classList.add("current");
+
   // Missing Letter used to refuse hints on the grounds that most of the word is
   // already showing. That held when it blanked one chunk; at 25% shown it can be
   // most of the word, so the level's own allowance applies here too.
@@ -2824,49 +2914,62 @@ function renderMissingLetter(p){
     btn.addEventListener("click", missingHint);
     $("#missingActions").appendChild(btn);
   }
-  blanks[0].focus();
   $("#say").addEventListener("click", ()=> speakName(name));
 }
 
-// Fills the first empty blank outright, same bargain as the spelling hint: it
-// costs an allowance and the answer stops counting as clean.
+function nextMissingSlot(){
+  return missingState ? missingState.slots.find(sl => !sl.classList.contains("mw-correct")) : null;
+}
+
+function placeChunk(chunk, tileEl){
+  const st = missingState;
+  if(!st) return;
+  const slot = nextMissingSlot();
+  if(!slot) return;
+  const fb = $("#feedback");
+  if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
+
+  if(chunk !== slot.dataset.answer){
+    st.p._notClean = true;
+    tileEl.classList.add("shake");
+    setTimeout(()=> tileEl.classList.remove("shake"), 450);
+    fb.className="feedback bad";
+    fb.textContent = "❌ Not that one — try again!";
+    return;                                   // deliberately silent on a miss
+  }
+  fillMissingSlot(slot, tileEl);
+}
+
+function fillMissingSlot(slot, tileEl){
+  const st = missingState;
+  slot.textContent = slot.dataset.answer;
+  slot.classList.add("mw-correct");
+  slot.classList.remove("current");
+  if(tileEl) tileEl.classList.add("used");
+  st.filledCount++;
+  speakChunk(st.chunks, Number(slot.dataset.chunk));
+  const next = nextMissingSlot();
+  if(next) next.classList.add("current");
+  if(st.filledCount === st.slots.length) finishMissingLetter();
+}
+
+// Fills the next slot outright, same bargain as the spelling hint: it costs an
+// allowance and the answer stops counting as clean.
 function missingHint(){
   const st = missingState;
   if(!st || st.hintsUsed >= st.hintLimit) return;
-  const inp = st.blanks.find(b => !b.disabled && b.value.toLowerCase() !== b.dataset.answer);
-  if(!inp) return;
+  const slot = nextMissingSlot();
+  if(!slot) return;
   st.hintsUsed++;
-  st.p._notClean = true;          // a hinted answer isn't a clean one, same as Spelling
-  inp.value = inp.dataset.answer;
-  checkMissingBlank(inp, st.blanks.indexOf(inp));
+  st.p._notClean = true;
+  const tile = [...$("#missingTiles").children]
+    .find(t => t.dataset.chunk === slot.dataset.answer && !t.classList.contains("used"));
+  fillMissingSlot(slot, tile);
   const btn = $("#missHint");
   if(btn){
     const left = st.hintLimit - st.hintsUsed;
     btn.textContent = `💡 Hint (${left} left)`;
     btn.disabled = left === 0;
-  }
-}
-
-function checkMissingBlank(inp, i){
-  if(!missingState || inp.disabled) return;
-  const val = inp.value.toLowerCase();
-  if(val.length < inp.maxLength) return;
-  const fb = $("#feedback");
-  if(val === inp.dataset.answer){
-    inp.disabled = true;
-    inp.classList.add("mw-correct");
-    missingState.filledCount++;
-    fb.textContent=""; fb.className="feedback";
-    const next = missingState.blanks[i+1];
-    if(next) next.focus();
-    if(missingState.filledCount === missingState.blanks.length) finishMissingLetter();
-  } else {
-    missingState.p._notClean = true;
-    inp.value="";
-    inp.classList.add("shake");
-    setTimeout(()=> inp.classList.remove("shake"), 450);
-    fb.className="feedback bad";
-    fb.textContent = "❌ Not that one — try again!";
   }
 }
 
@@ -2877,6 +2980,7 @@ function finishMissingLetter(){
   const fb = $("#feedback");
   fb.className="feedback good";
   fb.textContent = `✅ Yes! It's ${cap(missingState.name)}!`;
+  blendBack(missingState.name);
   lockAndAdvance();
 }
 
