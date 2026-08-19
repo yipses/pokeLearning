@@ -70,86 +70,74 @@ Two independent strands, each with its own frontier — a kid can be ahead on on
 
 ---
 
-## Spelling
+## Spelling and Reading
 
-Two phases on one trail — the daily mix just pulls from wherever Spelling's single frontier currently sits, same as every other track. Phase A actually teaches phonics using real words pulled from Pokopia items. Phase B is fluency practice on words already known by ear (Pokémon names) — no new decoding skill, just recall.
+Both trails now sit on one vocabulary grading, and both are defined entirely in CSV — `data/spelling_levels.csv` (25 levels) and `data/reading_levels.csv` (10). Nothing about either ladder lives in code.
 
-Interacts with Pokédex generation-gating like this: that gate only ever applied to *Pokémon names*, so Phase A's items were never subject to it — an item word is available the moment its pattern-level unlocks, full stop. Phase B's Pokémon names still respect it: a word can't appear in Phase B until its species has been caught, on top of the length/hint ceiling for the current level.
+### What replaced Phases A and B
 
-### Phase A — Phonics Ladder (real words, ordered like school does it)
+The old Spelling trail was nine "Phase A" phonics levels using 100 hand-picked single-word items, then five "Phase B" fluency levels using Pokémon names graded by length. That structure bundled four independent things into the word "Phase" — where words came from, how they were graded, which task was used, and whether the generation gate applied — and it had a hard fault at the seam: Phase A ended on *Refrigerator* (12 letters) and Phase B began on a 3-letter cap, which in Gen 1 meant `mew` and `muk`. The ladder went hard, then trivial, then climbed again.
 
-| # | Pattern | Skill | Words available | Examples |
-|---|---|---|---|---|
-| 1 | Short-vowel CVC | Simplest decoding — one consonant, one short vowel, one consonant. | 3 — thin | Fan, Mug, Sink |
-| 2 | Floss-rule doubles | ll / ss / ff after a short vowel. | 2 — thin | Bell, Moss |
-| 3 | Consonant blends | Two consonants blended smoothly — br, fl, gl, gr. | 4 — thin | Brick, Fluff, Glass, Gravel |
-| 4 | Digraphs | Two letters, one sound — sh, ch, th, wh. | 6 | Shutter, Torch, Perch, Wheat… |
-| 5 | Silent-e (magic e) | Trailing e makes the vowel say its name. | 10 | Bike, Rope, Slide, Wire… |
-| 6 | Vowel teams | Two vowels, one sound — ay, ea, oo. | 9 | Balloons, Bean, Book, Canoe… |
-| 7 | R-controlled vowels | ar / er / or reshape the vowel sound entirely. | 12 | Barrel, Cart, Counter, Fern… |
-| 8 | Compound words | Two known words joined — its own real skill. | 30 | Bathtub, Bookcase, Campfire, Corkboard… |
-| 9 | Multisyllabic | Longer real vocabulary, several syllables. | 24 | Bonfire, Cannon, Computer, Concrete… |
+It also wasted the catalogue. Only 100 of 909 usable item names were reachable, because the other 809 are multi-word and the phonics ladder had no way to grade them.
 
-Counts are audited against the actual item catalog, not guessed — every word already has a real image. **Patterns 1–3 are genuinely thin** (3–4 words each): early levels will repeat words more than later ones. That's normal for beginning practice, not a bug, but it's why those levels won't feel as fresh as Multisyllabic or Compound Words, which are the deepest pools by far. No invented words anywhere — if a pattern doesn't have real catalog words, it doesn't get a level. Dropped from the source list: *Wyndon* (a place name) and *Tinkagear* (invented game jargon).
+The four things are now four columns, and one ladder runs end to end.
 
-> *(Build note: during implementation, "Sign," "Pizza," and "Tires" were also dropped as too irregular/redundant for phonics teaching, and "Bill" turned out to be a mislabeled picture of a music CD rather than a real word — fixed by renaming that catalog entry to "CD" and removing it from this list. Floss-rule doubles ended up with 2 real words instead of 3 as a result. See `progress.md` Phase 12.)*
+### How a level selects words
 
-### Phase B — Fluency (Pokémon names, staggered by task)
+| Column | Selects |
+|---|---|
+| `word_level` | single-word items graded at or below this phonics level (1–9) |
+| `compound_level` | multi-word items whose hardest component is at or below this; `0` switches compounds off |
+| `pokemon_letters` | Pokémon names up to this many letters, generation-gated as before |
 
-Full Spelling (empty tiles, build the whole word) and Missing Letter (word shown, fill the gaps) run at different word-length ceilings on the same level — Missing Letter is strictly easier per word, so it reaches further ahead. **Multi-word names get a third, higher ceiling** for the same reason: letter count overstates them. "Iron Hands" is 9 letters but never more than 5 in a row, and the space tells the child where one word ends and the next begins.
+Pokémon keep a length gate rather than a phonics level because invented names have no decoding pattern to grade. Item words do: **`data/word_levels.csv`** grades all 807 distinct words in the catalogue against the nine patterns, and **`data/item_levels.csv`** rolls that up per item — a single-word item takes its own level, a multi-word item takes its hardest component's. `Copper ore` is level 7 because `copper` is; `Log bed` is level 1 because both halves are.
 
-| Level | Full Spelling | Hints (Full Spelling) | Missing Letter | Multi-word | Blanks | Hints (Missing Letter) |
-|---|---|---|---|---|---|---|
-| 1 | up to 3 letters | 3 | up to 5 letters | up to 6 | 1 | none |
-| 2 | up to 5 letters | 3 | up to 7 letters | up to 8 | 2–3 | none |
-| 3 | up to 6 letters | 2 | up to 8 letters | up to 9 | 2–4 | none |
-| 4 | up to 7 letters | 2 | up to 9 letters | up to 10 | 3–4 | none |
-| 5 | up to 8 letters | 1 | up to 10 letters | up to 12 | 3–5 | none |
+The split between "single" and "multi-word" is the one the child can see: a **space or hyphen** makes it multi-word, because the spelling screen draws separate slot groups either side of one. `Birdhouse` is a single word graded 8 by the compound-words *pattern*; `Black charcoal` is a multi-word item graded by its parts. Two different senses of "compound", and they don't interact.
 
-**"Multi-word" means two actual words**, separated by a space — *Iron Hands*, *Tapu Koko*, *Scream Tail*. A **hyphenated** name is not one: *Ho-Oh*, *Kommo-o* and *Porygon-Z* read and spell as single words and follow the ordinary ceilings. The roster stores the distinction directly (spaces for one, hyphens for the other), which it didn't originally — it came from PokéAPI, where every name is a hyphenated slug.
+### The nine phonics patterns
 
-The multi-word ceiling reaches 12 at Level 5 so that **all 27** two-word species are eventually reachable; the longest, *Iron Boulder*, is 11 letters and used to sit above every ceiling in the trail, in the pool but unable to appear.
+Unchanged as a grading scheme, now applied to the whole catalogue rather than 100 words:
 
-**Level 5 no longer spells everything.** At an 8-letter Full Spelling ceiling, 9- and 10-letter single words (*Bulbasaur*, *Charmander*) are never built from an empty row — they're practised through Missing Letter instead, which still reaches 10. That caps roughly a fifth of each generation as recognise-and-repair rather than build-from-scratch. It's a deliberate ceiling on the trail as a whole, to be raised when the ladder is extended past Level 5.
-
-**When a band is empty, the ceiling gives way one letter at a time.** Some generations have nothing at the easiest ceilings — Gen 9 has no 3-letter name at all, so Level 1's Full Spelling band is empty there. The pool raises its single-word ceiling by one letter until something fits (Gen 9 lands on 5 letters, six words) rather than falling back to the whole generation, which is what it used to do: that silently handed a Level 1 speller a 12-letter word. The multi-word ceiling doesn't inflate along with it.
-
-Missing Letter never gets hints — most of the word is already visible, so a hint would trivialize the one thing being tested. Blank *count* is a range so two 9-letter words in the same round don't always feel identical.
-
-**Blank placement is chunk-aware, not random.** Blanks are chosen so they never split a digraph, blend, or vowel team — the word is chunked first (sh / ch / th / wh / ck, common blends, vowel teams all count as one unit), then whole chunks are blanked. A raw random-letter approach can produce a blank that erases half a sound and leaves a meaningless fragment.
-
-- ✓ Chunk-aware: `S [HU] [_] T T E R` (blanks the "sh" digraph as one unit)
-- ✗ Raw random: `S [_] H T T E R` (splits the digraph in half)
-
----
-
-## Reading
-
-The 4th track, with its own frontier and its own ladder. It exists to fix a genuine flaw in the old Match mode: as pairs clear, the last couple of matches become guessable by elimination instead of actually reading the word. Fixed-choice formats don't have that problem.
-
-| Mode | Description | Why |
-|---|---|---|
-| **Read & Choose** | One picture, five word options, pick the match. | Fixed difficulty — always 5 choices, no shrinking pool |
-| **Reverse Read & Choose** | One written word, five pictures, pick the match. | Confirms real reading, not shape-matching |
-| **Rhyme Match** *(future)* | Given a word, pick which of three others rhymes. | Deferred — most Pokémon names are invented and won't reliably rhyme; would need to draw from the Phase A real-word list instead. |
-| **Clue Words** *(future)* | A few descriptor words shown at once — BIG, RED, METAL — pick the matching item from several pictures. | Deferred — needs attribute data (color, size, material) per Pokémon/item that doesn't exist yet. |
-
-### Reading Ladder — two difficulty levers, not one
-
-Ramps on two independent axes: word length (reuses the same Pokémon/item pool as Spelling) and distractor difficulty — whether the 4 wrong options are obviously different or deliberately close (same starting letter, similar length).
-
-| Level | Mode | Word length | Distractors |
+| Level | Pattern | Words graded | Items reachable |
 |---|---|---|---|
-| 1 | Read & Choose | 3–6 letters | Easy — obviously different |
-| 2 | Reverse Read & Choose | 3–6 letters | Easy — obviously different |
-| 3 | Read & Choose | 3–6 letters | Tricky — same first letter or length |
-| 4 | Reverse Read & Choose | 3–6 letters | Tricky — same first letter or length |
-| 5 | Read & Choose + Reverse, mixed | 7–10 letters | Easy — obviously different |
-| 6 | Read & Choose + Reverse, mixed | 7–10 letters | Tricky — same first letter or length |
+| 1 | Short-vowel CVC | 58 | 13 |
+| 2 | Floss doubles | 8 | 3 |
+| 3 | Consonant blends | 67 | 33 |
+| 4 | Digraphs | 79 | 37 |
+| 5 | Silent-e | 52 | 44 |
+| 6 | Vowel teams | 107 | 116 |
+| 7 | R-controlled | 117 | 164 |
+| 8 | Compound words | 101 | 145 |
+| 9 | Multisyllabic | 218 | 354 |
 
-*(Build note: the old Match mode was ultimately removed entirely rather than kept as untimed free play — it wasn't being used, and this Reading Ladder is its real replacement. See `progress.md` Phase 10.)*
+Grading is generated by `tools/classify_words.py` and corrected by hand in the spreadsheet. It reproduces 91 of the original 100 hand-graded words; the rest are flagged `differs` in the CSV, and they are genuinely arguable — several words match three patterns at once and which one a teacher would name is a judgement rules only approximate.
 
----
+Note that a word's level and an *item's* level pull apart: 58 words are level 1, but only 13 items are, because an item takes its hardest word. `bed` is level 1 and appears in 15 item names — only `Log bed` is playable at level 1; the rest are dragged up by their partner (`Iron bed` is 7, `Luxury bed` is 9).
+
+### Spelling — 25 levels
+
+Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the word given away: 50% → 25% → 0%. Above zero the task is Missing Letter; at zero it is Full Spelling from empty tiles. **`max_hints`** rises as `hinted_pct` falls — the level that shows least offers most help finding the rest.
+
+Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
+
+Level 1 is a single rung rather than three, so the opening six words are five questions rather than fifteen.
+
+### Reading — 10 levels
+
+Same three selection columns, two of its own:
+
+- **`wrong_answers`** — decoy count. Choices run 3, 4, then 5 from level 3 on.
+- **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. Always at or above the level's own row, so decoys come from a superset of the target pool. A child meets harder words as options before being asked to read them, and it fixes the thinness at the bottom: level 1 targets from 6 words but draws decoys from 12.
+
+This replaced a "tricky distractor" flag that hand-picked same-length or same-first-letter decoys. Difficulty now comes from pool breadth instead, and the two formats (Read & Choose, Reverse Read & Choose) are chosen at random per question rather than being rungs of their own.
+
+### Why the frontiers are separate
+
+Same grading, two frontiers. Reading will naturally run ahead of Spelling, and that is the intended shape: recognise a word, then produce it. The old trails drew from unrelated pools, so nothing one taught reinforced the other.
+
+### Promotion
+
+Both `promote_5_pct` and `promote_10_pct` are per level, read from the row. Currently 100% and 80% everywhere, matching what the engine used to hardcode — but they can now differ per level and per trail without touching code.
 
 ## Dashboard
 
