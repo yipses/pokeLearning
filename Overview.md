@@ -175,14 +175,17 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 ## 8b. Home Tiles
 
-Two tappable boxes across the top of the Start screen, with the ⚙️ Settings button sharing the row, flush right.
+A **HUD** across the top of the Start screen — icon and number, sitting straight on the background with no card around them — and the ⚙️ Settings button at the far right of the same line.
 
-| Box | Shows | Goes to |
+| Counter | Shows | Goes to |
 |---|---|---|
-| 🎯 **Today** / 🔥 **Streak** | rounds finished today against the daily goal — the box turns green once met — and, below a divider, consecutive days that met it | My progress |
-| 📕 **Pokémon** | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
+| 🎯 | rounds finished today against the daily goal; the number turns **green** once met | My progress |
+| 🔥 | consecutive days that met the rounds goal | My progress |
+| 📕 | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
-**Today and Streak are one box, not two.** They are the same daily fact seen twice and they open the same screen, so two boxes meant two ways to reach one place. The same pair appears on the results screen; the ⚙️ button is home-only.
+**No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
+
+The same HUD appears on the results screen, centred rather than left-aligned to match that card. The ⚙️ button is home-only.
 
 A "round" is one full session; how many questions make up a round, and how many rounds a day the streak needs, are both Settings values.
 

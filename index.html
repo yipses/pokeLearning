@@ -601,7 +601,9 @@
     filter:drop-shadow(0 4px 6px rgba(0,0,0,.15)); }
   .caught-chip span{ font-size:.86rem; font-weight:800; color:var(--ink); text-transform:capitalize;
     max-width:104px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  #resultTiles{ margin-bottom:16px; }
+  /* Home lays the HUD out from the left, under the title. The results card is
+     centred, so its copy of the HUD is too. */
+  #resultTiles{ margin-bottom:16px; justify-content:center; }
 
   /* ---------- home tiles ---------- */
   /* Three across at any phone width — value and icon sit on one line with a
@@ -610,36 +612,31 @@
      ever lands here. */
   /* Named `home-tiles`, not `tiles`: the spelling letter bank owns `.tiles`
      already, and a grid rule here silently reflowed that bank into 3 columns. */
-  /* Today and Streak are one box: both are the same daily fact and both go to
-     the same screen, so two boxes was two taps to reach one place. */
-  .home-top{ display:flex; align-items:center; gap:9px; margin:0 0 14px; }
-  .home-tiles{ display:grid; grid-template-columns:repeat(2,1fr); gap:9px; flex:1; min-width:0; }
-  .tile-card{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-    padding:9px 4px; font:inherit; cursor:pointer; text-align:center;
-    background:linear-gradient(180deg,var(--white),var(--cream));
-    border:3px solid rgba(255,255,255,.9); border-radius:var(--radius-sm);
-    box-shadow:var(--shadow-sm);
-    transition: transform .06s, border-color .15s, box-shadow .15s;
+  /* A HUD, not a set of cards: icon and number side by side, sitting straight on
+     the background. Three counters and a gear across one line — the labels went
+     because the icons already say it and a pre-reader wasn't reading "STREAK"
+     anyway. Each is still a button; the numbers are what changed, not the
+     destinations. */
+  .home-top{ display:flex; align-items:center; gap:6px; margin:2px 0 14px; }
+  .home-tiles{ display:flex; align-items:center; gap:6px; flex:1; min-width:0; flex-wrap:wrap; }
+  .hud-item{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:5px 8px; border:0; border-radius:999px; background:transparent;
+    font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    transition: transform .06s, background-color .15s;
   }
-  .tile-card:hover{ border-color:var(--sun-deep); }
-  .tile-card:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
-  .tile-card.done{ border-color:var(--leaf); background:linear-gradient(180deg,#f5fbf5,#e8f5ea); }
-  /* A box can carry more than one stat; the rule keeps them from reading as one. */
-  .tile-stat{ display:flex; flex-direction:column; align-items:center; gap:1px; }
-  .tile-stat + .tile-stat{
-    margin-top:7px; padding-top:7px; border-top:1px dashed var(--cream-2); width:82%;
+  .hud-item:hover{ background:rgba(255,255,255,.55); }
+  .hud-item:active{ transform:translateY(1px); }
+  .hud-icon{ font-size:1.3rem; line-height:1; }
+  .hud-val{
+    font-size:1.15rem; font-weight:900; line-height:1;
+    font-variant-numeric:tabular-nums; color:var(--ink-soft);
   }
-  .tile-top{ display:flex; align-items:center; justify-content:center; gap:5px; }
-  .tile-icon{ font-size:clamp(1.1rem, 5vw, 1.45rem); line-height:1; }
-  .tile-big{
-    font-size:clamp(1rem, 4.8vw, 1.45rem); font-weight:900; color:var(--ink);
-    line-height:1.15; font-variant-numeric:tabular-nums;
-  }
-  .tile-label{
-    font-size:.66rem; font-weight:800; color:var(--leaf-deep); line-height:1.2;
-    text-transform:uppercase; letter-spacing:.03em;
-  }
+  /* Colour carries the meaning the labels used to. Today goes green on the day
+     it is met, which is the one state worth noticing. */
+  .hud-item.streak .hud-val{ color:#e0812f; }
+  .hud-item.dex .hud-val{ color:var(--berry-deep); }
+  .hud-item.met .hud-val{ color:var(--leaf-deep); }
 
   /* ---------- home showcase ---------- */
   /* The middle band of the home screen: one of your own Pokémon, big enough to be
@@ -682,14 +679,15 @@
     padding:14px 8px; font-size:clamp(.95rem, 3.9vw, 1.15rem); line-height:1.2; text-align:center;
   }
   .action-icon{ font-size:1.35rem; line-height:1; }
+  /* Same footprint as a HUD counter, at the far end of the line. */
   .gear-btn{
-    width:46px; height:46px; flex:0 0 auto; border-radius:50%; border:none; cursor:pointer;
-    font:inherit; font-size:1.35rem; line-height:1; background:var(--white);
-    box-shadow:0 3px 0 var(--cream-2), var(--shadow-sm);
+    flex:0 0 auto; margin-left:auto; padding:5px 8px; border:0; border-radius:999px;
+    background:transparent; cursor:pointer; font:inherit; font-size:1.3rem; line-height:1;
     display:grid; place-items:center; -webkit-tap-highlight-color:transparent;
-    transition: transform .06s, box-shadow .06s;
+    transition: transform .06s, background-color .15s;
   }
-  .gear-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--cream-2); }
+  .gear-btn:hover{ background:rgba(255,255,255,.55); }
+  .gear-btn:active{ transform:translateY(1px); }
 
   /* ---------- About / build identity ---------- */
   .about-rows{ margin-top:4px; }
@@ -1145,7 +1143,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 50;
+const APP_BUILD = 51;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -1965,22 +1963,20 @@ function renderTiles(el){
     dexBig = `${collected.length}`; dexSmall = "Complete";
   }
 
-  // One box may hold several stats. Today and Streak share one: they are the same
-  // daily fact seen twice, and they open the same screen.
-  const box = (id, stats, done) => `
-    <button class="tile-card${done ? " done" : ""}" type="button" data-go="${id}">
-      ${stats.map(st => `<span class="tile-stat">
-        <span class="tile-top"><span class="tile-big">${st.big}</span><span class="tile-icon">${st.icon}</span></span>
-        <span class="tile-label">${st.label}</span>
-      </span>`).join("")}
+  // Icon then number, nothing else. The label each of these used to carry was a
+  // word a five-year-old wasn't reading; the icon and the colour do that work,
+  // and the aria-label keeps the meaning for anything that needs it spelled out.
+  const streak = currentStreak();
+  const hud = (id, icon, value, label, mod) => `
+    <button class="hud-item${mod ? " "+mod : ""}" type="button" data-go="${id}"
+            aria-label="${label}" title="${label}">
+      <span class="hud-icon" aria-hidden="true">${icon}</span><span class="hud-val">${value}</span>
     </button>`;
 
   el.innerHTML =
-    box("dashboard", [
-      { icon:"🎯", big:`${done}/${goal}`, label:"Today" },
-      { icon:"🔥", big:currentStreak(),   label:"Streak" },
-    ], done >= goal) +
-    box("pokedex", [{ icon:"📕", big:dexBig, label:dexSmall }], false);
+    hud("dashboard", "🎯", `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
+    hud("dashboard", "🔥", streak, `Day streak: ${streak}`, "streak") +
+    hud("pokedex", "📕", dexBig, `${dexSmall}: ${dexBig} caught`, "dex");
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;

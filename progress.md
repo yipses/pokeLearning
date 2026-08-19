@@ -187,8 +187,9 @@ Investigated, not fixed: the maths ladder is moving to a CSV with a min and a ma
 - **"There's no way to track my previous X days progress."** The home screen showed rounds-today and a streak count; neither says how the week went. Two quiet days and one strong day read identically from a single number.
 - **This week now leads My progress**: rounds per day over the last 7 days, today last, goal line dashed across it, count above each bar. Green where the day met the goal, blue where it fell short, and **days with no play left as empty slots** rather than dropped — the gaps are the whole point of looking.
 - **No new storage was needed.** `pokeLearningDailyStars` has always kept `{date: rounds}` for every day, uncapped, precisely because pruning to a window would have silently capped the streak at the window's length. That decision paid off here: the chart is correct from the day it ships instead of starting empty.
-- **Today and Streak merged into one box.** They are the same daily fact seen twice and both opened the same screen, so two boxes were two ways to reach one place. "Rounds" became "Today", which is what the number actually means.
-- **The ⚙️ button moved into that row, flush right**, and the home footer went with it. The same tile renderer feeds the results screen, so the merge lands there too; the gear is home-only.
+- **The three stat cards became a HUD** — icon and number on one line, no cards, the way a game shows its counters. It got there in two steps: first Today and Streak merged into one box stacked vertically, which was read as too heavy, and then the boxes went entirely.
+- **The labels went with them.** "TODAY", "STREAK", "GEN 1" were words a five-year-old wasn't reading. The icon says which counter it is; colour carries the one state worth noticing, the day's goal being met. Each counter keeps an `aria-label`.
+- **The ⚙️ button sits at the far right of the same line**, same footprint as a counter, and the home footer went. The same renderer feeds the results screen, so the HUD lands there too — centred, to match that card.
 - **"My Progress" lost its subtitle** and became "My progress".
 
 ## Where things stand
