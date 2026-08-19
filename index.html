@@ -133,9 +133,9 @@
   .field label{ font-weight:700; }
   .field .hint{ display:block; font-weight:400; font-size:.82rem; color:var(--ink-soft); margin-top:2px; }
 
-  /* Settings only. Unscoped, this outranks .math-input and .pattern-input on
-     specificity — an attribute selector beats a class — and every answer box in
-     the game silently rendered at settings size with 16px text. */
+  /* Settings only. Scoped because an unscoped input[type="number"] outranks a
+     class on specificity, which once silently restyled every answer box in the
+     game. The maths answers are buttons now; the scoping stays right regardless. */
   .field input[type="number"]{
     width:92px; font: inherit; font-weight:700; text-align:center;
     padding:10px 8px; border-radius: var(--radius-sm);
@@ -372,53 +372,44 @@
   }
   .reading-say-mini:active{ transform:translateY(1px); }
 
-  /* math input */
+  /* math question + answer choices */
   .math-q{ font-size: clamp(40px, 11vw, 64px); font-weight:800; color:var(--ink); margin:2px 0 10px; }
-  .math-input{
-    width: 200px; font: inherit; font-weight:800; font-size:2.4rem; text-align:center;
-    padding:12px; border-radius:20px; border:4px solid var(--berry); background:var(--white); color:var(--ink);
-    outline:none;
-  }
-  .math-input:focus{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
-  .math-input:disabled{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); opacity:1; }
-  /* The pad is the way in, so the browser's own up/down arrows are just a small
-     wrong thing to tap next to a big right one. */
-  .math-input, .pattern-input{ appearance:textfield; -moz-appearance:textfield; }
-  .math-input::-webkit-outer-spin-button, .math-input::-webkit-inner-spin-button,
-  .pattern-input::-webkit-outer-spin-button, .pattern-input::-webkit-inner-spin-button{
-    -webkit-appearance:none; margin:0;
-  }
 
-  /* number pad — the only way in on a tablet, so the keys are thumb-sized and
-     the grid is the phone layout a child has already seen on a lift button. */
-  .num-pad{
-    display:grid; grid-template-columns:repeat(3, 72px); gap:10px;
-    justify-content:center; margin:12px 0 4px;
+  /* Six numbers, two rows of three. Sized like the spelling tiles rather than a
+     keypad: this is the same act as picking a chunk, so it should look like it. */
+  .choices{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;
+    max-width:330px; margin:14px auto 4px;
   }
-  .num-key{
-    height:60px; border-radius:14px; font:inherit; font-size:1.7rem; font-weight:800;
-    cursor:pointer; color:var(--leaf-deep);
+  .choice{
+    min-height:58px; padding:6px 4px; border-radius:16px;
+    font:inherit; font-size:1.7rem; font-weight:900; line-height:1;
+    font-variant-numeric:tabular-nums; cursor:pointer; color:var(--leaf-deep);
     background:linear-gradient(180deg,var(--white),var(--cream));
     border:3px solid var(--leaf); box-shadow:0 5px 0 var(--leaf-deep);
     transition: transform .05s, opacity .15s;
   }
-  .num-key:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--leaf-deep); }
-  .num-key.wide{ grid-column:span 1; font-size:1.3rem; }
-  /* Answered: the pad has nothing left to do, and hiding it rather than greying
+  .choice:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--leaf-deep); }
+  /* A wrong one is spent: dimmed and dead, so the same mistake cannot be made
+     twice and the field narrows as the child reasons. */
+  .choice:disabled{ opacity:.3; pointer-events:none; }
+  .choice.picked{ background:linear-gradient(180deg,#f0fbf1,#dcf2e0); }
+  /* Answered: the bank has nothing left to do, and hiding it rather than greying
      it out is what lifts ✅ and Next above the fold on a phone. */
-  .num-pad.done{ display:none; }
+  .choices.done{ display:none; }
 
   /* pattern rows */
   .pattern-list{ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; }
   .pattern-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; }
   .pattern-eq{ min-width:150px; text-align:right; font-size:1.4rem; font-weight:800; color:var(--ink); }
-  .pattern-input{
-    width: 90px; font: inherit; font-weight:800; font-size:1.4rem; text-align:center;
-    padding:8px; border-radius:16px; border:4px solid var(--berry); background:var(--white); color:var(--ink);
-    outline:none;
+  .pattern-slot{
+    width:90px; min-height:48px; display:grid; place-items:center;
+    font-size:1.4rem; font-weight:800; text-align:center;
+    border-radius:16px; border:4px solid var(--cream-2); background:var(--white); color:var(--ink);
   }
-  .pattern-input:focus{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
-  .pattern-input:disabled{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); opacity:1; }
+  /* The open row is the one the six numbers below belong to. */
+  .pattern-slot.current{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
+  .pattern-slot.pattern-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
 
   /* battle mode */
   .battle-arena{ display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; margin:14px 0 10px; }
@@ -928,9 +919,8 @@
     .reading-say-mini{ width:26px; height:26px; font-size:12px; }
     .reading-opt-word{ font-size:.95rem; }
     .pattern-eq{ min-width:110px; font-size:1.1rem; }
-    .pattern-input{ width:70px; font-size:1.1rem; }
-    .num-pad{ grid-template-columns:repeat(3, 62px); gap:8px; }
-    .num-key{ height:52px; font-size:1.5rem; }
+    .pattern-slot{ width:70px; font-size:1.1rem; }
+    .choice{ min-height:52px; font-size:1.5rem; }
     .visual-icon{ width:42px; height:42px; }
     .visual-icon-wrap{ width:42px; height:42px; }
     .visual-icon-wrap .cross::before,
@@ -1189,7 +1179,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 54;
+const APP_BUILD = 55;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -3337,39 +3327,75 @@ function finishMissingLetter(){
   lockAndAdvance(done => blendBack(word, done));
 }
 
-/* ---------------- NUMBER PAD ---------------- */
-/* Every math mode answers the same way: tap digits to build the number. The
-   three renderers below keep their <input> elements — the pad writes into one
-   and fires the same `input` event a keystroke would, so the auto-checking that
-   was already there is untouched and there is one answer path, not two.
+/* ---------------- ANSWER CHOICES ---------------- */
+/* Every maths mode answers the same way: tap the right number out of six.
 
-   `inputmode="none"` on those inputs is what stops the OS keyboard opening on a
-   tablet. A physical keyboard still types, which is worth keeping: it costs
-   nothing and it is how the modes get driven in tests. */
-const PAD_KEYS = ["1","2","3","4","5","6","7","8","9","⌫","0","✕"];
-function numberPadHTML(id){
-  return `<div class="num-pad" id="${id}">` +
-    PAD_KEYS.map(k => `<button class="num-key${k.length>1?" wide":""}" type="button" data-key="${k}"` +
-      ` aria-label="${k==="⌫" ? "Backspace" : k==="✕" ? "Clear" : k}">${k}</button>`).join("") +
-    `</div>`;
+   The other five have to be *plausibly* wrong or the question answers itself.
+   They are built from the mistakes the operation actually invites — the
+   off-by-one, the neighbouring times-table row, the other operation's result —
+   rather than sampled from the level's range, which would put 40 beside 7 and
+   let a child pick by size without doing the sum.
+
+   The range is the wrong source for a second reason: four division levels have
+   a total answer space of four or five values, smaller than the choice count.
+   Error-shaped distractors have no such floor, and they reach outside the
+   range, which is correct — off-by-one is a real mistake whether or not the
+   result happens to be a legal answer at this level. */
+function mathDistractors(q, want){
+  const { a, b, sym, ans } = q;
+  // A tens-column slip is only a mistake you can make once there is a tens
+  // column. Offering 17 beside an answer of 7 is not a near miss, it is a
+  // giveaway — a child rules it out by size without doing the sum.
+  const tens = ans >= 10 ? [ans+10, ans-10] : [];
+  const nines = ans >= 10 ? [ans+9, ans-9] : [];
+  // Ordered by how likely the mistake is, closest first — the list is *taken*
+  // from the front, not sampled at random. Sampling let a far-out option beat a
+  // near one, which is how "7 + 7 = 14" ended up offered beside 23 and 0.
+  const near = [];
+  if(sym === "+"){
+    near.push(ans+1, ans-1, ans+2, ans-2, a-b, ans+3, ans-3, ...tens, ...nines);
+  } else if(sym === "−"){
+    near.push(ans+1, ans-1, ans+2, ans-2, a+b, ans+3, ans-3, b-a, ...tens);
+  } else if(sym === "×"){
+    near.push(a*(b+1), a*(b-1), (a+1)*b, (a-1)*b, ans+1, ans-1, a+b, ...tens);
+  } else {
+    near.push(ans+1, ans-1, ans+2, ans-2, b, a-b, ans+3, a);
+  }
+  const seen = new Set([ans]);
+  const out = [];
+  const take = v => {
+    if(!Number.isInteger(v) || v < 0 || seen.has(v)) return;
+    seen.add(v); out.push(v);
+  };
+  near.forEach(take);
+  // A small answer can exhaust its own neighbourhood, so walk outwards. Never
+  // below zero: a negative number is not a mistake a five-year-old is making.
+  for(let k = 1; out.length < want && k < 80; k++){ take(ans+k); take(ans-k); }
+  // Two spare, so the same sum doesn't offer the identical five every time, but
+  // never reaching past the plausible end of the list.
+  return shuffle(out.slice(0, want + 2)).slice(0, want);
 }
-/* `pick` returns the input the keys should write into, or null when the
-   question is finished — Math Pattern has four boxes and hands back whichever
-   one is still open. */
-function wireNumberPad(padId, pick){
-  const pad = $("#"+padId);
-  pad.addEventListener("click", e=>{
-    const key = e.target.closest(".num-key");
-    if(!key) return;
-    const input = pick();
-    if(!input || input.disabled) return;
-    const k = key.dataset.key;
-    if(k === "⌫") input.value = input.value.slice(0, -1);
-    else if(k === "✕") input.value = "";
-    else input.value += k;
-    input.dispatchEvent(new Event("input"));
+
+const MATH_CHOICES = 6;
+function mathChoicesHTML(id, q){
+  const options = shuffle([q.ans, ...mathDistractors(q, MATH_CHOICES - 1)]);
+  return `<div class="choices" id="${id}">` + options.map(v =>
+    `<button class="choice" type="button" data-val="${v}">${v}</button>`).join("") + `</div>`;
+}
+/* `onPick` gets the tapped number and its button and answers whether it was
+   right; the shake and the spent-tile lock are handled here, so all three modes
+   behave the same on a wrong tap. */
+function wireMathChoices(id, onPick){
+  const box = $("#"+id);
+  box.addEventListener("click", e=>{
+    const btn = e.target.closest(".choice");
+    if(!btn || btn.disabled || box.classList.contains("done")) return;
+    if(onPick(Number(btn.dataset.val), btn)) return;
+    btn.disabled = true;                       // a wrong one is spent, not repeatable
+    btn.classList.add("shake");
+    setTimeout(()=> btn.classList.remove("shake"), 450);
   });
-  return pad;
+  return box;
 }
 
 /* ---------------- MATH ---------------- */
@@ -3379,22 +3405,26 @@ function renderMath(p){
     <div class="kind-tag kind-math">Math</div>
     <div class="poke-frame compact"><img alt="${cap(p.poke.n)}" src="${artwork(p.poke.id)}"></div>
     <div class="math-q">${p.a} ${p.sym} ${p.b} = ?</div>
-    <input class="math-input" id="mathInput" type="number" inputmode="none" autocomplete="off" placeholder="?">
-    ${numberPadHTML("mathPad")}
+    ${mathChoicesHTML("mathChoices", p)}
     <div class="feedback" id="feedback"></div>
     <div class="actions">
       <button class="btn green" id="mathNext" disabled>Next ▶</button>
     </div>
   `;
-  const input = $("#mathInput");
-  input.focus();
-  wireNumberPad("mathPad", ()=> input);
-  mathState = {p, input, hadMistake:false};
-  input.addEventListener("input", ()=> autoCheckMathInput(p, input));
-  input.addEventListener("keydown", e=>{
-    if(e.key!=="Enter") return;
-    const btn = $("#mathNext");
-    if(!btn.disabled) btn.click();
+  mathState = {p, hadMistake:false};
+  wireMathChoices("mathChoices", (val, btn)=>{
+    const fb = $("#feedback");
+    if(val !== p.ans){
+      mathState.hadMistake = true;
+      fb.className="feedback bad"; fb.textContent="❌ Try again!";
+      return false;
+    }
+    btn.classList.add("picked");
+    $("#mathChoices").classList.add("done");
+    fb.className="feedback good big-check"; fb.textContent="✅";
+    const nextBtn = $("#mathNext");
+    nextBtn.disabled = false; nextBtn.focus();
+    return true;
   });
   $("#mathNext").addEventListener("click", markMathDone);
 }
@@ -3407,27 +3437,6 @@ function markMathDone(){
   }
   mathState = null;
   next();
-}
-
-// auto-checks as digits are typed, waiting for enough digits to match the answer's length
-function autoCheckMathInput(p, input){
-  if(input.disabled) return;
-  const val = input.value.trim();
-  if(val==="" || val.length < String(p.ans).length) return;
-  const fb = $("#feedback");
-  if(parseInt(val,10) === p.ans){
-    input.disabled = true;
-    $("#mathPad").classList.add("done");
-    fb.className="feedback good big-check"; fb.textContent="✅";
-    const btn = $("#mathNext");
-    btn.disabled = false;
-    btn.focus();
-  } else {
-    if(mathState) mathState.hadMistake = true;
-    fb.className="feedback bad"; fb.textContent="❌ Try again!";
-    input.classList.add("shake");
-    setTimeout(()=> input.classList.remove("shake"), 450);
-  }
 }
 
 /* ---------------- VISUAL MATH ---------------- */
@@ -3467,23 +3476,27 @@ function renderVisual(p){
     <div class="kind-tag kind-visual">Visual Math</div>
     <div class="visual-eq">${eqText}</div>
     ${visualHTML}
-    <input class="math-input" id="visualInput" type="number" inputmode="none" autocomplete="off" placeholder="?">
-    ${numberPadHTML("visualPad")}
+    ${mathChoicesHTML("visualChoices", p)}
     <div class="feedback" id="feedback"></div>
     <div class="actions">
       <button class="btn green" id="visualNext" disabled>Next ▶</button>
     </div>
   `;
 
-  const input = $("#visualInput");
-  input.focus();
-  wireNumberPad("visualPad", ()=> input);
-  visualState = {p, input, hadMistake:false};
-  input.addEventListener("input", ()=> autoCheckVisualInput(p, input));
-  input.addEventListener("keydown", e=>{
-    if(e.key!=="Enter") return;
-    const btn = $("#visualNext");
-    if(!btn.disabled) btn.click();
+  visualState = {p, hadMistake:false};
+  wireMathChoices("visualChoices", (val, btn)=>{
+    const fb = $("#feedback");
+    if(val !== p.ans){
+      visualState.hadMistake = true;
+      fb.className="feedback bad"; fb.textContent="❌ Count again!";
+      return false;
+    }
+    btn.classList.add("picked");
+    $("#visualChoices").classList.add("done");
+    fb.className="feedback good big-check"; fb.textContent="✅";
+    const nextBtn = $("#visualNext");
+    nextBtn.disabled = false; nextBtn.focus();
+    return true;
   });
   $("#visualNext").addEventListener("click", markVisualDone);
 }
@@ -3497,26 +3510,6 @@ function markVisualDone(){
   }
   visualState = null;
   next();
-}
-
-function autoCheckVisualInput(p, input){
-  if(input.disabled) return;
-  const val = input.value.trim();
-  if(val==="" || val.length < String(p.ans).length) return;
-  const fb = $("#feedback");
-  if(parseInt(val,10) === p.ans){
-    input.disabled = true;
-    $("#visualPad").classList.add("done");
-    fb.className="feedback good big-check"; fb.textContent="✅";
-    const btn = $("#visualNext");
-    btn.disabled = false;
-    btn.focus();
-  } else {
-    if(visualState) visualState.hadMistake = true;
-    fb.className="feedback bad"; fb.textContent="❌ Count again!";
-    input.classList.add("shake");
-    setTimeout(()=> input.classList.remove("shake"), 450);
-  }
 }
 
 /* ---------------- READING (Read & Choose / Reverse Read & Choose) ---------------- */
@@ -3602,6 +3595,12 @@ function pickReading(opt, btn){
 }
 
 /* ---------------- MATH PATTERNS ---------------- */
+/* All four equations stay on screen — seeing 3×1, 3×2, 3×3, 3×4 stacked is the
+   whole point of the mode, and hiding three of them to ask one would throw that
+   away. Only one row is *open* at a time and the six choices belong to it; as
+   each is answered the row fills in, the next opens, and a fresh six appear,
+   built from that row's own equation so the decoys are the mistakes that sum
+   invites. */
 let patternState=null;
 
 function renderPattern(p){
@@ -3610,7 +3609,7 @@ function renderPattern(p){
     <div class="kind-tag kind-pattern">Math Pattern</div>
     <div class="poke-frame compact"><img alt="Mystery Pokémon" src="${artwork(p.poke.id)}"></div>
     <div class="pattern-list" id="patternList"></div>
-    ${numberPadHTML("patternPad")}
+    <div id="patternChoiceWrap"></div>
     <div class="feedback" id="feedback"></div>
     <div class="actions">
       <button class="btn green" id="patternNext" disabled>Next ▶</button>
@@ -3620,31 +3619,44 @@ function renderPattern(p){
   const listEl = $("#patternList");
   p.items.forEach((it,i)=>{
     const row = document.createElement("div");
-    row.className="pattern-row";
+    row.className = "pattern-row";
     row.innerHTML = `<span class="pattern-eq">${it.a} ${p.sym} ${it.b} =</span>
-      <input class="pattern-input" type="number" inputmode="none" autocomplete="off" data-i="${i}" placeholder="?">`;
+      <span class="pattern-slot" data-i="${i}"></span>`;
     listEl.appendChild(row);
   });
 
-  const inputs = [...listEl.querySelectorAll(".pattern-input")];
-  patternState = {p, inputs, hadMistake:false};
-  inputs[0].focus();
-  // Four boxes, one pad: the keys go to whichever box the child is on, and fall
-  // back to the first still-open one so a stray tap can never land nowhere.
-  wireNumberPad("patternPad", ()=>
-    (inputs.includes(document.activeElement) && !document.activeElement.disabled)
-      ? document.activeElement
-      : inputs.find(x => !x.disabled) || null);
-  inputs.forEach((inp,i)=>{
-    inp.addEventListener("input", ()=> autoCheckPatternInput(p, i, inp));
-    inp.addEventListener("keydown", e=>{
-      if(e.key!=="Enter") return;
-      if(i<inputs.length-1){ inputs[i+1].focus(); return; }
-      const btn = $("#patternNext");
-      if(!btn.disabled) btn.click();
-    });
-  });
+  patternState = { p, slots:[...listEl.querySelectorAll(".pattern-slot")], at:0, hadMistake:false };
+  openPatternRow();
   $("#patternNext").addEventListener("click", markPatternDone);
+}
+
+function openPatternRow(){
+  const st = patternState;
+  const { p, slots, at } = st;
+  slots.forEach((sl,i)=> sl.classList.toggle("current", i === at));
+  const item = p.items[at];
+  const wrap = $("#patternChoiceWrap");
+  wrap.innerHTML = mathChoicesHTML("patternChoices", { a:item.a, b:item.b, sym:p.sym, ans:item.ans });
+  wireMathChoices("patternChoices", (val)=>{
+    const fb = $("#feedback");
+    if(val !== item.ans){
+      st.hadMistake = true;
+      fb.className="feedback bad"; fb.textContent="❌ Try again!";
+      return false;
+    }
+    if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
+    const slot = slots[at];
+    slot.textContent = item.ans;
+    slot.classList.remove("current");
+    slot.classList.add("pattern-correct");
+    st.at++;
+    if(st.at < slots.length){ openPatternRow(); return true; }
+    wrap.innerHTML = "";
+    fb.className="feedback good big-check"; fb.textContent="✅";
+    const nextBtn = $("#patternNext");
+    nextBtn.disabled = false; nextBtn.focus();
+    return true;
+  });
 }
 
 function markPatternDone(){
@@ -3654,31 +3666,6 @@ function markPatternDone(){
   }
   patternState = null;
   next();
-}
-
-// checks a single box the moment it has as many digits as the answer — so a
-// 2-digit answer isn't flagged wrong after just the first digit is typed
-function autoCheckPatternInput(p, i, inp){
-  if(inp.disabled) return;
-  const ans = p.items[i].ans;
-  const val = inp.value.trim();
-  if(val==="" || val.length < String(ans).length) return;
-  const fb = $("#feedback");
-  if(parseInt(val,10) === ans){
-    inp.disabled = true;
-    if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
-    const next = patternState.inputs.find(x=> !x.disabled);
-    if(next){ next.focus(); return; }
-    $("#patternPad").classList.add("done");
-    fb.className="feedback good big-check"; fb.textContent="✅";
-    const btn = $("#patternNext");
-    btn.disabled = false;
-    btn.focus();
-  } else {
-    if(patternState) patternState.hadMistake = true;
-    inp.classList.add("shake");
-    setTimeout(()=> inp.classList.remove("shake"), 450);
-  }
 }
 
 /* ---------------- shared advance ---------------- */

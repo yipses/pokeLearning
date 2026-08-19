@@ -133,7 +133,20 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 ### 7.3 Math Trails
 
-Two tracks. **Answers are tapped in on a number pad, not typed** — a 3×4 grid of `1`–`9`, `0`, backspace and clear, sized for a thumb and laid out like a phone. Every math mode uses the same pad: plain Math, Visual Math, and Math Pattern, where one pad serves all four boxes and its keys go to whichever box the child is on. The answer box is display-only (`inputmode="none"`), so a tablet's own keyboard never opens; a physical keyboard still types, which costs nothing and is how the modes are driven in tests.
+Two tracks. **Answers are picked from six numbers**, two rows of three, styled like the spelling tiles — it is the same act as picking a chunk, so it looks like it. Every maths mode answers this way: plain Math, Visual Math, and Math Pattern. There is no keypad and no input box.
+
+**The five wrong options are built from the mistakes the operation invites**, not sampled from the level's range. Sampling would put 40 beside 7 and let a child pick by size without doing the sum. Each operation has its own error shapes, ordered nearest-first and taken from the front of that list:
+
+| operation | wrong options come from |
+|---|---|
+| `+` | ±1, ±2, `a − b` (subtracted instead), ±3, and ±10 / ±9 once the answer reaches two digits |
+| `−` | ±1, ±2, `a + b` (added instead), ±3, `b − a`, ±10 |
+| `×` | the neighbouring table rows — `a×(b±1)`, `(a±1)×b` — then ±1, `a + b`, ±10 |
+| `÷` | ±1, ±2, the divisor, `a − b`, ±3, the dividend |
+
+Two spare candidates are kept and five drawn from them, so the same sum doesn't offer an identical set every time without ever reaching past the plausible end of the list. **A tens-column slip is only offered once there is a tens column** — 17 beside an answer of 7 is not a near miss, it is a giveaway.
+
+**A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
 Answers auto-check as digits arrive, waiting until there are enough to match the answer's length before judging. Once the answer is right the pad **hides** rather than greying out — it has nothing left to do, and on a phone that is what lifts the ✅ and the **Next ▶** button above the fold. A correct answer shows a large animated ✅ and no caption text.
 
@@ -141,7 +154,7 @@ Answers auto-check as digits arrive, waiting until there are enough to match the
 
 **Multiply↔Divide — 12 interleaved steps sharing one frontier**, from tiny facts (×1–3) to full range (÷1–10) (see `LessonTrails.md`). Multiplication gets two full steps before division is introduced at all, and division gets the same two-step ramp once it starts.
 
-**Skip-counting pattern sets.** On both tracks, roughly 30% of questions become a 4-in-a-row skip-counting set instead of a single equation, checked all at once. Step size is any value where four repetitions fit the level's number range, so a low level offers only counting by 1 while a high level can offer counting by up to 25.
+**Skip-counting pattern sets.** On both tracks, roughly 30% of questions become a 4-in-a-row skip-counting set instead of a single equation. **All four equations stay on screen** — seeing `3×1, 3×2, 3×3, 3×4` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear. Step size is any value where four repetitions fit the level's number range, so a low level offers only counting by 1 while a high level can offer counting by up to 25.
 
 ### 7.4 Visual Math
 
@@ -290,7 +303,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letter, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
-- Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius. On the maths screens the frame takes a `compact` modifier and drops from 220px to 96px: the number pad is tall, and the Pokémon is decoration on a sum, so it is what gives way.
+- Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius. On the maths screens the frame takes a `compact` modifier and drops from 220px to 96px: the answer choices need the room, and the Pokémon is decoration on a sum, so it is what gives way.
 - Rules for the Settings panel's number fields are scoped to `.field`. Unscoped, `input[type="number"]` outranks `.math-input` and `.pattern-input` on specificity — an attribute selector beats a class — and every answer box in the game silently rendered at settings size with 16px text.
 - **Type**: the UI is set in **M PLUS Rounded 1c**, the closest freely-licensed match to FOT-Rodin — the rounded Japanese gothic the Pokémon Switch games use — so the app reads as a sibling of the games it borrows from. **Served from `fonts/`, not a CDN**: this is an app for a child on a tablet, and a typeface is not something to need a network for. Latin subset only, four weights, 87 KB — M PLUS Rounded 1c is a Japanese family whose full webfont spans roughly 590 subset files, and nothing in the page or in `data/*.csv` uses a character above U+00FF. `font-display:swap` and a rounded fallback stack (`Baloo 2`, `Varela Round`, `Trebuchet MS`) mean the page never blocks on it and never falls back to something angular. See `fonts/README.md` for how to pull a further subset if one is ever needed.
 
