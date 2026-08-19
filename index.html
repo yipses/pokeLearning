@@ -103,13 +103,16 @@
   .field label{ font-weight:700; }
   .field .hint{ display:block; font-weight:400; font-size:.82rem; color:var(--ink-soft); margin-top:2px; }
 
-  input[type="number"]{
+  /* Settings only. Unscoped, this outranks .math-input and .pattern-input on
+     specificity — an attribute selector beats a class — and every answer box in
+     the game silently rendered at settings size with 16px text. */
+  .field input[type="number"]{
     width:92px; font: inherit; font-weight:700; text-align:center;
     padding:10px 8px; border-radius: var(--radius-sm);
     border:3px solid var(--sky-deep); background:var(--white); color:var(--ink);
     outline:none;
   }
-  input[type="number"]:focus{ border-color: var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
+  .field input[type="number"]:focus{ border-color: var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
 
   /* toggle switch */
   .switch{ display:inline-block; position:relative; width:58px; height:32px; flex:0 0 auto; cursor:pointer; }
@@ -186,6 +189,10 @@
   .kind-reading{ background:linear-gradient(160deg,#c9a6f0,#9a6bd6); }
   .kind-battle{ background:linear-gradient(160deg,#ffab6b,#d84315); }
 
+  /* The number pad is tall, and on a phone the maths screens ran past the fold
+     with it. The Pokémon is decoration on a sum — it shrinks rather than the
+     thing being answered with. */
+  .poke-frame.compact{ width:96px; height:96px; margin-bottom:4px; }
   .poke-frame{
     width: 220px; height:220px; margin: 0 auto 8px; border-radius: 50%;
     background: radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
@@ -323,13 +330,40 @@
   .reading-say-mini:active{ transform:translateY(1px); }
 
   /* math input */
-  .math-q{ font-size: clamp(40px, 11vw, 64px); font-weight:800; color:var(--ink); margin:6px 0 14px; }
+  .math-q{ font-size: clamp(40px, 11vw, 64px); font-weight:800; color:var(--ink); margin:2px 0 10px; }
   .math-input{
     width: 200px; font: inherit; font-weight:800; font-size:2.4rem; text-align:center;
     padding:12px; border-radius:20px; border:4px solid var(--berry); background:var(--white); color:var(--ink);
     outline:none;
   }
   .math-input:focus{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
+  .math-input:disabled{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); opacity:1; }
+  /* The pad is the way in, so the browser's own up/down arrows are just a small
+     wrong thing to tap next to a big right one. */
+  .math-input, .pattern-input{ appearance:textfield; -moz-appearance:textfield; }
+  .math-input::-webkit-outer-spin-button, .math-input::-webkit-inner-spin-button,
+  .pattern-input::-webkit-outer-spin-button, .pattern-input::-webkit-inner-spin-button{
+    -webkit-appearance:none; margin:0;
+  }
+
+  /* number pad — the only way in on a tablet, so the keys are thumb-sized and
+     the grid is the phone layout a child has already seen on a lift button. */
+  .num-pad{
+    display:grid; grid-template-columns:repeat(3, 72px); gap:10px;
+    justify-content:center; margin:12px 0 4px;
+  }
+  .num-key{
+    height:60px; border-radius:14px; font:inherit; font-size:1.7rem; font-weight:800;
+    cursor:pointer; color:var(--leaf-deep);
+    background:linear-gradient(180deg,var(--white),var(--cream));
+    border:3px solid var(--leaf); box-shadow:0 5px 0 var(--leaf-deep);
+    transition: transform .05s, opacity .15s;
+  }
+  .num-key:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--leaf-deep); }
+  .num-key.wide{ grid-column:span 1; font-size:1.3rem; }
+  /* Answered: the pad has nothing left to do, and hiding it rather than greying
+     it out is what lifts ✅ and Next above the fold on a phone. */
+  .num-pad.done{ display:none; }
 
   /* pattern rows */
   .pattern-list{ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; }
@@ -811,6 +845,8 @@
     .reading-opt-word{ font-size:.95rem; }
     .pattern-eq{ min-width:110px; font-size:1.1rem; }
     .pattern-input{ width:70px; font-size:1.1rem; }
+    .num-pad{ grid-template-columns:repeat(3, 62px); gap:8px; }
+    .num-key{ height:52px; font-size:1.5rem; }
     .visual-icon{ width:42px; height:42px; }
     .visual-icon-wrap{ width:42px; height:42px; }
     .visual-icon-wrap .cross::before,
@@ -1070,7 +1106,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 44;
+const APP_BUILD = 45;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -3044,14 +3080,50 @@ function finishMissingLetter(){
   lockAndAdvance(done => blendBack(word, done));
 }
 
+/* ---------------- NUMBER PAD ---------------- */
+/* Every math mode answers the same way: tap digits to build the number. The
+   three renderers below keep their <input> elements — the pad writes into one
+   and fires the same `input` event a keystroke would, so the auto-checking that
+   was already there is untouched and there is one answer path, not two.
+
+   `inputmode="none"` on those inputs is what stops the OS keyboard opening on a
+   tablet. A physical keyboard still types, which is worth keeping: it costs
+   nothing and it is how the modes get driven in tests. */
+const PAD_KEYS = ["1","2","3","4","5","6","7","8","9","⌫","0","✕"];
+function numberPadHTML(id){
+  return `<div class="num-pad" id="${id}">` +
+    PAD_KEYS.map(k => `<button class="num-key${k.length>1?" wide":""}" type="button" data-key="${k}"` +
+      ` aria-label="${k==="⌫" ? "Backspace" : k==="✕" ? "Clear" : k}">${k}</button>`).join("") +
+    `</div>`;
+}
+/* `pick` returns the input the keys should write into, or null when the
+   question is finished — Math Pattern has four boxes and hands back whichever
+   one is still open. */
+function wireNumberPad(padId, pick){
+  const pad = $("#"+padId);
+  pad.addEventListener("click", e=>{
+    const key = e.target.closest(".num-key");
+    if(!key) return;
+    const input = pick();
+    if(!input || input.disabled) return;
+    const k = key.dataset.key;
+    if(k === "⌫") input.value = input.value.slice(0, -1);
+    else if(k === "✕") input.value = "";
+    else input.value += k;
+    input.dispatchEvent(new Event("input"));
+  });
+  return pad;
+}
+
 /* ---------------- MATH ---------------- */
 function renderMath(p){
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-math">Math</div>
-    <div class="poke-frame"><img alt="${cap(p.poke.n)}" src="${artwork(p.poke.id)}"></div>
+    <div class="poke-frame compact"><img alt="${cap(p.poke.n)}" src="${artwork(p.poke.id)}"></div>
     <div class="math-q">${p.a} ${p.sym} ${p.b} = ?</div>
-    <input class="math-input" id="mathInput" type="number" inputmode="numeric" autocomplete="off" placeholder="?">
+    <input class="math-input" id="mathInput" type="number" inputmode="none" autocomplete="off" placeholder="?">
+    ${numberPadHTML("mathPad")}
     <div class="feedback" id="feedback"></div>
     <div class="actions">
       <button class="btn green" id="mathNext" disabled>Next ▶</button>
@@ -3059,6 +3131,7 @@ function renderMath(p){
   `;
   const input = $("#mathInput");
   input.focus();
+  wireNumberPad("mathPad", ()=> input);
   mathState = {p, input, hadMistake:false};
   input.addEventListener("input", ()=> autoCheckMathInput(p, input));
   input.addEventListener("keydown", e=>{
@@ -3087,6 +3160,7 @@ function autoCheckMathInput(p, input){
   const fb = $("#feedback");
   if(parseInt(val,10) === p.ans){
     input.disabled = true;
+    $("#mathPad").classList.add("done");
     fb.className="feedback good big-check"; fb.textContent="✅";
     const btn = $("#mathNext");
     btn.disabled = false;
@@ -3136,7 +3210,8 @@ function renderVisual(p){
     <div class="kind-tag kind-visual">Visual Math</div>
     <div class="visual-eq">${eqText}</div>
     ${visualHTML}
-    <input class="math-input" id="visualInput" type="number" inputmode="numeric" autocomplete="off" placeholder="?">
+    <input class="math-input" id="visualInput" type="number" inputmode="none" autocomplete="off" placeholder="?">
+    ${numberPadHTML("visualPad")}
     <div class="feedback" id="feedback"></div>
     <div class="actions">
       <button class="btn green" id="visualNext" disabled>Next ▶</button>
@@ -3145,6 +3220,7 @@ function renderVisual(p){
 
   const input = $("#visualInput");
   input.focus();
+  wireNumberPad("visualPad", ()=> input);
   visualState = {p, input, hadMistake:false};
   input.addEventListener("input", ()=> autoCheckVisualInput(p, input));
   input.addEventListener("keydown", e=>{
@@ -3173,6 +3249,7 @@ function autoCheckVisualInput(p, input){
   const fb = $("#feedback");
   if(parseInt(val,10) === p.ans){
     input.disabled = true;
+    $("#visualPad").classList.add("done");
     fb.className="feedback good big-check"; fb.textContent="✅";
     const btn = $("#visualNext");
     btn.disabled = false;
@@ -3274,8 +3351,9 @@ function renderPattern(p){
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-pattern">Math Pattern</div>
-    <div class="poke-frame"><img alt="Mystery Pokémon" src="${artwork(p.poke.id)}"></div>
+    <div class="poke-frame compact"><img alt="Mystery Pokémon" src="${artwork(p.poke.id)}"></div>
     <div class="pattern-list" id="patternList"></div>
+    ${numberPadHTML("patternPad")}
     <div class="feedback" id="feedback"></div>
     <div class="actions">
       <button class="btn green" id="patternNext" disabled>Next ▶</button>
@@ -3287,13 +3365,19 @@ function renderPattern(p){
     const row = document.createElement("div");
     row.className="pattern-row";
     row.innerHTML = `<span class="pattern-eq">${it.a} ${p.sym} ${it.b} =</span>
-      <input class="pattern-input" type="number" inputmode="numeric" autocomplete="off" data-i="${i}" placeholder="?">`;
+      <input class="pattern-input" type="number" inputmode="none" autocomplete="off" data-i="${i}" placeholder="?">`;
     listEl.appendChild(row);
   });
 
   const inputs = [...listEl.querySelectorAll(".pattern-input")];
   patternState = {p, inputs, hadMistake:false};
   inputs[0].focus();
+  // Four boxes, one pad: the keys go to whichever box the child is on, and fall
+  // back to the first still-open one so a stray tap can never land nowhere.
+  wireNumberPad("patternPad", ()=>
+    (inputs.includes(document.activeElement) && !document.activeElement.disabled)
+      ? document.activeElement
+      : inputs.find(x => !x.disabled) || null);
   inputs.forEach((inp,i)=>{
     inp.addEventListener("input", ()=> autoCheckPatternInput(p, i, inp));
     inp.addEventListener("keydown", e=>{
@@ -3328,6 +3412,7 @@ function autoCheckPatternInput(p, i, inp){
     if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
     const next = patternState.inputs.find(x=> !x.disabled);
     if(next){ next.focus(); return; }
+    $("#patternPad").classList.add("done");
     fb.className="feedback good big-check"; fb.textContent="✅";
     const btn = $("#patternNext");
     btn.disabled = false;

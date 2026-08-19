@@ -131,6 +131,14 @@ Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped
 - **It applies to Reading as much as to Spelling.** An unidentifiable picture is worse as a prompt than as an answer, so the filter sits on `GRADED_ITEMS` and both trails see the same catalogue.
 - **Cost: 90 of 909 usable items, just under 10%.** The pools barely move. Only one dropped item is graded below level 3 (`Sign`), so spelling level 1 goes from 6 candidates to 5 and levels 2–6 each lose one. Every level still has a pool it can draw from.
 
+## Phase 35 — Tap the number in
+
+- **Maths answers are a number pad now**, not the OS keyboard: `1`–`9`, `0`, backspace and clear, in the phone layout. The same pad serves plain Math, Visual Math and Math Pattern — where one pad feeds four boxes, going to whichever the child is on and falling back to the first still-open one so a stray tap can never land nowhere.
+- **The three renderers kept their `<input>` elements.** The pad writes into one and fires the same `input` event a keystroke would, so the auto-checking that was already there is untouched and there is one answer path rather than two. `inputmode="none"` stops the tablet keyboard opening; a physical keyboard still types, which costs nothing and is how the modes get driven in tests.
+- **Answer lengths were measured before the design was picked.** 400 questions at every level: answers run 1–3 digits and reach 196 at Add/Subtract 5a/5b, so a pad the child builds a number on was the only option that covers the whole ladder — four answer tiles would have worked at the bottom and nowhere near the top.
+- **A pre-existing bug fell out of it.** `input[type="number"]` was styled unscoped for the Settings panel, and an attribute selector outranks a class, so `.math-input`'s 200px/2.4rem had *never* applied — every answer box in the game was rendering at settings size in 16px text. Scoped to `.field` and the answer boxes finally look like answer boxes.
+- **The pad hides when the answer is right** rather than greying out. Measured first: with it left in place the pad itself sat below the fold on a 390×844 phone and **Next** was 136px past the bottom on every screen. The Pokémon frame also shrinks to 96px on maths screens. Both fixes verified on iPhone and iPad viewports, before and after answering.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
