@@ -123,6 +123,13 @@ An `evolves_from` column in `data/pokemon.csv` (from PokéAPI, 479 links) drives
 - **Stored frontiers are rescaled, not reset.** The ladders went 14 → 25 and 6 → 10 over different vocabulary, so a stored index would point somewhere arbitrary. It's rescaled by position — three-quarters up the old ladder starts three-quarters up the new one — stamped with a version so it happens once. Rolling windows are cleared, since they measured a different task.
 - **Verified by generating questions, not by reading code**: 400 spelling questions at each of 25 levels and 300 reading questions at each of 10, asserting every word fell inside its row's pools, every task type matched its `hinted_pct`, every hint allowance matched `max_hints`, every option count matched `wrong_answers`, and every decoy came from the declared distractor pool. Zero violations. Then the migration, both promotion paths, the settings dropdowns and a played round on screen.
 
+## Phase 26 — The pity timer was overwriting the drop rate
+
+- **Setting the wild rate to 50% produced an encounter every single question.** Reported from play, and true: the pity forced one at `round(100/R) - 1` questions, which at 50% is 1 — and `sinceEncounter` is incremented before the check, so every question was a forced encounter.
+- **Measuring it showed the fault was general, not a one-off.** Across 20,000 questions per setting the observed rate was 8% at a 5% setting, 16% at 10%, 43% at 25%, and 100% at anything from 50% up. The pity wasn't capping the tail of the distribution, it was replacing most of it: at rate R the wait is geometric with mean 100/R, and forcing at (mean − 1) cuts in below the mean, where the bulk of the probability lives.
+- **Now forced at twice the mean** (`round(200/R)`, floor 2). Measured over 50,000 questions per setting: 5% → 5.8, 10% → 11.3, 25% → 27.8, 50% → 53.1, 75% → 76.1, and 0% and 100% still mean never and always. Droughts cap at 20 questions at 10% and 4 at 50%.
+- **The trade-off is stated rather than hidden.** The original design promised a catch "by the 9th question" at 10%; honouring that promise is exactly what broke the rate, because 9 is below the mean wait of 10. The cap is 20 now — two rounds at the default length — in exchange for the Settings number meaning what it says.
+
 ## Where things stand
 
 Everything speced is built: four Lesson Trails promoting, the Dashboard, the Pokédex with detail and legendary call-outs, Battle, and all game data in editable CSVs. Published on GitHub Pages.
