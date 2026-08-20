@@ -168,6 +168,24 @@ All three maths modes now route through `lockAndAdvance()` on the default 850ms 
 
 What is given up is self-pacing, and the trade is worth naming: the beat is fixed at 850ms whether or not the child is done looking. Visual Math is the case that could have argued for longer — its icons stay on screen when the choices hide, so there *is* something to sit with — but it takes the same beat as everything else, which is the point.
 
+### Phase 54 — My progress splits maths into its two families
+
+Home shows two maths tiles, each a sum; My progress showed one card per live track. That was fine at one track and unreadable at eight — full cards with three gate bars and a trend chart each, and a flat list of *Add*, *Add pattern*, *Subtract* that never said which family any of them belonged to.
+
+Maths is now **two group cards**, `+ / −` and `× / ÷`, each headed with the same summed level the home tile shows, then one slim row per track: name, level out of that track's own total, and a bar. Tapping a row opens the detail that used to be the whole card. Spelling and Reading keep their full cards — nothing asked for them to change.
+
+- **Detail is built on first open**, not up front. Eight trend charts nobody asked for is the scroll this split exists to avoid.
+- **Locked tracks are listed, greyed, with what opens them** — *Opens at Multiply pattern 5*, the immediate prerequisite rather than the root of the chain, because that is the one a reader can act on. Showing them keeps the section's shape from re-flowing every time something unlocks.
+
+Two layout bugs, both found by rendering at 4× rather than from the assertions, which passed:
+
+- **The last live row lost its separator.** `.track-row:last-of-type` counts per *element type*, and a live row is a `<button>` while a locked one is a `<div>` — so it stripped the border from the last button rather than the last row. Separators moved to the **top** of every row but the first, which also stops a border trailing off the end of the card.
+- **"Divide pattern" broke across two lines at 360px** because the unlock note beside it was `white-space: nowrap` and won the squeeze. The note wraps now and the name stays whole — the note is the half that can afford to break.
+
+### Phase 55 — Spelling hint caps, from the sheet
+
+`max_hints` was the only column in the sheet that had moved. It now caps at **3** from level 11 up; the CSV still held the old escalating values that ran to 7 by level 25. Nine cells, all in that one column — every other spelling, reading and maths cell already matched. Levels 13, 16, 18, 19, 21, 22, 23, 24 and 25 came down from 4, 4, 4, 5, 5, 6, 4, 5 and 7.
+
 ### Phases 42–48 — the home screen, and maths by choice
 
 The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
