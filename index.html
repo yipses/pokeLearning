@@ -697,24 +697,39 @@
   /* The middle band of the home screen: one of your own Pokémon, big enough to be
      the reason a child taps Start. Only ever a caught one, unless nothing is
      caught yet — then an outline and its type stand in. The whole card is a
-     button; tapping re-rolls the pick. */
+     button; tapping re-rolls the pick.
+
+     Two columns, at every width: the trophy on the left, everything that labels
+     it on the right. The centred stack it replaces was a 360px phone layout
+     centred inside a card that grows to 724px — it never used more than 32% of
+     its own width, and 27% on a tablet, which is where the empty card came from.
+     No breakpoint: the frame and the text both clamp, so the arrangement holds
+     from 360 to 1280 and only breathes. */
   .showcase{
-    display:flex; flex-direction:column; align-items:center; gap:1px;
-    width:100%; margin:0 0 14px; padding:clamp(8px,1.4vh,12px) 12px clamp(9px,1.6vh,14px); font:inherit; cursor:pointer;
+    display:flex; align-items:center; gap:clamp(14px,3vw,26px);
+    width:100%; margin:0 0 14px; padding:clamp(12px,2vh,20px) clamp(16px,3vw,26px); font:inherit; cursor:pointer;
     background:linear-gradient(180deg,var(--white),var(--cream));
     border:3px solid rgba(255,255,255,.9); border-radius:var(--radius);
-    box-shadow:var(--shadow-sm); text-align:center;
+    box-shadow:var(--shadow-sm); text-align:left;
     transition: transform .06s, box-shadow .15s;
     -webkit-tap-highlight-color:transparent;
   }
   .showcase:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  /* min-width:0 or a long name would shove the frame instead of staying in its
+     own column — flex items refuse to shrink below their content otherwise. */
+  .showcase-body{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:1px; }
   /* Everything else on the home screen is a fixed cost — the HUD, the wordmark,
      four levels, two buttons. The Pokémon is the one thing that can be smaller
      without losing what it says, so it is the part that gives way: the frame is
-     sized off viewport height and shrinks on a short screen so the buttons stay
-     above the fold. */
+     sized off the viewport and shrinks on a short screen so the buttons stay
+     above the fold. It now takes whichever axis is scarcer: 22vh keeps it off
+     the fold on a short screen, 34vw keeps it from crowding the text column on a
+     narrow one. One rule covers both, so the max-width:480px override this used
+     to need is gone. Two columns pay for the extra size — moving the text out
+     from under the frame frees more height than the bigger frame spends. */
   .showcase-frame{
-    width:clamp(104px, 20vh, 196px); height:clamp(104px, 20vh, 196px); border-radius:50%;
+    flex:0 0 auto;
+    width:clamp(96px, min(22vh,34vw), 240px); height:clamp(96px, min(22vh,34vw), 240px); border-radius:50%;
     background:radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
     box-shadow:var(--shadow-sm), inset 0 0 0 5px rgba(255,255,255,.7);
     display:grid; place-items:center; overflow:hidden;
@@ -725,19 +740,25 @@
     filter:drop-shadow(0 6px 8px rgba(0,0,0,.15));
   }
   .showcase-frame img.silhouette{ filter:brightness(0) opacity(.28); }
-  .showcase-name{ font-size:clamp(1rem, 2.4vh, 1.2rem); font-weight:900; color:var(--ink); margin-top:6px; line-height:1.2; }
+  .showcase-name{ font-size:clamp(1.1rem, 3vh, 1.6rem); font-weight:900; color:var(--ink); margin-top:0; line-height:1.2; }
   .showcase-num{ font-size:.78rem; font-weight:800; color:var(--ink-soft); line-height:1.3; }
   .showcase-greet{ font-size:.9rem; font-weight:800; color:var(--leaf-deep); margin-top:2px; line-height:1.3; }
   /* Which generation this one belongs to, and how much of it is filled. Two short
      lines, no sentence — the label is a name and the count is a number, which is
      what §14.1 says a child's screen may spend words on. */
-  .showcase-gen{ display:block; margin-top:8px; }
+  .showcase-gen{ display:block; margin-top:8px; width:100%; }
+  /* Reuses the level tiles' bar, deliberately: the panel directly above already
+     argues that a number needs a bar beside it because "Level 3 of 25" and
+     "Level 3 of 10" are not the same place. 5 of 147 has exactly that problem.
+     Same colour as the dex counter in the HUD, because it is the same number.
+     aria-hidden — the card's own aria-label already reads the count out. */
+  .showcase-gen .level-bar{ display:block; margin-top:5px; max-width:320px; }
   .showcase-gen-name{ display:block; text-transform:uppercase; letter-spacing:.06em;
                       font-size:.68rem; font-weight:800; color:var(--ink-soft); line-height:1.4; }
   .showcase-gen-count{ display:block; font-size:1rem; font-weight:900; color:var(--ink); line-height:1.3; }
   /* Stands in for the name block when nothing is caught yet, so the card keeps
      roughly the same height either way and Start doesn't jump up the screen. */
-  .showcase-types{ display:flex; gap:6px; justify-content:center; margin-top:12px; padding-bottom:10px; }
+  .showcase-types{ display:flex; gap:6px; justify-content:flex-start; margin-top:0; padding-bottom:0; }
 
   /* ---------- home actions / footer ---------- */
   .home-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -974,7 +995,6 @@
 
   @media (max-width:480px){
     .poke-frame{ width:180px; height:180px; }
-    .showcase-frame{ width:clamp(84px, 13.5vh, 170px); height:clamp(84px, 13.5vh, 170px); }
     .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
     .slot-word{ gap:6px; }
@@ -1236,7 +1256,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 66;
+const APP_BUILD = 67;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2049,10 +2069,14 @@ function renderShowcase(){
   const shownGen = genOf(poke.id);
   const genTotal = shownGen ? POKEMON.filter(x => x.id>=shownGen.from && x.id<=shownGen.to).length : 0;
   const genCaught = shownGen ? collected.filter(id => id>=shownGen.from && id<=shownGen.to).length : 0;
+  const genPct = genTotal ? Math.round((genCaught / genTotal) * 100) : 0;
   const genBlock = shownGen ? `
       <span class="showcase-gen">
         <span class="showcase-gen-name">${shownGen.label.split(" — ")[0]}</span>
         <span class="showcase-gen-count">${genCaught} / ${genTotal}</span>
+        <span class="level-bar" aria-hidden="true">
+          <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
+        </span>
       </span>` : "";
 
   el.innerHTML = `
@@ -2060,15 +2084,17 @@ function renderShowcase(){
       <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
            class="${showCaught ? "" : "silhouette"}" decoding="async">
     </span>
-    ${showCaught ? `
-      <span class="showcase-name">${cap(poke.n)}</span>
-      <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
-      <span class="showcase-greet">Welcome back!</span>
-    ` : `
-      <span class="showcase-types">${(poke.t||[]).map(t=>
-        `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
-    `}
-    ${genBlock}`;
+    <span class="showcase-body">
+      ${showCaught ? `
+        <span class="showcase-name">${cap(poke.n)}</span>
+        <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
+        <span class="showcase-greet">Welcome back!</span>
+      ` : `
+        <span class="showcase-types">${(poke.t||[]).map(t=>
+          `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
+      `}
+      ${genBlock}
+    </span>`;
 
   el.setAttribute("aria-label", showCaught
     ? `${cap(poke.n)}, number ${poke.id}. ${genCaught} of ${genTotal} caught in ${shownGen.label}. Tap for another.`
