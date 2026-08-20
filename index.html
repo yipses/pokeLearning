@@ -809,11 +809,16 @@
   .dex-rare.mythical{ background:#d9b6f0; }
   .rare-count{ color:var(--sun-deep); }
   /* Sized so a three-stage line — the common case — fits one row inside the
-     card's ~292px interior with room to spare. Branching families (Eevee) still
-     wrap, which is fine. */
+     card's ~292px interior with room to spare. A wide stage (Eevee has eight
+     second-stage forms) wraps inside its own group, so the arrow still reads as
+     "this stage becomes that stage" rather than pointing at one sibling. */
   .evo-row{
     display:flex; align-items:center; justify-content:center; gap:3px;
     flex-wrap:wrap; margin:10px 0 2px;
+  }
+  .evo-stage{
+    display:flex; align-items:center; justify-content:center; gap:3px;
+    flex-wrap:wrap; flex:0 1 auto; min-width:0;
   }
   .evo{
     display:flex; flex-direction:column; align-items:center; gap:1px;
@@ -1183,7 +1188,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 58;
+const APP_BUILD = 59;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -2426,12 +2431,40 @@ function catchCaption(poke){
    stay reachable because each member here reopens the popup on itself, so a
    three-stage line is two taps rather than a wall of sprites. Hidden entirely
    for an uncaught entry, which keeps its secret. */
+/* The whole family, laid out in stages.
+
+   This walked one hop back and one hop forward, which is only the whole family
+   when you happen to be standing in the middle of a three-stage line. From
+   Bulbasaur it showed Bulbasaur and Ivysaur and stopped; from Venusaur it showed
+   Ivysaur and Venusaur. 269 of the 1,021 species saw a family missing at least
+   one member.
+
+   So: climb to the root, then walk down breadth-first, one array per stage.
+   Depth is capped and the climb is bounded — a cycle in `evolves_from` would
+   otherwise hang the popup, and the column is hand-edited data. */
+function evoStages(poke){
+  let root = poke;
+  for(let i = 0; i < 5 && root.from; i++){
+    const up = POKEMON.find(x => x.n === root.from);
+    if(!up || up.n === root.n) break;
+    root = up;
+  }
+  const stages = [];
+  let level = [root];
+  while(level.length && stages.length < 5){
+    stages.push(level);
+    level = level.flatMap(p => EVOLVES_INTO[p.n] || []);
+  }
+  return stages;
+}
+
 function renderEvoRow(poke){
   const row = $("#catchEvo");
   if(!poke){ row.classList.add("hidden"); row.innerHTML = ""; return; }
-  const prev = poke.from ? POKEMON.find(x => x.n === poke.from) : null;
-  const next = EVOLVES_INTO[poke.n] || [];
-  if(!prev && !next.length){ row.classList.add("hidden"); row.innerHTML = ""; return; }
+  const stages = evoStages(poke);
+  if(stages.reduce((n, st) => n + st.length, 0) < 2){
+    row.classList.add("hidden"); row.innerHTML = ""; return;
+  }
 
   const collected = loadCollection();
   const chip = (p, current) => {
@@ -2441,9 +2474,11 @@ function renderEvoRow(poke){
       <img src="${artwork(p.id)}" alt="" class="${got ? "" : "silhouette"}">
       <span>${got ? cap(p.n) : "&nbsp;"}</span></button>`;
   };
-  row.innerHTML = (prev ? chip(prev, false) + `<span class="evo-arrow">➜</span>` : "")
-    + chip(poke, true)
-    + (next.length ? `<span class="evo-arrow">➜</span>` + next.map(x => chip(x, false)).join("") : "");
+  // One group per stage, so a branching family's siblings stay together and the
+  // arrow sits between stages rather than between every pair of chips.
+  row.innerHTML = stages
+    .map(st => `<span class="evo-stage">` + st.map(x => chip(x, x.id === poke.id)).join("") + `</span>`)
+    .join(`<span class="evo-arrow">➜</span>`);
   row.querySelectorAll(".evo[data-id]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const target = POKEMON.find(x => x.id === Number(btn.dataset.id));

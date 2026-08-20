@@ -124,6 +124,12 @@ Opening any Pokémon entry says its name aloud — one rule covering the catch p
 
 **My progress** leads with rounds per day over the last 7 days. No new storage was needed — the streak record has always kept `{date: rounds}` uncapped, so the chart was correct from the day it shipped.
 
+### Phase 49 — The Pokédex family showed two of three
+
+The evolution strip walked one hop back and one hop forward, which is the whole family only if you happen to be standing in the middle of a three-stage line. From Bulbasaur it showed Bulbasaur and Ivysaur and stopped; from Venusaur, Ivysaur and Venusaur. **269 of the 1,021 species saw a family missing at least one member** — measured, because "it only shows 2" could have been one bad row rather than a structural fault.
+
+Now it climbs to the root and walks down breadth-first, one group per stage. Eevee's nine render as one plus eight, Wurmple's branch keeps `silcoon, cascoon → beautifly, dustox` in the right stages, and the count of species seeing an incomplete family is zero.
+
 ### Phases 42–48 — the home screen, and maths by choice
 
 The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
