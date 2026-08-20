@@ -188,6 +188,18 @@ Height freed: **46px more clearance above the fold at 360**, on top of the 58px 
 
 **Six screens lost their logo, and that is the change worth looking at**, not the home screen. `.brand` sat outside `#homeTop`, so it rendered on all seven; inside it, it renders on one. Settings, Pokédex, My progress and Battle each open with their own **← Back**, and a round now opens with the ✕ and the progress bar — which is what `Overview.md` §8b already said that screen should hold and never quite did.
 
+### Phase 58 — Two headings, and the collection counter moves where it is explained
+
+The home screen's two cards had no headings, so a panel of four levels and a card holding one Pokémon both began mid-sentence. **Your progress** and **Your Pokémon** now label them, set through `text-transform` so the accent survives.
+
+Inside the Pokémon card: the **number goes above the name** — the number is the slot in the collection, the name is what fills it — and **"Welcome back!" is gone**, which read as a caption with nothing to caption once the card had a heading of its own.
+
+**The collection counter moved out of the HUD.** Its dex slot said `5/147` with no label, and the card below it said `GENERATION 1` over `5 / 147` — the same two numbers twice on one screen, one of them explaining nothing. The icon and the tap moved down to the count row, which names the generation it is counting. The results screen keeps its counter, having no card to move it into.
+
+That forced a structural change: the card **was** one big button, so tapping anywhere re-rolled the Pokémon. A button inside a button is invalid and browsers disagree about what to do with one, so the card is a plain container now with two buttons in it — the picture re-rolls, the count row opens the Pokédex. Verified there are zero nested buttons and both taps do what they claim.
+
+Two headings cost height, and 360×640 went over by 3px. Taken back from the gap under a six-letter label rather than from the Pokémon, which has given way enough.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

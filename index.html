@@ -690,11 +690,19 @@
      says how far along the trail that is, which the number alone can't: level 3
      of 25 and level 3 of 10 are not the same place. Reading it is optional;
      Start Playing stays above it and above the fold. */
-  .levels-card{
-    margin:0 0 14px; padding:14px 16px 15px; border-radius:var(--radius);
-    background:rgba(255,255,255,.72); box-shadow:var(--shadow-sm);
-    display:grid; grid-template-columns:repeat(2,1fr); gap:15px 18px;
+  /* Both home cards carry one. Set through text-transform rather than typed in
+     caps so "Pokémon" keeps its accent instead of losing it to a retype — the
+     same reason the wordmark does it. */
+  .card-heading{
+    display:block; text-transform:uppercase; letter-spacing:.07em;
+    font-size:.66rem; font-weight:800; color:var(--ink-soft);
+    line-height:1.3; margin:0 0 9px;
   }
+  .levels-card{
+    margin:0 0 14px; padding:12px 16px 14px; border-radius:var(--radius);
+    background:rgba(255,255,255,.72); box-shadow:var(--shadow-sm);
+  }
+  .levels-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:15px 18px; }
   .level-tile{ display:flex; flex-direction:column; gap:5px; min-width:0; }
   .level-icon{ display:inline-grid; place-items:center; width:17px; height:17px; flex:0 0 auto; }
   .level-icon svg{ display:block; width:100%; height:100%; }
@@ -720,16 +728,24 @@
      its own width, and 27% on a tablet, which is where the empty card came from.
      No breakpoint: the frame and the text both clamp, so the arrangement holds
      from 360 to 1280 and only breathes. */
+  /* The card holds two separate targets now — the picture re-rolls, the count
+     row opens the Pokédex — so it cannot itself be a button: a button inside a
+     button is invalid and browsers disagree about what to do with it. */
   .showcase{
-    display:flex; align-items:center; gap:clamp(14px,3vw,26px);
-    width:100%; margin:0 0 14px; padding:clamp(12px,2vh,20px) clamp(16px,3vw,26px); font:inherit; cursor:pointer;
+    width:100%; margin:0 0 14px; padding:clamp(10px,1.8vh,16px) clamp(16px,3vw,26px) clamp(12px,2vh,18px);
     background:linear-gradient(180deg,var(--white),var(--cream));
     border:3px solid rgba(255,255,255,.9); border-radius:var(--radius);
     box-shadow:var(--shadow-sm); text-align:left;
-    transition: transform .06s, box-shadow .15s;
-    -webkit-tap-highlight-color:transparent;
   }
-  .showcase:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  .showcase-row{ display:flex; align-items:center; gap:clamp(14px,3vw,26px); }
+  /* Tapping the Pokémon re-rolls it. It used to be the whole card, which cannot
+     survive a second target inside it. */
+  .showcase-pick{
+    flex:0 0 auto; padding:0; border:0; background:none; font:inherit; color:inherit;
+    cursor:pointer; border-radius:50%; -webkit-tap-highlight-color:transparent;
+    transition: transform .06s;
+  }
+  .showcase-pick:active{ transform:translateY(2px); }
   /* min-width:0 or a long name would shove the frame instead of staying in its
      own column — flex items refuse to shrink below their content otherwise. */
   .showcase-body{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:1px; }
@@ -757,17 +773,30 @@
   .showcase-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   .showcase-name{ font-size:clamp(1.1rem, 3vh, 1.6rem); font-weight:900; color:var(--ink); margin-top:0; line-height:1.2; }
   .showcase-num{ font-size:.78rem; font-weight:800; color:var(--ink-soft); line-height:1.3; }
-  .showcase-greet{ font-size:.9rem; font-weight:800; color:var(--leaf-deep); margin-top:2px; line-height:1.3; }
+  /* The collection count, carrying the Pokédex icon the HUD used to hold and the
+     tap that used to go with it. One counter, in the one place that explains what
+     it is counting — the HUD's third slot said the same two numbers with no label
+     at all. */
+  .showcase-dex{
+    display:flex; align-items:center; gap:9px; width:100%;
+    margin-top:9px; padding:6px 8px 7px; border:0; border-radius:12px;
+    background:rgba(255,255,255,.55); font:inherit; color:inherit; text-align:left;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+    transition: background .15s, transform .06s;
+  }
+  .showcase-dex:hover{ background:rgba(255,255,255,.9); }
+  .showcase-dex:active{ transform:translateY(1px); }
+  .showcase-dex .hud-icon{ flex:0 0 auto; width:20px; height:20px; color:var(--berry-deep); }
+  .showcase-dex-text{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:1px; }
   /* Which generation this one belongs to, and how much of it is filled. Two short
      lines, no sentence — the label is a name and the count is a number, which is
      what §14.1 says a child's screen may spend words on. */
-  .showcase-gen{ display:block; margin-top:8px; width:100%; }
   /* Reuses the level tiles' bar, deliberately: the panel directly above already
      argues that a number needs a bar beside it because "Level 3 of 25" and
      "Level 3 of 10" are not the same place. 5 of 147 has exactly that problem.
      Same colour as the dex counter in the HUD, because it is the same number.
      aria-hidden — the card's own aria-label already reads the count out. */
-  .showcase-gen .level-bar{ display:block; margin-top:5px; max-width:320px; }
+  .showcase .level-bar{ display:block; margin-top:7px; }
   .showcase-gen-name{ display:block; text-transform:uppercase; letter-spacing:.06em;
                       font-size:.68rem; font-weight:800; color:var(--ink-soft); line-height:1.4; }
   .showcase-gen-count{ display:block; font-size:1rem; font-weight:900; color:var(--ink); line-height:1.3; }
@@ -1003,7 +1032,9 @@
      Keyed on height, not width — a short landscape phone has the same problem. */
   @media (max-height:700px){
     .showcase{ margin-bottom:10px; }
-    .showcase-gen{ margin-top:4px; }
+    .card-heading{ margin-bottom:6px; }
+    .levels-card{ margin-bottom:10px; }
+    .levels-grid{ gap:12px 18px; }
     .showcase-gen-name{ font-size:.64rem; line-height:1.25; }
     .showcase-gen-count{ font-size:.9rem; line-height:1.2; }
   }
@@ -1068,7 +1099,7 @@
 
     <div class="levels-card" id="homeLevels"></div>
 
-    <button class="showcase" id="homeShowcase" type="button"></button>
+    <div class="showcase" id="homeShowcase"></div>
 
     <div class="home-actions">
       <button class="btn green" id="startBtn"><span class="action-icon">▶</span>Start Playing!</button>
@@ -1269,7 +1300,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 68;
+const APP_BUILD = 69;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2049,11 +2080,11 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles"), false); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
 
-/* The home screen's middle band: one of YOUR Pokémon, shown big — name, number,
-   "Welcome back!". It is a trophy shelf, not a teaser: showing off a catch is
-   what makes a child want to press Start, and it re-rolls on every tap so the
+/* The home screen's middle band: one of YOUR Pokémon, shown big — number, then
+   name. It is a trophy shelf, not a teaser: showing off a catch is what makes a
+   child want to press Start, and it re-rolls on every tap of the picture so the
    shelf keeps turning over.
 
    Before anything is caught there is no trophy to show, so the band falls back
@@ -2083,35 +2114,48 @@ function renderShowcase(){
   const genTotal = shownGen ? POKEMON.filter(x => x.id>=shownGen.from && x.id<=shownGen.to).length : 0;
   const genCaught = shownGen ? collected.filter(id => id>=shownGen.from && id<=shownGen.to).length : 0;
   const genPct = genTotal ? Math.round((genCaught / genTotal) * 100) : 0;
+  const genName = shownGen ? shownGen.label.split(" — ")[0] : "";
   const genBlock = shownGen ? `
-      <span class="showcase-gen">
-        <span class="showcase-gen-name">${shownGen.label.split(" — ")[0]}</span>
-        <span class="showcase-gen-count">${genCaught} / ${genTotal}</span>
-        <span class="level-bar" aria-hidden="true">
-          <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
+      <button class="showcase-dex" type="button"
+              aria-label="${genCaught} of ${genTotal} caught in ${shownGen.label}. Open the Pokédex.">
+        <span class="hud-icon" aria-hidden="true">${HUD_ICONS.dex}</span>
+        <span class="showcase-dex-text">
+          <span class="showcase-gen-name">${genName}</span>
+          <span class="showcase-gen-count">${genCaught} / ${genTotal}</span>
         </span>
+      </button>
+      <span class="level-bar" aria-hidden="true">
+        <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
       </span>` : "";
 
   el.innerHTML = `
-    <span class="showcase-frame">
-      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
-           class="${showCaught ? "" : "silhouette"}" decoding="async">
-    </span>
-    <span class="showcase-body">
-      ${showCaught ? `
-        <span class="showcase-name">${cap(poke.n)}</span>
-        <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
-        <span class="showcase-greet">Welcome back!</span>
-      ` : `
-        <span class="showcase-types">${(poke.t||[]).map(t=>
-          `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
-      `}
-      ${genBlock}
-    </span>`;
+    <span class="card-heading">Your Pokémon</span>
+    <div class="showcase-row">
+      <button class="showcase-pick" type="button" aria-label="Show a different one">
+        <span class="showcase-frame">
+          <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
+               class="${showCaught ? "" : "silhouette"}" decoding="async">
+        </span>
+      </button>
+      <span class="showcase-body">
+        ${showCaught ? `
+          <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
+          <span class="showcase-name">${cap(poke.n)}</span>
+        ` : `
+          <span class="showcase-types">${(poke.t||[]).map(t=>
+            `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
+        `}
+      </span>
+    </div>
+    ${genBlock}`;
 
-  el.setAttribute("aria-label", showCaught
-    ? `${cap(poke.n)}, number ${poke.id}. ${genCaught} of ${genTotal} caught in ${shownGen.label}. Tap for another.`
-    : `Not caught yet. ${genCaught} of ${genTotal} caught in ${shownGen ? shownGen.label : "this generation"}.`);
+  el.querySelector(".showcase-pick").addEventListener("click", renderShowcase);
+  const dexBtn = el.querySelector(".showcase-dex");
+  if(dexBtn) dexBtn.addEventListener("click", ()=>{ renderPokedex(); show("pokedex"); });
+
+  el.querySelector(".showcase-pick").setAttribute("aria-label", showCaught
+    ? `${cap(poke.n)}, number ${poke.id}. Show a different one.`
+    : "Not caught yet. Show a different one.");
 
   // Same single cache-busting retry the Pokédex grid uses — one dropped request
   // would otherwise leave the home screen showing a broken image until reload.
@@ -2146,7 +2190,12 @@ const HUD_ICONS = {
     <path fill="currentColor" d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.5 7.5 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7.5 7.5 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.7 8.8a.5.5 0 0 0 .1.6L4.8 11a7.7 7.7 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3a.5.5 0 0 0 .6.2l2.4-1c.5.4 1.1.7 1.7 1l.4 2.5a.5.5 0 0 0 .5.4h3.8a.5.5 0 0 0 .5-.4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1a.5.5 0 0 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6zM12 15.4A3.4 3.4 0 1 1 15.4 12 3.4 3.4 0 0 1 12 15.4z"/></svg>`,
 };
 
-function renderTiles(el){
+/* `withDex` is false on the home screen only. Its collection counter moved into
+   the Pokémon card, where the row it sits on names the generation it is counting
+   and carries the tap through to the Pokédex — the HUD slot said the same two
+   numbers with no label at all. Results keeps it: that screen has no card to
+   move it to. */
+function renderTiles(el, withDex = true){
   if(!el) return;
   const data = loadStreak();
   const collected = loadCollection();
@@ -2176,7 +2225,7 @@ function renderTiles(el){
   el.innerHTML =
     hud("dashboard", "today",  `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
     hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak") +
-    hud("pokedex",   "dex",    dexBig, `${dexSmall}: ${dexBig} caught`, "dex");
+    (withDex ? hud("pokedex", "dex", dexBig, `${dexSmall}: ${dexBig} caught`, "dex") : "");
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;
@@ -2228,6 +2277,7 @@ const LEVEL_TRACKS = [
 function renderHomeLevels(){
   const el = $("#homeLevels");
   if(!el) return;
+  const heading = `<span class="card-heading">Your progress</span>`;
   const tile = (icon, label, color, at, total) => {
     if(!total) return "";
     const pct = Math.round((at / total) * 100);
@@ -2257,7 +2307,7 @@ function renderHomeLevels(){
     </div>`;
     return tile(LEVEL_ICONS.addsub, g.label, g.color, at, total);
   });
-  el.innerHTML = word.concat(maths).join("");
+  el.innerHTML = heading + `<div class="levels-grid">` + word.concat(maths).join("") + `</div>`;
 }
 
 /* ---------------- game state ---------------- */
@@ -4312,7 +4362,6 @@ $("#settingsBtn").innerHTML = HUD_ICONS.gear;
 $("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"); });
 // The Pokédex and Progress screens are reached through the home tiles now, so
 // the home screen keeps to one job: pick a mode and play.
-$("#homeShowcase").addEventListener("click", renderShowcase);
 $("#dexBackBtn").addEventListener("click", ()=> show("setup"));
 $("#dexTabsPrev").addEventListener("click", ()=> scrollDexTabs(-1));
 $("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
