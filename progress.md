@@ -8,31 +8,21 @@ How the project got from a basic spelling/math quiz to where it is now, and the 
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both word ladders in editable CSVs.
 
+Maths is CSV-driven too now — eight tracks, 57 levels, prerequisites and promotion gates all authored in the spreadsheet.
+
 The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all four tables authored in a spreadsheet and read at boot. No word ladder, word list or promotion gate remains in code.
 
 ## Open threads
 
 Roughly by how much they'd bite.
 
-### 1. The maths ladder is the last thing still hardcoded
+### 1. The maths sheet's remaining tight spots
 
-Both tracks' levels live in `ADDSUB_LEVELS` / `MULDIV_LEVELS` in `index.html`, and promotion falls back to the Spelling/Reading CSV figures because Maths has no table of its own. Moving it to a CSV with a min and a max per level is the next piece of work.
+The three rows the first cut of the sheet could not satisfy have been fixed at source: `PatternSubtract` levels 1 and 2 now anchor at 5–9 and 10–19 instead of 0–9, and `MathAdd` level 4 is no longer `visual`. A 114,000-question audit against the corrected CSV finds **0 violations**, and every pattern step now has at least one usable anchor — level 2 uses both step 2 and step 3, which it could not before.
 
-**A min/max is necessary and not sufficient**, which is the thing to carry into that work. Measured with each frontier parked at the top of its track:
+Two rows still clear the bar only just: `pattern_sub` level 2 step 3 loses 2 anchors of 10 to the clamp, level 3 step 5 loses 1 of 11. Raising either `step` without widening the anchor range would silently drop the step again.
 
-| track at top level | trivial questions |
-|---|---|
-| Add/Subtract, "Within 100, with regrouping" | 4.1% |
-| Multiply/Divide, "Full range (÷)" | **29.5%** |
-
-The two tracks fail for different reasons:
-
-- **Multiply/Divide is identities, not range.** 90% of top-level questions come from the frontier itself, not the review band, and that level yields `n ÷ 1` or `n ÷ n` **28%** of the time. Level 11 is 27.6% `something × 1`. Level 7 is *labelled* "Harder tables only" and is still 20.4% `1 × 6`, because `mkMul(1,5,6,10)` floors the hard operand at 6 and leaves the other free to be 1. Identities sit *inside* any sane range.
-- **Add/Subtract is mostly the review band.** Levels 4a–5b do draw both operands from `randInt(0, ceiling)`, but two draws from 0–100 are rarely both small — "both operands ≤ 2" measures 0% there. The `1 + 1` seen at high difficulty is review deliberately serving 20% of questions from earlier levels, which a range cannot reach.
-
-This matters more since answers became six visible choices: a trivial question with the answer on screen is easier still than one you had to type.
-
-`makeMath(op,min,max)` has no callers and is the obvious thing to mistake for the live path.
+The tallest visual question left is **`div` level 5** — 25 ÷ 5 draws 25 icons over five groups, 919px on a 390×844 phone. It reads fine and does not overflow sideways; it is 75px below the fold, which the old 19 + 9 case beat at 956px.
 
 ### 2. The phoneme respellings still have not been heard
 
@@ -46,6 +36,7 @@ A first pass written on paper turned out to be 30% unspeakable; the rewrite meas
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is caught automatically now, but an item whose picture is *unique and still wrong* is not.
 - **The answer's position leans early on the division levels** — 30% first of six, 2.6% last, because those answers run 1–10 and there are not five whole numbers below 2. Flat everywhere else. Flattening it means offering negatives, which is not a mistake a five-year-old makes.
+- **Three-operand questions are unbuilt.** `num3_min`/`num3_max` are carried through the CSV and are null on every row; nothing reads them yet.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it. The `This file` timestamp beside it is automatic and cannot go stale.
 
 Parked, not scheduled: a service worker for genuine offline install; moving the type chart to CSV if it ever needs editing; recorded phoneme audio instead of synthesised respellings; and two deferred Reading modes — **Rhyme Match**, which needs a real-word list and now has one in `word_levels.csv`, and **Clue Words**, which needs per-item colour/size/material data that does not exist.
@@ -139,6 +130,29 @@ The strip now shows either way, and each relative reveals itself independently: 
 One subtlety that had to change with it: `chip(p, current)` treated *current* as implying *caught*, which was harmless while the strip only rendered for caught entries and would have made an uncaught one name and un-silhouette itself in its own family.
 
 **Back is gone.** The trail existed so that following a family line was not a one-way trip, which mattered when the strip showed one hop each way. Now that it shows the whole family, every relative you could have come from is still one tap away, so **Okay** is the only button from every entry. Checked that the catch-reveal hazard the trail guarded against is still safe: drilling into a relative mid-reveal and pressing Okay fires the pending callback exactly once.
+
+### Phase 51 — The maths ladder moves into CSV
+
+The last hardcoded ladder. Two tracks of 8 and 12 levels became **eight tracks of 57 levels**, all read from `data/math_levels.csv`, with `data/math_tracks.csv` for prerequisites and `data/math_promotion.csv` for gates.
+
+- **Tracks open on prerequisites, not in sequence**, and everything open has a chance to come up — the ladder widens as it is climbed. Add is open from the start; the rest unlock in the order add → pattern-add → subtract → multiply → pattern-multiply → pattern-subtract → divide → pattern-divide.
+- **Modelling the sheet before building caught three bad rows.** PatternSubtract 1–3 can produce negative answers, and level 2 has no valid anchor at all for step 3. Checking the prereq graph the same way confirmed no cycles and every track reachable.
+- **Generating 114,000 questions caught a real bug in the first pass**: every addition question came back with `ans: null`, because the answer was passed rather than computed. Nothing about the shape of the code suggested it; only checking the output did.
+- **Two more found by looking at the screen.** Liveness was not transitive, so a locked track's stored frontier could open its dependent. And `19 + 9` drawn as pictures was 956px tall, with × and ÷ stacking one group per row — icons now scale to their count, and grouped layouts get narrower boxes so a group of five stays on one line.
+- **A round is split in thirds**, not evenly across tracks: eight maths tracks against one each for spelling and reading would have made a round 80% maths without anyone choosing that.
+- **Home still shows two maths tiles**, each summing its four tracks — `+ / −` out of 31, `× / ÷` out of 26 — so eight tracks don't become eight tiles on a screen that has to stay above the fold. Settings and My progress list all eight, since a parent reads those.
+- **Maths progress resets.** The old levels don't map: old Add/Subtract 5 was "within 100, no regrouping" and new add 5 is 10–19 plus 10–19. Spelling and Reading are untouched.
+- **The sheet was corrected rather than worked around.** `PatternSubtract` 1 and 2 re-anchored to 5–9 and 10–19, `MathAdd` 4 un-flagged as visual. Re-running the audit on the corrected CSV: 114,000 questions, 0 violations, and level 2 now draws on both of its steps instead of one.
+
+### Phase 52 — Two bugs, one of them quietly eating progress
+
+**Setting a level in Settings made it climb.** Set spelling to 5, back out, and it read 8; refresh and it read 14, then 25. The cause was one line that was never written. `migrateFrontiers()` stamps `progress.ladderVersion` so a one-off rescale runs once — but `loadProgress()` rebuilds the object from `TRACK_IDS` alone, and `ladderVersion` is not a track. Every load therefore looked unstamped, and the migration re-ran on top of its own output. Modelled before fixing: spelling 5 → 8 → 14 → 25, reading 3 → 5 → 8 → 10, which is exactly what was reported.
+
+The same line was silently wiping the new maths frontiers on every single load, since the current migration resets maths. Nobody would have called that a bug — maths simply never seemed to stick. Four consecutive reloads now hold at what was set.
+
+Worth naming as a class: **a persisted object rebuilt from a whitelist drops anything that isn't on the whitelist.** The stamp was written, saved, and thrown away on read, so no amount of reading `migrateFrontiers` would have shown it.
+
+**"Welcome back!" is gone from the Pokédex.** It belongs on the home screen's trophy band, where it greets you once beside one Pokémon you chose to look at. In the dex it appeared on every caught entry — a sentence to skip past thirty times while browsing a list. The home band keeps it.
 
 ### Phases 42–48 — the home screen, and maths by choice
 

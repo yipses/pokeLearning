@@ -142,6 +142,10 @@
     border:3px solid var(--sky-deep); background:var(--white); color:var(--ink);
     outline:none;
   }
+  .locked-chip{
+    padding:5px 12px; border-radius:999px; background:var(--cream-2);
+    font-size:.78rem; font-weight:800; color:var(--ink-soft); white-space:nowrap;
+  }
   .field input[type="number"]:focus{ border-color: var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
 
   /* toggle switch */
@@ -492,6 +496,28 @@
   }
   .visual-op{ font-size:1.8rem; font-weight:800; color:var(--ink); }
   .visual-icon{ width:56px; height:56px; object-fit:contain; }
+  /* How many icons a question draws is set per level in the CSV now, and the
+     bigger rungs ask for a lot of them — 19 + 9 is 28. At full size that is a
+     956px question. The icons shrink to the count instead, so a picture stays a
+     picture rather than becoming a scroll. */
+  .visual-groups.dense .visual-box{ max-width:250px; gap:5px; padding:9px; }
+  .visual-groups.dense .visual-icon,
+  .visual-groups.dense .visual-icon-wrap{ width:34px; height:34px; }
+  .visual-groups.packed .visual-box{ max-width:230px; gap:4px; padding:8px; }
+  .visual-groups.packed .visual-icon,
+  .visual-groups.packed .visual-icon-wrap{ width:26px; height:26px; }
+  /* × and ÷ draw one box per group, and a box wide enough for a whole group is
+     nearly the card's width — so four groups became four rows. Grouped layouts
+     get narrower boxes and smaller icons, sized so a group still sits on one
+     line and two groups fit side by side. */
+  .visual-groups.grouped{ gap:6px; }
+  /* Wide enough for five icons on one line — 5x20 + 4 gaps + padding + the 3px
+     border — because a group of five shown as four-and-one is not a group of
+     five to look at. */
+  .visual-groups.grouped .visual-box{ max-width:136px; min-width:0; gap:3px; padding:6px; }
+  .visual-groups.grouped .visual-icon,
+  .visual-groups.grouped .visual-icon-wrap{ width:20px; height:20px; }
+  .visual-groups.grouped .visual-op{ font-size:1rem; }
   .visual-icon.crossed{ opacity:.35; }
   .visual-icon-wrap{ position:relative; display:inline-grid; place-items:center; width:56px; height:56px; }
   .visual-icon-wrap .visual-icon{ position:absolute; }
@@ -585,7 +611,6 @@
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
   .catch-name{ font-weight:800; font-size:1.4rem; color:var(--ink); text-transform:capitalize; margin:2px 0 8px; }
-  .catch-greet{ margin:0 0 8px; font-weight:800; font-size:1rem; color:var(--leaf-deep); }
   .catch-types{ margin-bottom:4px; }
   /* Needs to out-specify `.poke-frame img`, which sets its own drop-shadow filter. */
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
@@ -1051,33 +1076,21 @@
 
     <div class="card">
       <h2><span class="chip">🔢</span> Math Trails</h2>
-      <p class="sub">Two graduated tracks. Each round mixes review, current-level, and stretch questions around wherever each track's frontier is.</p>
+      <p class="sub">Eight tracks — add, subtract, multiply, divide and a skip-counting pattern track for each. A track opens once its prerequisite reaches the level named in <code>data/math_tracks.csv</code>, and everything open has a chance to come up.</p>
 
       <div class="field">
         <label>Turn on math
-          <span class="hint">Include Add/Subtract and Multiply/Divide questions in this round</span>
+          <span class="hint">Include maths questions in this round</span>
         </label>
         <label class="switch"><input type="checkbox" id="mathOn" checked><span class="slider"></span></label>
       </div>
 
-      <div class="field">
-        <label>Add / Subtract level
-          <span class="hint" id="addsubLevelHint">—</span>
-        </label>
-        <select id="addsubFrontier"></select>
-      </div>
-
-      <div class="field">
-        <label>Multiply ↔ Divide level
-          <span class="hint" id="muldivLevelHint">—</span>
-        </label>
-        <select id="muldivFrontier"></select>
-      </div>
+      <div id="mathTrails"></div>
     </div>
 
     <div class="card">
       <h2><span class="chip">🖼️</span> Pokémon Visual Math</h2>
-      <p class="sub">Not a separate mode — the same Math Trails questions above, shown as Pok&eacute;mon icons instead of bare numbers whenever the numbers involved are still small enough to draw. Leads the early levels automatically, then fades on its own as the trail's numbers grow past what pictures can show.</p>
+      <p class="sub">Not a separate mode — the same maths questions above, shown as Pok&eacute;mon icons instead of bare numbers. Which rungs can be drawn is set per level in <code>data/math_levels.csv</code>, so it leads the early levels and stops where the numbers outgrow a picture.</p>
 
       <div class="field">
         <label>Turn on visual math
@@ -1171,7 +1184,6 @@
       </div>
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
-      <p class="catch-greet hidden" id="catchGreet"></p>
       <div class="rarity-chip hidden" id="catchRarity"></div>
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
@@ -1187,8 +1199,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 60;
-const APP_BUILD_DATE = "19 Aug 2026";
+const APP_BUILD = 62;
+const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -1225,6 +1237,7 @@ let GRADED_ITEMS = [];
 let PHONEMES = {};
 let SPELLING_ROWS = [];
 let READING_ROWS = [];
+let MATH_TRACK_ROWS = [], MATH_LEVEL_ROWS = [], MATH_PROMO_ROWS = [];
 
 // Minimal RFC-4180-ish parser: handles quoted fields and doubled quotes inside
 // them, which is all a spreadsheet export can realistically throw at us.
@@ -1287,7 +1300,8 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
    the CSV by hand, so don't "normalise" them back. */
 
 async function loadData(){
-  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, phonemeRows] = await Promise.all([
+  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, phonemeRows,
+         mathTrackRows, mathLevelRows, mathPromoRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -1295,6 +1309,9 @@ async function loadData(){
     fetchCsv("data/spelling_levels.csv"),
     fetchCsv("data/reading_levels.csv"),
     fetchCsv("data/phonemes.csv"),
+    fetchCsv("data/math_tracks.csv"),
+    fetchCsv("data/math_levels.csv"),
+    fetchCsv("data/math_promotion.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -1354,6 +1371,10 @@ async function loadData(){
   GRADED_ITEMS = ITEMS.filter(it => it.lvl > 0 && !it.sharedArt && SPELLABLE_RE.test(it.n));
 
   const n = v => Number(v);
+  MATH_TRACK_ROWS = mathTrackRows;
+  MATH_LEVEL_ROWS = mathLevelRows;
+  MATH_PROMO_ROWS = mathPromoRows;
+
   SPELLING_ROWS = spellRows.map(r => ({
     level: n(r.level), wordLevel: n(r.word_level), compoundLevel: n(r.compound_level),
     pokemonLetters: n(r.pokemon_letters), hintedPct: n(r.hinted_pct), maxHints: n(r.max_hints),
@@ -1403,7 +1424,8 @@ const randInt = (min,max) => min + rand(max-min+1);
    when it's a "clean" answer: right on the first try, no hints.
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
-const TRACK_IDS = ["addsub","muldiv","spelling","reading"];
+const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
+const TRACK_IDS = ["spelling","reading", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -1421,6 +1443,11 @@ function loadProgress(){
         };
       }
     });
+    // Carry the migration stamp. It is written by migrateFrontiers but lives
+    // outside TRACK_IDS, so rebuilding `base` from the track list alone dropped
+    // it — every load then looked unstamped and re-ran the migration, which
+    // rescaled a level you had just set in Settings on top of itself.
+    if(typeof saved.ladderVersion === "number") base.ladderVersion = saved.ladderVersion;
   }
   return base;
 }
@@ -1428,36 +1455,36 @@ function saveProgress(){ try{ localStorage.setItem(PROGRESS_KEY, JSON.stringify(
 let progress = loadProgress();
 
 function trackLevels(track){
-  if(track==="addsub") return ADDSUB_LEVELS;
-  if(track==="muldiv") return MULDIV_LEVELS;
   if(track==="spelling") return SPELLING_LEVELS;
   if(track==="reading") return READING_LEVELS;
-  return [];
+  return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
 function frontierIndex(track){
   const levels = trackLevels(track);
+  if(!progress[track] || !levels.length) return 0;
   return Math.max(0, Math.min(progress[track].frontier, levels.length-1));
 }
 function currentLevel(track){ return trackLevels(track)[frontierIndex(track)]; }
 
-/* Promotion gates. Two paths out of a level: a clean run of the last 5, or a
-   percentage of the last 10. Both windows are deliberately short — a child who
-   has the level shouldn't have to prove it twenty times, and one they haven't
-   got comes back around through the review band anyway.
+/* Promotion gates: a list of {questions, percent}, any one of which promotes.
+   Windows are deliberately short — a child who has the level shouldn't have to
+   prove it twenty times, and one they haven't got comes back around through the
+   review band anyway.
 
-   The percentages are per level, read from whichever CSV row the track is on,
-   so Spelling and Reading can be tuned apart without touching code. Math has no
-   CSV yet and falls back to the same 100%/80% it has always used. */
+   Spelling and Reading carry their two percentages per level in their own CSVs.
+   Maths has one table for every track, in `data/math_promotion.csv`, and it is
+   a different shape — three gates rather than two, and stricter at ten. */
 const PROMOTE = { fastN: 5, windowN: 10 };
 const PROMOTE_FALLBACK = { fastPct: 100, windowPct: 80 };
 function promoteGates(track){
-  const lv = currentLevel(track);
-  const row = lv && lv.row;
-  return {
-    fastPct:   row && row.fastPct   != null ? row.fastPct   : PROMOTE_FALLBACK.fastPct,
-    windowPct: row && row.windowPct != null ? row.windowPct : PROMOTE_FALLBACK.windowPct,
-  };
+  if(MATH_BY_ID[track] && MATH_PROMOTION.length) return MATH_PROMOTION.slice();
+  const row = (currentLevel(track) || {}).row;
+  return [
+    { questions: PROMOTE.fastN,   percent: row && row.fastPct   != null ? row.fastPct   : PROMOTE_FALLBACK.fastPct },
+    { questions: PROMOTE.windowN, percent: row && row.windowPct != null ? row.windowPct : PROMOTE_FALLBACK.windowPct },
+  ];
 }
+const gateWindow = track => Math.max(...promoteGates(track).map(g => g.questions));
 
 // Records one attempt's outcome AT THE FRONTIER LEVEL ONLY (review/stretch
 // attempts don't call this). Returns true if it just triggered a promotion.
@@ -1466,22 +1493,27 @@ function promoteGates(track){
 // unbounded, but keeps enough history for a meaningful trend chart.
 function recordAttempt(track, wasClean){
   const p = progress[track];
-  p.history.push(wasClean ? 1 : 0);
-  if(p.history.length > PROMOTE.windowN) p.history.shift();
-  const fast = p.history.slice(-PROMOTE.fastN);
-  const win  = p.history.slice(-PROMOTE.windowN);
-  const fastPct = fast.length ? Math.round(fast.reduce((a,b)=>a+b,0)/fast.length*100) : 0;
-  const winPct  = win.length  ? Math.round(win.reduce((a,b)=>a+b,0)/win.length*100)   : 0;
   const gates = promoteGates(track);
-  const instant  = fast.length===PROMOTE.fastN
-                && fastPct >= gates.fastPct;
-  const standard = win.length===PROMOTE.windowN
-                && winPct  >= gates.windowPct;
+  p.history.push(wasClean ? 1 : 0);
+  if(p.history.length > gateWindow(track)) p.history.shift();
+  const pctOf = n => {
+    const w = p.history.slice(-n);
+    return w.length === n ? Math.round(w.reduce((a,b)=>a+b,0)/w.length*100) : null;
+  };
+  // The shortest window that clears its bar wins, so a clean run promotes on the
+  // spot rather than waiting for a longer window to fill.
+  const met = gates.find(g => { const v = pctOf(g.questions); return v != null && v >= g.percent; });
+  const fastPct = pctOf(gates[0].questions) ?? 0;
+  const winPct  = pctOf(gates[gates.length-1].questions) ?? fastPct;
   let promoted = false;
   let promotedVia = null;
-  if(instant || standard){
+  if(met){
     const levels = trackLevels(track);
-    if(p.frontier < levels.length-1){ p.frontier++; promoted = true; promotedVia = instant ? "instant" : "standard"; p.frontierSince = Date.now(); }
+    if(p.frontier < levels.length-1){
+      p.frontier++; promoted = true;
+      promotedVia = met.questions === gates[0].questions ? "instant" : "standard";
+      p.frontierSince = Date.now();
+    }
     p.history = [];
   }
   p.trend.push({fast:fastPct, win:winPct, promoted:promotedVia});
@@ -1493,6 +1525,7 @@ function recordAttempt(track, wasClean){
 // Manual override from Settings — always resets that track's windows.
 function setFrontier(track, idx){
   const levels = trackLevels(track);
+  if(!progress[track] || !levels.length) return;   // a track id that no longer exists
   progress[track].frontier = Math.max(0, Math.min(idx, levels.length-1));
   progress[track].history = [];
   progress[track].trend = [];
@@ -1516,100 +1549,161 @@ function pickBand(track){
   return {level: levels[idx], isFrontier:true};
 }
 
-/* ---------------- Add/Subtract trail (8 levels) ---------------- */
-function mkAddSub(op,a,b){
-  const ans = op==="add" ? a+b : a-b;
-  return {kind:"math", a, b, ans, sym: op==="add" ? "+" : "−", poke: POKEMON[rand(POKEMON.length)]};
-}
-const onesDigit = n => n % 10;
-const addCarries = (a,b) => onesDigit(a)+onesDigit(b) >= 10;
-const subBorrows = (a,b) => onesDigit(a) < onesDigit(b);
+/* ---------------- Maths trails ----------------
+   Eight tracks — add, subtract, multiply, divide and a skip-counting pattern
+   track for each — every level of every one of them read from
+   `data/math_levels.csv`. Nothing about maths difficulty lives in code any more.
 
-function genTwoDigit(lo,hi,op,wantRegroup){
-  for(let i=0;i<300;i++){
-    let a=randInt(lo,hi), b=randInt(lo,hi);
-    if(op==="sub"){ if(a<b) [a,b]=[b,a]; if(a===b) continue; }
-    const regroups = op==="add" ? addCarries(a,b) : subBorrows(a,b);
-    if(regroups===wantRegroup) return mkAddSub(op,a,b);
+   A track is *live* once its prerequisite track reaches the level named in
+   `data/math_tracks.csv`; add is live from the start. Everything live has a
+   chance to come up, so the ladder widens as it is climbed rather than
+   marching through one list.
+
+   `num1`/`num2` are the two operands' ranges. On a pattern track `num1` is the
+   fixed anchor and `pattern` is the step: anchor 2 with step 2 gives
+   2+2, 2+4, 2+6, 2+8 — the second operand stepping, four rows. */
+let MATH_TRACKS = [];
+let MATH_BY_ID = {};
+let MATH_PROMOTION = [];
+const PATTERN_TERMS = 4;
+
+function mkMathQ(sym, a, b, ans){
+  return {kind:"math", a, b, ans, sym, poke: POKEMON[rand(POKEMON.length)]};
+}
+
+/* Division never leaves a remainder. The row gives a dividend range and a
+   divisor; the quotient is chosen first, from those that land the dividend
+   inside the range, so 3 ÷ 2 can never be asked. */
+function divQuotients(row){
+  const out = [];
+  for(let d = row.n2min; d <= row.n2max; d++){
+    if(d <= 0) continue;
+    for(let q = 1; q * d <= row.n1max; q++) if(q * d >= row.n1min) out.push([q * d, d, q]);
   }
-  let a=randInt(lo,hi), b=randInt(lo,hi);
-  if(op==="sub" && a<b) [a,b]=[b,a];
-  return mkAddSub(op,a,b); // fallback if the constraint proved unreachable
+  return out;
 }
 
-// 30% of the time, a level gives a 4-in-a-row skip-counting pattern set
-// instead of one equation — same range, teaches counting by 1s/10s (or by
-// the table itself for ×/÷), distinct from the single-answer recall skill.
-const PATTERN_RATE = 0.3;
-function withPattern(patternMax, singleGenFn, patternMin){
-  if(Math.random() < PATTERN_RATE){
-    return makePatternSet(rand(2)?"add":"sub", patternMax, patternMin);
+function mkMathSingle(track, row){
+  const sym = track.symbol;
+  if(sym === "+"){
+    const a = randInt(row.n1min,row.n1max), b = randInt(row.n2min,row.n2max);
+    return mkMathQ("+", a, b, a + b);
   }
-  return singleGenFn();
+  if(sym === "−"){
+    let a = randInt(row.n1min,row.n1max), b = randInt(row.n2min,row.n2max);
+    if(a < b) [a,b] = [b,a];              // never negative, whichever way the ranges fall
+    return mkMathQ("−", a, b, a - b);
+  }
+  if(sym === "×"){
+    const a = randInt(row.n1min,row.n1max), b = randInt(row.n2min,row.n2max);
+    return mkMathQ("×", a, b, a * b);
+  }
+  const opts = divQuotients(row);
+  if(!opts.length) return mkMathQ("÷", row.n2max, row.n2max, 1);   // unreachable row: stay whole
+  const [a, b, q] = opts[rand(opts.length)];
+  return mkMathQ("÷", a, b, q);
 }
 
-const ADDSUB_LEVELS = [
-  {id:"1", label:"Within 5", gen:()=> withPattern(5, ()=>{
-    const op = rand(2)?"add":"sub"; let a=randInt(0,5), b=randInt(0,5);
-    if(op==="sub" && a<b) [a,b]=[b,a];
-    return mkAddSub(op,a,b);
-  })},
-  {id:"2", label:"Within 10", gen:()=> withPattern(10, ()=>{
-    const op = rand(2)?"add":"sub"; let a=randInt(0,10), b=randInt(0,10);
-    if(op==="sub" && a<b) [a,b]=[b,a];
-    return mkAddSub(op,a,b);
-  })},
-  {id:"3a", label:"Teen + Ones", gen:()=> withPattern(20, ()=>{
-    const teen=randInt(10,20), ones=randInt(0,9);
-    if(rand(2)) return mkAddSub("add", rand(2)?teen:ones, rand(2)?ones:teen);
-    return mkAddSub("sub", teen, ones);
-  })},
-  {id:"3b", label:"Teen + Teen", gen:()=> withPattern(20, ()=>{
-    const op = rand(2)?"add":"sub"; let a=randInt(10,20), b=randInt(10,20);
-    if(op==="sub" && a<b) [a,b]=[b,a];
-    return mkAddSub(op,a,b);
-  })},
-  {id:"4a", label:"Within 40, no regrouping", gen:()=> withPattern(40, ()=> genTwoDigit(0,40, rand(2)?"add":"sub", false))},
-  {id:"4b", label:"Within 40, with regrouping", gen:()=> withPattern(40, ()=> genTwoDigit(0,40, rand(2)?"add":"sub", true))},
-  {id:"5a", label:"Within 100, no regrouping", gen:()=> withPattern(100, ()=> genTwoDigit(0,100, rand(2)?"add":"sub", false))},
-  {id:"5b", label:"Within 100, with regrouping", gen:()=> withPattern(100, ()=> genTwoDigit(0,100, rand(2)?"add":"sub", true))},
-];
+/* A subtraction pattern has to start high enough to take every step without
+   going below zero — anchor >= step * terms. Where only part of the row's
+   anchor range can do that, the anchor is drawn from that part; where no anchor
+   in the row can (pattern_sub level 2, step 3, which would need 12 from a range
+   of 0–9), the step is skipped. Both are reported by tools rather than hidden. */
+function patternOptions(track, row){
+  const out = [];
+  for(const step of row.pattern){
+    let lo = row.n1min;
+    if(track.symbol === "−") lo = Math.max(lo, step * PATTERN_TERMS);
+    if(lo <= row.n1max) out.push({step, lo, hi: row.n1max});
+  }
+  return out;
+}
 
-/* ---------------- Multiply ↔ Divide trail (10 interleaved steps) ---------------- */
-function mkMul(aMin,aMax,bMin,bMax){
-  const a=randInt(aMin,aMax), b=randInt(bMin,bMax);
-  return {kind:"math", a, b, ans:a*b, sym:"×", poke: POKEMON[rand(POKEMON.length)]};
+function mkMathPattern(track, row){
+  const opts = patternOptions(track, row);
+  if(!opts.length) return mkMathSingle(track, row);
+  const {step, lo, hi} = opts[rand(opts.length)];
+  const anchor = randInt(lo, hi);
+  const items = [];
+  for(let i = 1; i <= PATTERN_TERMS; i++){
+    const k = step * i;
+    if(track.symbol === "+")      items.push({a:anchor, b:k, ans:anchor + k});
+    else if(track.symbol === "−") items.push({a:anchor, b:k, ans:anchor - k});
+    else if(track.symbol === "×") items.push({a:anchor, b:k, ans:anchor * k});
+    else                          items.push({a:anchor * k, b:anchor, ans:k});
+  }
+  return {kind:"pattern", sym:track.symbol, items, step, poke: POKEMON[rand(POKEMON.length)]};
 }
-function mkDiv(divMin,divMax,quotMin,quotMax){
-  const b=randInt(divMin,divMax), ans=randInt(quotMin,quotMax);
-  return {kind:"math", a:b*ans, b, ans, sym:"÷", poke: POKEMON[rand(POKEMON.length)]};
+
+function buildMathTracks(trackRows, levelRows, promoRows){
+  const n = v => (v === "" || v == null) ? null : Number(v);
+  MATH_PROMOTION = promoRows
+    .map(r => ({ questions: Number(r.questions), percent: Number(r.percent) }))
+    .filter(g => g.questions > 0)
+    .sort((x,y) => x.questions - y.questions);
+
+  MATH_TRACKS = trackRows.map(r => ({
+    id: r.track, label: r.label, symbol: r.symbol, kind: r.kind, group: r.group,
+    prereqTrack: r.prereq_track || null,
+    prereqLevel: r.prereq_level ? Number(r.prereq_level) : null,
+    levels: [],
+  }));
+  MATH_BY_ID = {};
+  MATH_TRACKS.forEach(t => MATH_BY_ID[t.id] = t);
+
+  for(const r of levelRows){
+    const track = MATH_BY_ID[r.track];
+    if(!track) continue;
+    const row = {
+      level: Number(r.level),
+      visual: r.visual === "yes",
+      n1min: n(r.num1_min), n1max: n(r.num1_max),
+      n2min: n(r.num2_min), n2max: n(r.num2_max),
+      n3min: n(r.num3_min), n3max: n(r.num3_max),
+      pattern: (r.pattern || "").split(",").map(x => Number(x.trim())).filter(x => x > 0),
+    };
+    const label = track.kind === "pattern"
+      ? `Count by ${row.pattern.join(", ")} from ${row.n1min}–${row.n1max}`
+      : `${row.n1min}–${row.n1max} ${track.symbol} ${row.n2min}–${row.n2max}`;
+    track.levels.push({
+      id: String(row.level), label, row,
+      gen: () => track.kind === "pattern" ? mkMathPattern(track, row) : mkMathSingle(track, row),
+    });
+  }
+  MATH_TRACKS.forEach(t => t.levels.sort((a,b)=> Number(a.id) - Number(b.id)));
 }
-// Patterns naturally represent "one table walked through ×1..×4" — that
-// matches these levels' ranges cleanly. Levels 5-8 don't get patterns: their
-// whole point is a specific *second* operand range (6-10, or a flipped
-// orientation) that the fixed ×1..×4 pattern shape can't express.
-function withMulPattern(tableMin,tableMax,singleGenFn){
-  if(Math.random() < PATTERN_RATE) return makePatternSet("mul", tableMax, tableMin);
-  return singleGenFn();
+
+/* A track opens once its prerequisite has *reached* the named level. Frontiers
+   are 0-based indices and the sheet's levels are 1-based, hence the +1. */
+function trackLive(id, seen){
+  const t = MATH_BY_ID[id];
+  if(!t) return true;
+  if(!t.prereqTrack) return true;
+  if(!progress[t.prereqTrack]) return false;
+  // Liveness is transitive: a track whose own prerequisite has not opened cannot
+  // open the next one, however its stored frontier happens to read. The guard is
+  // against a malformed chain in the CSV, not against normal play.
+  seen = seen || new Set();
+  if(seen.has(id)) return false;
+  seen.add(id);
+  if(!trackLive(t.prereqTrack, seen)) return false;
+  return frontierIndex(t.prereqTrack) + 1 >= t.prereqLevel;
 }
-function withDivPattern(divMin,divMax,singleGenFn){
-  if(Math.random() < PATTERN_RATE) return makePatternSet("div", divMax, divMin);
-  return singleGenFn();
-}
-const MULDIV_LEVELS = [
-  {id:"1",  label:"Tiny facts (×1–3)",             gen:()=> withMulPattern(1,3, ()=> mkMul(1,3,1,3))},
-  {id:"2",  label:"Small facts (×1–5)",             gen:()=> withMulPattern(1,5, ()=> mkMul(1,5,1,5))},
-  {id:"3",  label:"Tiny facts, inverse (÷1–3)",     gen:()=> withDivPattern(1,3, ()=> mkDiv(1,3,1,3))},
-  {id:"4",  label:"Small facts, inverse (÷1–5)",    gen:()=> withDivPattern(1,5, ()=> mkDiv(1,5,1,5))},
-  {id:"5",  label:"Small anchor, mixed (×)",       gen:()=> withMulPattern(1,5, ()=> mkMul(1,5,1,10))},
-  {id:"6",  label:"Small anchor, mixed (÷)",       gen:()=> withDivPattern(1,10, ()=> mkDiv(1,10,1,5))},
-  {id:"7",  label:"Harder tables only (×)",        gen:()=> mkMul(1,5,6,10)},
-  {id:"8",  label:"Harder tables only (÷)",        gen:()=> mkDiv(6,10,1,5)},
-  {id:"9",  label:"Flipped orientation (×)",       gen:()=> mkMul(1,10,1,5)},
-  {id:"10", label:"Flipped orientation (÷)",       gen:()=> mkDiv(1,5,1,10)},
-  {id:"11", label:"Full range (×)",                gen:()=> withMulPattern(1,10, ()=> mkMul(1,10,1,10))},
-  {id:"12", label:"Full range (÷)",                gen:()=> withDivPattern(1,10, ()=> mkDiv(1,10,1,10))},
+function liveMathTracks(){ return MATH_TRACKS.filter(t => t.levels.length && trackLive(t.id)); }
+
+/* The two maths tiles the home screen and the trail selects still show. Each
+   one's level is the sum of its four tracks', so a single number moves whenever
+   any part of it does; a track that has not opened yet contributes nothing. */
+const MATH_GROUPS = [
+  { id:"addsub", label:"+ / −", color:"var(--berry-deep)" },
+  { id:"muldiv", label:"× / ÷", color:"var(--sun-deep)" },
 ];
+function mathGroupProgress(groupId){
+  const ts = MATH_TRACKS.filter(t => t.group === groupId && t.levels.length);
+  const total = ts.reduce((a,t) => a + t.levels.length, 0);
+  const at = ts.reduce((a,t) => a + (trackLive(t.id) ? frontierIndex(t.id) + 1 : 0), 0);
+  return { at, total };
+}
 
 /* ---------------- Spelling and Reading trails ----------------
    Both trails select words the same way, from `data/spelling_levels.csv` and
@@ -1738,62 +1832,48 @@ let SPELLING_LEVELS = [], READING_LEVELS = [];
 
 /* ---------------- build a session queue ---------------- */
 // Each active mode contributes a generator; every challenge slot picks a random active mode.
+/* A round is split in thirds — spelling, reading, maths — rather than evenly
+   across every track. Maths has eight tracks to Spelling's and Reading's one
+   each, so an even split would hand a fully-unlocked child eight questions in
+   ten as maths and reduce spelling to one. The maths third is then shared among
+   whichever tracks are live, so newly opened ones start appearing immediately.
+   Turning a mode off gives its share to the others. */
 function buildQueue(){
-  const modes = [];
+  const wordPick = track => () => {
+    const {level, isFrontier} = pickBand(track);
+    const p = level.gen();
+    p.track = track; p.isFrontier = isFrontier; p.levelId = level.id;
+    return p;
+  };
+  const mathPick = () => {
+    const live = liveMathTracks();
+    if(!live.length) return null;
+    const track = live[rand(live.length)];
+    const {level, isFrontier} = pickBand(track.id);
+    let p = level.gen();
+    // Visual Math isn't a separate mode: the level's own `visual` flag says
+    // whether this rung is one a picture can carry, and the setting says whether
+    // to use it. Same challenge either way, so it still counts toward promotion.
+    if(p.kind === "math" && level.row.visual && $("#visualOn").checked) p = toVisual(p);
+    p.track = track.id; p.isFrontier = isFrontier; p.levelId = level.id;
+    return p;
+  };
 
-  // Spelling — Lesson Trails (Phase A Phonics Ladder, Phase B Fluency), mixing
-  // review/current/stretch around the spelling frontier, same engine as Math.
-  if($("#spellOn").checked){
-    modes.push(()=>{
-      const {level, isFrontier} = pickBand("spelling");
-      const p = level.gen();
-      p.track = "spelling"; p.isFrontier = isFrontier; p.levelId = level.id;
-      return p;
-    });
-  }
-
-  // Reading — Lesson Trails (Read & Choose / Reverse Read & Choose), same engine.
-  if($("#readingOn").checked){
-    modes.push(()=>{
-      const {level, isFrontier} = pickBand("reading");
-      const p = level.gen();
-      p.track = "reading"; p.isFrontier = isFrontier; p.levelId = level.id;
-      return p;
-    });
-  }
-
-  // Math — Add/Subtract and Multiply/Divide trails, each mixing review/current/stretch
-  // around their own frontier (see pickBand). Replaces the old fixed min/max settings.
-  // Visual Math isn't a separate mode: when it's on, any plain-math result that's still
-  // small enough to draw gets rendered as pictures instead — same challenge either way,
-  // so it still counts toward that trail's promotion (see markVisualDone).
-  if($("#mathOn").checked){
-    modes.push(()=>{
-      const {level, isFrontier} = pickBand("addsub");
-      let p = level.gen();
-      if(p.kind==="math" && $("#visualOn").checked && visuallyLegible(p)) p = toVisual(p);
-      p.track = "addsub"; p.isFrontier = isFrontier; p.levelId = level.id;
-      return p;
-    });
-    modes.push(()=>{
-      const {level, isFrontier} = pickBand("muldiv");
-      let p = level.gen();
-      if(p.kind==="math" && $("#visualOn").checked && visuallyLegible(p)) p = toVisual(p);
-      p.track = "muldiv"; p.isFrontier = isFrontier; p.levelId = level.id;
-      return p;
-    });
-  }
-
-  if(modes.length===0) return [];
+  const groups = [];
+  if($("#spellOn").checked)   groups.push(wordPick("spelling"));
+  if($("#readingOn").checked) groups.push(wordPick("reading"));
+  if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
+  if(groups.length === 0) return [];
 
   const total = clampInt($("#totalCount").value,1,50,10);
   const q = [];
-  let lastModeIdx = -1;
+  let lastIdx = -1;
   for(let i=0;i<total;i++){
-    let idx = rand(modes.length);
-    if(modes.length>1) while(idx===lastModeIdx) idx = rand(modes.length);
-    lastModeIdx = idx;
-    q.push(modes[idx]());
+    let idx = rand(groups.length);
+    if(groups.length>1) while(idx===lastIdx) idx = rand(groups.length);
+    lastIdx = idx;
+    const p = groups[idx]();
+    if(p) q.push(p);
   }
   return q;
 }
@@ -1820,58 +1900,8 @@ function makeMath(op,min,max){
 // Still applies the pre-existing "need at least 2 groups" rule for ×/÷, since a
 // single group doesn't actually demonstrate repeated addition.
 const MATH_SYM_TO_OP = {"+":"add", "−":"sub", "×":"mul", "÷":"div"};
-function visuallyLegible(p){
-  const cap = 6;
-  if(p.sym==="+") return p.a<=cap && p.b<=cap;
-  if(p.sym==="−") return p.a<=cap;
-  if(p.sym==="×") return p.a<=cap && p.b<=cap && p.b>=2;
-  if(p.sym==="÷") return p.b<=cap && p.ans<=cap && p.b>=2;
-  return false;
-}
 function toVisual(p){
   return {kind:"visual", op:MATH_SYM_TO_OP[p.sym], a:p.a, b:p.b, ans:p.ans, poke:p.poke};
-}
-
-function makePatternSet(op,max,min){
-  const items = []; let sym, step;
-  if(op==="add"){
-    sym="+";
-    step = randInt(1, Math.max(1, Math.floor(Math.max(max,4)/4)));
-    const varyLeft = rand(2)===0;               // the incrementing number can be on either side
-    const varStart = randInt(0, Math.max(0, max-step*3));
-    const anchor = randInt(0,max);
-    for(let i=0;i<4;i++){
-      const v = varStart + step*i;
-      const a = varyLeft ? v : anchor, b = varyLeft ? anchor : v;
-      items.push({a,b,ans:a+b});
-    }
-  } else if(op==="sub"){
-    sym="−";
-    step = randInt(1, Math.max(1, Math.floor(max/4)));
-    const varyLeft = rand(2)===0;
-    if(varyLeft){
-      // increasing minuend, fixed subtrahend — keep every row non-negative
-      const anchor = randInt(0, Math.max(0, max-step*3));
-      const varStart = randInt(anchor, Math.max(anchor, max-step*3));
-      for(let i=0;i<4;i++){ const v=varStart+step*i; items.push({a:v,b:anchor,ans:v-anchor}); }
-    } else {
-      // fixed minuend, increasing subtrahend
-      const anchor = randInt(step*3, Math.max(step*3,max));
-      const varStart = randInt(0, Math.max(0, anchor-step*3));
-      for(let i=0;i<4;i++){ const v=varStart+step*i; items.push({a:anchor,b:v,ans:anchor-v}); }
-    }
-  } else if(op==="mul"){
-    sym="×";
-    const a = randInt(min||1,max);
-    for(let i=1;i<=4;i++){ items.push({a,b:i,ans:a*i}); }
-    return {kind:"pattern", sym, items, step:a, poke: POKEMON[rand(POKEMON.length)]};
-  } else { // div — reverse of a times table so every answer is whole
-    sym="÷";
-    const d = randInt(min||1,max);
-    for(let i=1;i<=4;i++){ items.push({a:d*i,b:d,ans:i}); }
-    return {kind:"pattern", sym, items, step:d, poke: POKEMON[rand(POKEMON.length)]};
-  }
-  return {kind:"pattern", sym, items, step, poke: POKEMON[rand(POKEMON.length)]};
 }
 
 /* ---------------- settings persistence ---------------- */
@@ -2089,28 +2119,42 @@ const LEVEL_ICONS = {
 LEVEL_ICONS.muldiv = LEVEL_ICONS.addsub;
 
 const LEVEL_TRACKS = [
-  {id:"spelling", label:"Spelling",  color:"var(--sky-deep)"},
-  {id:"reading",  label:"Reading",   color:"#9a6bd6"},
-  {id:"addsub",   label:"+ / −",     color:"var(--berry-deep)"},
-  {id:"muldiv",   label:"× / ÷",     color:"var(--sun-deep)"},
+  {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
+  {id:"reading",  label:"Reading",  color:"#9a6bd6"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
   if(!el) return;
-  el.innerHTML = LEVEL_TRACKS.map(({id, label, color})=>{
-    const levels = trackLevels(id);
-    const level = currentLevel(id);
-    if(!levels.length || !level) return "";
-    const at = frontierIndex(id) + 1;
-    const pct = Math.round((at / levels.length) * 100);
+  const tile = (icon, label, color, at, total) => {
+    if(!total) return "";
+    const pct = Math.round((at / total) * 100);
     return `<div class="level-tile">
-      <span class="level-name"><span class="level-icon" style="color:${color}">${LEVEL_ICONS[id]}</span>${label}</span>
-      <span class="level-num">Level ${level.id}<span class="of">of ${levels.length}</span></span>
-      <span class="level-bar" role="img" aria-label="${label}: level ${level.id} of ${levels.length}">
+      <span class="level-name"><span class="level-icon" style="color:${color}">${icon}</span>${label}</span>
+      <span class="level-num">Level ${at}<span class="of">of ${total}</span></span>
+      <span class="level-bar" role="img" aria-label="${label}: level ${at} of ${total}">
         <span class="level-fill" style="width:${pct}%; background:${color}"></span>
       </span>
     </div>`;
-  }).join("");
+  };
+  const word = LEVEL_TRACKS.map(({id, label, color})=>{
+    const levels = trackLevels(id);
+    if(!levels.length) return "";
+    return tile(LEVEL_ICONS[id], label, color, frontierIndex(id) + 1, levels.length);
+  });
+  // Maths stays two tiles. Each is the sum of its four tracks' levels, so the
+  // number moves whenever any part of it does and eight tracks don't become
+  // eight tiles on a screen that has to stay above the fold.
+  const maths = MATH_GROUPS.map(g => {
+    const { at, total } = mathGroupProgress(g.id);
+    if(!total) return "";
+    if(at === 0) return `<div class="level-tile">
+      <span class="level-name"><span class="level-icon" style="color:${g.color}">${LEVEL_ICONS.addsub}</span>${g.label}</span>
+      <span class="level-num">Locked</span>
+      <span class="level-bar"><span class="level-fill" style="width:0%; background:${g.color}"></span></span>
+    </div>`;
+    return tile(LEVEL_ICONS.addsub, g.label, g.color, at, total);
+  });
+  el.innerHTML = word.concat(maths).join("");
 }
 
 /* ---------------- game state ---------------- */
@@ -2292,10 +2336,9 @@ function maybeStartGrassEncounter(){
 }
 
 /* One modal serves two callers: the grass catch reveal, and tapping an entry in
-   the Pokédex. A caught entry reads: picture, number, name, "Welcome back!". An
-   uncaught one gets the outline and its type and nothing else — no name, no
-   "???", no caption — so browsing the dex can't spoil what's still out there to
-   find, and there is no word on screen the child has to decode for no payoff.
+   the Pokédex. A caught entry reads: picture, number, name. An uncaught one
+   gets the outline and its type and nothing else — no name, no "???", no
+   caption — so browsing the dex can't spoil what's still out there to find, and there is no word on screen the child has to decode for no payoff.
    Backdrop-dismissal is opt-in: the catch reveal deliberately requires the Okay
    button, but browsing the dex means opening and closing a lot of these.
 
@@ -2371,14 +2414,12 @@ function clearCelebration(){
 
 function renderPokeModal(poke, opts){
   modalCurrent = { poke, opts };
-  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false,
+  const { caption = "🎉 Caught!", revealed = true, dismissOnBackdrop = false,
           celebrate = false } = opts || {};
   // Walking to a relative re-renders this card; the previous burst goes with it.
   clearCelebration();
   $("#catchCaption").textContent = caption;
   $("#catchCaption").classList.toggle("hidden", !caption);
-  $("#catchGreet").textContent = greet;
-  $("#catchGreet").classList.toggle("hidden", !greet);
   $("#catchImg").src = artwork(poke.id);
   $("#catchImg").alt = revealed ? cap(poke.n) : "Not caught yet";
   $("#catchImg").classList.toggle("silhouette", !revealed);
@@ -2473,7 +2514,6 @@ function renderEvoRow(poke){
       markSeen(target.id);
       showPokeModal(target, {
         caption: "",
-        greet: got ? "Welcome back!" : "",
         revealed: got,
         // Inherit the backdrop rule from where we came from: a catch reveal that
         // has to be acknowledged must not become dismissable by walking one hop
@@ -2638,7 +2678,6 @@ function renderPokedex(){
       }
       showPokeModal(poke, {
         caption: "",
-        greet: got ? "Welcome back!" : "",
         revealed: got,
         dismissOnBackdrop: true
       });
@@ -2649,12 +2688,20 @@ function renderPokedex(){
 }
 
 /* ---------------- DASHBOARD ---------------- */
-const DASHBOARD_TRACKS = [
-  {id:"addsub",   label:"Add / Subtract",     color:"var(--berry-deep)"},
-  {id:"muldiv",   label:"Multiply ↔ Divide",  color:"var(--sun-deep)"},
-  {id:"spelling", label:"Spelling",           color:"var(--sky-deep)"},
-  {id:"reading",  label:"Reading",            color:"#9a6bd6"},
+/* Home groups the eight maths tracks into two tiles; this screen is read by a
+   parent, so it lists every one — and only the ones that have opened, since a
+   locked track has nothing to report yet. */
+const WORD_TRACKS = [
+  {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
+  {id:"reading",  label:"Reading",  color:"#9a6bd6"},
 ];
+function dashboardTracks(){
+  const maths = MATH_TRACKS
+    .filter(t => t.levels.length && trackLive(t.id))
+    .map(t => ({ id:t.id, label:t.label,
+                 color: t.group === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)" }));
+  return WORD_TRACKS.concat(maths);
+}
 
 /* Rounds played on each of the last 7 days, today last. The streak tile answers
    "am I still going"; this answers "how has the week gone", which is the thing
@@ -2729,13 +2776,14 @@ function renderDashboard(){
   `;
   grid.appendChild(weekCard);
 
-  DASHBOARD_TRACKS.forEach(({id, label, color})=>{
+  dashboardTracks().forEach(({id, label, color})=>{
     const p = progress[id];
     const level = currentLevel(id);
-    const fast = p.history.slice(-PROMOTE.fastN);
-    const win  = p.history.slice(-PROMOTE.windowN);
-    const fastCount = fast.reduce((a,b)=>a+b,0);
-    const winCount  = win.reduce((a,b)=>a+b,0);
+    const gates = promoteGates(id);
+    const windows = gates.map(g => {
+      const w = p.history.slice(-g.questions);
+      return { n: g.questions, pct: g.percent, hits: w.reduce((a,b)=>a+b,0), of: w.length };
+    });
     const days = Math.max(0, Math.floor((Date.now()-p.frontierSince)/86400000));
     const daysLabel = days===0 ? "Started today" : `${days} day${days===1?"":"s"} at this level`;
 
@@ -2749,16 +2797,11 @@ function renderDashboard(){
         </div>
         <div class="dash-days">${daysLabel}</div>
       </div>
-      <div class="window-row">
-        <span class="window-label">Last ${PROMOTE.fastN}</span>
-        <span class="window-track"><span class="window-fill" style="width:${fast.length ? (fastCount/fast.length*100) : 0}%; background:${color}"></span></span>
-        <span class="window-val">${fastCount}/${fast.length}</span>
-      </div>
-      <div class="window-row">
-        <span class="window-label">Last ${PROMOTE.windowN}</span>
-        <span class="window-track"><span class="window-fill" style="width:${win.length ? (winCount/win.length*100) : 0}%; background:${color}"></span></span>
-        <span class="window-val">${winCount}/${win.length}</span>
-      </div>
+      ${windows.map(w => `<div class="window-row">
+        <span class="window-label">Last ${w.n}</span>
+        <span class="window-track"><span class="window-fill" style="width:${w.of ? (w.hits/w.of*100) : 0}%; background:${color}"></span></span>
+        <span class="window-val">${w.hits}/${w.of}</span>
+      </div>`).join("")}
       <div class="trend-wrap"></div>
     `;
     const trendWrap = card.querySelector(".trend-wrap");
@@ -2788,18 +2831,24 @@ function renderTrendChart(trend, color, gates){
     svg += `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" class="grid-line"/>`;
     svg += `<text x="${xL-5}" y="${Number(y)+3}" class="axis-label" text-anchor="end">${pct}</text>`;
   });
-  const y80 = yAt(gates.windowPct).toFixed(1), y100 = yAt(gates.fastPct).toFixed(1);
-  svg += `<line x1="${xL}" y1="${y80}" x2="${xR}" y2="${y80}" class="threshold-line"/>`;
-  svg += `<text x="${xL}" y="${Number(y80)-4}" class="threshold-label">${gates.windowPct}% · Last ${PROMOTE.windowN} gate</text>`;
-  svg += `<line x1="${xL}" y1="${y100}" x2="${xR}" y2="${y100}" class="threshold-line"/>`;
-  svg += `<text x="${xR}" y="${Number(y100)-4}" class="threshold-label" text-anchor="end">${gates.fastPct}% · Last ${PROMOTE.fastN} gate</text>`;
+  // One line per gate, drawn from whatever that track's gates are — the word
+  // trails have two, maths has three.
+  const seenPct = new Set();
+  gates.forEach((g, gi) => {
+    if(seenPct.has(g.percent)) return;
+    seenPct.add(g.percent);
+    const y = yAt(g.percent).toFixed(1);
+    svg += `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" class="threshold-line"/>`;
+    svg += `<text x="${gi % 2 ? xR : xL}" y="${Number(y)-4}" class="threshold-label"`
+         + `${gi % 2 ? ' text-anchor="end"' : ''}>${g.percent}% · Last ${g.questions} gate</text>`;
+  });
   svg += `<path d="M ${pathOf(winOf)}" fill="none" class="trend-line" style="stroke:${color}"/>`;
   svg += `<path d="M ${pathOf(fastOf)}" fill="none" class="trend-line trend-line-10" style="stroke:${color}"/>`;
   trend.forEach((t,i)=>{
     const x = xAt(i).toFixed(1);
-    svg += `<circle cx="${x}" cy="${yAt(fastOf(t)).toFixed(1)}" r="2.2" class="trend-pt" style="fill:${color}"><title>Attempt ${i+1}: Last ${PROMOTE.fastN} = ${fastOf(t)}%, Last ${PROMOTE.windowN} = ${winOf(t)}%</title></circle>`;
+    svg += `<circle cx="${x}" cy="${yAt(fastOf(t)).toFixed(1)}" r="2.2" class="trend-pt" style="fill:${color}"><title>Attempt ${i+1}: short window ${fastOf(t)}%, long window ${winOf(t)}%</title></circle>`;
     if(t.promoted==="instant"){
-      svg += `<text x="${x}" y="9" class="star-marker" text-anchor="middle">★<title>Cleared the last ${PROMOTE.fastN} — instant promotion</title></text>`;
+      svg += `<text x="${x}" y="9" class="star-marker" text-anchor="middle">★<title>Cleared the shortest window — instant promotion</title></text>`;
     } else if(t.promoted==="standard"){
       svg += `<line x1="${x}" y1="${yTop-4}" x2="${x}" y2="${yBot}" class="promo-line"/>`;
       svg += `<text x="${x}" y="${H-4}" class="promo-label" text-anchor="middle">Leveled up</text>`;
@@ -3549,29 +3598,39 @@ function renderVisual(p){
   const icon = ()=> `<img class="visual-icon" src="${artwork(p.poke.id)}" alt="${cap(p.poke.n)}">`;
   const crossedIcon = ()=> `<span class="visual-icon-wrap">${icon()}<span class="cross"></span></span>`;
 
+  // Total icons on screen decides how big they can be. The level rows go up to
+  // 19 + 9, and at full size that question is taller than the phone.
+  const totalIcons = p.op==="add" ? p.a + p.b
+                   : p.op==="sub" ? p.a
+                   : p.op==="mul" ? p.a * p.b
+                   : p.ans * p.b;
+  const grouped = (p.op === "mul" ? p.b : p.op === "div" ? p.b : 1) > 1;
+  const density = (totalIcons > 24 ? " packed" : totalIcons > 12 ? " dense" : "")
+                + (grouped && totalIcons > 12 ? " grouped" : "");
+
   let visualHTML, eqText;
   if(p.op==="add"){
     eqText = `${p.a} + ${p.b} = ?`;
-    visualHTML = `<div class="visual-groups">
+    visualHTML = `<div class="visual-groups${density}">
       <div class="visual-box">${icon().repeat(p.a)}</div>
       <span class="visual-op">+</span>
       <div class="visual-box">${icon().repeat(p.b)}</div>
     </div>`;
   } else if(p.op==="sub"){
     eqText = `${p.a} − ${p.b} = ?`;
-    visualHTML = `<div class="visual-groups">
+    visualHTML = `<div class="visual-groups${density}">
       <div class="visual-box">${crossedIcon().repeat(p.b)}${icon().repeat(p.a-p.b)}</div>
     </div>`;
   } else if(p.op==="mul"){
     eqText = `${p.a} × ${p.b} = ?`;
     const box = `<div class="visual-box">${icon().repeat(p.a)}</div>`;
-    visualHTML = `<div class="visual-groups">${Array(p.b).fill(box).join('<span class="visual-op">+</span>')}</div>`;
+    visualHTML = `<div class="visual-groups${density}">${Array(p.b).fill(box).join('<span class="visual-op">+</span>')}</div>`;
   } else { // div — same "separate boxes" layout as multiplication (its inverse),
     // rather than one shared box with an internal divider line: that broke down
     // and wrapped into a confusing grid once a slice's icons didn't fit one row.
     eqText = `${p.a} ÷ ${p.b} = ?`;
     const box = `<div class="visual-box">${icon().repeat(p.ans)}</div>`;
-    visualHTML = `<div class="visual-groups">${Array(p.b).fill(box).join('')}</div>`;
+    visualHTML = `<div class="visual-groups${density}">${Array(p.b).fill(box).join('')}</div>`;
   }
 
   stage.innerHTML = `
@@ -4055,11 +4114,30 @@ function renderTrailSelect(track, selectId, hintId, labelPrefix){
   sel.onchange = ()=>{
     setFrontier(track, parseInt(sel.value,10));
     $(hintId).textContent = `${labelPrefix} ${levels[frontierIndex(track)].id} — ${levels[frontierIndex(track)].label}`;
+    // Moving one maths track can open or close another, so the panel rebuilds.
+    if(MATH_BY_ID[track]) renderMathTrailSettings();
   };
 }
+/* One row per maths track, built rather than written out: the tracks come from
+   a CSV now, so hand-written markup would go stale the moment a row is added. */
+function renderMathTrailSettings(){
+  const host = $("#mathTrails");
+  if(!host) return;
+  host.innerHTML = MATH_TRACKS.filter(t => t.levels.length).map(t => {
+    const live = trackLive(t.id);
+    const need = t.prereqTrack ? `Opens at ${MATH_BY_ID[t.prereqTrack].label} level ${t.prereqLevel}` : "";
+    return `<div class="field">
+      <label>${t.label}
+        <span class="hint" id="hint_${t.id}">${live ? "—" : need}</span>
+      </label>
+      ${live ? `<select id="sel_${t.id}"></select>` : `<span class="locked-chip">Locked</span>`}
+    </div>`;
+  }).join("");
+  MATH_TRACKS.filter(t => t.levels.length && trackLive(t.id))
+    .forEach(t => renderTrailSelect(t.id, `#sel_${t.id}`, `#hint_${t.id}`, "Level"));
+}
 function renderTrailSettings(){
-  renderTrailSelect("addsub", "#addsubFrontier", "#addsubLevelHint", "Level");
-  renderTrailSelect("muldiv", "#muldivFrontier", "#muldivLevelHint", "Step");
+  renderMathTrailSettings();
   renderTrailSelect("spelling", "#spellingFrontier", "#spellingLevelHint", "Level");
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
 }
@@ -4073,19 +4151,23 @@ function renderTrailSettings(){
    than reset — a child three-quarters of the way up the old ladder starts
    three-quarters of the way up the new one instead of back at the beginning.
    Stamped so it only ever happens once. */
-const LADDER_VERSION = 2;
+const LADDER_VERSION = 3;
+/* The maths ladder was two hardcoded tracks of 8 and 12 levels; it is now eight
+   CSV tracks of 6–8. Nothing maps: old Add/Subtract 5 was "within 100, no
+   regrouping" while new add 5 is 10–19 plus 10–19. Rather than invent an
+   equivalence, maths restarts — the prerequisites mean the early rungs pass
+   quickly — and Spelling and Reading keep their frontiers untouched.
+
+   Stamped once, so it can't re-run and wipe real progress on a later load. */
 function migrateFrontiers(){
   if(progress.ladderVersion === LADDER_VERSION) return;
-  const rescale = (track, oldCount) => {
-    const levels = trackLevels(track);
-    if(!levels.length) return;
-    const old = progress[track].frontier || 0;
-    const frac = oldCount > 1 ? Math.min(old, oldCount - 1) / (oldCount - 1) : 0;
-    progress[track].frontier = Math.round(frac * (levels.length - 1));
-    progress[track].history = [];      // the windows measured a different task
-  };
-  rescale("spelling", 14);
-  rescale("reading", 6);
+  MATH_TRACK_IDS.forEach(track=>{
+    if(!progress[track]) return;
+    progress[track].frontier = 0;
+    progress[track].history = [];
+    progress[track].trend = [];
+    progress[track].frontierSince = Date.now();
+  });
   progress.ladderVersion = LADDER_VERSION;
   saveProgress();
 }
@@ -4095,6 +4177,7 @@ function migrateFrontiers(){
   catch(err){ console.error(err); showDataError(err); return; }
   SPELLING_LEVELS = buildSpellingLevels();
   READING_LEVELS = buildReadingLevels();
+  buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
   loadSettings();
   renderHomeTiles();

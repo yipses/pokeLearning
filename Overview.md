@@ -53,7 +53,7 @@ Each core skill has its own **track** — an ordered sequence of levels — that
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
-**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on **100% of the last 5, or 80% of the last 10**, whichever lands first — short windows, so a child who has the level isn't made to prove it twenty times, and one they haven't got comes back through the Review band anyway. Both percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code; Math has no CSV yet and uses those same figures as its fallback. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
+**Promotion.** Only **clean** answers count — right on the first attempt, no wrong guesses, no hints. A track promotes on **100% of the last 5, or 80% of the last 10**, whichever lands first — short windows, so a child who has the level isn't made to prove it twenty times, and one they haven't got comes back through the Review band anyway. Both percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code; Maths has its own table with three gates — 5 at 100%, 10 at 90%, 20 at 85%. No demotion; a rough patch is absorbed by the Review band. The tracking is invisible: retrying or using a hint still works and still advances the session, it just doesn't count.
 
 **Manual placement.** Every frontier is editable in Settings in either direction. Moving one resets that track's rolling window.
 
@@ -133,7 +133,27 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 ### 7.3 Math Trails
 
-Two tracks. **Answers are picked from six numbers**, two rows of three, styled like the spelling tiles — it is the same act as picking a chunk, so it looks like it. Every maths mode answers this way: plain Math, Visual Math, and Math Pattern. There is no keypad and no input box.
+**Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. 57 levels in total. Nothing about maths difficulty lives in code.
+
+**Tracks open on prerequisites rather than in sequence.** `data/math_tracks.csv` gives each track the track and level that unlocks it: pattern-add opens at add 3, subtract at add 5, multiply at add 7, and so on. Add is open from the start, and **everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list. Liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
+
+| column | means |
+|---|---|
+| `num1_min` / `num1_max` | first operand's range. On a pattern track, the fixed anchor |
+| `num2_min` / `num2_max` | second operand's range. On a division row, the divisor |
+| `num3_min` / `num3_max` | reserved for three-operand questions; null throughout, and unbuilt |
+| `pattern` | on a pattern track, the steps to choose from |
+| `visual` | whether this rung is one a picture can carry (§7.4) |
+
+**Division never leaves a remainder.** The row gives a dividend range and a divisor; the quotient is chosen first, from those that land the dividend inside the range, so `3 ÷ 2` can never be asked.
+
+**A pattern set is an anchor and a step, four rows.** Anchor 2 with step 2 gives `2+2, 2+4, 2+6, 2+8` — the second operand stepping. Divide mirrors multiply so every answer stays whole. A subtraction pattern has to start high enough to take every step without going below zero (anchor ≥ step × 4); where only part of a row's anchor range can, the anchor comes from that part, and where none can, that step is skipped.
+
+**Promotion is its own table**, `data/math_promotion.csv`: **5 at 100%, 10 at 90%, 20 at 85%**, whichever lands first, per track. That is stricter at ten than the word trails' 80% and adds a twenty-question window they don't have.
+
+**A round is split in thirds** — spelling, reading, maths — not evenly across every track. Maths has eight tracks to the others' one each, so an even split would hand a fully-unlocked child eight questions in ten as maths. The maths third is shared among whichever tracks are open.
+
+**Answers are picked from six numbers**, two rows of three, styled like the spelling tiles — it is the same act as picking a chunk, so it looks like it. Every maths mode answers this way: plain Math, Visual Math, and Math Pattern. There is no keypad and no input box.
 
 **The five wrong options are built from the mistakes the operation invites**, not sampled from the level's range. Sampling would put 40 beside 7 and let a child pick by size without doing the sum. Each operation has its own error shapes, ordered nearest-first and taken from the front of that list:
 
@@ -150,7 +170,7 @@ Two tracks. **Answers are picked from six numbers**, two rows of three, styled l
 
 **A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
-Answers auto-check as digits arrive, waiting until there are enough to match the answer's length before judging. Once the answer is right the pad **hides** rather than greying out — it has nothing left to do, and on a phone that is what lifts the ✅ and the **Next ▶** button above the fold. A correct answer shows a large animated ✅ and no caption text.
+Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ and the **Next ▶** button above the fold. A correct answer shows a large animated ✅ and no caption text.
 
 **Add/Subtract — 8 levels**, from *within 5* to *within 100 with regrouping* (see `LessonTrails.md`). Each level auto-generates a mix of addition and subtraction within its range. Levels 4a–5b use rejection sampling to control specifically for whether the ones digit carries or borrows, making "no regrouping" and "with regrouping" genuinely distinct steps rather than just wider ranges.
 
@@ -160,7 +180,9 @@ Answers auto-check as digits arrive, waiting until there are enough to match the
 
 ### 7.4 Visual Math
 
-Not a separate question source — a **rendering** of Math Trails questions as pictures of Pokémon instead of bare numbers, to build number-sense alongside abstract arithmetic. When it's on, any Math Trails question whose numbers are still small enough to draw legibly (operands capped at 6, with at least 2 groups required for × and ÷) is drawn instead of written. It therefore leads the early levels automatically and fades on its own as a trail's numbers outgrow what pictures can show.
+Not a separate question source — a **rendering** of Math Trails questions as pictures of Pokémon instead of bare numbers, to build number-sense alongside abstract arithmetic. **Which rungs can be drawn is data**: the `visual` column in `data/math_levels.csv` says so per level, rather than the code guessing from the numbers. It leads the early levels and stops where the sheet says it should.
+
+**Icons scale to how many there are.** The level rows go up to `19 + 9`, and at full size that question is 956px tall — a picture that has to be scrolled is not a picture. Above twelve icons they shrink, above twenty-four they shrink again. Grouped layouts (× and ÷) get their own narrower boxes, sized so a group of five still sits on one line and two groups fit side by side: without that, four groups of five became four stacked rows.
 
 - **Addition** — two boxes of Pokémon icons side by side, joined by "+".
 - **Subtraction** — one box showing all the icons, with the subtracted amount crossed out by a bold drawn X.
@@ -179,7 +201,7 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - The **Pokédex screen** is organized into **generation tabs** — `Gen 1` … `Gen 9`, one row that scrolls sideways on a phone — showing one generation's grid at a time. It opens on whichever generation the collection gate is currently on, not always Gen 1, and a tab whose generation is fully caught is outlined in green. All nine tabs fit the content column on a desktop window; below that width the strip scrolls, and **‹ › arrow buttons appear** — a touchscreen can swipe the strip but a mouse cannot, so the arrows are the desktop affordance. They exist only while the strip actually overflows and each one greys out at its end. One generation at a time keeps the visible grid to at most 160 cells instead of 1,021 and puts Gen 9 one tap away instead of a very long scroll.
 - Within a tab: caught entries show in full colour with their name; uncaught ones are a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with **no name text at all** — the outline and the Dex number say it, where a row of `???` would be a word to decode for no payoff (§14.1). A live X/Y caught count sits in the generation header.
 - **Legendary and mythical species are called out**: a gold cell with a ✨ badge in the grid, a matching chip above the type badges in the detail popup, and a per-generation tally in each generation header (`✨ 2/5 · 3 / 147`). The marker shows on **uncaught** slots too — it reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name and rarity chip stay hidden until it's caught.
-- **Every entry is tappable**, opening a detail popup. A caught entry reads: larger artwork, the Dex number, the name, **"Welcome back!"**, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**.
+- **Every entry is tappable**, opening a detail popup. A caught entry reads: larger artwork, the Dex number, the name, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**. The greeting belongs to the home screen's trophy band, not here — the dex is a list you page through, and a "Welcome back!" on every entry is a sentence to skip past thirty times in a row.
 - **The family shows whether or not this one is caught**, and each relative reveals itself independently: caught ones in colour with their names, uncaught ones as silhouettes. It gives away nothing an uncaught entry is holding back, and it answers what the card is opened to ask — what is this, and what does it become. An uncaught base with the strip hidden looked like a species with no evolutions at all.
 - **The family is the whole family, from wherever you are standing in it.** The strip climbs to the root of the line and then walks down breadth-first, one group per stage with an arrow between stages — so Bulbasaur, Ivysaur and Venusaur all show the same three, and Eevee shows all eight of its second stage. Siblings stay grouped inside their stage, and a wide stage wraps within its own group so the arrow keeps meaning *this stage becomes that stage* rather than pointing at one sibling. Depth is capped and the climb is bounded, since `evolves_from` is hand-editable and a cycle would otherwise hang the popup.
 - **Opening an entry says its name aloud.** One rule covers every way in — tapping a Pokédex cell, tapping a relative in the evolution family, tapping a catch on the results screen, and the catch popup itself. A name a child has only ever read is a name they can't yet use, and the picture is on screen at the moment it's said.
@@ -296,6 +318,9 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_pct`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
+| `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |
+| `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |
+| `data/math_promotion.csv` | 3 | `questions`, `percent` |
 
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). **1,020 of the 1,021 are spellable** — a name may contain a space or a hyphen, so Iron Hands and Ho-Oh both work; only Type: Null is excluded, for its colon. `rarity` marks **71 legendary** and **23 mythical** species.
 - **Pokopia items**: **922** items across 12 categories, of which **819** reach the word trails. 13 carry an apostrophe, accent, period or digit; **90 share their artwork with another item** and are dropped from both trails, because a picture that names two things names neither — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same picture. A few are plain mislabels: `Acrylic poster` and `Campfire` are one image. The rule is mechanical — `tools/classify_words.py` hashes every PNG and flags any file that appears twice — so it needs no eyeballing. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
