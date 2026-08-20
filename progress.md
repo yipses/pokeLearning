@@ -154,6 +154,20 @@ Worth naming as a class: **a persisted object rebuilt from a whitelist drops any
 
 **"Welcome back!" is gone from the Pokédex.** It belongs on the home screen's trophy band, where it greets you once beside one Pokémon you chose to look at. In the dex it appeared on every caught entry — a sentence to skip past thirty times while browsing a list. The home band keeps it.
 
+### Phase 53 — No Next button
+
+Spelling and both Reading modes advanced on their own; maths waited for a **Next ▶** tap. Looking at what was actually on screen settled it rather than the consistency argument alone — `.choices.done { display:none }` hides the whole grid the moment an answer is right, so a solved maths question read:
+
+```
+Math / 7 + 5 = ? / ✅ / Next ▶
+```
+
+A question still showing `= ?`, a checkmark, and a button with one possible action. Nothing to read, nothing to decide. The word trails can afford their pause because it has content — `lockAndAdvance(done => blendBack(word, done))` holds the round open while the word is spoken aloud. Maths has no such payload, so its pause was dead air with a button in it.
+
+All three maths modes now route through `lockAndAdvance()` on the default 850ms beat. Two things came free: the shared helper disables every control, so a fast double-tap can no longer land on the next question, and the catch reveal loses a tap — it was *Next → modal → Okay*, now it is *modal → Okay*.
+
+What is given up is self-pacing, and the trade is worth naming: the beat is fixed at 850ms whether or not the child is done looking. Visual Math is the case that could have argued for longer — its icons stay on screen when the choices hide, so there *is* something to sit with — but it takes the same beat as everything else, which is the point.
+
 ### Phases 42–48 — the home screen, and maths by choice
 
 The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
