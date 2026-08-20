@@ -270,12 +270,19 @@ Reached from either home box. Headed **"My progress"**, with no subtitle.
 
 The streak tile answers *am I still going*; this answers *how has the week gone*, which a single day counter cannot show — two quiet days and one strong day read identically from one number. It uses the same `{date: rounds}` record the streak is computed from, which has always been kept in full rather than pruned to a window, so the chart is correct from the day it ships rather than starting empty.
 
-Then one card per Lesson Trail, each showing:
+Then **Spelling** and **Reading** get a card each, showing:
 
 - The track's current level, in plain language.
 - Days at the current level.
-- Last-10 and Last-20 clean-answer progress bars.
-- A live SVG trend chart of rolling accuracy, with gate lines at 80% and 100%, a gold star marker at each instant 5/5 promotion, and a dashed "Leveled up" line at each 8/10 promotion.
+- One clean-answer progress bar per promotion gate — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths.
+- A live SVG trend chart of rolling accuracy, with a line at each gate's percentage, a gold star marker at each instant promotion, and a dashed "Leveled up" line at each slower one.
+
+**Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
+
+- **Tapping a row opens the full detail** — level in plain language, days at it, every gate bar, and the trend chart. Only one tap's worth is built at a time; eight trend charts nobody asked for is the scroll this split exists to avoid.
+- **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply pattern 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
+
+Eight full cards was the alternative, and it failed twice over: an unreadable scroll, and a flat list of *Add*, *Add pattern*, *Subtract* that never said which family any of them belonged to.
 
 ## 10. Battle Mode
 

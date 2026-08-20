@@ -891,6 +891,35 @@
   .window-fill{ display:block; height:100%; border-radius:999px; transition:width .3s ease; }
   .window-val{ width:44px; flex:0 0 auto; text-align:right; font-weight:800; font-size:.85rem; color:var(--ink); }
   .trend-wrap{ margin-top:14px; }
+
+  /* Maths on this screen is two group cards, one per family, each listing its
+     four tracks as a slim row. Eight full cards was an enormous scroll on a
+     phone, and it also lost the thing the grouping is meant to show — which
+     family a track belongs to. */
+  .group-top{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+              padding-bottom:10px; border-bottom:2px solid var(--cream-2); margin-bottom:4px; }
+  .group-name{ font-weight:800; font-size:1.1rem; }
+  .group-level{ color:var(--ink-soft); font-size:.9rem; font-weight:700; white-space:nowrap; }
+  /* Separators sit on the TOP of each row but the first, never the bottom. A live
+     row is a <button> and a locked one a <div>, so :last-of-type counts per element
+     type and stripped the border from the last button rather than the last row —
+     and a bottom border would trail off the end of the card besides. */
+  .track-row{ display:flex; align-items:center; gap:10px; width:100%; padding:10px 2px;
+              background:none; border:0; border-top:1px solid var(--cream-2);
+              font:inherit; color:inherit; text-align:left; cursor:pointer; }
+  .track-row.first{ border-top:0; }
+  .track-row.locked{ cursor:default; opacity:.55; }
+  .track-name{ flex:1 0 auto; font-weight:700; font-size:.95rem; }
+  .track-lvl{ flex:0 0 auto; font-weight:800; font-size:.95rem; }
+  .track-bar{ flex:0 0 84px; height:10px; background:var(--cream-2); border-radius:999px; overflow:hidden; }
+  .track-fill{ display:block; height:100%; border-radius:999px; transition:width .3s ease; }
+  .track-lock{ flex:0 0 auto; font-size:.8rem; color:var(--ink-soft); white-space:nowrap; }
+  /* The longest of these is "Opens at Multiply pattern 5". Left nowrap it squeezed
+     the track name into two lines at 360px, which is the wrong half to break. */
+  .track-unlock{ flex:0 1 auto; font-size:.8rem; color:var(--ink-soft); text-align:right; }
+  .track-caret{ flex:0 0 auto; font-size:.7rem; color:var(--ink-soft); transition:transform .2s ease; }
+  .track-row[aria-expanded="true"] .track-caret{ transform:rotate(90deg); }
+  .track-detail{ padding:4px 2px 14px; }
   .trend-chart{ width:100%; height:auto; overflow:visible; }
   .days-chart{ width:100%; height:auto; overflow:visible; }
   .day-base{ fill:var(--cream-2); }
@@ -1199,7 +1228,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 63;
+const APP_BUILD = 64;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2688,19 +2717,27 @@ function renderPokedex(){
 }
 
 /* ---------------- DASHBOARD ---------------- */
-/* Home groups the eight maths tracks into two tiles; this screen is read by a
-   parent, so it lists every one — and only the ones that have opened, since a
-   locked track has nothing to report yet. */
+/* Spelling and Reading get a card each. Maths gets two — one per family — because
+   eight full cards was a scroll nobody would read, and a flat list of "Add", "Add
+   pattern", "Subtract" never said which family any of them belonged to. Each group
+   card carries the same summed level the home tile shows, then one slim row per
+   track that opens into the full detail on tap.
+
+   Locked tracks are listed too, greyed, with what opens them. The road ahead is
+   worth seeing, and it keeps the section's shape from shifting under the reader
+   every time something unlocks. */
 const WORD_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
   {id:"reading",  label:"Reading",  color:"#9a6bd6"},
 ];
-function dashboardTracks(){
-  const maths = MATH_TRACKS
-    .filter(t => t.levels.length && trackLive(t.id))
-    .map(t => ({ id:t.id, label:t.label,
-                 color: t.group === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)" }));
-  return WORD_TRACKS.concat(maths);
+function dashboardTracks(){ return WORD_TRACKS.slice(); }
+function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
+/* What a locked track is waiting on. The immediate prerequisite, not the root of
+   the chain — "Opens at Subtract 6" is what the reader can act on, even when
+   Subtract is itself still shut. */
+function unlockNote(track){
+  const up = track.prereqTrack && MATH_BY_ID[track.prereqTrack];
+  return up ? `Opens at ${up.label} ${track.prereqLevel}` : "Locked";
 }
 
 /* Rounds played on each of the last 7 days, today last. The streak tile answers
@@ -2777,39 +2814,96 @@ function renderDashboard(){
   grid.appendChild(weekCard);
 
   dashboardTracks().forEach(({id, label, color})=>{
-    const p = progress[id];
-    const level = currentLevel(id);
-    const gates = promoteGates(id);
-    const windows = gates.map(g => {
-      const w = p.history.slice(-g.questions);
-      return { n: g.questions, pct: g.percent, hits: w.reduce((a,b)=>a+b,0), of: w.length };
-    });
-    const days = Math.max(0, Math.floor((Date.now()-p.frontierSince)/86400000));
-    const daysLabel = days===0 ? "Started today" : `${days} day${days===1?"":"s"} at this level`;
-
     const card = document.createElement("div");
     card.className = "card dash-card";
     card.innerHTML = `
       <div class="dash-top">
         <div>
           <div class="dash-track" style="color:${color}">${label}</div>
-          <div class="dash-level">${level ? `${level.id} — ${level.label}` : "—"}</div>
+          <div class="dash-level">${levelLine(id)}</div>
         </div>
-        <div class="dash-days">${daysLabel}</div>
+        <div class="dash-days">${daysAtLevel(id)}</div>
       </div>
-      ${windows.map(w => `<div class="window-row">
-        <span class="window-label">Last ${w.n}</span>
-        <span class="window-track"><span class="window-fill" style="width:${w.of ? (w.hits/w.of*100) : 0}%; background:${color}"></span></span>
-        <span class="window-val">${w.hits}/${w.of}</span>
-      </div>`).join("")}
-      <div class="trend-wrap"></div>
+      ${trackDetailHTML(id, label, color)}
     `;
-    const trendWrap = card.querySelector(".trend-wrap");
-    trendWrap.innerHTML = p.trend.length >= 2
-      ? renderTrendChart(p.trend, color, promoteGates(id))
-      : `<div class="placeholder">Play a few ${label} rounds to see a trend here!</div>`;
     grid.appendChild(card);
   });
+
+  MATH_GROUPS.forEach(g => {
+    const tracks = MATH_TRACKS.filter(t => t.group === g.id && t.levels.length);
+    if(!tracks.length) return;
+    const { at, total } = mathGroupProgress(g.id);
+    const color = groupColor(g.id);
+
+    const card = document.createElement("div");
+    card.className = "card dash-card";
+    card.innerHTML = `
+      <div class="group-top">
+        <span class="group-name" style="color:${color}">${g.label}</span>
+        <span class="group-level">${at ? `Level ${at} of ${total}` : `Locked · ${total} levels`}</span>
+      </div>
+      ${tracks.map((t, i) => {
+        const first = i === 0 ? " first" : "";
+        if(!trackLive(t.id)) return `<div class="track-row locked${first}">
+          <span class="track-name">${t.label}</span>
+          <span class="track-unlock">${unlockNote(t)}</span>
+        </div>`;
+        const at1 = frontierIndex(t.id) + 1, of = t.levels.length;
+        return `<button class="track-row${first}" type="button" aria-expanded="false" data-track="${t.id}">
+          <span class="track-caret">▶</span>
+          <span class="track-name">${t.label}</span>
+          <span class="track-lvl">${at1}<span class="track-lock"> / ${of}</span></span>
+          <span class="track-bar"><span class="track-fill" style="width:${at1/of*100}%; background:${color}"></span></span>
+        </button>
+        <div class="track-detail hidden" data-detail="${t.id}"></div>`;
+      }).join("")}
+    `;
+
+    // Detail is built on first open, not up front: eight trend charts the reader
+    // has not asked for is the scroll this screen was splitting up to avoid.
+    card.querySelectorAll(".track-row[data-track]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const t = MATH_BY_ID[btn.dataset.track];
+        const detail = card.querySelector(`[data-detail="${t.id}"]`);
+        const open = btn.getAttribute("aria-expanded") === "true";
+        if(!open && !detail.innerHTML){
+          detail.innerHTML = `<div class="dash-level">${levelLine(t.id)}</div>`
+                           + `<div class="dash-days">${daysAtLevel(t.id)}</div>`
+                           + trackDetailHTML(t.id, t.label, color);
+        }
+        btn.setAttribute("aria-expanded", String(!open));
+        detail.classList.toggle("hidden", open);
+      });
+    });
+    grid.appendChild(card);
+  });
+}
+
+function levelLine(id){
+  const level = currentLevel(id);
+  return level ? `${level.id} — ${level.label}` : "—";
+}
+function daysAtLevel(id){
+  const days = Math.max(0, Math.floor((Date.now()-progress[id].frontierSince)/86400000));
+  return days===0 ? "Started today" : `${days} day${days===1?"":"s"} at this level`;
+}
+/* The promotion windows and the trend chart — the same block whether it is a word
+   track's own card or a maths track opened out of its group row. */
+function trackDetailHTML(id, label, color){
+  const p = progress[id];
+  const windows = promoteGates(id).map(g => {
+    const w = p.history.slice(-g.questions);
+    return { n: g.questions, hits: w.reduce((a,b)=>a+b,0), of: w.length };
+  });
+  const trend = p.trend.length >= 2
+    ? renderTrendChart(p.trend, color, promoteGates(id))
+    : `<div class="placeholder">Play a few ${label} rounds to see a trend here!</div>`;
+  return windows.map(w => `<div class="window-row">
+      <span class="window-label">Last ${w.n}</span>
+      <span class="window-track"><span class="window-fill" style="width:${w.of ? (w.hits/w.of*100) : 0}%; background:${color}"></span></span>
+      <span class="window-val">${w.hits}/${w.of}</span>
+    </div>`).join("")
+    + `<div class="trend-wrap">${trend}</div>`;
 }
 
 // Rolling accuracy over the two promotion windows, plus markers for how each
