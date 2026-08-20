@@ -1176,7 +1176,6 @@
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
-      <button class="btn green big hidden" id="catchBackBtn" style="margin-top:10px">← Back</button>
     </div>
   </div>
 
@@ -1188,7 +1187,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 59;
+const APP_BUILD = 60;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -2301,13 +2300,10 @@ function maybeStartGrassEncounter(){
    button, but browsing the dex means opening and closing a lot of these.
 
    The popup navigates to itself: tapping an evolution relative replaces what's
-   on screen with that relative. `modalTrail` remembers what you came from so
-   there is a way back — without it, following a family line one hop was a
-   one-way trip and the only button left closed the whole thing. On a catch
-   reveal that was worse than a dead end: Okay runs the pending callback and
-   advances the round, so drilling in and pressing it skipped the catch you were
-   being shown. While the trail has anything in it, Back is the only exit. */
-let modalTrail = [];        // entries behind the one on screen
+   on screen with that relative. There is no Back — the strip shows the whole
+   family from wherever you have landed in it, so every relative you could have
+   come from is still one tap away, and the way out is the same single Okay from
+   every entry. */
 let modalCurrent = null;    // {poke, opts} for the entry on screen
 
 /* Opening an entry says its name out loud. A name a child has only ever read is
@@ -2326,22 +2322,11 @@ function sayPokeModalName(poke, opts){
   // Let the card paint first, so the name lands on a picture already there.
   setTimeout(()=> speak(sayAs(poke.n)), 350);
 }
-// Fresh entry from outside the popup: the trail starts over.
+/* Opening an entry, from the dex or from a relative in the family strip. Both
+   are the same act now that there is nothing to go back to. */
 function showPokeModal(poke, opts){
-  modalTrail = [];
   renderPokeModal(poke, opts);
   sayPokeModalName(poke, opts);
-}
-// Same entry, one hop deeper: remember where we were.
-function navPokeModal(poke, opts){
-  if(modalCurrent) modalTrail.push(modalCurrent);
-  renderPokeModal(poke, opts);
-  sayPokeModalName(poke, opts);
-}
-function backPokeModal(){
-  const prev = modalTrail.pop();
-  if(!prev){ hideCatchModal(); return; }
-  renderPokeModal(prev.poke, prev.opts);
 }
 
 /* Confetti and a burst of light, fired only on an actual catch. Rarer catches
@@ -2408,14 +2393,14 @@ function renderPokeModal(poke, opts){
   $("#catchRarity").textContent = rarity ? `✨ ${rarity}` : "";
   $("#catchRarity").classList.toggle("hidden", !rarity);
   $("#catchRarity").classList.toggle("mythical", poke.rarity === "mythical");
-  renderEvoRow(revealed ? poke : null);
+  // The family shows whether or not this one is caught. It gives away nothing an
+  // uncaught entry is holding back — the relatives are silhouettes too until you
+  // catch them — and it answers the question the card is actually being opened
+  // to ask: what is this, and what does it become? Hiding it left an uncaught
+  // base looking like a species with no evolutions at all.
+  renderEvoRow(poke);
   $("#catchSay").classList.toggle("hidden", !revealed);
   $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
-  // One primary button, never two: Back while there is somewhere to go back to,
-  // Okay once you're at the entry you opened.
-  const deep = modalTrail.length > 0;
-  $("#catchBackBtn").classList.toggle("hidden", !deep);
-  $("#catchOkBtn").classList.toggle("hidden", deep);
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   modal.classList.remove("hidden");
@@ -2467,8 +2452,10 @@ function renderEvoRow(poke){
   }
 
   const collected = loadCollection();
+  // `current` rings the entry you are on; it must not also imply caught, or an
+  // uncaught entry would name and un-silhouette itself in its own strip.
   const chip = (p, current) => {
-    const got = current || collected.includes(p.id);
+    const got = collected.includes(p.id);
     return `<button class="evo${current ? " current" : ""}" type="button" data-id="${p.id}"
       ${current ? "disabled" : ""} aria-label="${got ? cap(p.n) : "Not caught yet"}">
       <img src="${artwork(p.id)}" alt="" class="${got ? "" : "silhouette"}">
@@ -2484,7 +2471,7 @@ function renderEvoRow(poke){
       const target = POKEMON.find(x => x.id === Number(btn.dataset.id));
       const got = loadCollection().includes(target.id);
       markSeen(target.id);
-      navPokeModal(target, {
+      showPokeModal(target, {
         caption: "",
         greet: got ? "Welcome back!" : "",
         revealed: got,
@@ -2502,7 +2489,6 @@ function showCatchModal(poke){ showPokeModal(poke, { caption: catchCaption(poke)
 function hideCatchModal(){
   $("#catchModal").classList.add("hidden");
   clearCelebration();
-  modalTrail = [];
   modalCurrent = null;
 }
 
@@ -4136,7 +4122,6 @@ $("#quitBtn").addEventListener("click", ()=>{
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });
-$("#catchBackBtn").addEventListener("click", backPokeModal);
 $("#catchOkBtn").addEventListener("click", ()=>{
   hideCatchModal();
   const cb = pendingCatchCallback;
