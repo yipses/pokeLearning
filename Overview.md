@@ -45,6 +45,12 @@ Settings, Lesson Trails progress, the Pokédex collection, and the play streak p
 
 ## 5. Sessions
 
+**A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. A question counts toward the round when it is answered with at most **`Mistakes allowed`** slips — a Settings value, default 1, where a slip is a wrong tap *or* a hint. Hints count because hinting through a word to reach the end of a round is the same loophole in a different costume.
+
+**Two different bars, deliberately kept apart.** The Lesson Trails still promote only on a **spotless** question — nothing wrong at all, no hints — exactly as before. `Mistakes allowed` governs only whether a question moves the *round* along. Loosening the round does not loosen the ladder.
+
+**The progress bar measures credits**, so guessing your way through a question leaves it exactly where it was. That is the feedback the change exists to give.
+
 Each mode toggles on/off in Settings. A session of **N** challenges is **split in thirds** — spelling, reading, maths — rather than drawn evenly across every track, and never repeats the same mode back-to-back. The maths third is shared among whichever maths tracks are currently open; without the split, a fully-unlocked child would get eight questions in ten as maths purely because maths has the most tracks. A mode with nothing enabled inside it drops out of the pool automatically.
 
 ## 6. Lesson Trails
@@ -345,7 +351,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 12. Settings & Persistence
 
-- **General**: Questions per round (session length across all active modes, default 10), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
+- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
 - **Per trail**: a frontier dropdown showing the current level in plain language — *Level 1 — Words to level 1, 25% shown*, *Level 1 — 0–3 + 0–3* — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.

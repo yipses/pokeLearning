@@ -1148,6 +1148,12 @@
         <input type="number" id="totalCount" min="1" max="50" value="10">
       </div>
       <div class="field">
+        <label>Mistakes allowed
+          <span class="hint">Wrong taps or hints a question may take and still count toward finishing the round. 0 means it must be right first time</span>
+        </label>
+        <input type="number" id="mistakeAllowance" min="0" max="5" value="1">
+      </div>
+      <div class="field">
         <label>Rounds per day
           <span class="hint">Rounds needed to keep the streak going</span>
         </label>
@@ -1310,7 +1316,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 76;
+const APP_BUILD = 77;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2031,6 +2037,7 @@ const SETTINGS_KEY = "pokeLearningSettings";
 function saveSettings(){
   const settings = {
     totalCount: $("#totalCount").value, grassRate: $("#grassRate").value,
+    mistakeAllowance: $("#mistakeAllowance").value,
     spellOn: $("#spellOn").checked,
     readingOn: $("#readingOn").checked,
     mathOn: $("#mathOn").checked,
@@ -2044,6 +2051,7 @@ function loadSettings(){
   try{ saved = JSON.parse(localStorage.getItem(SETTINGS_KEY)); }catch(e){ saved=null; }
   if(!saved) return;
   if(saved.totalCount!=null) $("#totalCount").value = saved.totalCount;
+  if(saved.mistakeAllowance!=null) $("#mistakeAllowance").value = saved.mistakeAllowance;
   if(saved.grassRate!=null) $("#grassRate").value = saved.grassRate;
   if(saved.spellOn!=null) $("#spellOn").checked = saved.spellOn;
   if(saved.readingOn!=null) $("#readingOn").checked = saved.readingOn;
@@ -2054,7 +2062,9 @@ function loadSettings(){
 /* ---------------- daily play streak ---------------- */
 const STREAK_KEY = "pokeLearningDailyStars";
 const ROUNDS_GOAL_DEFAULT = 2;
+const MISTAKE_ALLOWANCE_DEFAULT = 1;
 function roundsGoal(){ return clampInt($("#roundsGoal")?.value, 1, 20, ROUNDS_GOAL_DEFAULT); }
+function mistakeAllowance(){ return clampInt($("#mistakeAllowance")?.value, 0, 5, MISTAKE_ALLOWANCE_DEFAULT); }
 
 /* Consecutive days that met the goal. Today counts once met; until then the
    streak stands on yesterday, so it holds all day and only breaks when a whole
@@ -2327,18 +2337,27 @@ function renderHomeLevels(){
 
 /* ---------------- game state ---------------- */
 let queue=[], idx=0, correct=0;
+/* A round is over when this many questions have been answered well enough, not
+   when this many have been shown. Every question is retried until it is right, so
+   counting questions shown meant a round could be finished by guessing through it —
+   which is exactly what it was being finished by. */
+let roundCredits = 0;
+function roundTarget(){ return clampInt($("#totalCount")?.value, 1, 50, 10); }
 
 function startGame(){
   saveSettings();
   queue = buildQueue();
   if(queue.length===0){ alert("Turn on at least one challenge mode in Settings to play!"); return; }
-  idx=0; correct=0; roundCatches=[]; sinceEncounter=0;
+  idx=0; correct=0; roundCredits=0; roundCatches=[]; sinceEncounter=0;
   show("play");
   renderProblem();
 }
 
+/* The bar measures credits, not questions seen. That is the honest number now —
+   and it is also the lesson: guessing your way through a question leaves the bar
+   exactly where it was. */
 function updateProgress(){
-  $("#progFill").style.width = (idx/queue.length*100) + "%";
+  $("#progFill").style.width = Math.min(100, roundCredits / roundTarget() * 100) + "%";
 }
 
 function renderProblem(){
@@ -2363,10 +2382,34 @@ function next(){
   }
 }
 
+/* A question carries a count of everything that went wrong on it — every wrong
+   tap and every hint. Two different rules read that count, and keeping them apart
+   matters:
+
+     spotless()  — nothing went wrong at all. This is what the Lesson Trails have
+                   always demanded to promote, and it is deliberately unchanged.
+     countsForRound() — at most `mistakeAllowance` went wrong. This is the softer
+                   bar a question has to clear to move the round along.
+
+   Hints count as mistakes for both. A hint is not a wrong tap, but hinting through
+   a word to reach the end of a round is the same loophole in a different costume. */
+function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
+function spotless(p){ return !p || !p._mistakes; }
+function countsForRound(p){ return (p && p._mistakes || 0) <= mistakeAllowance(); }
+
 function advanceQueue(){
+  if(countsForRound(queue[idx])) roundCredits++;
   idx++;
-  if(idx>=queue.length) finish();
-  else renderProblem();
+  if(roundCredits >= roundTarget()){ finish(); return; }
+  // The round no longer has a fixed length, so the queue is topped up a batch at a
+  // time rather than built once. A whole batch keeps buildQueue's thirds and its
+  // no-repeat rule intact; appending single questions would lose both.
+  if(idx >= queue.length){
+    const more = buildQueue();
+    if(!more.length){ finish(); return; }   // every mode switched off mid-round
+    queue = queue.concat(more);
+  }
+  renderProblem();
 }
 
 /* ---------------- grass encounters & collection ---------------- */
@@ -3158,7 +3201,7 @@ function hintChunk(){
   const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.dataset.chunk === chunk);
   if(!tile) return;
   const wasLast = pos === target.length - 1;
-  spellState.p._notClean = true;
+  bumpMistake(spellState.p);
   spellState.typed = "";
   placeChunk(chunk, tile);
   if(wasLast) return;                    // that hint finished the word
@@ -3249,7 +3292,7 @@ function checkSpell(){
   const fb = $("#feedback");
   if(guess === spellState.target.join("")){
     correct++;
-    if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, !spellState.p._notClean);
+    if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, spotless(spellState.p));
     fb.className="feedback good";
     fb.textContent = `✅ Yes! It's ${cap(spellState.name)}!`;
     const word = spellState.name;
@@ -3264,7 +3307,7 @@ function markWrong(){
   const slots = $("#slots");
   slots.classList.add("shake");
   setTimeout(()=>{ slots.classList.remove("shake"); }, 450);
-  if(spellState){ spellState.p._notClean = true; backspaceChunk(); }   // remove the wrong chunk, keep the correct ones before it
+  if(spellState){ bumpMistake(spellState.p); backspaceChunk(); }   // remove the wrong chunk, keep the correct ones before it
   fb.className="feedback bad";
   fb.textContent = "❌ Not that one — try again!";
 }
@@ -3599,7 +3642,7 @@ function placeMissingChunk(chunk, tileEl){
   if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
 
   if(chunk !== slot.dataset.answer){
-    st.p._notClean = true;
+    bumpMistake(st.p);
     tileEl.classList.add("shake");
     setTimeout(()=> tileEl.classList.remove("shake"), 450);
     fb.className="feedback bad";
@@ -3630,7 +3673,7 @@ function missingHint(){
   const slot = nextMissingSlot();
   if(!slot) return;
   st.hintsUsed++;
-  st.p._notClean = true;
+  bumpMistake(st.p);
   const tile = [...$("#missingTiles").children]
     .find(t => t.dataset.chunk === slot.dataset.answer && !t.classList.contains("used"));
   fillMissingSlot(slot, tile);
@@ -3645,7 +3688,7 @@ function missingHint(){
 function finishMissingLetter(){
   correct++;
   const p = missingState.p;
-  if(p.track && p.isFrontier) recordAttempt(p.track, !p._notClean);
+  if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
   const fb = $("#feedback");
   fb.className="feedback good";
   fb.textContent = `✅ Yes! It's ${cap(missingState.name)}!`;
@@ -3763,11 +3806,11 @@ function renderMath(p){
     ${mathChoicesHTML("mathChoices", p)}
     <div class="feedback" id="feedback"></div>
   `;
-  mathState = {p, hadMistake:false};
+  mathState = {p};
   wireMathChoices("mathChoices", (val, btn)=>{
     const fb = $("#feedback");
     if(val !== p.ans){
-      mathState.hadMistake = true;
+      bumpMistake(p);
       fb.className="feedback bad"; fb.textContent="❌ Try again!";
       return false;
     }
@@ -3783,7 +3826,7 @@ let mathState=null;
 function markMathDone(){
   correct++;
   if(mathState && mathState.p.track && mathState.p.isFrontier){
-    recordAttempt(mathState.p.track, !mathState.hadMistake);
+    recordAttempt(mathState.p.track, spotless(mathState.p));
   }
   lockAndAdvance();
 }
@@ -3839,11 +3882,11 @@ function renderVisual(p){
     <div class="feedback" id="feedback"></div>
   `;
 
-  visualState = {p, hadMistake:false};
+  visualState = {p};
   wireMathChoices("visualChoices", (val, btn)=>{
     const fb = $("#feedback");
     if(val !== p.ans){
-      visualState.hadMistake = true;
+      bumpMistake(p);
       fb.className="feedback bad"; fb.textContent="❌ Count again!";
       return false;
     }
@@ -3860,7 +3903,7 @@ function markVisualDone(){
   // a visual-rendered trail question is the same underlying challenge as its plain-math
   // form, just pictured — so it counts toward that trail's promotion the same way.
   if(visualState && visualState.p.track && visualState.p.isFrontier){
-    recordAttempt(visualState.p.track, !visualState.hadMistake);
+    recordAttempt(visualState.p.track, spotless(visualState.p));
   }
   lockAndAdvance();
 }
@@ -3923,7 +3966,7 @@ function renderReading(p){
       wrap.appendChild(cell);
     });
   }
-  readingState = { p, hadMistake:false, done:false };
+  readingState = { p, done:false };
 }
 
 function pickReading(opt, btn){
@@ -3932,7 +3975,7 @@ function pickReading(opt, btn){
     readingState.done = true;
     correct++;
     btn.classList.add("correct");
-    if(readingState.p.track && readingState.p.isFrontier) recordAttempt(readingState.p.track, !readingState.hadMistake);
+    if(readingState.p.track && readingState.p.isFrontier) recordAttempt(readingState.p.track, spotless(readingState.p));
     /* Say the word once it's been found, and hold the round open until it
        finishes — the same trail Spelling leaves. This doesn't break the rule that
        words are never read aloud (§7.2): the rule guards the *prompt*, and by now
@@ -3940,7 +3983,7 @@ function pickReading(opt, btn){
     const word = readingState.p.target.n;
     lockAndAdvance(done => blendBack(word, done));
   } else {
-    readingState.hadMistake = true;
+    bumpMistake(readingState.p);
     btn.disabled = true;
     btn.classList.add("wrong", "shake");
     setTimeout(()=> btn.classList.remove("shake"), 450);
@@ -3975,7 +4018,7 @@ function renderPattern(p){
     listEl.appendChild(row);
   });
 
-  patternState = { p, slots:[...listEl.querySelectorAll(".pattern-slot")], at:0, hadMistake:false };
+  patternState = { p, slots:[...listEl.querySelectorAll(".pattern-slot")], at:0 };
   openPatternRow();
 }
 
@@ -3989,7 +4032,7 @@ function openPatternRow(){
   wireMathChoices("patternChoices", (val)=>{
     const fb = $("#feedback");
     if(val !== item.ans){
-      st.hadMistake = true;
+      bumpMistake(st.p);
       fb.className="feedback bad"; fb.textContent="❌ Try again!";
       return false;
     }
@@ -4010,7 +4053,7 @@ function openPatternRow(){
 function markPatternDone(){
   correct++;
   if(patternState && patternState.p.track && patternState.p.isFrontier){
-    recordAttempt(patternState.p.track, !patternState.hadMistake);
+    recordAttempt(patternState.p.track, spotless(patternState.p));
   }
   lockAndAdvance();
 }

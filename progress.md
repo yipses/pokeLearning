@@ -253,6 +253,21 @@ It takes three mechanisms, because no single one covers every browser: `user-sca
 
 Worth being clear about the trade: this is an accessibility guarantee being switched off on purpose. It is right for a game held by a child who cannot undo an accidental gesture, and it would be wrong for a page of text.
 
+### Phase 64 — A round is ten answered, not ten shown
+
+Reported as a child spamming answers until he could move on. Tracing it first changed what the fix had to be: **every mode already retries until the answer is right**, verified in all six — a wrong tap never advances anything. So a round already ended after ten *correct* answers, and spamming never skipped a question, it only resolved one faster.
+
+What spamming actually bought was narrower than it looked. The Lesson Trails were **already immune** — `recordAttempt` counts only spotless questions. What was being farmed was the round ending and the Pokémon being caught, since an encounter resolves on a correct answer however many wrong taps came first.
+
+A round now ends after **N questions answered with at most `Mistakes allowed` slips** — a Settings value, default 1, counting wrong taps and hints alike. The queue tops up a batch at a time rather than being built once, so it keeps `buildQueue`'s thirds and no-repeat rule. **The progress bar measures credits**, which is the honest number and also the lesson: guessing leaves the bar where it was.
+
+**Two definitions of clean, deliberately separate.** `spotless()` — nothing wrong at all — still gates promotion, unchanged. `countsForRound()` — at most the allowance — gates only the round. Conflating them would have quietly loosened the ladder while nobody was looking at it. The eight places that set a boolean flag now increment a count on the question instead, so both rules read the same number.
+
+Two things measurement turned up that are worth deciding on rather than discovering later:
+
+- **A round can fail to end.** At allowance 1, a child averaging two slips a question earns no credits at all and plays forever. Simulated to a 400-question guard without finishing. There is no cap.
+- **The allowance is per question, but questions are not the same size.** A maths question takes one answer; a pattern set takes four; a Full Spelling word takes one placement per chunk, and Missing Letters runs to eighteen blanks at the top of the ladder. One slip allowed is a far harder bar on a nine-chunk word than on a single sum.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
