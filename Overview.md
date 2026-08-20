@@ -33,7 +33,7 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
+| **Start** | One line carrying three counters, the wordmark and the gear, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
@@ -223,9 +223,13 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 ## 8b. Home HUD
 
-A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the Settings button at the far right of the same line.
+A **HUD** on the very first line of the page — icon and number sitting straight on the background with no card around them — with the **wordmark and the gear sharing that same line**, pushed to the right.
 
-**The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
+**The logo does not get a row of its own.** A full-width mark cost 40–46px of height to tell a five-year-old the name of the app they had just opened, which is the argument that removed the tagline applied to the thing the tagline sat under. It rides in the HUD instead, at a 26px ball and 15–20px of type. Below the sheet's **480px** breakpoint the words drop and the ball stands alone: the row holds 60px of free space at 360 and 130 at 430, while the ball and words together need 150px even at an already-too-small 14px, so there is no size at which the full mark fits a phone.
+
+Because the mark now lives in the HUD, it is **home-only** — the other six screens have no logo. Each already opens with its own **← Back** or, in a round, with the ✕ and progress bar §8b says should be the only things there.
+
+**The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark beside them is set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and carries **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
 The HUD is home-only. A round has its own progress bar and a ✕, and a second row of counters there would be two things to read at once.
 
@@ -273,7 +277,7 @@ A 2×2 grid rather than four rows: the same four facts at about half the height,
 
 ### The fold is the constraint the whole screen is laid out against
 
-Order is HUD, wordmark, levels, Pokémon, buttons — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
+Order is HUD, levels, Pokémon, buttons — the wordmark rides in the HUD rather than taking a row between it and the levels — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
 
 Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` takes whichever axis is scarcer — `22vh` keeps it clear of the fold on a short screen, `34vw` keeps it from crowding the text column on a narrow one — and runs from 225px down to 122px. One rule covers both, so the `max-width: 480px` override this used to need is gone; a `max-height: 700px` query still tightens the generation block. Measured at 360×640, 390×844, 414×736, 768×1024 and 360×780: no vertical scroll on any of them, and no horizontal scroll either.
 

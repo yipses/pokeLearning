@@ -99,18 +99,33 @@
   }
 
   /* ---------- Title ---------- */
-  .brand{ text-align:center; margin: 2px 0 16px; }
-  /* Uppercase via CSS, not by retyping the word: "POKÉ" keeps its accent that way. */
+  /* The wordmark rides in the HUD row, right-aligned beside the gear, instead of
+     owning a row of its own. A full-width logo spent 40-46px of height telling a
+     five-year-old the name of the app they had just opened — the same argument
+     that removed the tagline, applied to what the tagline sat under. It is
+     home-only now, because .brand lives inside #homeTop and that row is.
+
+     Uppercase via CSS, not by retyping the word: "POKÉ" keeps its accent. */
+  .brand{ display:flex; align-items:center; flex:0 0 auto; min-width:0; margin:0; }
   .brand h1{ text-transform:uppercase;
-    margin:0; font-size: clamp(28px, 5.6vw, 42px); line-height:1.05;
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
+    margin:0; font-size:clamp(15px, 2.1vw, 20px); line-height:1;
     color:var(--white); letter-spacing:.5px; font-weight:800;
-    text-shadow: 0 3px 0 var(--leaf-deep), 0 6px 16px rgba(0,0,0,.18);
+    text-shadow: 0 2px 0 var(--leaf-deep), 0 3px 8px rgba(0,0,0,.18);
   }
   .brand .pokeball{
-    display:inline-block; width:40px; height:40px; vertical-align:-8px; margin-right:8px;
-    filter: drop-shadow(0 3px 3px rgba(0,0,0,.2));
+    display:block; flex:0 0 auto; width:26px; height:26px;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,.2));
   }
-  .brand p{ margin:8px 0 0; color:var(--ink); opacity:.8; font-size:1.05rem; }
+  /* Below 480px the words go and the ball stands alone. Measured: the row has
+     60px free at 360 and 130 at 430, and ball-plus-words needs 150px even at an
+     already-too-small 14px — there is no size at which it fits on a phone. The
+     ball is the half that survives the trim; the mark is not there to be read.
+     The counters, mark and gear come to 416px, so the row needs 452px to hold
+     them and the cut is at the 480px breakpoint the sheet already uses — one
+     more value here would be a fourth number to keep in step for the sake of
+     28px. Below it .home-tiles would wrap the counters onto a second line. */
+  @media (max-width:480px){ .brand-word{ display:none; } }
 
   /* ---------- Cards ---------- */
   .card{
@@ -644,7 +659,7 @@
      because the icons already say it and a pre-reader wasn't reading "STREAK"
      anyway. Each is still a button; the numbers are what changed, not the
      destinations. */
-  .home-top{ display:flex; align-items:center; gap:6px; margin:0 0 2px; }
+  .home-top{ display:flex; align-items:center; gap:6px; margin:0 0 12px; }
   .home-tiles{ display:flex; align-items:center; gap:6px; flex:1; min-width:0; flex-wrap:wrap; }
   .hud-item{
     display:inline-flex; align-items:center; gap:5px;
@@ -1034,20 +1049,18 @@
 
   <div class="home-top" id="homeTop">
     <div class="home-tiles" id="homeTiles"></div>
+    <div class="brand">
+      <h1>
+        <svg class="pokeball" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="46" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
+          <path d="M4 50a46 46 0 0 1 92 0z" fill="#ef5350" stroke="#2b2b2b" stroke-width="5"/>
+          <line x1="4" y1="50" x2="96" y2="50" stroke="#2b2b2b" stroke-width="5"/>
+          <circle cx="50" cy="50" r="14" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
+          <circle cx="50" cy="50" r="6" fill="#fff" stroke="#2b2b2b" stroke-width="4"/>
+        </svg><span class="brand-word">Poké Learning</span>
+      </h1>
+    </div>
     <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings"></button>
-  </div>
-
-  <div class="brand">
-    <h1>
-      <svg class="pokeball" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="46" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-        <path d="M4 50a46 46 0 0 1 92 0z" fill="#ef5350" stroke="#2b2b2b" stroke-width="5"/>
-        <line x1="4" y1="50" x2="96" y2="50" stroke="#2b2b2b" stroke-width="5"/>
-        <circle cx="50" cy="50" r="14" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-        <circle cx="50" cy="50" r="6" fill="#fff" stroke="#2b2b2b" stroke-width="4"/>
-      </svg>
-      Poké Learning
-    </h1>
   </div>
 
   <!-- ============ SETUP ============ -->
@@ -1256,7 +1269,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 67;
+const APP_BUILD = 68;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){

@@ -176,6 +176,18 @@ Two things fell out for free. The `max-width:480px` frame override is gone, beca
 
 Still true and not fixed: a landscape phone (740×360) scrolls. It scrolled before too — Start at 577 against a 360px viewport, now 486 — and 360px of height cannot hold the HUD, wordmark, levels, card and buttons. The supported set is portrait.
 
+### Phase 59 — the wordmark stops owning a row
+
+Reported the same way as the card: *"we don't need a large obvious logo like this on its own row."* It moves into the HUD line, right-aligned with the gear beside it.
+
+**The first measurement of the free space was wrong, and the wrong number nearly decided the design.** `.hud-item` matches the results screen's HUD as well as home's, and the hidden copies were counted at zero width while still contributing gaps — which reported **41px free at 360** and made the wordmark look impossible at every width. Scoped to `#homeTiles` the real figure is **60px at 360, 130 at 430, 291 at 591, 460 at 768**. The words were never impossible; they were impossible *on a phone*. A screenshot saying "I see lots of space" is what prompted the re-measure.
+
+Ball plus words needs 150px even at 14px, so the cut is at the sheet's existing **480px** breakpoint — below it the words go and the ball stands alone. 480 rather than a fourth breakpoint value: the row actually needs 452px, and 28px is not worth another number to keep in step. An attempt at 449px wrapped the counters onto a second line at exactly 450, caught only because the row height came back as 68px instead of 31.
+
+Height freed: **46px more clearance above the fold at 360**, on top of the 58px the two-column card had already bought. Start Playing now sits at 456 of 640, where it was 560 two changes ago.
+
+**Six screens lost their logo, and that is the change worth looking at**, not the home screen. `.brand` sat outside `#homeTop`, so it rendered on all seven; inside it, it renders on one. Settings, Pokédex, My progress and Battle each open with their own **← Back**, and a round now opens with the ✕ and the progress bar — which is what `Overview.md` §8b already said that screen should hold and never quite did.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
