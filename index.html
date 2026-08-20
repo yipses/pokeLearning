@@ -678,6 +678,7 @@
      Today goes green on the day it is met, the one state worth noticing. */
   .hud-item{ color:var(--ink-soft); }
   .hud-item.streak{ color:#e0812f; }
+  .hud-item.dex{ color:var(--berry-deep); }
   .hud-item.met{ color:var(--leaf-deep); }
 
   /* ---------- home levels ---------- */
@@ -1301,7 +1302,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 74;
+const APP_BUILD = 75;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2112,8 +2113,9 @@ function renderShowcase(){
   // for the one being looked at. Showing the hunted generation's numbers beneath a
   // trophy from the previous one would be two different subjects on one card.
   const shownGen = genOf(poke.id);
-  const genTotal = shownGen ? POKEMON.filter(x => x.id>=shownGen.from && x.id<=shownGen.to).length : 0;
-  const genCaught = shownGen ? collected.filter(id => id>=shownGen.from && id<=shownGen.to).length : 0;
+  const genRoster = shownGen ? POKEMON.filter(x => x.id>=shownGen.from && x.id<=shownGen.to) : [];
+  const genTotal = genRoster.length;
+  const genCaught = genRoster.filter(x => collected.includes(x.id)).length;
   const genPct = genTotal ? Math.round((genCaught / genTotal) * 100) : 0;
   const genName = shownGen ? shownGen.label.split(" — ")[0] : "";
   const genBlock = shownGen ? `
@@ -2194,12 +2196,28 @@ const HUD_ICONS = {
    today and the streak, and nothing else: the collection counter moved into the
    Pokémon card, where the row it sits on names the generation it is counting and
    carries the tap through to the Pokédex. A counter that differs by screen is not
-   persistent chrome, it is three similar things. */
+   persistent chrome, it is three similar things.
+
+   The collection counter is one of the three, and it also appears on the Pokémon
+   card. That is deliberate: the HUD's is chrome — always in the same corner, on
+   every screen, a fixed route to the Pokédex — and the card's names the generation
+   it is counting and belongs to the Pokémon above it. Same numbers, two jobs. */
 function renderTiles(el){
   if(!el) return;
   const data = loadStreak();
+  const collected = loadCollection();
+  const g = currentGenRange(collected);
   const goal = roundsGoal();
   const done = data[dateKey(new Date())] || 0;
+
+  let dexBig, dexSmall;
+  if(g){
+    const inGen = POKEMON.filter(p => p.id>=g.from && p.id<=g.to);
+    dexBig = `${inGen.filter(p => collected.includes(p.id)).length}/${inGen.length}`;
+    dexSmall = g.label.split("—")[0].replace("Generation","Gen").trim();
+  } else {
+    dexBig = `${collected.length}`; dexSmall = "Complete";
+  }
 
   // Icon then number, nothing else. The label each of these used to carry was a
   // word a five-year-old wasn't reading; the icon and the colour do that work,
@@ -2213,7 +2231,8 @@ function renderTiles(el){
 
   el.innerHTML =
     hud("dashboard", "today",  `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
-    hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak");
+    hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak") +
+    hud("pokedex",   "dex",    dexBig, `${dexSmall}: ${dexBig} caught`, "dex");
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;

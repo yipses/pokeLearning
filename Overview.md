@@ -253,7 +253,7 @@ The HUD is **identical wherever it appears** — home, results, and every chrome
 |---|---|---|
 | target | rounds finished today against the daily goal; the number turns **green** once met | My progress |
 | flame | consecutive days that met the rounds goal | My progress |
-| dex | caught/total for the **current generation only** — the one the collection gate is on. **Results screen only** | Pokédex |
+| dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
 **The home HUD has two counters, not three.** Its collection counter moved into the Pokémon card (§8c), where the row it sits on names the generation it is counting and carries the tap through to the Pokédex. Unlabelled in the HUD it said the same two numbers twice on one screen and explained neither. Results keeps it, having no card to move it to.
 
