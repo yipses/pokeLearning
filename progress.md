@@ -243,6 +243,16 @@ It is back, three counters on every screen that shows the HUD. **The Pokémon ca
 
 A second thing that looked wrong and was not: a caught Pokémon appeared in an empty frame. The screenshot fired before the image decoded. Waiting on `img.complete && naturalWidth > 0` rather than a fixed delay shows the artwork every time, and is what the check does now.
 
+### Phase 63 — Zoom off
+
+Pinch and double-tap zoom are disabled. A five-year-old holding a tablet triggers both by accident and cannot undo either, and a screen stuck at 2.4× is a broken app to them.
+
+It takes three mechanisms, because no single one covers every browser: `user-scalable=no` on the viewport meta (honoured by Chrome and Android, **ignored by iOS Safari**, which treats pinch-zoom as an accessibility guarantee), `touch-action: pan-x pan-y` on `html,body` (the standards-based half, and what actually stops the gesture in Chrome), and `preventDefault` on Safari's non-standard `gesture*` events, which is the only thing that stops it on iOS. Other browsers never fire those, so it costs them nothing.
+
+**One version of this was written and then deleted before it shipped.** The usual recipe for killing double-tap zoom is to `preventDefault` any `touchend` within 300ms of the last. It also cancels the synthesised click that follows — and this game is played by tapping letter tiles in quick succession, so it would have eaten real taps. `touch-action` already covers double-tap zoom everywhere it is supported, iOS included, so the hack bought nothing and would have cost gameplay. Checked by tapping two different controls 80ms apart: both still register.
+
+Worth being clear about the trade: this is an accessibility guarantee being switched off on purpose. It is right for a game held by a child who cannot undo an accidental gesture, and it would be wrong for a page of text.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

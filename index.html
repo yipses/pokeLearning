@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Pinch and double-tap zoom are off: this is a game a small child holds, and a
+     stray two-finger touch that leaves the screen zoomed at 2.4x is not something
+     they can undo. It takes three separate mechanisms, because no one of them
+     covers every browser — see also `touch-action` on html,body and the
+     gesture handlers at the end of the script. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Poké Learning — Spelling &amp; Math</title>
 <!-- Pokéball favicon, inlined as an SVG data URI so it needs no extra file and
      the app stays a single self-contained page. Same artwork as the header mark. -->
@@ -67,7 +72,10 @@
   }
 
   *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; }
+  /* Panning still works; pinch-zoom and double-tap-to-zoom do not. This is the
+     part the standard covers, and it is what actually stops the gesture in
+     Chrome and on Android. */
+  html,body{ margin:0; padding:0; touch-action:pan-x pan-y; }
   body{
     font-family: var(--font-ui);
     color:var(--ink);
@@ -1302,7 +1310,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 75;
+const APP_BUILD = 76;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -4439,6 +4447,20 @@ $("#backSetupBtn").addEventListener("click", ()=> show("setup"));
 // persist setup/settings changes as they happen
 $("#setup").addEventListener("change", saveSettings);
 $("#settings").addEventListener("change", saveSettings);
+
+/* The third of the three ways zoom has to be turned off. iOS Safari deliberately
+   ignores user-scalable=no — it treats pinch-zoom as an accessibility guarantee —
+   and honours touch-action only partially, so the one thing that stops the gesture
+   there is cancelling Safari's own non-standard gesture events. Other browsers
+   never fire these, so this costs them nothing.
+
+   Double-tap zoom is NOT handled here. The obvious version — preventDefault on any
+   touchend within 300ms of the last — also cancels the click that follows, and this
+   game is played by tapping letter tiles in quick succession, so it would eat real
+   taps. `touch-action` above already turns double-tap zoom off everywhere it is
+   supported, iOS included. */
+["gesturestart","gesturechange","gestureend"].forEach(type=>
+  document.addEventListener(type, e => e.preventDefault(), { passive:false }));
 </script>
 </body>
 </html>
