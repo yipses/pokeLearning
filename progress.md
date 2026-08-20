@@ -239,6 +239,16 @@ Laid out against what comparable apps actually do, rather than from taste. The c
 
 **Left alone deliberately:** the four Home Levels tiles still use emoji (🔤 📖 ➕ ✖️) and have the same problem in a smaller way. Not part of what was asked, and worth doing in the same style when it is.
 
+## Phase 47 — Numerals that survive 17px, and a panel that refreshes
+
+- **The home levels panel showed a stale level.** Setting a level in Settings moved the frontier and updated the Settings hint, and nothing told the home screen. Quitting a round after a promotion had the same hole.
+- **Fixed on the way *in*, not at each caller.** `show("setup")` rebuilds the home screen, so every route — Settings back, quit, dashboard back, results — shows the current figure. Patching the Back button would have fixed the reported path and left the other two, which is how the bug got there.
+- **The four tile icons are drawn now**, matching the HUD (Phase 46). The emoji they replace had the same trouble: four optical sizes, two rendering monochrome.
+- **"123" was the right instinct and I nearly talked myself out of it.** The icon box is 14×16px, and three digits at ~6px each sounded unreadable — so I built a strip of candidates at the real size and looked instead of guessing. `123` reads cleanly; the hand-drawn `+ −` I had assumed would be safer read as `+ _`.
+- **Two things the render caught that reasoning would not.** The `3` clipped its viewBox, fixed with `textLength`. And `Aa` rendered as `AA`, because the tile label above is `text-transform:uppercase` and SVG text inherits it.
+- **Numerals are set in the app's own webfont**, not drawn as paths — it is self-hosted since Phase 38, so it is certainly there, and real type at 17px beats six-pixel outlines.
+- 360×640 went 1px over the fold, the 17px icon box being a pixel taller than the emoji; two pixels off the levels card's padding settled it.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
@@ -253,7 +263,6 @@ Open threads, roughly by how much they'd bite:
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
 - **`fonts/OFL.txt` is missing.** The webfont is now served from `fonts/`, and the Open Font Licence requires its text to travel with the files. It could not be fetched from the sandbox the change was made in — `fonts/README.md` says where to get it. Nothing breaks without it; it is a licence obligation, not a runtime one.
-- **The Home Levels tiles still use emoji.** Same optical-size problem the HUD had (Phase 46), smaller in effect because the tiles are further apart. Four more drawn icons in the same style would settle it.
 - **Settings overflows horizontally on a narrow phone.** ~115px at 360px wide, from the level `<select>` elements taking their width from the longest option text. Long-standing; a `max-width` and text-overflow on the selects would settle it.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
 

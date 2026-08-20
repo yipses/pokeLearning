@@ -222,6 +222,8 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 Directly under the wordmark, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
 
+**The icons are drawn, on the same 24×24 grid as the HUD's** and for the same reason. Spelling is `Aa`, Reading an open book, Add / Sub `123`, and × and ÷ the two operators; each takes the colour of its own progress bar. The numerals are set in the app's own webfont rather than drawn as paths — it is self-hosted, so it is certainly present, and `123` at 17px reads as *numbers* in a way three hand-drawn digits at 6px each would not. `text-transform` has to be reset on the SVG text: the label beside it is uppercase and SVG inherits that, which turns `Aa` into `AA`.
+
 **The bar is there because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and the number by itself implies they are.
 
 A 2×2 grid rather than four rows: the same four facts at about half the height, scanned in one look instead of read down a list.
@@ -231,6 +233,8 @@ A 2×2 grid rather than four rows: the same four facts at about half the height,
 Order is HUD, wordmark, levels, Pokémon, buttons — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
 
 Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` is sized from viewport *height*, not width, and shrinks from 196px to about 115px on a short screen. The page's own top padding gives way with it. Measured at 360×640, 390×844, 414×736 and 768×1024: no vertical scroll on any of them.
+
+**The panel is rebuilt on the way into home, not by whoever changed something.** `show("setup")` re-renders it, so setting a level in Settings, quitting a round after a promotion, or finishing one all show the current figure. Hanging it off each caller instead is what left the panel showing a stale level after a Settings change.
 
 ## 9. Dashboard
 
