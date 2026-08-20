@@ -64,6 +64,10 @@ Each of these cost real time at least once.
 
 **Prefer the rule with no floor to the rule that runs out.** Distractors drawn from "other answers at this level" cannot work where a level has four of them; distractors drawn from *the mistakes the operation invites* always can. Same shape of reasoning as excluding items by shared artwork rather than by eyeballing 922 of them.
 
+**A persisted object rebuilt from a whitelist drops whatever is not on the list.** `loadProgress()` reassembled `progress` from `TRACK_IDS`, so the `ladderVersion` stamp was written, saved, and thrown away on read — and the migration it guarded re-ran on its own output at every load, inflating a level the parent had just set. No amount of reading the migration would have shown it; the hole was in the loader.
+
+**One value cannot serve both a decision and a display.** `pctOf` returned `null` for a partial window, which is correct for a promotion gate and nonsense for a chart, where `?? 0` turned *not enough data yet* into *scored zero*. The two wanted different answers to the same question and got one. Splitting them was the whole fix.
+
 **Fix on the way in, not at each caller.** The home levels panel showed a stale level after a Settings change; the same hole existed for quitting a round after a promotion. Rebuilding on entry to the screen fixed both and any third.
 
 **A wrong sound teaches a wrong thing; silence teaches nothing.** Anything with no row in `data/phonemes.csv` stays silent rather than guessing. The same instinct killed the "You earned Mewtwo!" reward that granted nothing.
@@ -100,7 +104,7 @@ Condensed. Where a later phase replaced one of these outright — the Phase A/B 
 
 The Spelling and Reading trails moved wholesale into `data/*.csv`: word levels, item levels, both ladders, and the promotion gates. Nothing about difficulty remains in code. The old Phase A/B ladder had a broken seam — the phonics half ended on *Refrigerator* (12 letters) and the fluency half began on a 3-letter cap — and grading items by their **hardest component word** brought all 909 usable names into play instead of 100.
 
-Four bugs in the same stretch, each reported from a screenshot: a `.tiles` class collision reflowed the letter bank; filled Missing Letter boxes rendered lowercase; **21 Pokémon names were graded as ordinary vocabulary** and had to be excluded from Spelling, since an invented name is memorised rather than decoded; and the pity timer overwrote the drop rate — 50% produced an encounter every single time. That last one is now calibrated so the setting *is* the measured outcome, pity included.
+Four bugs in the same stretch, each reported from a screenshot: a `.tiles` class collision reflowed the letter bank; filled Missing Letters boxes rendered lowercase; **21 Pokémon names were graded as ordinary vocabulary** and had to be excluded from Spelling, since an invented name is memorised rather than decoded; and the pity timer overwrote the drop rate — 50% produced an encounter every single time. That last one is now calibrated so the setting *is* the measured outcome, pity included.
 
 ### Phases 30–36 — one way to answer, and sounds attached to it
 
@@ -112,7 +116,7 @@ Then four context rules — `c`, `y` (twice) and `ow` reading the word around th
 
 **97 items share byte-identical artwork**, found by hashing all 922 files. One generic building icon serves ten place names, which is why one screen offered both `Boutique` and `Snowbelle City` for the same picture. Ninety leave both trails: a picture that names two things names neither.
 
-Missing Letter's bank held exactly the missing chunks, so a one-blank word offered **one tile** — 9% of all such questions, 45% of level 2. It is padded with same-phonics-class decoys to a floor of four.
+Missing Letters' bank held exactly the missing chunks, so a one-blank word offered **one tile** — 9% of all such questions, 45% of level 2. It is padded with same-phonics-class decoys to a floor of four.
 
 ### Phases 37–41 — self-hosted type, spoken names, and the week
 
@@ -126,7 +130,7 @@ Opening any Pokémon entry says its name aloud — one rule covering the catch p
 
 ### Phases 42–48 — the home screen, and maths by choice
 
-The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
+The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 86px.
 
 The three stat cards became a **HUD**: icon and number, no cards, no labels. Its icons are drawn as inline SVG rather than typed as emoji, because emoji ink differs inside identical boxes and the metrics belong to whichever font the device has — there is no offset that is right everywhere. The four level tiles followed, with `123` on both maths rows and the operation in the label.
 
@@ -134,102 +138,25 @@ Maths answers became **six numbers in order** instead of a keypad. The wrong fiv
 
 The trade, on the record: a blind guess now lands 1 in 6, and a round can be brute-forced in about three taps. Promotion resists it, since every wrong tap marks the attempt unclean, but the practice is weaker than composing the number was.
 
-### Phase 49 — The Pokédex family showed two of three
+### Phases 49–52 — the Pokédex family, the maths ladder, and a bug eating progress
 
-The evolution strip walked one hop back and one hop forward, which is the whole family only if you happen to be standing in the middle of a three-stage line. From Bulbasaur it showed Bulbasaur and Ivysaur and stopped; from Venusaur, Ivysaur and Venusaur. **269 of the 1,021 species saw a family missing at least one member** — measured, because "it only shows 2" could have been one bad row rather than a structural fault.
+**The evolution strip showed two of three (49–50).** It walked one hop each way, which is the whole family only if you happen to be standing in the middle of a three-stage line. **269 of 1,021 species saw a family missing at least one member** — measured, because "it only shows 2" could have been one bad row rather than a structural fault. It climbs to the root and walks down breadth-first now; the count is zero. A follow-up report, *"the base Pokémon doesn't show evos anymore"*, was a different case from the one I first reproduced: mine had the species caught and the strip was there, theirs was **uncaught**, where the strip had never rendered at all. The screenshot settled in seconds what the description could not. **Back went with it** — the trail existed because following a line was once a one-way trip, and with the whole family on screen every relative is one tap away.
 
-Now it climbs to the root and walks down breadth-first, one group per stage. Eevee's nine render as one plus eight, Wurmple's branch keeps `silcoon, cascoon → beautifly, dustox` in the right stages, and the count of species seeing an incomplete family is zero.
+**The maths ladder moved into CSV (51).** The last hardcoded one. Two tracks of 8 and 12 levels became **eight tracks over 57 levels**, with prerequisites and promotion gates authored in the spreadsheet. Tracks open on each other's progress rather than in sequence, so the ladder widens as it is climbed. Four things were found by generating rather than reasoning: modelling the sheet first caught three rows it could not satisfy; **114,000 generated questions** caught every addition returning `ans: null`; liveness was not transitive, so a locked track's stored frontier could open its dependent; and `19 + 9` drawn as pictures was 956px tall. The sheet was then **corrected at source** rather than worked around. A round is split in thirds — eight maths tracks against one each for spelling and reading would have made a round 80% maths without anyone choosing it.
 
-### Phase 50 — The family an uncaught entry was not showing
+**Setting a level made it climb (52).** Set spelling to 5, back out, read 8; refresh, 14, then 25. `migrateFrontiers()` stamps `progress.ladderVersion` so its one-off rescale runs once — but `loadProgress()` rebuilds the object from `TRACK_IDS` alone, and the stamp is not a track. Every load looked unstamped and the migration re-ran on its own output. Modelled before fixing: 5 → 8 → 14 → 25, exactly as reported. The same line was silently wiping the new maths frontiers on every load; nobody would have called that a bug, maths simply never seemed to stick.
 
-Reported as "the base Pokémon doesn't show evos anymore", with a screenshot that turned out to be a different case from the one I first reproduced. Mine had the species caught, and the strip was there. Theirs was an **uncaught** entry, where `renderPokeModal` passed `revealed ? poke : null` and the strip never rendered at all — long-standing, not from Phase 49. The screenshot settled in seconds what the description could not.
+### Phases 53–57 — one way to advance, My progress rebuilt, and the trophy band
 
-The strip now shows either way, and each relative reveals itself independently: caught ones in colour with their names, uncaught ones as silhouettes. It gives away nothing an uncaught entry is holding back, and it answers what the card is opened to ask — what is this, and what does it become. Viewing an uncaught Bulbasaur having caught only Ivysaur shows silhouette → **Ivysaur** → silhouette, which is the collection filling in.
+**No Next button (53).** Spelling and Reading advanced on their own; maths waited for a tap. What settled it was what the screen actually held — `.choices.done` hides the grid the moment an answer is right, so a solved question was `7 + 5 = ?`, a checkmark, and a button with one possible action. The word trails can afford their pause because it carries something: the word is spoken aloud while the round is held open. Maths had no such payload. All three maths modes route through `lockAndAdvance()` now, which also disabled every control during the beat and took a tap out of the catch reveal. Given up, on the record: self-pacing — the beat is fixed at 850ms whether or not the child is done looking.
 
-One subtlety that had to change with it: `chip(p, current)` treated *current* as implying *caught*, which was harmless while the strip only rendered for caught entries and would have made an uncaught one name and un-silhouette itself in its own family.
+**My progress split maths into its two families (54).** One card per live track was fine at one track and unreadable at eight. Two group cards now, `+ / −` and `× / ÷`, each headed with the summed level the home tile shows, then a slim row per track that opens into the detail. Locked tracks are listed greyed with what opens them — the **immediate** prerequisite, since that is the one a reader can act on. Two layout bugs came out of rendering at 4× rather than from the assertions, which passed: `:last-of-type` counts per *element type*, so a live row being a `<button>` and a locked one a `<div>` stripped the separator from the wrong row; and a `nowrap` unlock note won a squeeze against the track name at 360px, breaking the wrong half.
 
-**Back is gone.** The trail existed so that following a family line was not a one-way trip, which mattered when the strip showed one hop each way. Now that it shows the whole family, every relative you could have come from is still one tap away, so **Okay** is the only button from every entry. Checked that the catch-reveal hazard the trail guarded against is still safe: drilling into a relative mid-reveal and pressing Okay fires the pending callback exactly once.
+**The trend charts came out (56).** Two cards reported a minute apart were one bug: `pctOf` returns `null` until a window is full — right for promotion, since 3 clean out of a gate of 5 must not promote — but the same value fed the chart, where `?? 0` turned *not enough data yet* into *scored zero*. Spelling showed bars of 3/3 beside a chart of 0%; Reading showed four fake zeros beside the one real 100% that earned its star. Fixed by splitting the two. Then the charts went entirely, because simulating a real learner showed what they were drawing: rolling accuracy **resets at every promotion** and a level lasts 5–10 attempts, so the line was a sawtooth of fixed period and the gate lines were crossed once per tooth. If a chart returns it should plot **level over time** — a staircase that accumulates, where a flat stretch means stuck. That is the journey; rolling accuracy never was. The level at any point can be reconstructed from the stored `promoted` flags, verified against a real sequence, so nothing was lost.
 
-### Phase 51 — The maths ladder moves into CSV
+**Hint caps and the trophy band (55, 57).** `max_hints` came down from the sheet to a cap of 3 from level 11 — nine cells, the only column that had moved. The showcase gained `GENERATION 1` over `3 / 147`: a caught Pokémon shown big says *you have this one*, not *and here is the set it belongs to*. It names the generation of the Pokémon **on screen**, since that differs from the hunted one whenever a freshly opened generation is still empty. It cost 44px on a screen with none spare, and the documented trade applied rather than being renegotiated — the frame gives way, 115px to 86px on the shortest supported screen.
 
-The last hardcoded ladder. Two tracks of 8 and 12 levels became **eight tracks of 57 levels**, all read from `data/math_levels.csv`, with `data/math_tracks.csv` for prerequisites and `data/math_promotion.csv` for gates.
-
-- **Tracks open on prerequisites, not in sequence**, and everything open has a chance to come up — the ladder widens as it is climbed. Add is open from the start; the rest unlock in the order add → pattern-add → subtract → multiply → pattern-multiply → pattern-subtract → divide → pattern-divide.
-- **Modelling the sheet before building caught three bad rows.** PatternSubtract 1–3 can produce negative answers, and level 2 has no valid anchor at all for step 3. Checking the prereq graph the same way confirmed no cycles and every track reachable.
-- **Generating 114,000 questions caught a real bug in the first pass**: every addition question came back with `ans: null`, because the answer was passed rather than computed. Nothing about the shape of the code suggested it; only checking the output did.
-- **Two more found by looking at the screen.** Liveness was not transitive, so a locked track's stored frontier could open its dependent. And `19 + 9` drawn as pictures was 956px tall, with × and ÷ stacking one group per row — icons now scale to their count, and grouped layouts get narrower boxes so a group of five stays on one line.
-- **A round is split in thirds**, not evenly across tracks: eight maths tracks against one each for spelling and reading would have made a round 80% maths without anyone choosing that.
-- **Home still shows two maths tiles**, each summing its four tracks — `+ / −` out of 31, `× / ÷` out of 26 — so eight tracks don't become eight tiles on a screen that has to stay above the fold. Settings and My progress list all eight, since a parent reads those.
-- **Maths progress resets.** The old levels don't map: old Add/Subtract 5 was "within 100, no regrouping" and new add 5 is 10–19 plus 10–19. Spelling and Reading are untouched.
-- **The sheet was corrected rather than worked around.** `PatternSubtract` 1 and 2 re-anchored to 5–9 and 10–19, `MathAdd` 4 un-flagged as visual. Re-running the audit on the corrected CSV: 114,000 questions, 0 violations, and level 2 now draws on both of its steps instead of one.
-
-### Phase 52 — Two bugs, one of them quietly eating progress
-
-**Setting a level in Settings made it climb.** Set spelling to 5, back out, and it read 8; refresh and it read 14, then 25. The cause was one line that was never written. `migrateFrontiers()` stamps `progress.ladderVersion` so a one-off rescale runs once — but `loadProgress()` rebuilds the object from `TRACK_IDS` alone, and `ladderVersion` is not a track. Every load therefore looked unstamped, and the migration re-ran on top of its own output. Modelled before fixing: spelling 5 → 8 → 14 → 25, reading 3 → 5 → 8 → 10, which is exactly what was reported.
-
-The same line was silently wiping the new maths frontiers on every single load, since the current migration resets maths. Nobody would have called that a bug — maths simply never seemed to stick. Four consecutive reloads now hold at what was set.
-
-Worth naming as a class: **a persisted object rebuilt from a whitelist drops anything that isn't on the whitelist.** The stamp was written, saved, and thrown away on read, so no amount of reading `migrateFrontiers` would have shown it.
-
-**"Welcome back!" is gone from the Pokédex.** It belongs on the home screen's trophy band, where it greets you once beside one Pokémon you chose to look at. In the dex it appeared on every caught entry — a sentence to skip past thirty times while browsing a list. The home band keeps it.
-
-### Phase 53 — No Next button
-
-Spelling and both Reading modes advanced on their own; maths waited for a **Next ▶** tap. Looking at what was actually on screen settled it rather than the consistency argument alone — `.choices.done { display:none }` hides the whole grid the moment an answer is right, so a solved maths question read:
-
-```
-Math / 7 + 5 = ? / ✅ / Next ▶
-```
-
-A question still showing `= ?`, a checkmark, and a button with one possible action. Nothing to read, nothing to decide. The word trails can afford their pause because it has content — `lockAndAdvance(done => blendBack(word, done))` holds the round open while the word is spoken aloud. Maths has no such payload, so its pause was dead air with a button in it.
-
-All three maths modes now route through `lockAndAdvance()` on the default 850ms beat. Two things came free: the shared helper disables every control, so a fast double-tap can no longer land on the next question, and the catch reveal loses a tap — it was *Next → modal → Okay*, now it is *modal → Okay*.
-
-What is given up is self-pacing, and the trade is worth naming: the beat is fixed at 850ms whether or not the child is done looking. Visual Math is the case that could have argued for longer — its icons stay on screen when the choices hide, so there *is* something to sit with — but it takes the same beat as everything else, which is the point.
-
-### Phase 54 — My progress splits maths into its two families
-
-Home shows two maths tiles, each a sum; My progress showed one card per live track. That was fine at one track and unreadable at eight — full cards with three gate bars and a trend chart each, and a flat list of *Add*, *Add pattern*, *Subtract* that never said which family any of them belonged to.
-
-Maths is now **two group cards**, `+ / −` and `× / ÷`, each headed with the same summed level the home tile shows, then one slim row per track: name, level out of that track's own total, and a bar. Tapping a row opens the detail that used to be the whole card. Spelling and Reading keep their full cards — nothing asked for them to change.
-
-- **Detail is built on first open**, not up front. Eight trend charts nobody asked for is the scroll this split exists to avoid.
-- **Locked tracks are listed, greyed, with what opens them** — *Opens at Multiply pattern 5*, the immediate prerequisite rather than the root of the chain, because that is the one a reader can act on. Showing them keeps the section's shape from re-flowing every time something unlocks.
-
-Two layout bugs, both found by rendering at 4× rather than from the assertions, which passed:
-
-- **The last live row lost its separator.** `.track-row:last-of-type` counts per *element type*, and a live row is a `<button>` while a locked one is a `<div>` — so it stripped the border from the last button rather than the last row. Separators moved to the **top** of every row but the first, which also stops a border trailing off the end of the card.
-- **"Divide pattern" broke across two lines at 360px** because the unlock note beside it was `white-space: nowrap` and won the squeeze. The note wraps now and the name stays whole — the note is the half that can afford to break.
-
-### Phase 55 — Spelling hint caps, from the sheet
-
-`max_hints` was the only column in the sheet that had moved. It now caps at **3** from level 11 up; the CSV still held the old escalating values that ran to 7 by level 25. Nine cells, all in that one column — every other spelling, reading and maths cell already matched. Levels 13, 16, 18, 19, 21, 22, 23, 24 and 25 came down from 4, 4, 4, 5, 5, 6, 4, 5 and 7.
-
-### Phase 56 — The trend charts come out
-
-Two cards, reported a minute apart, that turned out to be one bug seen from both sides:
-
-```
-SPELLING after 3 clean answers     READING after 5 clean answers
-  bars  : Last 5  3/3               bars  : Last 5  0/0
-  trend : [0, 0, 0]                 trend : [0, 0, 0, 0, 100 ★]
-```
-
-`recordAttempt` used one function for two jobs. `pctOf` returns `null` until a window is **full**, which is right for promotion — 3 clean out of a gate of 5 must not promote. But the same value fed the chart, where `?? 0` turned *not enough data yet* into *scored zero*. Every level's first four answers were logged as a flat 0% however well they went. Spelling showed it directly, bars contradicting the chart on one card; Reading showed it after a promotion cleared `history`, so four fake zeros sat beside the one real 100% that earned the star.
-
-Fixed by splitting the two: `pctOf` stays strict for the gate check, `soFar` records the accuracy over whatever the window holds. Promotion timing is unchanged — verified 5 clean promotes on 5, 3 clean never promotes, `1,0,1,1,1,1` promotes on 7 and not before, ten wrong never promotes, on both a two-gate and a three-gate track.
-
-**Then the charts came out entirely.** Simulating a real learner — 85% clean, 60 attempts — showed the deeper problem the 0% bug was sitting on top of:
-
-```
-[80,80] [80,80] [80,80] [100,100 ★] [0,0] [0,0] [0,0] [0,0] [100,100 ★] …
-```
-
-A sawtooth with a fixed period. Rolling accuracy **resets at every promotion**, and a level lasts 5–10 attempts, so the line drew the same tooth over and over and the gate lines were crossed once per tooth rather than being a target anything approached. The y-axis did not even mean the same thing across the chart: 92% at level 3 and 92% at level 7 are accuracy on different material, drawn as one continuous line.
-
-The bars already answer the question the screen exists for, exactly and with fractions. So `renderTrendChart` is gone, along with the CSS only it used. The **This week** chart stays — different question, not implicated, and specifically asked for. `trend` is still recorded, correctly now, so nothing is lost if a chart returns; the level at any point can be reconstructed from the `promoted` flags walking back from the current frontier, which was verified exactly against a real sequence.
-
-If it does return it should plot **level over time** — a staircase that accumulates and only goes up, where a flat stretch means stuck. That is the journey. Rolling accuracy is not.
+**"Missing Letter" was reported as wrong, and it was — but not the way it looked (57).** The screenshot showed Doduo with four blanks and one letter given, which reads like over-blanking. It is correct: 25%-shown is what eight of the levels ask for. Measuring the mode settled which half was wrong — **96% of its questions have more than one blank**, so the singular was wrong almost always. Renamed in the app and in every doc and comment, since a mode called one thing on screen and another in its own source is the drift this repo keeps paying for.
 
 ## Doc roles
 

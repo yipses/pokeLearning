@@ -16,7 +16,7 @@ Nothing here is a hard gate a kid must fully clear before moving on — see the 
 
 **Two ways to promote.** Tracking **clean** answers only (right on the first try, no hints) — **5/5** clean in a row promotes instantly; otherwise **8/10** (80%) clean in the rolling window promotes. Whichever hits first. No demotion — Review keeps old levels sharp instead.
 
-These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. The percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code. Maths has its own table in `data/math_promotion.csv` and a different shape — three gates: 5 at 100%, 10 at 90%, 20 at 85%. My progress's labels and gate lines are drawn from whichever row the track is on.
+These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. The percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code. Maths has its own table in `data/math_promotion.csv` and a different shape — three gates: 5 at 100%, 10 at 90%, 20 at 85%. My progress draws one bar per gate, from whichever row the track is on.
 
 **You can place the pin.** The frontier is editable in Settings, in either direction — up if a kid's already ahead, down if a level was set too high. Moving it resets that track's Last 5 / Last 10 windows.
 
@@ -107,7 +107,7 @@ Note that a word's level and an *item's* level pull apart: 58 words are level 1,
 
 ### Spelling — 25 levels
 
-Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the word given away: 50% → 25% → 0%. Above zero the task is Missing Letter; at zero it is Full Spelling from empty tiles. **`max_hints`** rises as `hinted_pct` falls — the level that shows least offers most help finding the rest.
+Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the word given away: 50% → 25% → 0%. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles. **`max_hints`** rises as `hinted_pct` falls — the level that shows least offers most help finding the rest.
 
 Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
 

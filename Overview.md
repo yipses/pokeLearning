@@ -33,7 +33,7 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big, then "Start Playing" and "Pokémon Battle" |
+| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
@@ -75,9 +75,9 @@ Pokémon are gated by length rather than by phonics level because invented names
 
 The ladder is nine tiers of three, and within a tier only **`hinted_pct`** changes — the share of the word given away, 50% → 25% → 0%:
 
-- **Above 0% it's Missing Letter** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
+- **Above 0% it's Missing Letters** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
 
-  **The bank is padded with decoys to a floor of four tiles.** Holding only the missing chunks made a one-blank word a guaranteed tap — `MEW` showed `M` and a single `EW` tile — which was 9% of all Missing Letter questions and 45% of level 2. Four blanks or more get no decoys, so the hard end is untouched. Each decoy is drawn from the same phonics class as a chunk it competes with — single vowels, vowel teams, r-controlled vowels, digraphs, blends, single consonants — and is never a chunk the word contains. Class matters: beside a vowel team, `str` can be ruled out by eye without knowing the answer, and `oo` cannot. A wrong tap shakes the tile, says so, and costs the clean answer.
+  **The bank is padded with decoys to a floor of four tiles.** Holding only the missing chunks made a one-blank word a guaranteed tap — `MEW` showed `M` and a single `EW` tile — which was 9% of all Missing Letters questions and 45% of level 2. Four blanks or more get no decoys, so the hard end is untouched. Each decoy is drawn from the same phonics class as a chunk it competes with — single vowels, vowel teams, r-controlled vowels, digraphs, blends, single consonants — and is never a chunk the word contains. Class matters: beside a vowel team, `str` can be ruled out by eye without knowing the answer, and `oo` cannot. A wrong tap shakes the tile, says so, and costs the clean answer.
 - **At 0% it's Full Spelling** — empty slots, the whole word built from shuffled tiles (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear.
 
 **Both tasks answer the same way, in the same units: tap a tile holding a chunk.** `torch` is three slots and three tiles — `T`, `OR`, `CH` — in both. A chunk is the thing with a sound, so a tile can say what it is, and the same group is the same group on every screen. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next, so `t-o-r-c-h` fills `T`, then `OR`, then `CH`.
@@ -237,6 +237,8 @@ The HUD is home-only. A round has its own progress bar and a ✕, and a second r
 | flame | consecutive days that met the rounds goal | My progress |
 | dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
+The dex counter and the showcase's generation count (§8c) are the same pair of numbers whenever the Pokémon on the shelf comes from the generation being hunted, which is the usual case. They are not redundant in role — the HUD's is unlabelled and goes to the Pokédex, the showcase's names its generation and sits under the trophy it describes — but the screen does say the number twice.
+
 **No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
 
 The same HUD appears on the results screen, centred rather than left-aligned to match that card. The gear is home-only.
@@ -249,9 +251,11 @@ A "round" is one full session; how many questions make up a round, and how many 
 
 Below the wordmark, the middle band of the Start screen shows **one of the child's own Pokémon**, big: artwork in a circular frame, its name, its Dex number, and **"Welcome back!"**. The whole card is a button — tapping it re-rolls the pick, as does every return to the home screen.
 
+**Under it, the generation and how much of it is filled** — `GENERATION 1` over `3 / 147`. The trophy says *you caught this one*; the count says *and here is the set it belongs to*, which is what makes a shelf a collection rather than a pile. It names the generation of the Pokémon **on screen**, not the one being hunted: those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card.
+
 It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
 
-**Before anything at all is caught** there is no trophy to show, so the band falls back to a silhouette and its **type badges** — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not.
+**Before anything at all is caught** there is no trophy to show, so the band falls back to a silhouette and its **type badges** — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not. The generation count still shows, at `0 / 147`, because a goal is a number rather than a sentence.
 
 ## 8d. Home Levels
 
@@ -267,7 +271,7 @@ A 2×2 grid rather than four rows: the same four facts at about half the height,
 
 Order is HUD, wordmark, levels, Pokémon, buttons — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
 
-Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` is sized from viewport *height*, not width, and shrinks from 196px to about 115px on a short screen. The page's own top padding gives way with it. Measured at 360×640, 390×844, 414×736 and 768×1024: no vertical scroll on any of them.
+Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` is sized from viewport *height*, not width, and shrinks from 196px to 86px on the shortest supported screen. A `max-height: 700px` query tightens the generation block with it. Measured at 360×640, 390×844, 414×736, 768×1024 and 360×780: no vertical scroll on any of them, and no horizontal scroll either.
 
 **The panel is rebuilt on the way into home, not by whoever changed something.** `show("setup")` re-renders it, so setting a level in Settings, quitting a round after a promotion, or finishing one all show the current figure. Hanging it off each caller instead is what left the panel showing a stale level after a Settings change.
 
@@ -285,7 +289,7 @@ Then **Spelling** and **Reading** get a card each, showing:
 - Days at the current level.
 - One clean-answer progress bar per promotion gate, with exact fractions — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths. The bar fills against however many answers the window actually holds, so three clean out of three reads full.
 
-**There is no per-track accuracy chart.** The bars are the whole of it. An accuracy chart plotted a rolling window that *resets on every promotion*, so it drew the same sawtooth over and over — climb, spike, promote, restart — and the gate lines it was drawn against were crossed once per tooth rather than being anything a reader was watching a track approach.
+**There is no per-track accuracy chart.** The bars are the whole of it. Rolling accuracy resets at every promotion, so it cannot be plotted across levels as a trend — the reasoning is in `progress.md`.
 
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
@@ -350,7 +354,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - Warm, pastel, "cozy life-sim" visual style (leaf greens, sky blues, cream, sun yellow, berry pink) consistent across every mode.
 - Mobile-first responsive layout: touch targets sized for small screens, a dedicated `@media (max-width:480px)` breakpoint, no horizontal page scroll.
 - Speech synthesis is used in Spelling, Battle, Reading and the Pokédex — in Reading, only ever to name a picture (§7.2). Utterances are pinned to `en-US`, since otherwise the OS default voice applies its own language's phonetics to English spellings. Names the synthesiser mangles are respelled via `data/pronunciations.csv` (§13); overrides affect **speech only**.
-- Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letter, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
+- Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letters, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
 - Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius. On the maths screens the frame takes a `compact` modifier and drops from 220px to 96px: the answer choices need the room, and the Pokémon is decoration on a sum, so it is what gives way.

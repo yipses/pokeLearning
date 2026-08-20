@@ -249,7 +249,7 @@
 
   /* Read-aloud sits on the picture itself rather than in the action row below
      it, so the affordance reads the same everywhere it appears — Spelling,
-     Missing Letter, Read & Choose, and the Pokédex — and matches the per-option
+     Missing Letters, Read & Choose, and the Pokédex — and matches the per-option
      speakers in Reverse Read & Choose. */
   /* Block-level with max-content width, not inline-block — inline-block would let
      the preceding kind-tag share its line instead of sitting above it. */
@@ -728,6 +728,13 @@
   .showcase-name{ font-size:clamp(1rem, 2.4vh, 1.2rem); font-weight:900; color:var(--ink); margin-top:6px; line-height:1.2; }
   .showcase-num{ font-size:.78rem; font-weight:800; color:var(--ink-soft); line-height:1.3; }
   .showcase-greet{ font-size:.9rem; font-weight:800; color:var(--leaf-deep); margin-top:2px; line-height:1.3; }
+  /* Which generation this one belongs to, and how much of it is filled. Two short
+     lines, no sentence — the label is a name and the count is a number, which is
+     what §14.1 says a child's screen may spend words on. */
+  .showcase-gen{ display:block; margin-top:8px; }
+  .showcase-gen-name{ display:block; text-transform:uppercase; letter-spacing:.06em;
+                      font-size:.68rem; font-weight:800; color:var(--ink-soft); line-height:1.4; }
+  .showcase-gen-count{ display:block; font-size:1rem; font-weight:900; color:var(--ink); line-height:1.3; }
   /* Stands in for the name block when nothing is caught yet, so the card keeps
      roughly the same height either way and Start doesn't jump up the screen. */
   .showcase-types{ display:flex; gap:6px; justify-content:center; margin-top:12px; padding-bottom:10px; }
@@ -953,9 +960,21 @@
 
   .hidden{ display:none !important; }
 
+  /* Adding the generation count cost the home screen 44px, and 360x640 had none
+     spare. The documented trade applies: the Pokemon is the one thing that can be
+     smaller without losing what it says, so on a short screen the frame gives way
+     further and the text block tightens, rather than Start sliding off the bottom.
+     Keyed on height, not width — a short landscape phone has the same problem. */
+  @media (max-height:700px){
+    .showcase{ margin-bottom:10px; }
+    .showcase-gen{ margin-top:4px; }
+    .showcase-gen-name{ font-size:.64rem; line-height:1.25; }
+    .showcase-gen-count{ font-size:.9rem; line-height:1.2; }
+  }
+
   @media (max-width:480px){
     .poke-frame{ width:180px; height:180px; }
-    .showcase-frame{ width:clamp(96px, 18vh, 170px); height:clamp(96px, 18vh, 170px); }
+    .showcase-frame{ width:clamp(84px, 13.5vh, 170px); height:clamp(84px, 13.5vh, 170px); }
     .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
     .slot-word{ gap:6px; }
@@ -1217,7 +1236,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 65;
+const APP_BUILD = 66;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2024,6 +2043,18 @@ function renderShowcase(){
   const poke = list[Math.floor(Math.random()*list.length)];
   if(!poke) return;
 
+  // The generation of the Pokémon ON SCREEN, so the count under it is the count
+  // for the one being looked at. Showing the hunted generation's numbers beneath a
+  // trophy from the previous one would be two different subjects on one card.
+  const shownGen = genOf(poke.id);
+  const genTotal = shownGen ? POKEMON.filter(x => x.id>=shownGen.from && x.id<=shownGen.to).length : 0;
+  const genCaught = shownGen ? collected.filter(id => id>=shownGen.from && id<=shownGen.to).length : 0;
+  const genBlock = shownGen ? `
+      <span class="showcase-gen">
+        <span class="showcase-gen-name">${shownGen.label.split(" — ")[0]}</span>
+        <span class="showcase-gen-count">${genCaught} / ${genTotal}</span>
+      </span>` : "";
+
   el.innerHTML = `
     <span class="showcase-frame">
       <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
@@ -2036,7 +2067,12 @@ function renderShowcase(){
     ` : `
       <span class="showcase-types">${(poke.t||[]).map(t=>
         `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
-    `}`;
+    `}
+    ${genBlock}`;
+
+  el.setAttribute("aria-label", showCaught
+    ? `${cap(poke.n)}, number ${poke.id}. ${genCaught} of ${genTotal} caught in ${shownGen.label}. Tap for another.`
+    : `Not caught yet. ${genCaught} of ${genTotal} caught in ${shownGen ? shownGen.label : "this generation"}.`);
 
   // Same single cache-busting retry the Pokédex grid uses — one dropped request
   // would otherwise leave the home screen showing a broken image until reload.
@@ -2286,6 +2322,11 @@ const GENERATIONS = [
   {from:810, to:905,  label:"Generation 8 — Galar",  short:"Gen 8"},
   {from:906, to:1025, label:"Generation 9 — Paldea", short:"Gen 9"},
 ];
+
+// Which generation a Pokémon belongs to — the showcase names the generation of
+// the one it is SHOWING, not the one being hunted. Those differ whenever a freshly
+// opened generation has nothing in it yet and the shelf falls back to the last.
+function genOf(id){ return GENERATIONS.find(g => id >= g.from && id <= g.to) || null; }
 
 // the active generation is the lowest one not yet fully caught
 function currentGenRange(collected){
@@ -2913,7 +2954,7 @@ function trackDetailHTML(id, color){
 /* ---------------- SPELLING ---------------- */
 /* Full Spelling. Slots and tiles both hold a *chunk*, not a letter: "torch" is
    three slots — T, OR, CH — and three tiles. Two reasons. A chunk is the unit
-   with a sound, so a tile can say what it is; and Missing Letter already worked
+   with a sound, so a tile can say what it is; and Missing Letters already worked
    this way, so CH was one thing on one screen and two on the other, which is
    worse than either choice made consistently.
 
@@ -3303,7 +3344,7 @@ function pickBlankChunks(chunks, blankLetters){
 
 let missingState = null;
 
-/* Missing Letter now answers the same way Full Spelling does: tap a tile. It
+/* Missing Letters now answers the same way Full Spelling does: tap a tile. It
    used to be typed <input> boxes, which meant two input mechanics under one
    "Spelling" tag, and — since 17 of the 25 levels are this task — an on-screen
    keyboard covering half a tablet for most of the ladder.
@@ -3312,9 +3353,9 @@ let missingState = null;
    is one sound, so tapping it plays /k/ rather than teaching that c and k are
    separate. Tapping the right chunk places it and says its sound; tapping a
    wrong one shakes and stays silent, so nothing rewards tapping for noise. */
-/* Missing Letter's bank used to hold exactly the missing chunks, which meant a
+/* Missing Letters' bank used to hold exactly the missing chunks, which meant a
    word with one blank offered one tile: a guaranteed tap that decided nothing.
-   Measured across the ladder it was 9% of all Missing Letter questions and 45%
+   Measured across the ladder it was 9% of all Missing Letters questions and 45%
    of level 2. The bank is padded with decoys instead, to a floor of four tiles —
    so one blank becomes a choice of four and a word with four or more blanks,
    already hard, gets nothing extra.
@@ -3366,7 +3407,7 @@ function renderMissingLetter(p){
   const blankIdx = pickBlankChunks(chunks, p.blankLetters || 1);
   const stage = $("#stage");
   stage.innerHTML = `
-    <div class="kind-tag kind-spell">Missing Letter</div>
+    <div class="kind-tag kind-spell">Missing Letters</div>
     <div class="frame-wrap">
       <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
       <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
@@ -3417,7 +3458,7 @@ function renderMissingLetter(p){
   missingState = { name, p, chunks, slots, filledCount:0, hintsUsed:0, hintLimit };
   if(slots[0]) slots[0].classList.add("current");
 
-  // Missing Letter used to refuse hints on the grounds that most of the word is
+  // Missing Letters used to refuse hints on the grounds that most of the word is
   // already showing. That held when it blanked one chunk; at 25% shown it can be
   // most of the word, so the level's own allowance applies here too.
   if(hintLimit > 0){
