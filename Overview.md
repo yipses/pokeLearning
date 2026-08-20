@@ -12,7 +12,7 @@
 
 Poké Learning is a no-build, no-dependency HTML/CSS/JS app — one page plus a folder of CSV data and local artwork — that turns spelling, reading, and math practice into short, randomized, Pokémon-themed mini-games. A session mixes challenges from whichever modes are turned on, tracks a score, and ends with a results screen.
 
-Difficulty is not a setting a parent picks and re-picks. Four **Lesson Trails** — Spelling, Reading, Add/Subtract, and Multiply↔Divide — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
+Difficulty is not a setting a parent picks and re-picks. Ten **Lesson Trails** — Spelling, Reading, and eight maths tracks — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
 
 ## 2. Goals
 
@@ -33,23 +33,23 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | Three status tiles, one of your Pokémon shown big, then "Start Playing," "Pokémon Battle," "My Pokédex," "My Progress," "Settings" |
+| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big, then "Start Playing" and "Pokémon Battle" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
 | **Pokédex** | Every Pokémon, one generation per tab, caught ones in color, uncaught ones as grey silhouettes |
-| **My progress** | A 7-day rounds chart, then one progress card per Lesson Trail |
+| **My progress** | A 7-day rounds chart, a card each for Spelling and Reading, then one card per maths family |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
 
 ## 5. Sessions
 
-Each mode toggles on/off in Settings. A session draws each of its **N** challenges at random from the active modes, never repeating the same mode back-to-back. A mode with nothing enabled inside it drops out of the pool automatically.
+Each mode toggles on/off in Settings. A session of **N** challenges is **split in thirds** — spelling, reading, maths — rather than drawn evenly across every track, and never repeats the same mode back-to-back. The maths third is shared among whichever maths tracks are currently open; without the split, a fully-unlocked child would get eight questions in ten as maths purely because maths has the most tracks. A mode with nothing enabled inside it drops out of the pool automatically.
 
 ## 6. Lesson Trails
 
-Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are four: **Spelling**, **Reading**, **Add/Subtract**, and **Multiply↔Divide**. All four share one progression engine; a track supplies only its level list and generator functions.
+Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are ten: **Spelling**, **Reading**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
@@ -172,17 +172,26 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ above the fold. A correct answer shows a large animated ✅ and no caption text, then the round moves on by itself after a short beat. **There is no Next button anywhere**: with the choices gone there is nothing left on screen to act on, so a tap to continue would buy the child nothing. Maths advances exactly as Spelling and Reading do.
 
-**Add/Subtract — 8 levels**, from *within 5* to *within 100 with regrouping* (see `LessonTrails.md`). Each level auto-generates a mix of addition and subtraction within its range. Levels 4a–5b use rejection sampling to control specifically for whether the ones digit carries or borrows, making "no regrouping" and "with regrouping" genuinely distinct steps rather than just wider ranges.
+**The eight tracks and where they lead:**
 
-**Multiply↔Divide — 12 interleaved steps sharing one frontier**, from tiny facts (×1–3) to full range (÷1–10) (see `LessonTrails.md`). Multiplication gets two full steps before division is introduced at all, and division gets the same two-step ramp once it starts.
+| track | levels | runs from | to |
+|---|---|---|---|
+| `add` | 8 | `0–3 + 0–3` | `20–39 + 20–39` |
+| `sub` | 7 | `0–5 − 0–5` | `20–29 − 20–29` |
+| `mul` | 6 | `1–2 × 1–2` | `1–5 × 1–5` |
+| `div` | 6 | `2–4 ÷ 2` | `6–30 ÷ 6` |
+| `pattern_add` | 8 | count by 1 from 0–3 | any step to 10 from 10–19 |
+| `pattern_sub` | 8 | count back by 1 from 5–9 | count back by 10 from 79–99 |
+| `pattern_mul` | 7 | ×1–2 | the whole 1–10 table |
+| `pattern_div` | 7 | ÷1–2 | the whole 1–10 table |
 
-**Skip-counting pattern sets.** On both tracks, roughly 30% of questions become a 4-in-a-row skip-counting set instead of a single equation. **All four equations stay on screen** — seeing `3×1, 3×2, 3×3, 3×4` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear. Step size is any value where four repetitions fit the level's number range, so a low level offers only counting by 1 while a high level can offer counting by up to 25.
+**A pattern track is its own track, not a dice roll inside another one.** Skip-counting has four tracks with their own levels, prerequisites and frontiers, so counting by 3s is practised at its own pace rather than turning up at random. **All four equations stay on screen** — seeing `3×1, 3×2, 3×3, 3×4` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear.
 
 ### 7.4 Visual Math
 
 Not a separate question source — a **rendering** of Math Trails questions as pictures of Pokémon instead of bare numbers, to build number-sense alongside abstract arithmetic. **Which rungs can be drawn is data**: the `visual` column in `data/math_levels.csv` says so per level, rather than the code guessing from the numbers. It leads the early levels and stops where the sheet says it should.
 
-**Icons scale to how many there are.** The level rows go up to `19 + 9`, and at full size that question is 956px tall — a picture that has to be scrolled is not a picture. Above twelve icons they shrink, above twenty-four they shrink again. Grouped layouts (× and ÷) get their own narrower boxes, sized so a group of five still sits on one line and two groups fit side by side: without that, four groups of five became four stacked rows.
+**Icons scale to how many there are.** Above twelve icons they shrink, above twenty-four they shrink again — a picture that has to be scrolled is not a picture. The tallest the sheet asks for is `div` level 5: `25 ÷ 5`, twenty-five icons over five groups, 919px on a 390×844 phone. Grouped layouts (× and ÷) get their own narrower boxes, sized so a group of five still sits on one line and two groups fit side by side: without that, four groups of five became four stacked rows.
 
 - **Addition** — two boxes of Pokémon icons side by side, joined by "+".
 - **Subtraction** — one box showing all the icons, with the subtracted amount crossed out by a bold drawn X.
@@ -205,11 +214,11 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - **The family shows whether or not this one is caught**, and each relative reveals itself independently: caught ones in colour with their names, uncaught ones as silhouettes. It gives away nothing an uncaught entry is holding back, and it answers what the card is opened to ask — what is this, and what does it become. An uncaught base with the strip hidden looked like a species with no evolutions at all.
 - **The family is the whole family, from wherever you are standing in it.** The strip climbs to the root of the line and then walks down breadth-first, one group per stage with an arrow between stages — so Bulbasaur, Ivysaur and Venusaur all show the same three, and Eevee shows all eight of its second stage. Siblings stay grouped inside their stage, and a wide stage wraps within its own group so the arrow keeps meaning *this stage becomes that stage* rather than pointing at one sibling. Depth is capped and the climb is bounded, since `evolves_from` is hand-editable and a cycle would otherwise hang the popup.
 - **Opening an entry says its name aloud.** One rule covers every way in — tapping a Pokédex cell, tapping a relative in the evolution family, tapping a catch on the results screen, and the catch popup itself. A name a child has only ever read is a name they can't yet use, and the picture is on screen at the moment it's said.
-  - It hangs off *opening*, not rendering: pressing **Back** out of an evolution re-renders the entry you came from and stays silent, because a name repeated on the way out is noise rather than teaching.
+  - It hangs off *opening*, not rendering: re-rendering a card that is already on screen stays silent, because a name repeated without a new thing to look at is noise rather than teaching.
   - An uncaught entry shows no name, so it says none — the silhouette, number and type are all it gives up, and the speaker is hidden.
   - The 🔊 button covers repeats. An uncaught one gets the outline, its number, its **type** and its family strip — nothing else: no name, no greeting, no read-aloud. Type is the one thing shown either way; it is a single short word, it says something useful about a slot still to fill, and it doesn't name what's hiding in it.
 - **The popup navigates to itself, and there is no Back.** Tapping a relative replaces what's on screen with that relative; **Okay** is the only button, from every entry. A back trail is unnecessary now the strip shows the *whole* family from wherever you land in it — every relative you could have come from is still one tap away, so walking a line in either direction uses the same control.
-- **The evolution strip** shows one step back and every step forward, with the current entry highlighted. Relatives not yet caught appear as unlabelled silhouettes, and every member is tappable — so a three-stage line is two taps rather than a wall of sprites, and branching families (Eevee's eight) simply wrap. National Dex order puts 83% of families side by side already, but cross-generation evolutions can sit hundreds of slots apart (Pichu is #172, Pikachu #25), which is what this makes visible. Uncaught entries open too, but keep their secret — silhouette and type only, no name and no read-aloud — so browsing can't spoil what's still out there to find.
+- **Why the strip earns its place:** National Dex order already puts 83% of families side by side, but cross-generation evolutions can sit hundreds of slots apart — Pichu is #172 and Pikachu #25 — and no amount of scrolling the grid makes that relationship visible.
 - A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
 
 ## 8b. Home HUD
@@ -274,15 +283,14 @@ Then **Spelling** and **Reading** get a card each, showing:
 
 - The track's current level, in plain language.
 - Days at the current level.
-- One clean-answer progress bar per promotion gate — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths.
-- A live SVG trend chart of rolling accuracy, with a line at each gate's percentage, a gold star marker at each instant promotion, and a dashed "Leveled up" line at each slower one.
+- One clean-answer progress bar per promotion gate, with exact fractions — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths. The bar fills against however many answers the window actually holds, so three clean out of three reads full.
+
+**There is no per-track accuracy chart.** The bars are the whole of it. An accuracy chart plotted a rolling window that *resets on every promotion*, so it drew the same sawtooth over and over — climb, spike, promote, restart — and the gate lines it was drawn against were crossed once per tooth rather than being anything a reader was watching a track approach.
 
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
-- **Tapping a row opens the full detail** — level in plain language, days at it, every gate bar, and the trend chart. Only one tap's worth is built at a time; eight trend charts nobody asked for is the scroll this split exists to avoid.
+- **Tapping a row opens the full detail** — level in plain language, days at it, and every gate bar. Only one tap's worth is built at a time.
 - **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply pattern 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
-
-Eight full cards was the alternative, and it failed twice over: an unreadable scroll, and a flat list of *Add*, *Add pattern*, *Subtract* that never said which family any of them belonged to.
 
 ## 10. Battle Mode
 
@@ -307,7 +315,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 - **General**: Questions per round (session length across all active modes, default 10), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
-- **Per trail**: a frontier dropdown showing the current level in plain language ("Level 4a — Within 40, no regrouping"), which doubles as the manual placement control.
+- **Per trail**: a frontier dropdown showing the current level in plain language — *Level 1 — Words to level 1, 25% shown*, *Level 1 — 0–3 + 0–3* — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
@@ -332,7 +340,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). **1,020 of the 1,021 are spellable** — a name may contain a space or a hyphen, so Iron Hands and Ho-Oh both work; only Type: Null is excluded, for its colon. `rarity` marks **71 legendary** and **23 mythical** species.
 - **Pokopia items**: **922** items across 12 categories, of which **819** reach the word trails. 13 carry an apostrophe, accent, period or digit; **90 share their artwork with another item** and are dropped from both trails, because a picture that names two things names neither — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same picture. A few are plain mislabels: `Acrylic poster` and `Campfire` are one image. The rule is mechanical — `tools/classify_words.py` hashes every PNG and flags any file that appears twice — so it needs no eyeballing. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
 - **Offline, but served**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path, the webfont is in `fonts/`, and nothing is fetched from PokéAPI, GitHub, Google or any fan site at runtime — **there are no external requests at all**, verified by loading the page with every non-local host blocked. Because the CSVs are fetched, though, the page must be **served over http(s)** — browsers block `fetch` on `file://` as cross-origin, so opening `index.html` by double-clicking it shows a load error instead. Once loaded, the browser cache covers repeat visits.
-- **The ladders are data, not code.** `index.html` holds no level list, no word list and no promotion constant — it reads all four from CSV at boot. There is deliberately no fallback copy compiled in: a ladder that exists in two places drifts, and the spreadsheet is the one that gets edited.
+- **The ladders are data, not code.** `index.html` holds no level list, no word list and no promotion constant — it reads every ladder from CSV at boot. There is deliberately no fallback copy compiled in: a ladder that exists in two places drifts, and the spreadsheet is the one that gets edited.
 - **Word grading**: `word_levels.csv` grades every distinct word in the item catalogue against the nine phonics patterns; `item_levels.csv` is the derived per-item view, where a single-word item takes its own level and a multi-word item takes its hardest component's. Both are regenerated by `tools/classify_words.py`. `word_levels.csv` is the file to correct — the item view follows from it.
 - **Failure is loud**: a missing or empty CSV replaces the page with a legible error rather than booting an app with silently empty pools.
 - **Storage keys**: Lesson Trails progress, the Pokédex collection, the set of caught-but-not-yet-viewed Pokémon, the play streak, and general settings each persist under their own `localStorage` key.
@@ -362,10 +370,10 @@ The reader is five and still learning to read. Every word on a child-facing scre
 ## 15. Technical Architecture
 
 - **Stack**: vanilla HTML/CSS/JS, no framework, no build step, no package manager.
-- **Data loading**: `loadData()` fetches the three CSVs in parallel at startup and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
+- **Data loading**: `loadData()` fetches all eleven CSVs in parallel at startup and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
 - **State**: in-memory JS objects for the active session/battle; `localStorage` for everything persisted.
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
-- **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all four tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.
+- **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all ten tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.
 - **Assets**: local `pokemon/*.png` and `items/*.png`, referenced via relative paths from `index.html`. A Pokémon's artwork is found by `id` (`25` → `pokemon/25.png`); an item's by its `image` slug.
 - **`tools/phonemes.html`**: a development-only audit page for `data/phonemes.csv`. Every row with a play button, using the app's own voice settings so it audits what a child actually hears; a rough pronounceability test shades the doubtful ones amber and can play only those; anything marked wrong collects into a copyable list. Built after a third of all spoken sounds turned out to be respellings a synthesiser spells out rather than says.
 - **`tools/pronounce.html`**: a development-only audit page, not part of the app. Lists every name with a play button and collects the ones that sound wrong. It reads `POKEMON` and `SPEECH_OVERRIDES` out of a hidden `index.html` iframe, and provenance from `data/pronunciations.csv`, rather than keeping its own copy, so it cannot drift out of sync. Each row plays **Before** (the raw spelling) and **After** (the respelling) with an A/B comparison, and the respelling is editable so a fix can be tried by ear and copied back out.

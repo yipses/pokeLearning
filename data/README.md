@@ -6,6 +6,13 @@ no build step. They are plain comma-separated UTF-8 with a header row, designed
 to be opened, sorted and edited in Google Sheets or Excel and exported straight
 back.
 
+**Keep the line endings a file already has.** Some of these came out of a
+spreadsheet as CRLF (`item_levels`, `pokemon`, `pronunciations`, `word_levels`)
+and the rest are LF. Rewriting one with a script that changes them turns a
+nine-cell edit into a whole-file diff, which buries the actual change in review.
+Python's `csv.writer` defaults to CRLF — pass `lineterminator="\n"`, or check
+`git diff --stat` before committing.
+
 ## pokemon.csv — 1,021 rows
 
 | Column | Notes |
@@ -23,7 +30,7 @@ row makes that Pokémon appear — as long as `pokemon/<id>.png` exists.
 
 ## items.csv — 922 rows
 
-The Pokopia item catalogue, used by Spelling's Phonics Ladder and by Reading.
+The Pokopia item catalogue, used by the Spelling and Reading trails.
 
 | Column | Notes |
 |---|---|
@@ -36,8 +43,9 @@ stays short and the convention lives in exactly one place. An `image` value with
 no matching file gives a broken image in-game, not an error — check the file
 exists when adding a row.
 
-Some names are referenced by the phonics word lists in `index.html`; renaming
-one there without updating both will silently drop it from Spelling.
+Renaming an item silently drops it from both trails unless `word_levels.csv`
+and `item_levels.csv` are regenerated with it — the grading is keyed on the
+name. `index.html` holds no copy of any word list, so it never needs touching.
 
 ## pronunciations.csv — 184 rows
 
@@ -50,7 +58,15 @@ it reads invented names as though they were English words.
 | `say_as` | Lowercase, syllables separated by spaces |
 | `source` | `checked` = verified against a published guide. `unverified` = derived from the name's etymology, unconfirmed |
 
+Keep `say_as` lowercase: some speech engines read an all-caps syllable as an
+initialism and spell it out letter by letter. Spaces are the only stress control
+available — the Web Speech API has no usable SSML in most browsers.
 
+Only names the synthesiser actually gets wrong belong here. A respelling that
+matches what it already produces does nothing, and one that differs can make a
+correct name worse, so ordinary English-readable names are deliberately absent.
+
+Use `tools/pronounce.html` to try a respelling by ear before committing it.
 
 ---
 
@@ -95,21 +111,6 @@ Spelling adds `hinted_pct` — the share of the word shown, where `0` means the 
 Reading adds `wrong_answers` (decoy count) and `distractor_level`, which names **another reading level** whose pool supplies the wrong answers. Keep it at or above the row's own level, or decoys end up easier than the target.
 
 Traps: rows are read in file order but `level` is what the app reports, so keep them consistent. A `distractor_level` pointing at a level that doesn't exist falls back to the row itself. Regenerating `word_levels.csv` does not rewrite these — they are hand-authored from the design spreadsheet.
-Keep `say_as` lowercase: some speech engines read an all-caps syllable as an
-initialism and spell it out letter by letter. Spaces are the only stress control
-available — the Web Speech API has no usable SSML in most browsers.
-
-Only names the synthesiser actually gets wrong belong here. A respelling that
-matches what it already produces does nothing, and one that differs can make a
-correct name worse, so ordinary English-readable names are deliberately absent.
-
-Use `tools/pronounce.html` to try a respelling by ear before committing it.
-
-## Caveat
-
-Because the app fetches these, `index.html` must be **served over http(s)**, not
-opened as a file — browsers block `fetch` on `file://` as cross-origin. GitHub
-Pages serves it fine; double-clicking the file will show a load error instead.
 
 ## `phonemes.csv` — what each chunk says out loud
 
@@ -136,7 +137,7 @@ Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed
 |---|---|
 | `track` | must match a `track` in `math_tracks.csv` |
 | `level` | 1-based, and the number a prerequisite refers to |
-| `visual` | `yes` if this rung can be drawn as pictures. Set it honestly: it is trusted, and 19 + 9 means 28 icons on screen |
+| `visual` | `yes` if this rung can be drawn as pictures. Set it honestly: it is trusted, and the count is the operands, not the answer — `div` level 5 puts 25 icons on screen for `25 ÷ 5`, which is the tallest the sheet currently asks for |
 | `num1_min`, `num1_max` | first operand. On a **pattern** row this is the fixed anchor; on a **division** row it is the dividend |
 | `num2_min`, `num2_max` | second operand. On a division row, the divisor |
 | `num3_min`, `num3_max` | reserved for three-operand questions. Null everywhere, and nothing reads them |
@@ -149,3 +150,9 @@ Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed
 - **A subtraction pattern needs room to descend.** Four rows of `step` means the anchor must be at least `step × 4`, or the set goes below zero. Where only part of `num1_min`–`num1_max` qualifies the anchor is drawn from that part; where none does, that step is silently skipped — a level can lose a step without any error. Every `pattern_sub` row currently has at least one usable anchor per step, but two rows only just: level 2 step 3 loses 2 anchors of 10, level 3 step 5 loses 1 of 11. Widen `num1_min`–`num1_max` before raising a `step`, not after.
 - **Division is always exact.** The quotient is chosen first, from those whose dividend lands inside `num1`, so a row can be written that has no valid question at all — check that some multiple of the divisor falls in the dividend range.
 - **A prerequisite can point past its track's last level**, which locks the dependent forever. Nothing validates this; `tools/` has no checker for it yet.
+
+## Caveat
+
+Because the app fetches these, `index.html` must be **served over http(s)**, not
+opened as a file — browsers block `fetch` on `file://` as cross-origin. GitHub
+Pages serves it fine; double-clicking the file will show a load error instead.
