@@ -123,3 +123,29 @@ Spoken when a child places a letter or chunk correctly. Keyed on `chunk` **and**
 | `notes` | free text, ignored by the app |
 
 Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed `ch` says "see-aitch" and handed `lll` says "ell ell ell" — a respelling needs a vowel in it, so /ch/ is written `chuh` and /l/ is `luh`. Check any edit with `tools/phonemes.html`, which plays each row aloud. A context the code never asks for is dead weight, and one it asks for with no row is **silent** — so the context names above are fixed by `chunkSound()` in `index.html` and cannot be invented here. A chunk with no row is silent, deliberately — a wrong sound teaches a wrong thing, silence teaches nothing, so leave a row out rather than guess. And they have still not all been checked by ear — `ee` is the one a rough test can't settle.
+
+## `math_tracks.csv`, `math_levels.csv`, `math_promotion.csv` — the maths ladder
+
+**These are the maths ladder.** `index.html` holds no copy; editing a row changes the game.
+
+`math_tracks.csv` — one row per track. `prereq_track` and `prereq_level` decide when it opens; leave both blank for a track that is open from the start. `group` is `addsub` or `muldiv` and only decides which of the two home tiles it counts toward. `kind` is `single` or `pattern`.
+
+`math_levels.csv` — one row per level of per track.
+
+| Column | Notes |
+|---|---|
+| `track` | must match a `track` in `math_tracks.csv` |
+| `level` | 1-based, and the number a prerequisite refers to |
+| `visual` | `yes` if this rung can be drawn as pictures. Set it honestly: it is trusted, and 19 + 9 means 28 icons on screen |
+| `num1_min`, `num1_max` | first operand. On a **pattern** row this is the fixed anchor; on a **division** row it is the dividend |
+| `num2_min`, `num2_max` | second operand. On a division row, the divisor |
+| `num3_min`, `num3_max` | reserved for three-operand questions. Null everywhere, and nothing reads them |
+| `pattern` | pattern rows only: the steps to choose from, comma-separated |
+
+`math_promotion.csv` — `questions,percent`, any one of which promotes. Applies to every maths track. Spelling and Reading keep their own per-level percentages instead.
+
+**Traps.**
+
+- **A subtraction pattern needs room to descend.** Four rows of `step` means the anchor must be at least `step × 4`, or the set goes below zero. Where only part of `num1_min`–`num1_max` qualifies the anchor is drawn from that part; where none does, that step is silently skipped. `pattern_sub` level 2 is in exactly that state — step 3 needs an anchor of 12 from a range of 0–9, so that level only ever uses step 2.
+- **Division is always exact.** The quotient is chosen first, from those whose dividend lands inside `num1`, so a row can be written that has no valid question at all — check that some multiple of the divisor falls in the dividend range.
+- **A prerequisite can point past its track's last level**, which locks the dependent forever. Nothing validates this; `tools/` has no checker for it yet.

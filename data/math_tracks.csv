@@ -1,0 +1,9 @@
+track,label,symbol,kind,group,prereq_track,prereq_level
+add,Add,+,single,addsub,,
+pattern_add,Add pattern,+,pattern,addsub,add,3
+sub,Subtract,−,single,addsub,add,5
+pattern_sub,Subtract pattern,−,pattern,addsub,sub,6
+mul,Multiply,×,single,muldiv,add,7
+pattern_mul,Multiply pattern,×,pattern,muldiv,mul,3
+div,Divide,÷,single,muldiv,mul,5
+pattern_div,Divide pattern,÷,pattern,muldiv,pattern_mul,5
