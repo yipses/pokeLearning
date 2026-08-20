@@ -208,6 +208,18 @@ The generation count spanned the whole card, below both columns, which read as a
 
 **One thing that looked like a bug and was not.** The empty state's silhouette appeared to be missing — a blank circle where the outline should be. Rendered at 4× it is plainly there: `brightness(0) opacity(.28)` on a cream ground is faint at a phone's own scale and washes out entirely in a screenshot. The reverse of the usual trap, and the same fix — magnify before concluding.
 
+### Phase 60 — The Pokédex opens onto the collection
+
+It opened onto a card headed *"My Pokédex"* with a `60 / 1021 caught` pill under it, which pushed the first row of the grid most of a screen down to state a total nobody is working toward — the generation is the unit being filled, and its own header already said where it stood. The card is gone and the grid starts about **195px down** at every supported width.
+
+Three things replaced it, each doing a job the card was not:
+
+- **Closing is a ✕**, the same control in the same corner as a round, rather than "← Back".
+- **The HUD follows you here.** Rounds today and the streak no longer vanish the moment you go looking at what you caught. Not the collection counter: this screen *is* the collection.
+- **A bar under each generation header**, the same `.level-bar` the home card and the level tiles use. It replaces the dashed rule the header carried — the rule separated header from grid, the bar does that *and* says how full the generation is. `58 / 147` is exactly the fraction that cannot be felt without one.
+
+One thing checked rather than assumed: the tab strip clips its last pill at the scroll edge, which looks like the ‹ › arrow overlapping it. The arrows are flex siblings, not overlays — that is the strip scrolling, and it predates this change.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

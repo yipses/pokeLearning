@@ -877,9 +877,13 @@
   .dex-gen-section{ margin:0 0 26px; }
   .dex-gen-title{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    margin:0 4px 10px; font-size:1.1rem; color:var(--leaf-deep);
-    border-bottom:2px dashed var(--cream-2); padding-bottom:6px;
+    margin:0 4px 6px; font-size:1.1rem; color:var(--leaf-deep);
+    padding-bottom:0;
   }
+  /* Replaces the dashed rule the header used to carry: it separates the header
+     from the grid AND says how full the generation is, where the rule only did
+     the first. */
+  .dex-gen-bar{ display:block; margin:0 4px 12px; }
   .dex-gen-count{ font-size:.85rem; font-weight:700; color:var(--ink-soft); }
   .dex-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(94px,1fr)); gap:12px; margin-top:14px; }
   .dex-cell{
@@ -1253,11 +1257,8 @@
   <!-- ============ POKÉDEX ============ -->
   <section id="pokedex" class="hidden">
     <div class="topbar">
-      <button class="quit" id="dexBackBtn">← Back</button>
-    </div>
-    <div class="card" style="text-align:center;">
-      <h2 style="justify-content:center;"><span class="chip">📖</span> My Pokédex</h2>
-      <div class="score-pill" id="dexCount">0 / 0 caught</div>
+      <button class="quit quit-x" id="dexBackBtn" aria-label="Close" title="Close">&#10005;</button>
+      <div class="home-tiles" id="dexTiles"></div>
     </div>
     <div class="dex-tabs-wrap">
       <button class="dex-arrow hidden" type="button" id="dexTabsPrev" aria-label="Scroll to earlier generations">‹</button>
@@ -1302,7 +1303,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 70;
+const APP_BUILD = 71;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2745,7 +2746,7 @@ function renderPokedex(){
   const collected = loadCollection();
   const unseen = loadUnseen();
   const sorted = [...POKEMON].sort((a,b)=> a.id-b.id);
-  $("#dexCount").textContent = `${collected.length} / ${sorted.length} caught`;
+  renderTiles($("#dexTiles"), false);
 
   // a generation only appears once the roster actually reaches into its range
   const gens = GENERATIONS.filter(g => sorted.some(p => p.id>=g.from && p.id<=g.to));
@@ -2783,10 +2784,18 @@ function renderPokedex(){
 
   const section = document.createElement("div");
   section.className = "dex-gen-section";
+  // The same bar the home card and the level tiles use. It sits under the header
+  // that already names the generation and states the count, so it needs no label
+  // of its own — and a fraction of 147 is exactly the number that cannot be felt
+  // without one.
+  const genPct = genPokes.length ? Math.round((genCaught / genPokes.length) * 100) : 0;
   section.innerHTML = `
     <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
       genRare.length ? `<b class="rare-count">✨ ${genRareCaught}/${genRare.length}</b> · ` : ""
     }${genCaught} / ${genPokes.length}</span></h3>
+    <span class="level-bar dex-gen-bar" aria-hidden="true">
+      <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
+    </span>
     <div class="dex-grid"></div>
   `;
   const grid = section.querySelector(".dex-grid");
