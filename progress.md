@@ -58,6 +58,8 @@ Each of these cost real time at least once.
 
 **One file, one namespace — grep before you name.** Three collisions so far, every one silent. A `.tiles` rule reflowed the spelling letter bank into three columns. A second `placeChunk` meant every tap in one mode reached the other mode's function and returned with no sound, no error and nothing on screen. `.count-badge` was nearly deleted as dead when it was still the Battle screen's win/loss record. `grep -o "^function [a-zA-Z0-9_]*" index.html | sort | uniq -d` catches the second kind in a second, and it has since caught a splice that duplicated 160 lines.
 
+**Centring is not reflowing.** A layout that looks fine on a phone and is merely *centred* at every larger size is width-blind, not responsive. The home trophy card read as mostly empty on a tablet because it was a 360px stack sitting in the middle of a 724px card, using 27% of it. Nothing was stretched and nothing was broken, which is why it survived so long.
+
 **Measure before designing, and measure the thing that actually matters.** The pity timer was fixed by simulation rather than reasoning. Six answer choices only worked once the answer *space* per level was counted — four division levels have fewer than six possible answers. And sorting those choices was verified by measuring where the answer *landed*, which turned up an exploit the change itself would never have shown: sorted alone, the answer sat 3rd or 4th in 75% of questions.
 
 **Structural assertions are not enough — look at it.** Several bugs passed every DOM assertion while being visibly broken. The reverse happens too: reported misaligned HUD icons measured *correct* on every number available, and the real cause — different ink inside identical boxes — was obvious the moment the row was rendered at 4×.
@@ -157,6 +159,46 @@ The trade, on the record: a blind guess now lands 1 in 6, and a round can be bru
 **Hint caps and the trophy band (55, 57).** `max_hints` came down from the sheet to a cap of 3 from level 11 — nine cells, the only column that had moved. The showcase gained `GENERATION 1` over `3 / 147`: a caught Pokémon shown big says *you have this one*, not *and here is the set it belongs to*. It names the generation of the Pokémon **on screen**, since that differs from the hunted one whenever a freshly opened generation is still empty. It cost 44px on a screen with none spare, and the documented trade applied rather than being renegotiated — the frame gives way, 115px to 86px on the shortest supported screen.
 
 **"Missing Letter" was reported as wrong, and it was — but not the way it looked (57).** The screenshot showed Doduo with four blanks and one letter given, which reads like over-blanking. It is correct: 25%-shown is what eight of the levels ask for. Measuring the mode settled which half was wrong — **96% of its questions have more than one blank**, so the singular was wrong almost always. Renamed in the app and in every doc and comment, since a mode called one thing on screen and another in its own source is the drift this repo keeps paying for.
+
+### Phase 58 — the home trophy card stops being a phone layout in a wide box
+
+Reported as *"the layout here has a lot of white space"*, from a tablet screenshot. It was, and the measurement said where: the showcase card **never used more than 32% of its own width**, and 27% at 768px — **264px dead on each side**. The cause was not the card, which is content-height and never stretched. It was the content: a centred vertical stack is a 360px phone layout centred inside a card that grows to 724px. Centring is not reflowing.
+
+**Four candidates were measured before one was built**, and the obvious one lost. Growing the trophy — the first instinct, since the disc is the emptiest thing on the card — *cost* 41px of height at 360×640 and still reached only 28% at 768, because the frame is clamped against viewport height and a 1024-tall screen has none spare to give it. Capping the card to its content width worked but only moved the emptiness onto the page background. Adding a bar under the generation count scored 91% at phone width, which flattered it: that was the bar alone spanning the card, with the text still a narrow column behind it.
+
+What shipped is the two-column layout with the bar: **88–93% of card width used at every supported size**, verified at 360×640, 390×844, 414×736, 360×780, 768×1024 and 1280×900. No breakpoint — the frame and the text both clamp, so one arrangement covers the range.
+
+**The trophy got bigger, not smaller**, which was the objection to a left-hand thumbnail and turned out to be backwards. Moving the text out from under the frame frees more height than a larger frame spends: the circle goes 86px → 122px at 360 and 196px → 225px at 768, *and* the card still shortens, leaving Start Playing 58px more clearance above the fold than the centred stack gave it.
+
+**One prototype detail was dropped on measurement.** The mock also raised the image cap inside the circle from 68% to 78% of the frame. A square image centred in a circle keeps its corners inside only up to 1/√2 — **70.7%** — so 78% would have clipped artwork on any zero-padding sprite, and the existing 68% is already at the geometric limit. The frame growth alone made the picture bigger anyway: 58px → 83px at 360.
+
+Two things fell out for free. The `max-width:480px` frame override is gone, because `min(22vh, 34vw)` covers short and narrow with one rule. And caught and uncaught card heights are now **identical** (154px at 360) where they differed by 22px, so Start stops shifting when the shelf is empty — something §8c claimed and only roughly had.
+
+Still true and not fixed: a landscape phone (740×360) scrolls. It scrolled before too — Start at 577 against a 360px viewport, now 486 — and 360px of height cannot hold the HUD, wordmark, levels, card and buttons. The supported set is portrait.
+
+### Phase 59 — the wordmark stops owning a row
+
+Reported the same way as the card: *"we don't need a large obvious logo like this on its own row."* It moves into the HUD line, right-aligned with the gear beside it.
+
+**The first measurement of the free space was wrong, and the wrong number nearly decided the design.** `.hud-item` matches the results screen's HUD as well as home's, and the hidden copies were counted at zero width while still contributing gaps — which reported **41px free at 360** and made the wordmark look impossible at every width. Scoped to `#homeTiles` the real figure is **60px at 360, 130 at 430, 291 at 591, 460 at 768**. The words were never impossible; they were impossible *on a phone*. A screenshot saying "I see lots of space" is what prompted the re-measure.
+
+Ball plus words needs 150px even at 14px, so the cut is at the sheet's existing **480px** breakpoint — below it the words go and the ball stands alone. 480 rather than a fourth breakpoint value: the row actually needs 452px, and 28px is not worth another number to keep in step. An attempt at 449px wrapped the counters onto a second line at exactly 450, caught only because the row height came back as 68px instead of 31.
+
+Height freed: **46px more clearance above the fold at 360**, on top of the 58px the two-column card had already bought. Start Playing now sits at 456 of 640, where it was 560 two changes ago.
+
+**Six screens lost their logo, and that is the change worth looking at**, not the home screen. `.brand` sat outside `#homeTop`, so it rendered on all seven; inside it, it renders on one. Settings, Pokédex, My progress and Battle each open with their own **← Back**, and a round now opens with the ✕ and the progress bar — which is what `Overview.md` §8b already said that screen should hold and never quite did.
+
+### Phase 58 — Two headings, and the collection counter moves where it is explained
+
+The home screen's two cards had no headings, so a panel of four levels and a card holding one Pokémon both began mid-sentence. **Your progress** and **Your Pokémon** now label them, set through `text-transform` so the accent survives.
+
+Inside the Pokémon card: the **number goes above the name** — the number is the slot in the collection, the name is what fills it — and **"Welcome back!" is gone**, which read as a caption with nothing to caption once the card had a heading of its own.
+
+**The collection counter moved out of the HUD.** Its dex slot said `5/147` with no label, and the card below it said `GENERATION 1` over `5 / 147` — the same two numbers twice on one screen, one of them explaining nothing. The icon and the tap moved down to the count row, which names the generation it is counting. The results screen keeps its counter, having no card to move it into.
+
+That forced a structural change: the card **was** one big button, so tapping anywhere re-rolled the Pokémon. A button inside a button is invalid and browsers disagree about what to do with one, so the card is a plain container now with two buttons in it — the picture re-rolls, the count row opens the Pokédex. Verified there are zero nested buttons and both taps do what they claim.
+
+Two headings cost height, and 360×640 went over by 3px. Taken back from the gap under a six-letter label rather than from the Pokémon, which has given way enough.
 
 ## Doc roles
 

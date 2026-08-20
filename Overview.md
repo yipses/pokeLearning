@@ -33,7 +33,7 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
+| **Start** | One line carrying three counters, the wordmark and the gear, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
@@ -210,7 +210,7 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - The **Pokédex screen** is organized into **generation tabs** — `Gen 1` … `Gen 9`, one row that scrolls sideways on a phone — showing one generation's grid at a time. It opens on whichever generation the collection gate is currently on, not always Gen 1, and a tab whose generation is fully caught is outlined in green. All nine tabs fit the content column on a desktop window; below that width the strip scrolls, and **‹ › arrow buttons appear** — a touchscreen can swipe the strip but a mouse cannot, so the arrows are the desktop affordance. They exist only while the strip actually overflows and each one greys out at its end. One generation at a time keeps the visible grid to at most 160 cells instead of 1,021 and puts Gen 9 one tap away instead of a very long scroll.
 - Within a tab: caught entries show in full colour with their name; uncaught ones are a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with **no name text at all** — the outline and the Dex number say it, where a row of `???` would be a word to decode for no payoff (§14.1). A live X/Y caught count sits in the generation header.
 - **Legendary and mythical species are called out**: a gold cell with a ✨ badge in the grid, a matching chip above the type badges in the detail popup, and a per-generation tally in each generation header (`✨ 2/5 · 3 / 147`). The marker shows on **uncaught** slots too — it reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name and rarity chip stay hidden until it's caught.
-- **Every entry is tappable**, opening a detail popup. A caught entry reads: larger artwork, the Dex number, the name, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**. The greeting belongs to the home screen's trophy band, not here — the dex is a list you page through, and a "Welcome back!" on every entry is a sentence to skip past thirty times in a row.
+- **Every entry is tappable**, opening a detail popup. A caught entry reads: larger artwork, the Dex number, the name, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**. No greeting and no caption — the dex is a list you page through, and a sentence on every entry is one to skip past thirty times in a row.
 - **The family shows whether or not this one is caught**, and each relative reveals itself independently: caught ones in colour with their names, uncaught ones as silhouettes. It gives away nothing an uncaught entry is holding back, and it answers what the card is opened to ask — what is this, and what does it become. An uncaught base with the strip hidden looked like a species with no evolutions at all.
 - **The family is the whole family, from wherever you are standing in it.** The strip climbs to the root of the line and then walks down breadth-first, one group per stage with an arrow between stages — so Bulbasaur, Ivysaur and Venusaur all show the same three, and Eevee shows all eight of its second stage. Siblings stay grouped inside their stage, and a wide stage wraps within its own group so the arrow keeps meaning *this stage becomes that stage* rather than pointing at one sibling. Depth is capped and the climb is bounded, since `evolves_from` is hand-editable and a cycle would otherwise hang the popup.
 - **Opening an entry says its name aloud.** One rule covers every way in — tapping a Pokédex cell, tapping a relative in the evolution family, tapping a catch on the results screen, and the catch popup itself. A name a child has only ever read is a name they can't yet use, and the picture is on screen at the moment it's said.
@@ -223,9 +223,13 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 ## 8b. Home HUD
 
-A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the Settings button at the far right of the same line.
+A **HUD** on the very first line of the page — icon and number sitting straight on the background with no card around them — with the **wordmark and the gear sharing that same line**, pushed to the right.
 
-**The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
+**The logo does not get a row of its own.** A full-width mark cost 40–46px of height to tell a five-year-old the name of the app they had just opened, which is the argument that removed the tagline applied to the thing the tagline sat under. It rides in the HUD instead, at a 26px ball and 15–20px of type. Below the sheet's **480px** breakpoint the words drop and the ball stands alone: the row holds 60px of free space at 360 and 130 at 430, while the ball and words together need 150px even at an already-too-small 14px, so there is no size at which the full mark fits a phone.
+
+Because the mark now lives in the HUD, it is **home-only** — the other six screens have no logo. Each already opens with its own **← Back** or, in a round, with the ✕ and progress bar §8b says should be the only things there.
+
+**The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark beside them is set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and carries **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
 The HUD is home-only. A round has its own progress bar and a ✕, and a second row of counters there would be two things to read at once.
 
@@ -235,9 +239,9 @@ The HUD is home-only. A round has its own progress bar and a ✕, and a second r
 |---|---|---|
 | target | rounds finished today against the daily goal; the number turns **green** once met | My progress |
 | flame | consecutive days that met the rounds goal | My progress |
-| dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
+| dex | caught/total for the **current generation only** — the one the collection gate is on. **Results screen only** | Pokédex |
 
-The dex counter and the showcase's generation count (§8c) are the same pair of numbers whenever the Pokémon on the shelf comes from the generation being hunted, which is the usual case. They are not redundant in role — the HUD's is unlabelled and goes to the Pokédex, the showcase's names its generation and sits under the trophy it describes — but the screen does say the number twice.
+**The home HUD has two counters, not three.** Its collection counter moved into the Pokémon card (§8c), where the row it sits on names the generation it is counting and carries the tap through to the Pokédex. Unlabelled in the HUD it said the same two numbers twice on one screen and explained neither. Results keeps it, having no card to move it to.
 
 **No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
 
@@ -249,17 +253,25 @@ A "round" is one full session; how many questions make up a round, and how many 
 
 ## 8c. Home Showcase
 
-Below the wordmark, the middle band of the Start screen shows **one of the child's own Pokémon**, big: artwork in a circular frame, its name, its Dex number, and **"Welcome back!"**. The whole card is a button — tapping it re-rolls the pick, as does every return to the home screen.
+Headed **"Your Pokémon"**, the middle band of the Start screen shows **one of the child's own**, big: artwork in a circular frame on the left, and beside it its Dex number and name, number first — the number is the slot in the collection and the name is what fills it.
 
-**Under it, the generation and how much of it is filled** — `GENERATION 1` over `3 / 147`. The trophy says *you caught this one*; the count says *and here is the set it belongs to*, which is what makes a shelf a collection rather than a pile. It names the generation of the Pokémon **on screen**, not the one being hunted: those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card.
+**The card holds two targets, so it is not itself a button.** Tapping the picture re-rolls the pick, as does every return to the home screen; tapping the count row below opens the Pokédex. A button inside a button is invalid and browsers disagree about what to do with one, so the card is a plain container with two buttons in it.
+
+**Two columns, at every width.** A centred stack was a 360px phone layout centred inside a card that grows to 724px: it used 32% of its own width on a phone and 27% on a tablet, leaving 264px empty on each side. The card is now the trophy on the left and everything that labels it on the right, which uses 88–93% at every supported size. There is no breakpoint — the frame and the text both clamp, so the arrangement holds from 360 to 1280 and only breathes.
+
+**The trophy got bigger, not smaller.** Moving the text out from under the frame frees more height than a larger frame spends, so the circle grows from 86px to 122px at 360×640 and from 196px to 225px at 768×1024 — and the card still gets *shorter*, leaving 58px more clearance above the fold than the centred stack did.
+
+**Under it, the generation and how much of it is filled** — the Pokédex icon, then `GENERATION 1` over `3 / 147`, over a bar. The icon is the HUD's own dex glyph and the row is the Pokédex entry point that the HUD slot used to be. The bar is the level tiles' own `.level-bar`, reused rather than reinvented: the panel directly above already argues that a number needs one beside it because *Level 3 of 25* and *Level 3 of 10* are not the same place, and `3 / 147` has exactly that problem. It takes the Pokédex's own colour, the same one the counter carries on the results screen. Being horizontal by nature, it is also what gives the right-hand column a right edge. The trophy says *you caught this one*; the count says *and here is the set it belongs to*, which is what makes a shelf a collection rather than a pile. It names the generation of the Pokémon **on screen**, not the one being hunted: those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card.
 
 It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
 
-**Before anything at all is caught** there is no trophy to show, so the band falls back to a silhouette and its **type badges** — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not. The generation count still shows, at `0 / 147`, because a goal is a number rather than a sentence.
+**Before anything at all is caught** there is no trophy to show, so the right-hand column falls back to the **type badges** beside a silhouette — an outline and one short word, no sentence (§14.1). The mystery shape is the invitation; a line of text telling a pre-reader to press Start is not. The generation count still shows, at `0 / 147`, because a goal is a number rather than a sentence.
 
 ## 8d. Home Levels
 
-Directly under the wordmark, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
+Headed **"Your progress"**, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
+
+Both home cards carry a heading, set through `text-transform` rather than typed in capitals so "Pokémon" keeps its accent instead of losing it to a retype — the same reason the wordmark does it.
 
 **The icons are drawn, on the same 24×24 grid as the HUD's** and for the same reason. Spelling is `Aa`, Reading an open book, and **both maths tracks carry `123`** — the icon's job is to say *this is maths*, and the label beside it (`+ / −`, `× / ÷`) says which operation. Two different symbols there made them read as unrelated subjects. Each takes the colour of its own progress bar. The numerals are set in the app's own webfont rather than drawn as paths — it is self-hosted, so it is certainly present, and `123` at 17px reads as *numbers* in a way three hand-drawn digits at 6px each would not. `text-transform` has to be reset on the SVG text: the label beside it is uppercase and SVG inherits that, which turns `Aa` into `AA`.
 
@@ -269,9 +281,9 @@ A 2×2 grid rather than four rows: the same four facts at about half the height,
 
 ### The fold is the constraint the whole screen is laid out against
 
-Order is HUD, wordmark, levels, Pokémon, buttons — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
+Order is HUD, levels, Pokémon, buttons — the wordmark rides in the HUD rather than taking a row between it and the levels — and **all of it fits on screen without scrolling**, down to 360×640. That matters because the primary action must stay visible: a panel of statistics is worth putting above the Pokémon, but not at the cost of pushing **Start Playing!** off the bottom.
 
-Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` is sized from viewport *height*, not width, and shrinks from 196px to 86px on the shortest supported screen. A `max-height: 700px` query tightens the generation block with it. Measured at 360×640, 390×844, 414×736, 768×1024 and 360×780: no vertical scroll on any of them, and no horizontal scroll either.
+Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` takes whichever axis is scarcer — `22vh` keeps it clear of the fold on a short screen, `34vw` keeps it from crowding the text column on a narrow one — and runs from 225px down to 122px. One rule covers both, so the `max-width: 480px` override this used to need is gone; a `max-height: 700px` query still tightens the generation block. Measured at 360×640, 390×844, 414×736, 768×1024 and 360×780: no vertical scroll on any of them, and no horizontal scroll either.
 
 **The panel is rebuilt on the way into home, not by whoever changed something.** `show("setup")` re-renders it, so setting a level in Settings, quitting a round after a promotion, or finishing one all show the current figure. Hanging it off each caller instead is what left the panel showing a stale level after a Settings change.
 
@@ -366,7 +378,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 The reader is five and still learning to read. Every word on a child-facing screen costs them effort, so:
 
 - **Never write a long sentence.** One to four words per line. `Try again!` — not `Not quite, try that blank again!`.
-- **Words have to earn their place.** A name, a number, `Welcome back!` — things worth the effort of decoding. Anything a picture, a number, or a control already says gets no text at all.
+- **Words have to earn their place.** A name, a number, `GENERATION 1` over a count — things worth the effort of decoding, or things that label a number so it means something. Anything a picture, a number, or a control already says gets no text at all.
 - **Never make the child read a placeholder.** No `???`, no `Not Caught`. A grey outline already says "you haven't found this one".
 - **Say it plainly, not cleverly.** No wordplay, no encouragement paragraphs, no "Oops".
 - **Adult-facing screens are exempt.** Settings, My progress and `data/README.md` are read by a parent and can explain themselves at length.
