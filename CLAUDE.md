@@ -32,12 +32,18 @@ preference, and it has been broken more than once.
 # One file, one namespace
 
 `index.html` holds all the CSS and JS. There is no module scope and no tooling to
-warn you, so **before naming a new class or top-level function, grep for the name.**
-Both collisions this project has hit were silent: a `.tiles` rule reflowed the
-spelling letter bank into three columns, and a second `placeChunk` meant every tap
-in one mode reached the other mode's function and returned with no sound, no error
-and nothing on screen. `grep -o "^function [a-zA-Z0-9_]*" index.html | sort | uniq -d`
-catches the second kind in a second.
+warn you, so **before naming a new class or top-level function — or deleting one —
+grep for the name.** Every collision this project has hit was silent:
+
+- a `.tiles` rule reflowed the spelling letter bank into three columns;
+- a second `placeChunk` meant every tap in one mode reached the other mode's
+  function and returned with no sound, no error and nothing on screen;
+- `.count-badge` was nearly deleted as dead when it was still the Battle
+  screen's win/loss record.
+
+`grep -o "^function [a-zA-Z0-9_]*" index.html | sort | uniq -d` catches the
+second kind in a second, and has since caught a bad splice that duplicated 160
+lines including a whole second `renderReading`.
 
 # Running it
 
@@ -50,5 +56,17 @@ Node, Playwright and Chromium are preinstalled — serve the folder and drive it
 chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' })
 ```
 
-Check screenshots, not just assertions: several bugs in this project passed every
-structural assertion while being visibly broken on screen.
+Check screenshots, not just assertions, and zoom in when something is reported
+as looking wrong. Several bugs here passed every structural assertion while being
+visibly broken. The reverse happens too: misaligned HUD icons measured *correct*
+on every number available, and the cause was obvious the moment the row was
+rendered at 4×.
+
+# Measure before designing
+
+The habit that has paid off most. The pity timer was settled by simulation, not
+reasoning; six answer choices only worked once the answer *space* per level was
+counted; and sorting those choices was checked by measuring where the answer
+landed, which exposed an exploit the change itself could never have shown.
+Reported numbers in `progress.md` are worth trusting — they were generated, not
+estimated.

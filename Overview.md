@@ -12,7 +12,7 @@
 
 Poké Learning is a no-build, no-dependency HTML/CSS/JS app — one page plus a folder of CSV data and local artwork — that turns spelling, reading, and math practice into short, randomized, Pokémon-themed mini-games. A session mixes challenges from whichever modes are turned on, tracks a score, and ends with a results screen.
 
-Difficulty is not a setting a parent picks and re-picks. Four **Lesson Trails** — Spelling, Reading, Add/Subtract, and Multiply↔Divide — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress dashboard, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
+Difficulty is not a setting a parent picks and re-picks. Four **Lesson Trails** — Spelling, Reading, Add/Subtract, and Multiply↔Divide — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
 
 ## 2. Goals
 
@@ -123,7 +123,7 @@ Two formats, picked at random per question:
 Difficulty ramps on two columns of its own:
 
 - **`wrong_answers`** — how many decoys, so the choice count is 3 at level 1, 4 at level 2, and 5 from level 3 on.
-- **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. It always points at or above the level's own row, so decoys are drawn from a superset of the target pool and the child meets harder words as options before ever being asked to read them. This replaced an older "tricky distractor" flag: difficulty now comes from pool breadth rather than from hand-picking same-length decoys.
+- **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. It always points at or above the level's own row, so decoys are drawn from a superset of the target pool and the child meets harder words as options before ever being asked to read them. Difficulty comes from pool breadth rather than from hand-picking same-length decoys.
 
 **Read-aloud rule: pictures may be named aloud; words never are.** Read & Choose prompts with a picture, which a child may not recognize, so a 🔊 Say it names it — resolving the prompt while leaving the written options to be read. Reverse Read & Choose prompts with the written word and therefore has no speaker on the prompt at all; each picture option carries its own instead. In both modes the child must connect a spoken name to a written one, and nothing ever reads a word aloud to them. There are no hints on either mode.
 
@@ -146,7 +146,7 @@ Two tracks. **Answers are picked from six numbers**, two rows of three, styled l
 
 **A tens-column slip is only offered once there is a tens column** — 17 beside an answer of 7 is not a near miss, it is a giveaway.
 
-**The six are shown in order, and the answer's position is deliberately varied.** A shuffled grid makes finding the answer a visual search rather than a sum; sorted, the six read as a stretch of number line and the child compares against neighbours. But sorting alone was *worse* than the shuffle: the wrong options straddle the answer, so it landed 3rd or 4th in **75%** of questions and never 6th — tap one of the middle two and be right three times in four without doing any maths. So the split is chosen first, how many of the five sit below the answer, and the options are drawn from each side to match. That takes the middle two down to 32%. Where the answer is small there may not be three numbers below it, so division still leans early; the alternative would be inventing negatives, which is not a mistake a five-year-old makes.
+**The six are shown in order, and the answer's position is deliberately varied.** A shuffled grid makes finding the answer a visual search rather than a sum; sorted, the six read as a stretch of number line and the child compares against neighbours. Sorting alone is not enough, because the wrong options straddle the answer and so centre it — leaving the middle two positions worth guessing. **The split is chosen first** — how many of the five sit below the answer — and each side is drawn to match, which spreads the answer across all six places. Where the answer is small there may not be three whole numbers below it, so division still leans early; the alternative is offering negatives, which is not a mistake a five-year-old makes.
 
 **A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
@@ -192,11 +192,11 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the Settings button at the far right of the same line.
 
-**The icons are drawn, not typed.** Emoji were the obvious choice and the wrong one: their em-boxes line up but their *ink* does not — the target is round and wide, the flame narrow, the book tall and narrow, and the gear renders flat grey beside three colour glyphs, so the row read ragged. It cannot be nudged straight either, because those metrics belong to whichever emoji font the device happens to have; an offset tuned against one is wrong on another. Drawn as inline SVG on one 24×24 grid, every icon has the same optical size and the same centre on every device, and takes its colour from the counter it belongs to via `currentColor`. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
+**The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
 The HUD is home-only. A round has its own progress bar and a ✕, and a second row of counters there would be two things to read at once.
 
-**The round's top bar is a ✕ and a bar, nothing else.** It used to carry a `3 / 10` chip beside the bar; that was the same fact written twice, and neither number meant anything to a child who cannot yet read them — the bar's fill says how far along the round is. Quitting is an icon rather than the word "Quit" for the same reason. The ✕ keeps an `aria-label`, and the ← Back links on the other screens are unchanged: they are for whoever is navigating, not mid-round.
+**The round's top bar is a ✕ and a bar, nothing else.** The bar's fill says how far along the round is, so a `3 / 10` beside it would be the same fact written twice — and neither number means anything to a child who cannot yet read them. Quitting is an icon rather than the word "Quit" for the same reason. The ✕ keeps an `aria-label`, and the ← Back links on the other screens are unchanged: they are for whoever is navigating, not mid-round.
 
 | Counter | Shows | Goes to |
 |---|---|---|
@@ -238,7 +238,7 @@ Everything on the screen is a fixed cost except one thing. The HUD, the wordmark
 
 **The panel is rebuilt on the way into home, not by whoever changed something.** `show("setup")` re-renders it, so setting a level in Settings, quitting a round after a promotion, or finishing one all show the current figure. Hanging it off each caller instead is what left the panel showing a stale level after a Settings change.
 
-## 9. Dashboard
+## 9. My progress
 
 Reached from either home box. Headed **"My progress"**, with no subtitle.
 
@@ -270,7 +270,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 - **What was caught this round**, as large tappable cards that open the full detail popup — the reward is the point of this screen, so the artwork is sized to be looked at. Three fit a row at any phone width; more wrap. When nothing was caught, a plain line says so rather than inventing a consolation prize.
 - **Play Again**, which starts another round at the length set in Settings, and **Go Back**.
 
-**There is deliberately no score.** Every mode retries until the answer is correct, so a finished round is always 100% — a score would be a number that cannot vary, and the tiered praise it drove ("Perfect! You're a Champion!") fired every single time. The old perfect-run reward went with it: it announced "You earned Mewtwo!" and granted nothing, so a child who went looking for it in their Pokédex never found it. Performance is measured where it means something — clean answers driving the Lesson Trails, shown on the Dashboard.
+**There is deliberately no score.** Every mode retries until the answer is correct, so a finished round is always 100%: a score would be a number that cannot vary, and any praise it drove would fire every single time. Nor is there a perfect-run reward — a promise of a Pokémon that the Pokédex would then not contain. Performance is measured where it means something: clean answers driving the Lesson Trails, shown on My progress.
 
 ## 12. Settings & Persistence
 
@@ -323,7 +323,7 @@ The reader is five and still learning to read. Every word on a child-facing scre
 - **Words have to earn their place.** A name, a number, `Welcome back!` — things worth the effort of decoding. Anything a picture, a number, or a control already says gets no text at all.
 - **Never make the child read a placeholder.** No `???`, no `Not Caught`. A grey outline already says "you haven't found this one".
 - **Say it plainly, not cleverly.** No wordplay, no encouragement paragraphs, no "Oops".
-- **Adult-facing screens are exempt.** Settings, the Dashboard and `data/README.md` are read by a parent and can explain themselves at length.
+- **Adult-facing screens are exempt.** Settings, My progress and `data/README.md` are read by a parent and can explain themselves at length.
 
 ## 15. Technical Architecture
 

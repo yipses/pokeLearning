@@ -4,7 +4,77 @@ How the project got from a basic spelling/math quiz to where it is now, and the 
 
 ---
 
-## Phases 1–22 — the road here
+## Where things stand
+
+Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both word ladders in editable CSVs.
+
+The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all four tables authored in a spreadsheet and read at boot. No word ladder, word list or promotion gate remains in code.
+
+## Open threads
+
+Roughly by how much they'd bite.
+
+### 1. The maths ladder is the last thing still hardcoded
+
+Both tracks' levels live in `ADDSUB_LEVELS` / `MULDIV_LEVELS` in `index.html`, and promotion falls back to the Spelling/Reading CSV figures because Maths has no table of its own. Moving it to a CSV with a min and a max per level is the next piece of work.
+
+**A min/max is necessary and not sufficient**, which is the thing to carry into that work. Measured with each frontier parked at the top of its track:
+
+| track at top level | trivial questions |
+|---|---|
+| Add/Subtract, "Within 100, with regrouping" | 4.1% |
+| Multiply/Divide, "Full range (÷)" | **29.5%** |
+
+The two tracks fail for different reasons:
+
+- **Multiply/Divide is identities, not range.** 90% of top-level questions come from the frontier itself, not the review band, and that level yields `n ÷ 1` or `n ÷ n` **28%** of the time. Level 11 is 27.6% `something × 1`. Level 7 is *labelled* "Harder tables only" and is still 20.4% `1 × 6`, because `mkMul(1,5,6,10)` floors the hard operand at 6 and leaves the other free to be 1. Identities sit *inside* any sane range.
+- **Add/Subtract is mostly the review band.** Levels 4a–5b do draw both operands from `randInt(0, ceiling)`, but two draws from 0–100 are rarely both small — "both operands ≤ 2" measures 0% there. The `1 + 1` seen at high difficulty is review deliberately serving 20% of questions from earlier levels, which a range cannot reach.
+
+This matters more since answers became six visible choices: a trivial question with the answer on screen is easier still than one you had to type.
+
+`makeMath(op,min,max)` has no callers and is the obvious thing to mistake for the live path.
+
+### 2. The phoneme respellings still have not been heard
+
+A first pass written on paper turned out to be 30% unspeakable; the rewrite measures at 1%, but *measured* only against a rough test for whether a string can be said at all — not whether it says the **right** sound. `tools/phonemes.html` plays every row and takes about five minutes. `ee` is the one to listen to first.
+
+### 3. Smaller, and each self-contained
+
+- **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
+- **`fonts/OFL.txt` is missing.** The Open Font Licence requires its text to travel with the font files; `fonts/README.md` says where to get it. A licence obligation, not a runtime one.
+- **Settings overflows horizontally at 360px wide** — about 115px, from the level `<select>` elements taking their width from the longest option text ("Within 100, with regrouping"). A `max-width` and text-overflow would settle it.
+- **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once. `word_levels.csv` is the file to correct — item levels follow from it.
+- **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is caught automatically now, but an item whose picture is *unique and still wrong* is not.
+- **The answer's position leans early on the division levels** — 30% first of six, 2.6% last, because those answers run 1–10 and there are not five whole numbers below 2. Flat everywhere else. Flattening it means offering negatives, which is not a mistake a five-year-old makes.
+- **`APP_BUILD` is bumped by hand.** No build step stamps it. The `This file` timestamp beside it is automatic and cannot go stale.
+
+Parked, not scheduled: a service worker for genuine offline install; moving the type chart to CSV if it ever needs editing; recorded phoneme audio instead of synthesised respellings; and two deferred Reading modes — **Rhyme Match**, which needs a real-word list and now has one in `word_levels.csv`, and **Clue Words**, which needs per-item colour/size/material data that does not exist.
+
+---
+
+## Lessons this codebase keeps teaching
+
+Each of these cost real time at least once.
+
+**One file, one namespace — grep before you name.** Three collisions so far, every one silent. A `.tiles` rule reflowed the spelling letter bank into three columns. A second `placeChunk` meant every tap in one mode reached the other mode's function and returned with no sound, no error and nothing on screen. `.count-badge` was nearly deleted as dead when it was still the Battle screen's win/loss record. `grep -o "^function [a-zA-Z0-9_]*" index.html | sort | uniq -d` catches the second kind in a second, and it has since caught a splice that duplicated 160 lines.
+
+**Measure before designing, and measure the thing that actually matters.** The pity timer was fixed by simulation rather than reasoning. Six answer choices only worked once the answer *space* per level was counted — four division levels have fewer than six possible answers. And sorting those choices was verified by measuring where the answer *landed*, which turned up an exploit the change itself would never have shown: sorted alone, the answer sat 3rd or 4th in 75% of questions.
+
+**Structural assertions are not enough — look at it.** Several bugs passed every DOM assertion while being visibly broken. The reverse happens too: reported misaligned HUD icons measured *correct* on every number available, and the real cause — different ink inside identical boxes — was obvious the moment the row was rendered at 4×.
+
+**Prefer the rule with no floor to the rule that runs out.** Distractors drawn from "other answers at this level" cannot work where a level has four of them; distractors drawn from *the mistakes the operation invites* always can. Same shape of reasoning as excluding items by shared artwork rather than by eyeballing 922 of them.
+
+**Fix on the way in, not at each caller.** The home levels panel showed a stale level after a Settings change; the same hole existed for quitting a round after a promotion. Rebuilding on entry to the screen fixed both and any third.
+
+**A wrong sound teaches a wrong thing; silence teaches nothing.** Anything with no row in `data/phonemes.csv` stays silent rather than guessing. The same instinct killed the "You earned Mewtwo!" reward that granted nothing.
+
+**Never write a long sentence.** One to four words per line. A five-year-old cannot read "Play a round to catch it!" — the mystery shape is the invitation.
+
+---
+
+## How it got here
+
+### Phases 1–22 — the road here
 
 Condensed. Where a later phase replaced one of these outright — the Phase A/B spelling ladder, the old promotion gates, the first pity timer — only the lesson is kept, not the mechanism.
 
@@ -26,256 +96,44 @@ Condensed. Where a later phase replaced one of these outright — the Phase A/B 
 
 **An honest results screen (22).** The score could never be anything but 100% — every mode retries until correct — so "Perfect! You're a Champion!" fired every round and three tiers were unreachable code. The perfect-run reward was worse: it announced "You earned Mewtwo!" and granted nothing, a broken promise every round. Replaced with the three status tiles and the Pokémon actually caught. The Play Streak card became those tiles in the same pass, taking ~90px where seven rows of "Not played yet" took ~420 and pushed Start Playing below the fold. **The streak holds until the day ends**, counting days ending today *or yesterday*, rather than resetting at midnight before the child has played.
 
-## Phase 23 — A class-name collision, generation tabs, and words a five-year-old can read
+### Phases 23–29 — CSV ladders, and four bugs found by looking
 
-- **The spelling letter bank broke, and the cause was one word.** Phase 22's home tiles were given `class="tiles"` — a name the letter bank had owned since the first build. The new `display:grid; grid-template-columns:repeat(3,1fr)` rule sat later in the stylesheet, won, and reflowed the letter tiles into a sparse 3-column grid: four letters for `sink` laid out as `N K I` / `S` with gaps across the card. Nothing threw, no assertion failed, and the home tiles it was written for looked perfect. Renamed to `.home-tiles`, with a comment saying why the obvious name is taken. **Rule of thumb: before styling a new component, grep the stylesheet for the class name.** A single-file app has one global namespace and no tooling to warn you.
-- **The Pokédex is generation tabs now** — `Gen 1` … `Gen 9`, one sideways-scrolling row, one generation's grid at a time, opening on whichever generation the catch gate is on. Cells in the document went from 1,021 to at most 160, and Gen 9 went from a very long scroll to one tap.
-- **Copy rules, written down** (`Overview.md` §14.1). The audience is five. Long sentences are unreadable to them, so child-facing text is now one to four words: `Try again!` in place of `Not quite — try that blank again!`, `Spell, count, and catch!` in place of the old tagline, `No catch this time!` in place of a sentence explaining the drought. Adult screens — Settings, Dashboard — are exempt and stay explanatory.
-- **`???` is gone.** It was a word to decode with nothing behind it. An uncaught dex cell is now an outline plus its number; an uncaught popup is an outline, its number and its **type**; an uncaught evolution chip is an unlabelled outline. A caught entry opened from the dex greets you with **"Welcome back!"** instead of a `📖 Pokédex` header. Showing type on an uncaught slot is a deliberate reversal of the old spoiler rule: one short word, useful, and it doesn't name what's hiding there.
-- **The home screen's middle band is a trophy shelf now**, not a teaser. It showed a caught Pokémon half the time and a wild silhouette captioned "Who's that Pokémon? / Play a round to catch it!" the other half — two sentences aimed at someone who can't read them. It now only ever shows a species already caught: name, number, **"Welcome back!"**. It prefers the current generation but falls back to the whole collection, so the tap that opens Gen 2 doesn't blank the shelf. With nothing caught at all, an outline and its type badges stand in — no words.
-- **Following an evolution was a one-way trip.** Tapping a relative in the popup replaced the entry on screen, and the only button left closed the whole popup — no way back to the Pokémon you started from. On a catch reveal it was worse than a dead end: Okay runs the pending callback, so drilling into a relative and pressing it advanced the round from a screen that wasn't the catch. The popup now keeps a `modalTrail` of where you came from, shows **← Back** instead of **Okay** while that trail has anything in it, and inherits the backdrop-dismissal rule from the entry it was opened from — so an unacknowledged reveal can't become dismissable by walking one hop down its own family tree.
-- **The results screen's "Questions per round" field is gone.** It was never asked for — it arrived with the results rebuild as an unrequested convenience, and it put an adult-facing number stepper on the one screen a child lands on unaccompanied. Round length lives in Settings, where the rest of the round configuration already is. **Play Again** now just plays again.
-- **The generation tabs got arrow buttons**, because a sideways-scrolling strip is a touch idiom: a swipe works on a phone and does nothing with a mouse. They appear only while the strip overflows and grey out at each end. The tabs also shrank a few pixels so all nine fit the 760px content column — on a desktop window nothing overflows and there is no arrow furniture at all. One trap: the arrows are sized from `scrollWidth - clientWidth`, and `renderPokedex()` usually runs one line *before* `show("pokedex")`, when the section is still `display:none` and measures 0 in every direction. `show()` re-syncs the strip once it's actually on screen.
-- **The caught-this-round cards are about 60% bigger** (84px artwork, up from 52px). They read as a footnote at the old size, on the one screen whose whole purpose is showing off the reward. A `max-width:480px` rule keeps three on one row on a small phone.
-- **The UI is set in M PLUS Rounded 1c**, the closest freely-licensed match to the rounded gothic (FOT-Rodin) the Switch games use — matched against Pokopia screenshots. It's the app's first and only external dependency; loaded with `display=swap` behind a rounded fallback stack so a blocked request degrades instead of breaking.
+The Spelling and Reading trails moved wholesale into `data/*.csv`: word levels, item levels, both ladders, and the promotion gates. Nothing about difficulty remains in code. The old Phase A/B ladder had a broken seam — the phonics half ended on *Refrigerator* (12 letters) and the fluency half began on a 3-letter cap — and grading items by their **hardest component word** brought all 909 usable names into play instead of 100.
 
-## Phase 24 — Multi-word names get their own ceiling, and promotion halves
+Four bugs in the same stretch, each reported from a screenshot: a `.tiles` class collision reflowed the letter bank; filled Missing Letter boxes rendered lowercase; **21 Pokémon names were graded as ordinary vocabulary** and had to be excluded from Spelling, since an invented name is memorised rather than decoded; and the pity timer overwrote the drop rate — 50% produced an encounter every single time. That last one is now calibrated so the setting *is* the measured outcome, pity included.
 
-- **A third length ceiling for multi-word names** in Spelling's Fluency phase: 6/8/9/10/12 across B1–B5, above both the Full Spelling and Missing Letter ceilings. Same reasoning that already justified Missing Letter's higher ceiling — letter count overstates a two-word name. "Iron Hands" is 9 letters but never more than 5 in a row, and the space tells the child where one word ends. At 12, B5 finally reaches all 27 of them; the longest, *Iron Boulder* (11), previously sat above every ceiling in the trail — in the pool but unable to appear.
-- **The single-word ceilings came down** to 3/5/6/7/8 (Full) and 5/7/8/9/10 (Missing). Consequence to be aware of: at an 8-letter Full ceiling, roughly a fifth of each generation — *Bulbasaur*, *Charmander* — is never built from an empty row, only repaired through Missing Letter. Accepted deliberately, to be raised when the ladder extends past B5.
-- **"Multi-word" now means a real space, and the data had to change to say it.** The roster came from PokéAPI, where every name is a hyphenated slug, so `iron-hands` and `ho-oh` were indistinguishable. 27 genuinely space-separated names were converted in `data/pokemon.csv` (plus one `evolves_from` reference and 6 `pronunciations.csv` keys); the 9 officially hyphenated ones — Ho-Oh, Porygon-Z, Jangmo-o, Hakamo-o, Kommo-o, Wo-Chien, Chien-Pao, Ting-Lu, Chi-Yu — stay hyphenated and count as single words. Two knock-ons: the CSVs ship CRLF and a naive rewrite silently reflowed all 1,021 rows, and `cap()` only capitalised the first letter, which would have rendered "Iron hands". It now title-cases any all-lowercase string (Pokémon names) while leaving already-capitalised strings alone (items keep sentence case).
-- **Promotion halved: 5 clean in a row, or 8 of the last 10.** Same 80% bar as the old 16/20, half the evidence — precision traded for far less grinding. Applies to all four trails, since the engine is shared. Both numbers live in one `PROMOTE` constant that the Dashboard's window labels, gate lines and tooltips are all drawn from, so the next tune is a one-line change.
-- **Empty length bands no longer void the ceiling.** Gen 9 has no 3-letter name at all, so B1's Full Spelling band came up empty — and the old fallback handed over the *entire* generation, serving 12-letter words at B1. It now raises the single-word ceiling one letter at a time until something fits (Gen 9 lands on 5 letters, 6 words). The multi-word ceiling deliberately doesn't inflate with it. Found by asserting on 2,000 generated questions per level against a forced Gen 9, not by reading the code.
+### Phases 30–36 — one way to answer, and sounds attached to it
 
-## Phase 25 — Both trails move into CSV
+Both spelling tasks answer the same way: tap a tile holding a **chunk**. `torch` is `T` `OR` `CH` in both. A correct placement says the sound of what was completed, and the whole word is blended back afterwards — the round now waits for the voice to finish rather than talking over it.
 
-- **The Spelling trail's Phase A / Phase B split is gone.** It bundled four independent things into one word — where words came from, how they were graded, which task was used, whether the generation gate applied — and it had a fault at the seam: Phase A ended on *Refrigerator* (12 letters), Phase B began on a 3-letter cap, which in Gen 1 is `mew` and `muk`. Hard, then trivial, then climbing again. The four things are now four columns and one ladder runs end to end: **25 spelling levels**, nine tiers of three, from `data/spelling_levels.csv`.
-- **Reading moved onto the same grading**, 10 levels from `data/reading_levels.csv`, selecting words by the same three columns. One vocabulary now feeds both trails, so a word met in Reading at level 4 is the word Spelling asks for at level 4 — the two used to draw from unrelated pools, so nothing either taught reinforced the other. The frontiers stay separate, which lets Reading run ahead: recognising is easier than producing.
-- **The catalogue is finally usable.** The old phonics ladder reached 100 of 909 item names, because the other 809 are multi-word and it had no way to grade them. Grading by *component* — an item takes its hardest word's level — brings all 909 into play. Reading's pool at its top level went from 362 reachable items to 1,056 words.
-- **Nothing about either ladder is left in code.** `PHONICS_WORDS`, `SPELLING_LEVELS`, `READING_LEVELS` and the `PROMOTE` constant are deleted; the app reads four CSVs at boot and builds both ladders from them. No compiled-in fallback, deliberately — a ladder that exists in two places drifts. Promotion percentages are per level now, so the trails can be tuned apart.
-- **Missing Letter gained hints.** It refused them on the grounds that most of the word was already showing, which held when it blanked one chunk; at 25% shown it can be most of the word. The level's own `max_hints` applies to both tasks now, and a hinted answer still isn't clean.
-- **Stored frontiers are rescaled, not reset.** The ladders went 14 → 25 and 6 → 10 over different vocabulary, so a stored index would point somewhere arbitrary. It's rescaled by position — three-quarters up the old ladder starts three-quarters up the new one — stamped with a version so it happens once. Rolling windows are cleared, since they measured a different task.
-- **Verified by generating questions, not by reading code**: 400 spelling questions at each of 25 levels and 300 reading questions at each of 10, asserting every word fell inside its row's pools, every task type matched its `hinted_pct`, every hint allowance matched `max_hints`, every option count matched `wrong_answers`, and every decoy came from the declared distractor pool. Zero violations. Then the migration, both promotion paths, the settings dropdowns and a played round on screen.
+**A third of all spoken sounds were unpronounceable.** Respellings with no vowel (`ch`, `th`) or repeated letters (`lll`) get spelled out by a synthesiser: 2,799 of 9,302 events broken. Rewritten as syllables, measured at 1%.
 
-## Phase 26 — The drop rate setting now means what it says
+Then four context rules — `c`, `y` (twice) and `ow` reading the word around them, 395 chunk instances changed — and a bug found while building them: context was measured against the whole *name*, not the word, so no vowel in a multi-word item was ever at an end and `Ice cream` came out "ih-kuh-eh".
 
-- **Setting the wild rate to 50% produced an encounter every single question.** Reported from play. The pity forced one at `round(100/R) - 1` questions, which at 50% is 1 — and the counter is incremented before the check, so every question was forced.
-- **Measuring showed the fault was general.** Across 20,000 questions per setting the observed rate was 8% at a 5% setting, 16% at 10%, 43% at 25% and 100% at anything from 50% up. The pity wasn't trimming the tail of the distribution, it was replacing the middle: at rate R the wait is geometric with mean 100/R, and forcing below that mean cuts in where most of the probability lives.
-- **A first fix — force at twice the mean — was built and pushed before it had been agreed**, which is exactly what the working agreement in `CLAUDE.md` now forbids. It measured well (10% → 11%, 50% → 53%) but it was not the design that was wanted, and it was not mine to choose.
-- **The agreed design separates the two questions.** *When* the pity fires is a felt-experience decision: one question past the average wait — the 11th at 10%, the 3rd at 50%. *What the Settings number means* is a separate decision: it is the **outcome**, not the roll.
-- **So the roll is solved for rather than used.** For a drought capped at `k`, the mean gap is `(1 - (1-p)^k) / p`, so the encounter rate is `p / (1 - (1-p)^k)` — monotonic in `p`, hence a 50-step binary search. A 25% setting runs a raw roll of 11.2% and the pity supplies the rest. Measured over 200,000 questions per setting: every value from 1% to 100% lands on itself, droughts cap at exactly average-plus-one, and 0% and 100% still mean never and always.
-- **The field is relabelled "Expected drop"** — *out of 100 questions, about this many hide a Pokémon* — because the old label ("Chance a question hides a Pokémon") described the roll, and under any pity timer the roll is never what happens.
-- **Worth remembering: "longer than average" is a one-in-three event.** That is the whole reason a pity timer set at the mean wrecks the rate, and it isn't obvious until it's measured.
+**97 items share byte-identical artwork**, found by hashing all 922 files. One generic building icon serves ten place names, which is why one screen offered both `Boutique` and `Snowbelle City` for the same picture. Ninety leave both trails: a picture that names two things names neither.
 
-## Phase 27 — Filled blanks rendered in the wrong case
+Missing Letter's bank held exactly the missing chunks, so a one-blank word offered **one tile** — 9% of all such questions, 45% of level 2. It is padded with same-phonics-class decoys to a floor of four.
 
-- **A filled Missing Letter box showed lowercase next to uppercase given letters** — `BL` reading as `bl` beside `A C K`. One line: `.mw-blank` was `text-transform:lowercase` while `.mw-letter` is `uppercase`. Display only; the answer check lowercases the value, so nothing behavioural depended on it.
-- **Not introduced by the ladder rebuild, but exposed by it.** `git log -S` puts that rule in the initial commit, and a correctly typed chunk has always locked lowercase. What changed is how often it's on screen: Missing Letter gained hints (a hint fills a whole chunk at once), and blank counts now come from `hinted_pct`, so at 50% about half the word sits in filled boxes instead of one.
-- Checked while in there: no question renders with a blank already filled (1,020 across all 25 levels), and chunking still holds a sound together — `black glasses` splits `bl · a · ck · ␣ · gl · a · s · s · e · s`.
+### Phases 37–41 — self-hosted type, spoken names, and the week
 
-## Phase 28 — Pokémon names hiding in the item vocabulary
+(Phase 37 was an investigation that deliberately changed no code; its findings are Open thread 1 above.)
 
-- **Reported as "typing P won't work" on a picture of a pink water bottle.** Not a bug: the item is `Hoppip water bottle`, not "Pocket water bottle" — the tile bank has three P's and no C or K, which settles it. Verified from the keyboard: `p` is correctly rejected at slot 1, `h` lands, `o` and `p` follow.
-- **What it exposed is real.** 21 item words are Pokémon names, in 25 items, and the classifier graded them like ordinary vocabulary — `pikachu` filed under Digraphs at level 4, so `Pikachu doll` could be asked four rungs into the ladder on the strength of its `ch`. That grading is fiction: an invented proper noun is memorised, not decoded.
-- **Flagged in the data rather than special-cased in code.** `tools/classify_words.py` cross-references `data/pokemon.csv` and writes a `proper_noun` column into both `word_levels.csv` and `item_levels.csv`; the app reads it. Spelling skips those items; Reading keeps them, since recognising a name a child knows by sight is a fair reading task and the names stay reachable as Pokémon proper, under the generation gate.
-- **Cost is negligible**: the largest pool loses 25 of 1,056. Verified with 600 spelling questions at each of 25 levels — zero proper nouns served — while Reading still offers all 25.
+The webfont was never loading in the dev sandbox, which meant **every screenshot taken over several days rendered in a fallback face**. Self-hosting was the better answer anyway for an app aimed at a child on a tablet: latin subset, four weights, 87 KB, and the page now makes no external requests at all.
 
-## Phase 29 — A wider catch card, and a catch worth celebrating
+Opening any Pokémon entry says its name aloud — one rule covering the catch popup, a Pokédex tap, an evolution tap and the results screen, hung off *opening* rather than *rendering* so walking back is silent. The timing was traced with a stubbed 900ms voice: the blend-back ends at 3464ms and the name starts at 4267ms.
 
-- **The card was 280px and felt cramped**, especially with an evolution strip under the name. Widened to 360px, which gives a ~292px interior — enough to put the evolution chips back up to 62px (they had been shrunk to 54px to stop a three-stage line wrapping) with room to spare.
-- **Catches are celebrated now**: 22 confetti pieces falling through the card, plus one soft burst of light behind the artwork. Rarity gets 34 pieces and a gold palette rather than a different animation — a five-year-old reads the fuss, not the word "Legendary" on the chip.
-- **Fires on catches only.** The same card opens whenever a Pokédex entry is tapped, and confetti on every browse would be wallpaper. It's an explicit `celebrate` flag, set by the catch reveal and by the results screen's caught-this-round chips, and cleared whenever the card re-renders — so walking to an evolution relative drops the burst rather than stacking another.
-- No library: plain spans with per-piece drift, spin and timing as CSS custom properties, removed once the longest finishes. Hidden entirely under `prefers-reduced-motion`, alongside the caption pop.
+**My progress** leads with rounds per day over the last 7 days. No new storage was needed — the streak record has always kept `{date: rounds}` uncapped, so the chart was correct from the day it shipped.
 
-## Phase 30 — One way to answer, and the sounds to go with it
+### Phases 42–48 — the home screen, and maths by choice
 
-- **Missing Letter answers by tapping now, like Full Spelling.** It had been typed `<input>` boxes since the first build — two input mechanics under one "Spelling" heading, and since 17 of the 25 levels are that task, an on-screen keyboard covering half a tablet for most of the ladder. Input method and difficulty were accidentally welded together; the level's `hinted_pct` is the difficulty knob, and how you answer should have nothing to do with it.
-- **Its tiles are chunks, not letters.** A tile reading `CK` is one sound, which is the whole point: tapping it plays /k/ rather than implying c and k are separate. About a fifth of blanks are multi-letter chunks, so it shows up constantly.
-- **A correct placement speaks; a wrong one is silent.** A five-year-old who discovers that tapping makes noises will tap for noise, so a miss shakes and says nothing. In Full Spelling a tile is a single letter, so the sound waits for the letter that *finishes* a chunk — `shutter` says /sh/ when the h lands, never /s/ then /h/.
-- **The sound comes from the word, not the letter.** `a` differs in `cat`, `cake` and `car`. The chunker already makes `ar` one unit, so only lone vowels need deciding: a vowel followed by one consonant and a final `e` is long, otherwise short, and the final `e` itself says nothing. Verified: `cat` gives ah, `cake` gives ay, `car` gives ar, `sock` says the ck once.
-- **Completing a word speaks it whole** — sounding out, then blending back, which is the actual phonics move.
-- **`data/phonemes.csv` holds the respellings**, keyed by chunk and context. A synthesiser can't take a bare phoneme, so `b` is written `buh`. A chunk with no row is silent by design.
-- **Unverified by ear, and that matters.** These are respellings chosen on paper. This project has been burned before by assuming how a synthesiser reads something — the whole `pronunciations.csv` saga. Short `o` and long `o` are both `oh` right now, which is certainly wrong for one of them. An audit page was deliberately deferred.
+The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
 
-## Phase 31 — Three reports, one of them 30% of the feature
+The three stat cards became a **HUD**: icon and number, no cards, no labels. Its icons are drawn as inline SVG rather than typed as emoji, because emoji ink differs inside identical boxes and the metrics belong to whichever font the device has — there is no offset that is right everywhere. The four level tiles followed, with `123` on both maths rows and the operation in the label.
 
-Reported from play: `CH` said "CEE H", `L` said "L L L", and `CH` wasn't grouped in `resort chair`. All three were real; the first two were the same fault.
+Maths answers became **six numbers in order** instead of a keypad. The wrong five are built from the mistakes each operation invites, not sampled from the level's range. Two things had to be measured to get it right: the range could not be the source at all, because four division levels have fewer than six possible answers; and sorting the six centred the answer until the *split* — how many sit below it — was chosen first.
 
-- **A third of every sound the app played was unpronounceable.** Measured across 1,056 words and 9,302 spoken events: **2,799 were gibberish**. The respellings I wrote had no vowel to hang a syllable on (`ch`, `th`, `ng`, `ks`) or were the same letter repeated (`lll`, `mmm`, `sss`, `rrr`), and a synthesiser spells those out. The worst were the commonest letters in English — `n` 547 times, `l` 543, `s` 331. Rewritten as real syllables (`chuh`, `luh`, `suh`, `ung`): **30% → 1%**, and the 1% is `ee`, which the test flags and probably shouldn't. The lesson is that this was catchable without ears: a respelling with no vowel in it was never going to be spoken as a syllable.
-- **`CH` wasn't grouped because Full Spelling still dealt in letters.** Not a chunking bug — `chunkWord("resort chair")` groups it correctly — but Missing Letter had moved to chunk tiles while Full Spelling hadn't, so `CH` was one thing on one screen and two on the other. Full Spelling now uses chunk slots and chunk tiles too: `torch` is `T` `OR` `CH`, three slots, three tiles. Typing still works — keystrokes buffer until they complete the chunk that comes next.
-- **And that refactor introduced a name collision that hid itself.** Both renderers had a `placeChunk`, so the later declaration silently won: every tap in Full Spelling reached Missing Letter's copy, found no `missingState`, and returned with no sound, no error and no mark on screen. Renamed, and a check for duplicate top-level function names now takes one grep. That is the **second** collision this session after `.tiles` — in a single-file app with one global namespace, the check belongs in the routine, not in hindsight.
-- **`tools/phonemes.html` exists now**, deferred once and overdue: every row with a play button, amber shading on anything the pronounceability test doubts, and a collector for whatever sounds wrong. It would have caught all of this in five minutes.
+The trade, on the record: a blind guess now lands 1 in 6, and a round can be brute-forced in about three taps. Promotion resists it, since every wrong tap marks the attempt unclean, but the practice is weaker than composing the number was.
 
-## Phase 32 — Let the word finish
-
-- **The blend-back was being talked over by its own advance.** It spoke at 700ms and the next question replaced the screen at 850 — so a child heard about a syllable and a half. Reported as "a bit too sudden", which it was.
-- **`lockAndAdvance()` takes an optional waiter now.** Callers that have something to finish hand it a function and the round stays open until it calls back; everything else keeps the fixed beat. Spelling and Missing Letter use it, and the word is followed by a short pause so the change doesn't snap.
-- **Reading says the word too**, once the right one is found, and waits the same way. This isn't a breach of "words are never read aloud" — that rule guards the *prompt*, and by the time it speaks the child has already answered, so it confirms rather than tells.
-- **It can't hang on a voice.** `onend` isn't reliable everywhere, so a 3s timeout backs it up (advance at ~4s worst case), and where `speechSynthesis` is missing entirely `speak()` calls back immediately and the round continues at ~1s. Both paths tested by stubbing a voice that never finishes and by deleting `speechSynthesis` outright.
-
-## Phase 33 — Four letters that read the word around them
-
-- **"Should we look at other sounds too, not just c?"** The `c` in `Ice`, `City` and `Dance poster` was saying "kuh". Before fixing it, all 1,840 pool words were chunked and every positional rule that might apply was counted, so the choice was made on numbers rather than on which rule came to mind first.
-- **`y` turned out to be worse than `c`.** It said "yuh" in all 171 words where it isn't the first letter — `berry`, `city`, `ability`, `crystal`, `cyndaquil`. Four rules shipped: `y` (95 words at the end, 76 inside), `c` (88), `ow` at a word end (16). 395 chunk instances now say something different.
-- **The rules that were measured and rejected matter as much as the ones that shipped.** `g` before e/i/y looks like an exact twin of `c` and matches 121 words, but in this vocabulary it would be wrong more often than right — `geodude`, `gengar`, `gyarados`, `gible`, `regirock` are all hard. `a` before `l` matched 70 and narrowed to four real hits. `oo` (78) and `ea` (72) are genuinely ambiguous with no positional rule in English, so they keep one sound. `ch` was checked and is already right in 86 of 87 words.
-- **A bug found while fixing the rules: context was measured against the whole name, not the word.** `chunkSound()` looked at every chunk after the current one, including the next word's, so no vowel in a multi-word item was ever at an end. `Ice cream` came out "ih-kuh-eh" — the silent `e` never fired and neither did magic-e. `wordWindow()` now clips to the word the chunk sits in, which every one of the new rules needed anyway.
-- **`kuh` stays.** A stop consonant can't be said without a vowel, and `ka` would be worse: the schwa in "kuh" fades, `a` is a full vowel a child then blends into *kaat*. The blend-back after the word is what repairs it.
-
-**Still open.** The single vowels are 30% of all chunk instances and the largest remaining source of wrong sounds: magic-e only fires when the vowel is third-from-last, so in a multi-syllable word every vowel falls back to short — `poster`, `open`, `ceiling`. Fixing it needs syllable stress, which is a much bigger piece of work. Also `porygon2` is in the spelling pool, digit and all; the `2` is silent and a child is being asked to spell a number.
-
-## Phase 34 — A picture that names two things names neither
-
-- **Reported from a screenshot:** the word was `Boutique` and the picture was a CD. Both trails rest on one property — the picture identifies the word — and this item didn't have it. The question asked was whether there were others like it.
-- **There were 97.** Hashing all 922 files in `items/` found 38 groups of byte-identical artwork. One generic building icon serves ten place names (`CD`, `Cerulean City`, `Mt. Moon`, `Pallet Town`, `Silph Co.`…); another serves four, which is why the reported screen offered `Boutique` and `Snowbelle City` as two answers to one image. Some are plain mislabels — `Acrylic poster` and `Campfire` are one file, as are `Sign` and `Triangle-design flooring`. A few are legitimate variants (`Green shoots` / `Dry green shoots`) that are still unaskable.
-- **One mechanical rule instead of 922 judgement calls:** drop any item that shares its artwork. It catches all three kinds, needs no eyeballing, and `tools/classify_words.py` writes the `shared_art` column so it stays true as the catalogue changes.
-- **It applies to Reading as much as to Spelling.** An unidentifiable picture is worse as a prompt than as an answer, so the filter sits on `GRADED_ITEMS` and both trails see the same catalogue.
-- **Cost: 90 of 909 usable items, just under 10%.** The pools barely move. Only one dropped item is graded below level 3 (`Sign`), so spelling level 1 goes from 6 candidates to 5 and levels 2–6 each lose one. Every level still has a pool it can draw from.
-
-## Phase 35 — Tap the number in
-
-- **Maths answers are a number pad now**, not the OS keyboard: `1`–`9`, `0`, backspace and clear, in the phone layout. The same pad serves plain Math, Visual Math and Math Pattern — where one pad feeds four boxes, going to whichever the child is on and falling back to the first still-open one so a stray tap can never land nowhere.
-- **The three renderers kept their `<input>` elements.** The pad writes into one and fires the same `input` event a keystroke would, so the auto-checking that was already there is untouched and there is one answer path rather than two. `inputmode="none"` stops the tablet keyboard opening; a physical keyboard still types, which costs nothing and is how the modes get driven in tests.
-- **Answer lengths were measured before the design was picked.** 400 questions at every level: answers run 1–3 digits and reach 196 at Add/Subtract 5a/5b, so a pad the child builds a number on was the only option that covers the whole ladder — four answer tiles would have worked at the bottom and nowhere near the top.
-- **A pre-existing bug fell out of it.** `input[type="number"]` was styled unscoped for the Settings panel, and an attribute selector outranks a class, so `.math-input`'s 200px/2.4rem had *never* applied — every answer box in the game was rendering at settings size in 16px text. Scoped to `.field` and the answer boxes finally look like answer boxes.
-- **The pad hides when the answer is right** rather than greying out. Measured first: with it left in place the pad itself sat below the fold on a 390×844 phone and **Next** was 136px past the bottom on every screen. The Pokémon frame also shrinks to 96px on maths screens. Both fixes verified on iPhone and iPad viewports, before and after answering.
-
-## Phase 36 — A bank with only one tile in it
-
-- **Reported:** `MEW` blanks to `M` plus one gap, and the bank held exactly one tile. Nothing was decided; the child tapped the only thing there and was told they were right.
-- **It was not one word.** Generating 600 questions at every level put it at **9% of all Missing Letter questions and 45% of level 2**, with another 28% offering exactly two tiles. Nor was it only two-chunk words — `Mug`, `Fan`, `Sink`, `abra`, `Brick` all showed it, because the cause is general: the bank held exactly the missing chunks, and at 25–50% hinted a short word yields one blank.
-- **The bank is padded with decoys to a floor of four**, so one blank becomes a choice of four and four-or-more blanks get nothing extra — the trivial end is fixed without touching the hard end or the authored hinted percentages.
-- **Decoys share a phonics class with the chunk they sit beside.** Random decoys would let a child rule tiles out by shape: next to a vowel team, `str` is visibly wrong without knowing anything, `oo` is not. `MEW` now offers `EW OO OU OY`.
-- **Nothing else changed.** `placeMissingChunk` already shook a wrong tile, said "Not that one" and marked the answer unclean — that path simply had no wrong tile to fire on. The one addition was locking the bank when the word completes, since decoys outlive the answer and the blend-back holds the screen for about a second.
-- Verified over 10,200 generated questions: no bank under four tiles, no decoy sharing no class with an answer, no decoy already in the word, no duplicates. Driven on screen for the wrong tap, the right tap and the end-of-word lock.
-
-## Phase 37 — Where the trivial maths questions actually come from
-
-Investigated, not fixed: the maths ladder is moving to a CSV with a min and a max per level, the way the word ladders already work, and the numbers below are what that CSV has to solve.
-
-- **Reported:** with the difficulty set high, questions like `1 + 1` and `1 × 1` still turn up. The proposal was a floor per level, not just a ceiling.
-- **Measured with each frontier parked at the top of its track.** Add/Subtract at "Within 100, with regrouping" is **4.1%** trivial. Multiply/Divide at "Full range (÷)" is **29.5%**.
-- **The two tracks fail for different reasons, and only one of them is the floor.**
-  - *Multiply/Divide is identities.* At the top level 90% of questions come from the frontier itself, not review, and that level alone yields `n ÷ 1` or `n ÷ n` **28%** of the time. Level 11 is 27.6% `something × 1`. Level 7 is *labelled* "Harder tables only" and is still **20.4%** `1 × 6` / `1 × 8`, because `mkMul(1,5,6,10)` floors the hard operand at 6 and leaves the other free to be 1.
-  - *Add/Subtract is mostly the review band.* Levels 4a–5b really do draw both operands from `randInt(0, ceiling)` — floor zero — but two draws from 0–100 are rarely both small, so "both operands ≤ 2" measures at 0% there. The `1 + 1` seen at high difficulty is the review band doing its job: 20% of questions come from *earlier* levels, and at the top that is about 3% of all questions being genuinely easy. **A floor will not change those** — worth knowing before the CSV is designed. The frontier's own contribution is `n − 0` and `n + 0`, 1–2%.
-- **So a per-level min/max is necessary but not sufficient.** A floor of 2 on both operands fixes levels 7–12; identities like `8 ÷ 8` and `n ± 0` sit *inside* any sane range and need a separate rule; and the review band is a third, deliberate source that a range can't reach.
-- **`makeMath(op,min,max)` has no callers** — dead since the trails replaced free-play generation. It is the obvious thing to mistake for the live path when wiring the CSV up; the live generators are `ADDSUB_LEVELS` / `MULDIV_LEVELS`.
-
-## Phase 38 — The font nobody had actually seen
-
-- **The webfont was never loading in the sandbox.** Chromium here doesn't use the proxy that `curl` does, so the Google Fonts stylesheet failed with `ERR_CONNECTION_RESET` on every run. The app was fine — the URL returns 200 from a real network and the fallback stack is rounded — but it meant **every screenshot taken this session rendered in a fallback face**, including the ones used to sign off the type-matching work. Nothing verified numerically was affected; nothing verified by eye was worth much.
-- **Fixed by self-hosting**, which was the better answer anyway: an app for a child on a tablet should not need a network for its lettering.
-- **Latin subset only, four weights, 87 KB.** M PLUS Rounded 1c is a Japanese family whose full webfont spans roughly 590 subset files and runs to megabytes. Nothing in `index.html` or `data/*.csv` uses a character above U+00FF — checked, not assumed — so no other subset would ever be requested. Weights were taken from what the CSS actually asks for: 400, 700, 800, 900. The 500 that the old link requested was never used.
-- **The page now makes no external requests at all**, verified by loading it with every non-local host blocked at the route level: zero failed requests, and `document.fonts` showing the family genuinely loaded rather than silently falling through.
-
-## Phase 39 — Saying the name of the thing you just caught
-
-- **A name a child has only ever read is a name they can't yet use.** The catch popup showed the name and offered a 🔊 button; it now says it, once, 350ms after the card appears so the name lands on a picture that is already there.
-- **Once per catch, not once per render.** The obvious place — `renderPokeModal` — is wrong: `backPokeModal` re-renders an entry from its stored opts, so walking to an evolution and back would repeat it. It lives in `showCatchModal`, which only `revealGrassCatch` calls. Verified: catching speaks, walking to an evolution is silent, walking back is silent, opening a Pokédex entry is silent, and the 🔊 button still works.
-- **`speak()` cancels whatever is mid-flight**, so the risk was the catch talking over the word the child had just spelled. Traced with a stubbed voice taking a realistic 900ms per utterance: the blend-back ends at 3464ms and the catch name starts at 4267ms — 800ms of clearance, because the blend-back's own `onend` gates the advance. Nothing real is cut.
-- Uses `speak(sayAs(name))` rather than `speakName()`, which pops an `alert` when there is no speech synthesis — tolerable on a button press, not on something that fires by itself.
-
-## Phase 40 — One rule for saying a name, instead of one for catching
-
-- **"Same goes when you tap a Pokémon to view in the Pokédex."** Phase 39 had put the speech in `showCatchModal`, which was right for a catch and wrong as a general answer — it named the moment rather than the behaviour.
-- **Moved to the two ways *in*: `showPokeModal` and `navPokeModal`.** That covers tapping a Pokédex cell, tapping a relative in the evolution family, tapping a catch on the results screen, and the catch popup, in one place — and `showCatchModal` goes back to the one-liner it was.
-- **`backPokeModal` deliberately stays silent.** It re-renders the entry you came from, and a name repeated on the way out of an evolution is noise rather than teaching. Hanging the speech off *opening* rather than *rendering* is what makes that distinction expressible at all.
-- **An uncaught entry says nothing**, which falls out of the same `revealed` flag that already hides its name, silhouettes its artwork and hides its speaker. Verified against a real uncaught relative: silent, nameless, silhouetted, no speaker.
-- Checked across all seven paths — caught dex entry speaks, uncaught dex entry silent, opening speaks, evolution tap speaks, Back silent, catch speaks exactly once, 🔊 still works. Respellings apply: `ivysaur` says "eye vee sore".
-
-## Phase 41 — A week you can look at
-
-- **"There's no way to track my previous X days progress."** The home screen showed rounds-today and a streak count; neither says how the week went. Two quiet days and one strong day read identically from a single number.
-- **This week now leads My progress**: rounds per day over the last 7 days, today last, goal line dashed across it, count above each bar. Green where the day met the goal, blue where it fell short, and **days with no play left as empty slots** rather than dropped — the gaps are the whole point of looking.
-- **No new storage was needed.** `pokeLearningDailyStars` has always kept `{date: rounds}` for every day, uncapped, precisely because pruning to a window would have silently capped the streak at the window's length. That decision paid off here: the chart is correct from the day it ships instead of starting empty.
-- **The three stat cards became a HUD** — icon and number on one line, no cards, the way a game shows its counters. It got there in two steps: first Today and Streak merged into one box stacked vertically, which was read as too heavy, and then the boxes went entirely.
-- **The labels went with them.** "TODAY", "STREAK", "GEN 1" were words a five-year-old wasn't reading. The icon says which counter it is; colour carries the one state worth noticing, the day's goal being met. Each counter keeps an `aria-label`.
-- **The ⚙️ button sits at the far right of the same line**, same footprint as a counter, and the home footer went. The same renderer feeds the results screen, so the HUD lands there too — centred, to match that card.
-- **"My Progress" lost its subtitle** and became "My progress".
-
-## Phase 42 — Putting the home screen in the order the genre uses
-
-Laid out against what comparable apps actually do, rather than from taste. The consistent findings across Duolingo write-ups and kids-app design guidance: **play first, profile second** — the primary action stays dominant, stats are secondary; card-based grouping for multi-subject; and progress shown as something tangible, a bar or a set of checkpoints, not a bare number.
-
-- **The HUD moved to the very first line**, above the wordmark. It had to leave `#setup` to get there, since the brand block is shared by every screen, so `show()` hides it by hand everywhere but home — a round already has a progress bar and a Quit button, and a second row of counters would be two things to read at once.
-- **The tagline went.** "Spell, count, and catch!" was a sentence for whoever installed the app: read once, then permanently in the way of the thing it introduced.
-- **Four trail levels now show on home**, in a 2×2 grid under Start Playing — icon, level, total, and a coloured bar. Four rows would have been taller than the button above them; the grid is about half the height and scans in one look.
-- **The bar exists because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and a bare "Level 3" implies they are.
-- **Below the buttons, deliberately.** That is the play-first rule, and it is the one thing here worth defending: the panel is for the parent and the child's own sense of movement, not a gate in front of Start. Verified that Start Playing is fully on screen at 360×640, the smallest size checked.
-
-## Phase 43 — Everything above the fold, and one thing that gives way
-
-- **Order settled as HUD, wordmark, levels, Pokémon, buttons.** Phase 42 had put the levels *below* the buttons on the play-first principle; that was overruled, and the panel moved up. The play-first property is kept a different way — by making sure **Start Playing!** is still on screen without scrolling.
-- **The fold became the real constraint**, and it needed something to be elastic. The HUD, the wordmark, four levels and two buttons all have to be legible at their size; the Pokémon is the only element that can be smaller and still say what it says. So `.showcase-frame` is sized from viewport **height** and shrinks from 196px to ~115px on a short screen, with the page's top padding giving way alongside it.
-- **Measured at four sizes** — 360×640, 390×844, 414×736, 768×1024 — no vertical scroll on any, and the last button clears the fold on all four. The 360×640 case needed the top padding fix: it was over by exactly 3px, all of it the page's fixed 28px top inset.
-- **The HUD came down in size.** At 1.15rem it was competing with the wordmark for the same job; at 0.92rem it reads as instrumentation, which is what a HUD is.
-- **The wordmark went to caps** through `text-transform` rather than by retyping it, so "POKÉ" keeps its accent.
-
-**Found, not fixed:** the Settings screen scrolls horizontally at 360px wide — about 115px of overflow, caused by the level `<select>` elements sizing to their longest option ("Within 100, with regrouping"). It predates this work (build 51 overflowed by 127px) and is untouched by it.
-
-## Phase 44 — Two things saying one thing
-
-- **The round's top bar lost its `3 / 10` chip.** The progress bar beside it already showed the same fact, and neither number meant anything to a child who cannot read them yet. The bar now runs nearly the full width.
-- **"← Quit" became a ✕.** An icon, with an `aria-label`, in a round button matching the rest of the chrome. The `← Back` links on Settings, Battle, Pokédex and My progress keep their wording — those are for whoever is navigating, not for a child mid-round.
-- **Nearly deleted a rule that was still in use.** `.count-badge` looked like the removed chip's own style; it is also the Battle screen's win/loss record, which would have lost its pill and shadow silently. Caught by grepping the class before removing it, which is the same check `CLAUDE.md` prescribes for function names — and the third time in this project that a shared name has nearly bitten. The rule stayed; only the play-screen element went.
-
-## Phase 45 — Six numbers instead of a keypad
-
-- **Maths answers are picked from six**, in every mode. The keypad, the answer box and the `inputmode="none"` machinery are all gone — build 45 to build 55 in three days, which is the cost of the earlier call. Measuring answer lengths back then said a keypad was the only thing that covered a ladder reaching 196; it did not say whether *composing* the number was worth the screen it took.
-- **Checked the answer space before building, and it changed the design.** Four division levels have a total answer space of four or five values — smaller than the choice count — so distractors could not come from "other answers at this level". They come from the mistakes each operation invites instead, which is the better source anyway and has no such floor.
-- **Two rounds of tuning, both driven by looking at the actual sets.** First pass offered 16 and 17 beside an answer of 7, because the ±10 rule fired regardless of magnitude — a tens-column slip is only possible once there is a tens column. Second pass still scattered, because candidates were generated in plausibility order and then *sampled at random*, so a far option could beat a near one. Taking from the front of the list, with two spare for variety, fixed it: `3 + 4 = 7` now offers 4 5 6 7 8 10.
-- **The remaining wide sets are the good ones.** `4 + 3 → 1` and `6 − 5 → 11` look like outliers to a spread metric and are the most instructive options in the set: they are "did you add or subtract?". The metric was wrong, not the data.
-- **Math Pattern keeps all four equations on screen.** The choice was one box at a time; hiding the other three rows was not part of it, and stacking is what makes the pattern visible. One row is open, the six belong to it, and each answered row fills in.
-- **A wrong tap is spent** — dimmed and dead — so the same mistake can't be repeated and the field narrows. It still marks the answer unclean, so promotion is unchanged.
-- **Cost, stated plainly:** a blind guess now lands 1 in 6, and the round can be brute-forced in about three taps. Promotion resists it — every wrong tap marks the attempt unclean — but the practice is weaker than composing the number was.
-- **A splice bug caught by the duplicate-function grep.** Replacing the pattern section used the READING marker as its end bound; READING sits *before* MATH PATTERNS in the file, so the slice ran backwards and duplicated ~160 lines including a whole second `renderReading`. `grep -o "^function ..." | uniq -d` from `CLAUDE.md` caught it immediately. Fixed by searching for the end marker *after* the start index, and by using the correct section boundary.
-
-## Phase 46 — Icons that hold a line
-
-- **Reported: the HUD icons don't line up.** They did, by every measurement I could take here — the em-boxes were all 21px with centres at 38.7px, and the glyph ink centres were within 1.3% of the em. Measuring harder was the wrong move; looking at the row at 4× showed it immediately.
-- **The boxes lined up and the ink did not.** The target is round and wide, the flame narrow, the book tall and narrow, and the gear renders as flat grey next to three colour glyphs. Same box, four different optical sizes and weights.
-- **It could not be nudged straight.** Those metrics belong to the device's emoji font — this measurement is Noto Color Emoji, a tablet would use Apple's, and a per-glyph offset tuned against one is wrong on the other. There was no correct number to hardcode.
-- **Drawn as inline SVG on one 24×24 grid instead**, which the app already does for the pokéball. Same optical size and centre everywhere, no font dependency, and each icon takes its colour from the counter it belongs to through `currentColor` rather than carrying an emoji font's own palette.
-- **Two passes on the drawings themselves.** The first flame had an inner highlight that turned to mush at 18px, and the icons read light beside a 900-weight numeral. Simplified the flame to one silhouette, gave the dex a lens so it reads as a device rather than a bookmark, and took the icons from 1.15rem to 1.3rem.
-
-**Left alone deliberately:** the four Home Levels tiles still use emoji (🔤 📖 ➕ ✖️) and have the same problem in a smaller way. Not part of what was asked, and worth doing in the same style when it is.
-
-## Phase 47 — Numerals that survive 17px, and a panel that refreshes
-
-- **The home levels panel showed a stale level.** Setting a level in Settings moved the frontier and updated the Settings hint, and nothing told the home screen. Quitting a round after a promotion had the same hole.
-- **Fixed on the way *in*, not at each caller.** `show("setup")` rebuilds the home screen, so every route — Settings back, quit, dashboard back, results — shows the current figure. Patching the Back button would have fixed the reported path and left the other two, which is how the bug got there.
-- **The four tile icons are drawn now**, matching the HUD (Phase 46). The emoji they replace had the same trouble: four optical sizes, two rendering monochrome.
-- **"123" was the right instinct and I nearly talked myself out of it.** The icon box is 14×16px, and three digits at ~6px each sounded unreadable — so I built a strip of candidates at the real size and looked instead of guessing. `123` reads cleanly; the hand-drawn `+ −` I had assumed would be safer read as `+ _`.
-- **Two things the render caught that reasoning would not.** The `3` clipped its viewBox, fixed with `textLength`. And `Aa` rendered as `AA`, because the tile label above is `text-transform:uppercase` and SVG text inherits it.
-- **Numerals are set in the app's own webfont**, not drawn as paths — it is self-hosted since Phase 38, so it is certainly there, and real type at 17px beats six-pixel outlines.
-- 360×640 went 1px over the fold, the 17px icon box being a pixel taller than the emoji; two pixels off the levels card's padding settled it.
-
-## Phase 48 — Sorting the options, and the exploit it opened
-
-- **"Random is challenging, but not in a learning sort of way."** Right: a scattered grid makes finding the answer a visual search rather than a sum. Sorted, the six read as a stretch of number line and the child compares against neighbours.
-- **Sorting alone was worse than the shuffle it replaced**, which the change itself would never have shown — it took measuring where the answer *landed*. The wrong options straddle the answer by construction (±1, ±2, ±3), so sorting parked it 3rd or 4th in **75%** of questions and never 6th. Tap one of the middle two, be right three times in four, do no maths at all.
-- **Fixed by choosing the split before the options.** How many of the five sit below the answer is picked first, and each side is drawn to match. Middle two: 75% → 32%. Addition is near-flat at 17.9% / 15.2% across the six positions.
-- **Division still leans early** — 30% first, 2.6% last — because its answers are 1 to 10 and there are not five numbers below 2. The only way to flatten it is to offer negatives, which is not a mistake a five-year-old makes. Recorded rather than papered over.
-- **Both maths tiles now carry `123`.** The icon says *this is maths*; the label beside it — `+ / −`, `× / ÷` — says which. Two different symbols made them read as unrelated subjects.
-
-## Where things stand
-
-Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
-
-The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all four tables authored in a spreadsheet and read at boot. No ladder, word list or promotion gate remains in code.
-
-Open threads, roughly by how much they'd bite:
-
-- **The maths ladder is the last thing still hardcoded.** Both tracks' levels live in `ADDSUB_LEVELS` / `MULDIV_LEVELS` in `index.html`, and promotion falls back to the Spelling/Reading CSV figures because Maths has no table of its own. Moving it to a CSV with a min and a max per level is next; Phase 37 has the measurements it needs to fix, including the two things a range alone won't reach — identity operands, and the review band.
-- **The phoneme respellings still haven't been heard.** A first pass written on paper turned out to be 30% unspeakable (Phase 31); the rewrite is measured at 1%, but *measured* only against a rough test for whether a string can be said at all — not against whether it says the **right** sound. `tools/phonemes.html` exists now and takes about five minutes to run through. `ee` is the one to listen to first.
-- **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
-- **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
-- **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
-- **`fonts/OFL.txt` is missing.** The webfont is now served from `fonts/`, and the Open Font Licence requires its text to travel with the files. It could not be fetched from the sandbox the change was made in — `fonts/README.md` says where to get it. Nothing breaks without it; it is a licence obligation, not a runtime one.
-- **The answer's position leans early on the division levels.** 30% first of six, 2.6% last, because those answers run 1–10 and there are not five whole numbers below 2. Flat everywhere else (Phase 48).
-- **Settings overflows horizontally on a narrow phone.** ~115px at 360px wide, from the level `<select>` elements taking their width from the longest option text. Long-standing; a `max-width` and text-overflow on the selects would settle it.
-- **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
-
-Parked, not scheduled: a service worker for genuine offline install; moving the type chart to CSV if it ever needs editing; recorded phoneme audio instead of synthesised respellings; and two deferred Reading modes — **Rhyme Match**, which needs a real-word list and now has one in `word_levels.csv`, and **Clue Words**, which needs per-item colour/size/material data that doesn't exist.
 
 ## Doc roles
 
@@ -295,4 +153,4 @@ Real browser testing works in web sessions: Node, Playwright and Chromium are pr
 chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' })
 ```
 
-Calling the app's own functions via `page.evaluate()` — `mkReading()`, `renderPokedex()`, then asserting on the DOM — reaches any mode or level directly without playing to it. But check screenshots too: two bugs this session passed every structural assertion while being visibly broken on screen.
+Calling the app's own functions via `page.evaluate()` — `mkReading()`, `renderPokedex()`, then asserting on the DOM — reaches any mode or level directly without playing to it. But check screenshots too, and zoom in: several bugs here passed every structural assertion while being visibly broken, and one — misaligned HUD icons — measured *correct* on every number available and was obvious the moment the row was rendered at 4×.

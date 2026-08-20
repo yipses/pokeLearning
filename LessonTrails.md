@@ -1,6 +1,6 @@
 # Poké Learning — Lesson Trails (Curriculum Design)
 
-> **Status:** This is the original curriculum design document (originally published as a Claude artifact, "Poké Learning — Lesson Trails," v2). All four trails described below — Add/Subtract, Multiply↔Divide, Spelling, and Reading — plus the Dashboard have since been fully built; this file is kept as detailed design reference (exact word lists, level tables, promotion rules) that isn't fully duplicated in `Overview.md`'s higher-level summary. For current build status, see `progress.md`.
+> **Status:** This is the original curriculum design document (originally published as a Claude artifact, "Poké Learning — Lesson Trails," v2). All four trails described below — Add/Subtract, Multiply↔Divide, Spelling, and Reading — plus My progress (the dashboard screen) have since been fully built; this file is kept as detailed design reference (exact word lists, level tables, promotion rules) that isn't fully duplicated in `Overview.md`'s higher-level summary. For current build status, see `progress.md`.
 
 Math splits into two independent strands — **Add/Subtract** and an interleaved **Multiply↔Divide** — plus **Spelling** and **Reading**, which share one graded vocabulary but climb it at their own pace. Each trail has its own frontier and advances on its own schedule.
 
@@ -14,7 +14,7 @@ Nothing here is a hard gate a kid must fully clear before moving on — see the 
 
 **Two ways to promote.** Tracking **clean** answers only (right on the first try, no hints) — **5/5** clean in a row promotes instantly; otherwise **8/10** (80%) clean in the rolling window promotes. Whichever hits first. No demotion — Review keeps old levels sharp instead.
 
-These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. The percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code; Math has no CSV yet and falls back to the same figures. The Dashboard's labels and gate lines are drawn from whichever row the track is on.
+These windows are deliberately short. A child who has a level shouldn't have to prove it twenty times to leave it, and one they haven't got keeps coming back through the Review band anyway. The 80% bar is unchanged from the original 16/20 — the same standard on half the evidence, which trades a little precision for a lot less grinding. The percentages are **per level**, read from the Spelling and Reading CSVs, so the two trails can be tuned apart without touching code; Math has no CSV yet and falls back to the same figures. My progress's labels and gate lines are drawn from whichever row the track is on.
 
 **You can place the pin.** The frontier is editable in Settings, in either direction — up if a kid's already ahead, down if a level was set too high. Moving it resets that track's Last 5 / Last 10 windows.
 
@@ -149,7 +149,7 @@ Same grading, two frontiers. Reading will naturally run ahead of Spelling, and t
 
 Both `promote_5_pct` and `promote_10_pct` are per level, read from the row. Currently 100% and 80% everywhere, matching what the engine used to hardcode — but they can now differ per level and per trail without touching code.
 
-## Dashboard
+## My progress
 
 One status page per kid — where each trail's frontier sits right now, how close it is to promoting, and the trend behind that number. Each card shows:
 
