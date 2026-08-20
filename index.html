@@ -849,6 +849,9 @@
     text-transform:uppercase; letter-spacing:.07em;
     font-size:.82rem; font-weight:800; color:var(--ink-soft); line-height:1.2;
   }
+  /* Whatever a screen needs beside its name — only Battle uses it, for the
+     session record — pushed to the far end so the title stays put. */
+  .screen-extra{ margin-left:auto; display:flex; align-items:center; }
   .dex-tabs-wrap{ display:flex; align-items:flex-start; gap:6px; margin:0 0 14px; }
   .dex-tabs{
     flex:1 1 auto; min-width:0;
@@ -1124,9 +1127,7 @@
 
   <!-- ============ SETTINGS ============ -->
   <section id="settings" class="hidden">
-    <div class="topbar">
-      <button class="quit" id="settingsBackBtn">← Back</button>
-    </div>
+    <div class="chrome"></div>
 
     <div class="card">
       <h2><span class="chip">🎯</span> General Settings</h2>
@@ -1255,22 +1256,13 @@
 
   <!-- ============ BATTLE ============ -->
   <section id="battle" class="hidden">
-    <div class="topbar">
-      <button class="quit" id="battleBackBtn">← Back</button>
-      <div class="count-badge" id="battleRecord" style="margin-left:auto">✅ 0 &nbsp; ❌ 0</div>
-    </div>
+    <div class="chrome"></div>
     <div class="card" id="battleStage"><!-- battle UI injected here --></div>
   </section>
 
   <!-- ============ POKÉDEX ============ -->
   <section id="pokedex" class="hidden">
-    <div class="topbar">
-      <div class="home-tiles" id="dexTiles"></div>
-    </div>
-    <div class="screen-head">
-      <button class="quit quit-x" id="dexBackBtn" aria-label="Close" title="Close">&#10005;</button>
-      <span class="screen-title">Pokédex</span>
-    </div>
+    <div class="chrome"></div>
     <div class="dex-tabs-wrap">
       <button class="dex-arrow hidden" type="button" id="dexTabsPrev" aria-label="Scroll to earlier generations">‹</button>
       <div class="dex-tabs" id="dexTabs" role="tablist" aria-label="Generation"></div>
@@ -1281,12 +1273,7 @@
 
   <!-- ============ DASHBOARD ============ -->
   <section id="dashboard" class="hidden">
-    <div class="topbar">
-      <button class="quit" id="dashboardBackBtn">← Back</button>
-    </div>
-    <div class="card" style="text-align:center;">
-      <h2 style="justify-content:center;"><span class="chip">📊</span> My progress</h2>
-    </div>
+    <div class="chrome"></div>
     <div id="dashboardGrid"></div>
   </section>
 
@@ -1314,7 +1301,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 72;
+const APP_BUILD = 74;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2745,7 +2732,6 @@ function renderPokedex(){
   const collected = loadCollection();
   const unseen = loadUnseen();
   const sorted = [...POKEMON].sort((a,b)=> a.id-b.id);
-  renderTiles($("#dexTiles"));
 
   // a generation only appears once the roster actually reaches into its range
   const gens = GENERATIONS.filter(g => sorted.some(p => p.id>=g.from && p.id<=g.to));
@@ -4054,7 +4040,8 @@ let battleState = null;
 let battleWins = 0, battleLosses = 0;
 
 function updateBattleRecord(){
-  $("#battleRecord").innerHTML = `✅ ${battleWins} &nbsp; ❌ ${battleLosses}`;
+  // The chrome owns the slot; this just refreshes it after a win or a loss.
+  renderChrome("battle");
 }
 
 // Type effectiveness chart (attacker -> defender multiplier). Unlisted matchups are neutral (1x).
@@ -4255,6 +4242,42 @@ function finish(){
 }
 
 /* ---------------- view switching ---------------- */
+/* Every screen you can back out of wears the same chrome: the HUD, then a ✕ beside
+   the screen's name. Declared here once and rendered by show(), so adding a screen
+   is a row in this map rather than another copy of the same two rows of markup —
+   and the ✕ can never drift out of step with the one next to it.
+
+   The round is deliberately absent: it has its own progress bar and ✕, and a
+   second row of counters there would be two things to read at once. So is the
+   results card, whose HUD sits inside the card rather than above it. */
+const SCREEN_CHROME = {
+  settings:  { title: "Settings" },
+  battle:    { title: "Battle", extra: () => `<span class="count-badge">✅ ${battleWins} &nbsp; ❌ ${battleLosses}</span>` },
+  pokedex:   { title: "Pokédex" },
+  dashboard: { title: "My progress" },
+};
+function renderChrome(which){
+  const spec = SCREEN_CHROME[which];
+  const host = $("#" + which + " .chrome");
+  if(!host || !spec) return;
+  if(!host.dataset.built){
+    host.innerHTML = `
+      <div class="topbar"><div class="home-tiles"></div></div>
+      <div class="screen-head">
+        <button class="quit quit-x" type="button" aria-label="Close" title="Close">&#10005;</button>
+        <span class="screen-title">${spec.title}</span>
+        <span class="screen-extra"></span>
+      </div>`;
+    host.querySelector(".quit-x").addEventListener("click", ()=> show("setup"));
+    host.dataset.built = "1";
+  }
+  renderTiles(host.querySelector(".home-tiles"));
+  // Anything a screen wants beside its name. Filled on every render, so a screen
+  // that updates it before the chrome exists — Battle sets its record inside
+  // newBattle(), which runs before show() — still lands.
+  if(spec.extra) host.querySelector(".screen-extra").innerHTML = spec.extra();
+}
+
 function show(which){
   ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
   // The HUD sits above the logo, which is outside #setup — so it is hidden by
@@ -4266,6 +4289,7 @@ function show(which){
   // showing the old one; so would promoting mid-round and then quitting. Both
   // are the same bug, and patching each caller invites a third.
   if(which === "setup" && window.__dataReady) renderHomeTiles();
+  if(window.__dataReady) renderChrome(which);
   window.scrollTo({top:0, behavior:"smooth"});
   // Widths only exist once the section is displayed, so the tab strip is sized
   // here rather than in renderPokedex, which usually runs one line earlier.
@@ -4366,18 +4390,14 @@ function migrateFrontiers(){
 
 $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
-$("#battleBackBtn").addEventListener("click", ()=> show("setup"));
 $("#settingsBtn").innerHTML = HUD_ICONS.gear;
 $("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"); });
 // The Pokédex and Progress screens are reached through the home tiles now, so
 // the home screen keeps to one job: pick a mode and play.
-$("#dexBackBtn").addEventListener("click", ()=> show("setup"));
 $("#dexTabsPrev").addEventListener("click", ()=> scrollDexTabs(-1));
 $("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
 $("#dexTabs").addEventListener("scroll", updateDexArrows);
 window.addEventListener("resize", updateDexArrows);
-$("#dashboardBackBtn").addEventListener("click", ()=> show("setup"));
-$("#settingsBackBtn").addEventListener("click", ()=> show("setup"));
 $("#quitBtn").addEventListener("click", ()=>{
   spellState=null; missingState=null; mathState=null; readingState=null; patternState=null; visualState=null;
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();

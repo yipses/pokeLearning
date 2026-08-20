@@ -34,12 +34,12 @@ Seven top-level screens, all within one `index.html`:
 | Screen | Purpose |
 |---|---|
 | **Start** | One line carrying three counters, the wordmark and the gear, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
-| **Settings** | Per-mode toggles and each trail's frontier control |
+| **Settings** | The chrome, then per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
-| **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
+| **Battle** | Standalone Pokémon-vs-Pokémon prediction game; its session record sits beside the screen name |
 | **Pokédex** | The HUD, a ✕ beside **POKÉDEX**, generation tabs, then one generation's grid — caught in colour, uncaught as grey silhouettes |
-| **My progress** | A 7-day rounds chart, a card each for Spelling and Reading, then one card per maths family |
+| **My progress** | The chrome, a 7-day rounds chart, a card each for Spelling and Reading, then one card per maths family |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
 
@@ -235,7 +235,15 @@ Because the mark now lives in the HUD, it is **home-only** — the other six scr
 
 **The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark beside them is set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and carries **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
-The HUD is **identical wherever it appears** — home, results, the Pokédex. Two counters, the same two, in the same order. A counter that differs by screen is not persistent chrome, it is three similar things; the collection count lives on the Pokémon card (§8c) and in the Pokédex's own generation header, both of which name what they are counting.
+### Screen chrome
+
+**Every screen you can back out of wears the same two rows**: the HUD, then a ✕ beside the screen's name in caps — `SETTINGS`, `BATTLE`, `POKÉDEX`, `MY PROGRESS`. The HUD is persistent chrome and reads as belonging to the app; the row under it names the place you are in and gets you out of it. Those are different jobs, which is why they are different rows — on one line the ✕ read as a fourth counter.
+
+It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds each screen's title and, optionally, something to show beside it; `show()` renders it. Adding a screen is a row in that map rather than another copy of two rows of markup, and the ✕ cannot drift out of step with the one next to it. Only Battle uses the extra slot, for its session record.
+
+**A screen with chrome does not also carry a heading card.** My progress and the Pokédex both had one, stating a name the chrome now states; both are gone, and both screens start most of a screen higher.
+
+The HUD is **identical wherever it appears** — home, results, and every chrome screen. Two counters, the same two, in the same order. A counter that differs by screen is not persistent chrome, it is three similar things; the collection count lives on the Pokémon card (§8c) and in the Pokédex's own generation header, both of which name what they are counting.
 
 **Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
 
@@ -297,7 +305,7 @@ Everything on the screen is a fixed cost except one thing. The HUD, the wordmark
 
 ## 9. My progress
 
-Reached from either home box. Headed **"My progress"**, with no subtitle.
+Reached from either home box, and headed by the chrome — `MY PROGRESS` beside the ✕, with no card and no subtitle.
 
 **This week** comes first: a bar chart of rounds played on each of the last 7 days, today last, with a dashed line at the daily goal and a count above each bar. Days that met the goal are green, days that fell short are blue, and days with no play are left as an empty slot rather than dropped — the gaps are the point. Above it, the week's total and how many days it was spread over.
 

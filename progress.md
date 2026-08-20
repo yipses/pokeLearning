@@ -220,6 +220,19 @@ Three things replaced it, each doing a job the card was not:
 
 One thing checked rather than assumed: the tab strip clips its last pill at the scroll edge, which looks like the ‹ › arrow overlapping it. The arrows are flex siblings, not overlays — that is the strip scrolling, and it predates this change.
 
+### Phase 61 — The chrome becomes one thing, on every screen
+
+Settings, Battle, the Pokédex and My progress each had their own hand-written top bar: three said "← Back", one said ✕, one carried a badge, and none carried the HUD. They wear **the same two rows** now — the HUD, then a ✕ beside the screen's name.
+
+**Declared once rather than per screen.** A `SCREEN_CHROME` map holds each title and, optionally, something to show beside it; `show()` renders it. Four sections went from five to nine lines of markup each down to one `<div class="chrome"></div>`, and the four separately-bound back buttons went with them. Adding a screen is now a row in that map.
+
+Two things the change turned up:
+
+- **Battle's record was written before the chrome existed.** `newBattle()` calls `updateBattleRecord()` and only then `show()`, so the slot it wrote into was still null. Making the extra slot part of the map — a function the chrome calls on every render — fixed it at the shape level rather than by reordering two calls, and `updateBattleRecord` is now one line that re-renders the chrome.
+- **My progress said its own name twice**, once in the chrome and once in a card below it. That card is gone, for the same reason the Pokédex's was.
+
+One false alarm worth recording: a regression check reported the Pokédex HUD as empty. The HUD was fine — the *test* still queried `#dexTiles`, an id the chrome no longer emits. A stale selector reads exactly like a broken feature, so the check was fixed rather than the app.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
