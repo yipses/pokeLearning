@@ -34,12 +34,12 @@ Seven top-level screens, all within one `index.html`:
 | Screen | Purpose |
 |---|---|
 | **Start** | One line carrying three counters, the wordmark and the gear, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
-| **Settings** | Per-mode toggles and each trail's frontier control |
+| **Settings** | The chrome, then per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
-| **Battle** | Standalone Pokémon-vs-Pokémon prediction game with its own back button |
-| **Pokédex** | Every Pokémon, one generation per tab, caught ones in color, uncaught ones as grey silhouettes |
-| **My progress** | A 7-day rounds chart, a card each for Spelling and Reading, then one card per maths family |
+| **Battle** | Standalone Pokémon-vs-Pokémon prediction game; its session record sits beside the screen name |
+| **Pokédex** | The HUD, a ✕ beside **POKÉDEX**, generation tabs, then one generation's grid — caught in colour, uncaught as grey silhouettes |
+| **My progress** | The chrome, a 7-day rounds chart, a card each for Spelling and Reading, then one card per maths family |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
 
@@ -207,8 +207,12 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - **The Settings field is the outcome, not the dice roll.** A guarantee adds encounters on top of the roll, so a raw roll of R always produces more than R — and "longer than average" is a one-in-three event, not a rare one, so the gap is several points (a raw 25% roll with this pity lands at 33%). The app therefore solves for the roll that *lands* on the number: for a drought capped at `k`, the encounter rate is `p / (1 - (1-p)^k)`, which increases with `p`, so a short binary search finds it. Set 25% and the roll used is 11.2%, with the pity making up the difference. Measured over 200,000 questions per setting, every value from 1% to 100% lands on itself.
 - Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer) — the only button on the card, from every entry. **The name is said aloud**, shortly after the card appears — see the popup rule in §9. This doesn't breach the read-aloud rule in §7.2, which guards the *prompt*: the question is already answered, and what's being named is a picture. A **catch is celebrated**: confetti falls through the card and a burst of light blooms behind the artwork. Rarer catches get half again as many pieces and a gold palette, so the fuss itself signals the rarity to a child who can't yet read the chip. It fires on real catches only — browsing the Pokédex opens the same card dozens of times, and confetti every time would be noise — and is switched off entirely under `prefers-reduced-motion`. Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. The Pokémon side of both the Spelling and Reading pools respects the same gate.
+- **The screen opens straight onto the collection.** The HUD, then a ✕ beside **POKÉDEX**, then the tabs, then the grid — the first cell sits about 240px down at every supported width. It used to carry a full card headed *"My Pokédex"* with a `60 / 1021 caught` pill under it, which pushed the grid most of a screen down to state a total nobody is working toward: the generation is the unit being filled, and its own header already says where it stands.
+- **The HUD comes first, unchanged.** It is persistent chrome and reads as belonging to the app, so it sits where it always does and says what it always says.
+- **Below it, the ✕ on its own line beside the screen's name.** That row names the place you are in and gets you out of it — two different jobs from the HUD's, and mixing them into one line made the ✕ read as a fourth counter. Closing is a ✕ rather than "← Back", matching the round screen: same control, same corner, same meaning.
 - The **Pokédex screen** is organized into **generation tabs** — `Gen 1` … `Gen 9`, one row that scrolls sideways on a phone — showing one generation's grid at a time. It opens on whichever generation the collection gate is currently on, not always Gen 1, and a tab whose generation is fully caught is outlined in green. All nine tabs fit the content column on a desktop window; below that width the strip scrolls, and **‹ › arrow buttons appear** — a touchscreen can swipe the strip but a mouse cannot, so the arrows are the desktop affordance. They exist only while the strip actually overflows and each one greys out at its end. One generation at a time keeps the visible grid to at most 160 cells instead of 1,021 and puts Gen 9 one tap away instead of a very long scroll.
 - Within a tab: caught entries show in full colour with their name; uncaught ones are a grey silhouette (a `brightness(0)` filter on the same artwork, no separate asset) with **no name text at all** — the outline and the Dex number say it, where a row of `???` would be a word to decode for no payoff (§14.1). A live X/Y caught count sits in the generation header.
+- **A bar under each generation header** shows how full that generation is, in the same colour and the same `.level-bar` the home card and the level tiles use. It replaces the dashed rule the header used to carry: the rule separated the header from the grid, and the bar does that *and* says how far along you are — `58 / 147` is exactly the sort of fraction that cannot be felt without one.
 - **Legendary and mythical species are called out**: a gold cell with a ✨ badge in the grid, a matching chip above the type badges in the detail popup, and a per-generation tally in each generation header (`✨ 2/5 · 3 / 147`). The marker shows on **uncaught** slots too — it reveals nothing about which Pokémon lives there, and flagging the slot is the point: it marks something worth hunting for rather than only rewarding the find afterwards. Name and rarity chip stay hidden until it's caught.
 - **Every entry is tappable**, opening a detail popup. A caught entry reads: larger artwork, the Dex number, the name, type badges, any rarity chip, a 🔊 speaker, and its **evolution family**. No greeting and no caption — the dex is a list you page through, and a sentence on every entry is one to skip past thirty times in a row.
 - **The family shows whether or not this one is caught**, and each relative reveals itself independently: caught ones in colour with their names, uncaught ones as silhouettes. It gives away nothing an uncaught entry is holding back, and it answers what the card is opened to ask — what is this, and what does it become. An uncaught base with the strip hidden looked like a species with no evolutions at all.
@@ -231,7 +235,17 @@ Because the mark now lives in the HUD, it is **home-only** — the other six scr
 
 **The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark beside them is set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and carries **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
-The HUD is home-only. A round has its own progress bar and a ✕, and a second row of counters there would be two things to read at once.
+### Screen chrome
+
+**Every screen you can back out of wears the same two rows**: the HUD, then a ✕ beside the screen's name in caps — `SETTINGS`, `BATTLE`, `POKÉDEX`, `MY PROGRESS`. The HUD is persistent chrome and reads as belonging to the app; the row under it names the place you are in and gets you out of it. Those are different jobs, which is why they are different rows — on one line the ✕ read as a fourth counter.
+
+It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds each screen's title and, optionally, something to show beside it; `show()` renders it. Adding a screen is a row in that map rather than another copy of two rows of markup, and the ✕ cannot drift out of step with the one next to it. Only Battle uses the extra slot, for its session record.
+
+**A screen with chrome does not also carry a heading card.** My progress and the Pokédex both had one, stating a name the chrome now states; both are gone, and both screens start most of a screen higher.
+
+The HUD is **identical wherever it appears** — home, results, and every chrome screen. Two counters, the same two, in the same order. A counter that differs by screen is not persistent chrome, it is three similar things; the collection count lives on the Pokémon card (§8c) and in the Pokédex's own generation header, both of which name what they are counting.
+
+**Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
 
 **The round's top bar is a ✕ and a bar, nothing else.** The bar's fill says how far along the round is, so a `3 / 10` beside it would be the same fact written twice — and neither number means anything to a child who cannot yet read them. Quitting is an icon rather than the word "Quit" for the same reason. The ✕ keeps an `aria-label`, and the ← Back links on the other screens are unchanged: they are for whoever is navigating, not mid-round.
 
@@ -291,7 +305,7 @@ Everything on the screen is a fixed cost except one thing. The HUD, the wordmark
 
 ## 9. My progress
 
-Reached from either home box. Headed **"My progress"**, with no subtitle.
+Reached from either home box, and headed by the chrome — `MY PROGRESS` beside the ✕, with no card and no subtitle.
 
 **This week** comes first: a bar chart of rounds played on each of the last 7 days, today last, with a dashed line at the daily goal and a count above each bar. Days that met the goal are green, days that fell short are blue, and days with no play are left as an empty slot rather than dropped — the gaps are the point. Above it, the week's total and how many days it was spread over.
 
