@@ -229,6 +229,16 @@ Laid out against what comparable apps actually do, rather than from taste. The c
 - **Cost, stated plainly:** a blind guess now lands 1 in 6, and the round can be brute-forced in about three taps. Promotion resists it — every wrong tap marks the attempt unclean — but the practice is weaker than composing the number was.
 - **A splice bug caught by the duplicate-function grep.** Replacing the pattern section used the READING marker as its end bound; READING sits *before* MATH PATTERNS in the file, so the slice ran backwards and duplicated ~160 lines including a whole second `renderReading`. `grep -o "^function ..." | uniq -d` from `CLAUDE.md` caught it immediately. Fixed by searching for the end marker *after* the start index, and by using the correct section boundary.
 
+## Phase 46 — Icons that hold a line
+
+- **Reported: the HUD icons don't line up.** They did, by every measurement I could take here — the em-boxes were all 21px with centres at 38.7px, and the glyph ink centres were within 1.3% of the em. Measuring harder was the wrong move; looking at the row at 4× showed it immediately.
+- **The boxes lined up and the ink did not.** The target is round and wide, the flame narrow, the book tall and narrow, and the gear renders as flat grey next to three colour glyphs. Same box, four different optical sizes and weights.
+- **It could not be nudged straight.** Those metrics belong to the device's emoji font — this measurement is Noto Color Emoji, a tablet would use Apple's, and a per-glyph offset tuned against one is wrong on the other. There was no correct number to hardcode.
+- **Drawn as inline SVG on one 24×24 grid instead**, which the app already does for the pokéball. Same optical size and centre everywhere, no font dependency, and each icon takes its colour from the counter it belongs to through `currentColor` rather than carrying an emoji font's own palette.
+- **Two passes on the drawings themselves.** The first flame had an inner highlight that turned to mush at 18px, and the icons read light beside a 900-weight numeral. Simplified the flame to one silhouette, gave the dex a lens so it reads as a device rather than a bookmark, and took the icons from 1.15rem to 1.3rem.
+
+**Left alone deliberately:** the four Home Levels tiles still use emoji (🔤 📖 ➕ ✖️) and have the same problem in a smaller way. Not part of what was asked, and worth doing in the same style when it is.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
@@ -243,6 +253,7 @@ Open threads, roughly by how much they'd bite:
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
 - **`fonts/OFL.txt` is missing.** The webfont is now served from `fonts/`, and the Open Font Licence requires its text to travel with the files. It could not be fetched from the sandbox the change was made in — `fonts/README.md` says where to get it. Nothing breaks without it; it is a licence obligation, not a runtime one.
+- **The Home Levels tiles still use emoji.** Same optical-size problem the HUD had (Phase 46), smaller in effect because the tiles are further apart. Four more drawn icons in the same style would settle it.
 - **Settings overflows horizontally on a narrow phone.** ~115px at 360px wide, from the level `<select>` elements taking their width from the longest option text. Long-standing; a `max-width` and text-overflow on the selects would settle it.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
 
