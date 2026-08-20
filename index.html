@@ -678,7 +678,6 @@
      Today goes green on the day it is met, the one state worth noticing. */
   .hud-item{ color:var(--ink-soft); }
   .hud-item.streak{ color:#e0812f; }
-  .hud-item.dex{ color:var(--berry-deep); }
   .hud-item.met{ color:var(--leaf-deep); }
 
   /* ---------- home levels ---------- */
@@ -841,6 +840,15 @@
      affordance. They appear only when the strip actually overflows and disable
      at each end, so on a wide screen where all nine tabs fit there is no
      furniture at all. */
+  /* The ✕ gets its own line beside the screen's name, below the HUD. The HUD is
+     persistent chrome and reads as belonging to the app; this row names the place
+     you are in and gets you out of it. Same uppercase treatment as the home cards
+     — set through text-transform so "Pokédex" keeps its accent. */
+  .screen-head{ display:flex; align-items:center; gap:12px; margin:0 0 14px; }
+  .screen-title{
+    text-transform:uppercase; letter-spacing:.07em;
+    font-size:.82rem; font-weight:800; color:var(--ink-soft); line-height:1.2;
+  }
   .dex-tabs-wrap{ display:flex; align-items:flex-start; gap:6px; margin:0 0 14px; }
   .dex-tabs{
     flex:1 1 auto; min-width:0;
@@ -1257,8 +1265,11 @@
   <!-- ============ POKÉDEX ============ -->
   <section id="pokedex" class="hidden">
     <div class="topbar">
-      <button class="quit quit-x" id="dexBackBtn" aria-label="Close" title="Close">&#10005;</button>
       <div class="home-tiles" id="dexTiles"></div>
+    </div>
+    <div class="screen-head">
+      <button class="quit quit-x" id="dexBackBtn" aria-label="Close" title="Close">&#10005;</button>
+      <span class="screen-title">Pokédex</span>
     </div>
     <div class="dex-tabs-wrap">
       <button class="dex-arrow hidden" type="button" id="dexTabsPrev" aria-label="Scroll to earlier generations">‹</button>
@@ -1303,7 +1314,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 71;
+const APP_BUILD = 72;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -2083,7 +2094,7 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles"), false); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
 
 /* The home screen's middle band: one of YOUR Pokémon, shown big — number, then
    name. It is a trophy shelf, not a teaser: showing off a catch is what makes a
@@ -2192,27 +2203,16 @@ const HUD_ICONS = {
     <path fill="currentColor" d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.5 7.5 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7.5 7.5 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.7 8.8a.5.5 0 0 0 .1.6L4.8 11a7.7 7.7 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3a.5.5 0 0 0 .6.2l2.4-1c.5.4 1.1.7 1.7 1l.4 2.5a.5.5 0 0 0 .5.4h3.8a.5.5 0 0 0 .5-.4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1a.5.5 0 0 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6zM12 15.4A3.4 3.4 0 1 1 15.4 12 3.4 3.4 0 0 1 12 15.4z"/></svg>`,
 };
 
-/* `withDex` is false on the home screen only. Its collection counter moved into
-   the Pokémon card, where the row it sits on names the generation it is counting
-   and carries the tap through to the Pokédex — the HUD slot said the same two
-   numbers with no label at all. Results keeps it: that screen has no card to
-   move it to. */
-function renderTiles(el, withDex = true){
+/* One HUD, identical wherever it appears — home, results, the Pokédex. Rounds
+   today and the streak, and nothing else: the collection counter moved into the
+   Pokémon card, where the row it sits on names the generation it is counting and
+   carries the tap through to the Pokédex. A counter that differs by screen is not
+   persistent chrome, it is three similar things. */
+function renderTiles(el){
   if(!el) return;
   const data = loadStreak();
-  const collected = loadCollection();
-  const g = currentGenRange(collected);
   const goal = roundsGoal();
   const done = data[dateKey(new Date())] || 0;
-
-  let dexBig, dexSmall;
-  if(g){
-    const inGen = POKEMON.filter(p => p.id>=g.from && p.id<=g.to);
-    dexBig = `${inGen.filter(p => collected.includes(p.id)).length}/${inGen.length}`;
-    dexSmall = g.label.split("—")[0].replace("Generation","Gen").trim();
-  } else {
-    dexBig = `${collected.length}`; dexSmall = "Complete";
-  }
 
   // Icon then number, nothing else. The label each of these used to carry was a
   // word a five-year-old wasn't reading; the icon and the colour do that work,
@@ -2226,8 +2226,7 @@ function renderTiles(el, withDex = true){
 
   el.innerHTML =
     hud("dashboard", "today",  `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
-    hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak") +
-    (withDex ? hud("pokedex", "dex", dexBig, `${dexSmall}: ${dexBig} caught`, "dex") : "");
+    hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak");
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;
@@ -2746,7 +2745,7 @@ function renderPokedex(){
   const collected = loadCollection();
   const unseen = loadUnseen();
   const sorted = [...POKEMON].sort((a,b)=> a.id-b.id);
-  renderTiles($("#dexTiles"), false);
+  renderTiles($("#dexTiles"));
 
   // a generation only appears once the roster actually reaches into its range
   const gens = GENERATIONS.filter(g => sorted.some(p => p.id>=g.from && p.id<=g.to));

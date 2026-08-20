@@ -214,8 +214,8 @@ It opened onto a card headed *"My Pokédex"* with a `60 / 1021 caught` pill unde
 
 Three things replaced it, each doing a job the card was not:
 
-- **Closing is a ✕**, the same control in the same corner as a round, rather than "← Back".
-- **The HUD follows you here.** Rounds today and the streak no longer vanish the moment you go looking at what you caught. Not the collection counter: this screen *is* the collection.
+- **The HUD follows you here, unchanged.** It is persistent chrome, so it sits where it always does and says what it always says. That settled an inconsistency left over from the previous phase: the counter had been two items on home and three on results. It is **two everywhere** now — the collection count lives on the Pokémon card and in the generation header, both of which name what they are counting, and a counter that differs by screen is not persistent chrome but three similar things.
+- **Below the HUD, the ✕ on its own line beside POKÉDEX.** That row names the place you are in and gets you out of it — different work from the HUD's, and putting the ✕ on the HUD line made it read as a fourth counter. A ✕ rather than "← Back", matching the round screen.
 - **A bar under each generation header**, the same `.level-bar` the home card and the level tiles use. It replaces the dashed rule the header carried — the rule separated header from grid, the bar does that *and* says how full the generation is. `58 / 147` is exactly the fraction that cannot be felt without one.
 
 One thing checked rather than assumed: the tab strip clips its last pill at the scroll edge, which looks like the ‹ › arrow overlapping it. The arrows are flex siblings, not overlays — that is the strip scrolling, and it predates this change.
