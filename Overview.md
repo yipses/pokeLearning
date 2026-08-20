@@ -33,7 +33,7 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big, then "Start Playing" and "Pokémon Battle" |
+| **Start** | A HUD of three counters, the wordmark, a 2×2 panel of current levels, one of your Pokémon shown big with its generation count, then "Start Playing" and "Pokémon Battle" |
 | **Settings** | Per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The three status tiles, what was caught this round, replay controls |
@@ -237,6 +237,8 @@ The HUD is home-only. A round has its own progress bar and a ✕, and a second r
 | flame | consecutive days that met the rounds goal | My progress |
 | dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
+The dex counter and the showcase's generation count (§8c) are the same pair of numbers whenever the Pokémon on the shelf comes from the generation being hunted, which is the usual case. They are not redundant in role — the HUD's is unlabelled and goes to the Pokédex, the showcase's names its generation and sits under the trophy it describes — but the screen does say the number twice.
+
 **No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
 
 The same HUD appears on the results screen, centred rather than left-aligned to match that card. The gear is home-only.
@@ -287,7 +289,7 @@ Then **Spelling** and **Reading** get a card each, showing:
 - Days at the current level.
 - One clean-answer progress bar per promotion gate, with exact fractions — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths. The bar fills against however many answers the window actually holds, so three clean out of three reads full.
 
-**There is no per-track accuracy chart.** The bars are the whole of it. An accuracy chart plotted a rolling window that *resets on every promotion*, so it drew the same sawtooth over and over — climb, spike, promote, restart — and the gate lines it was drawn against were crossed once per tooth rather than being anything a reader was watching a track approach.
+**There is no per-track accuracy chart.** The bars are the whole of it. Rolling accuracy resets at every promotion, so it cannot be plotted across levels as a trend — the reasoning is in `progress.md`.
 
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
