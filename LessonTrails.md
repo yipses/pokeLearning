@@ -1,10 +1,12 @@
 # Poké Learning — Lesson Trails (Curriculum Design)
 
-> **Status:** This is the original curriculum design document (originally published as a Claude artifact, "Poké Learning — Lesson Trails," v2). All four trails described below — Add/Subtract, Multiply↔Divide, Spelling, and Reading — plus My progress (the dashboard screen) have since been fully built; this file is kept as detailed design reference (exact word lists, level tables, promotion rules) that isn't fully duplicated in `Overview.md`'s higher-level summary. For current build status, see `progress.md`.
+> **Status:** This is the curriculum design document (originally published as a Claude artifact, "Poké Learning — Lesson Trails," v2), kept for the design reference that `Overview.md`'s higher-level summary doesn't duplicate: exact word lists, level tables and the reasoning behind them. Everything described here is built. For how it got built and what's still open, see `progress.md`.
+>
+> **The maths half was redesigned.** The two strands below became **eight CSV-defined tracks** — see *Maths* — and the level tables that used to sit here are now `data/math_levels.csv`. The Spelling and Reading halves are current.
 
-Math splits into two independent strands — **Add/Subtract** and an interleaved **Multiply↔Divide** — plus **Spelling** and **Reading**, which share one graded vocabulary but climb it at their own pace. Each trail has its own frontier and advances on its own schedule.
+**Spelling** and **Reading** share one graded vocabulary but climb it at their own pace. **Maths** is eight tracks that open on each other's progress. Every trail has its own frontier and advances on its own schedule.
 
-20 questions/day, split across all 4 tracks — about **5 questions/day per track**. Multiply↔Divide counts as one track for this split (it shares a single frontier), so each of its ~5 daily picks independently rolls whether it lands on a × or ÷ step.
+A round is split in thirds — spelling, reading, maths — with the maths third shared among whichever maths tracks are open. Splitting evenly across all ten tracks instead would make a fully-unlocked round 80% maths.
 
 Nothing here is a hard gate a kid must fully clear before moving on — see the mix model below.
 
@@ -26,47 +28,36 @@ The app itself never changes — every question can still be retried until it's 
 
 ---
 
-## Math
+## Maths
 
-Two independent strands, each with its own frontier — a kid can be ahead on one and building up the other.
+Eight tracks, every level of every one in `data/math_levels.csv`, their prerequisites in `data/math_tracks.csv` and their promotion gates in `data/math_promotion.csv`. Nothing about maths difficulty lives in code, and nothing about it lives in this file either — the tables below were replaced by those CSVs, and the spreadsheet is the copy that gets edited.
 
-### Add / Subtract — 8 levels
+| track | levels | runs from | to |
+|---|---|---|---|
+| `add` | 8 | `0–3 + 0–3` | `20–39 + 20–39` |
+| `sub` | 7 | `0–5 − 0–5` | `20–29 − 20–29` |
+| `mul` | 6 | `1–2 × 1–2` | `1–5 × 1–5` |
+| `div` | 6 | `2–4 ÷ 2` | `6–30 ÷ 6` |
+| `pattern_add` | 8 | count by 1 from 0–3 | any step to 10 from 10–19 |
+| `pattern_sub` | 8 | count back by 1 from 5–9 | count back by 10 from 79–99 |
+| `pattern_mul` | 7 | ×1–2 | the whole 1–10 table |
+| `pattern_div` | 7 | ÷1–2 | the whole 1–10 table |
 
-| # | Level | Skill | Range | Example |
-|---|---|---|---|---|
-| 1 | Within 5 | Single digits, smallest sums. | 0–5 & 0–5 | |
-| 2 | Within 10 | Single digits, full range. | 0–10 & 0–10 | |
-| 3a | Teen + Ones | A teen number plus a single digit — often no carry. | 10–20 & 0–9 | 12+7 |
-| 3b | Teen + Teen | Two teens together — regularly crosses 20. | 10–20 & 10–20 | 12+15 |
-| 4a | Within 40, no regrouping | Two-digit numbers, ones don't carry. | 0–40 & 0–40 | 23+15=38 |
-| 4b | Within 40, with regrouping | Same range, ones now carry into tens. | 0–40 & 0–40 | 27+15=42 |
-| 5a | Within 100, no regrouping | Full two-digit range, ones don't carry. | 0–100 & 0–100 | 53+34=87 |
-| 5b | Within 100, with regrouping | The Grade-2 fluency target — full range, real carrying. | 0–100 & 0–100 | 57+34=91 |
+### What replaced the two strands
 
-**Visual Math** (picture-grouped Pokémon) covers Levels 1–2 as the concrete/pictorial lead-in, then drops out of "current" once ranges exceed what's legible (icon counts stay legible only up to ~6–8) — it stays available forever as a low-stakes Review option. Multiplication visuals always show at least 2 groups — a single group (e.g. "5×1") doesn't actually demonstrate repeated addition.
+The old design was **Add/Subtract, 8 levels** and an interleaved **Multiply↔Divide, 12 steps sharing one frontier**, with skip-counting patterns woven in as roughly 30% of questions on both. Three things were wrong with it:
 
-**Patterns** weave into every level instead of being a separate mode — ~30% of questions become a 4-in-a-row skip-counting set instead of one equation. Step size isn't a fixed list; it's any value where 4 repetitions still fit the level's range, so Level 1 only offers step-1, but Level 5b opens up to step-25.
+- **A shared frontier hides a real gap.** Multiply and divide moved together, so a child fluent at `4×3` and lost at `12÷4` had one number describing both, and could not practise the weaker one without re-proving the stronger.
+- **Patterns as a 30% dice roll cannot be practised.** Counting by 3s turned up when it turned up. As its own track it has its own levels, its own frontier and its own promotion, so it can be worked at.
+- **The ladder was a queue, not a map.** One list marched through in order. Tracks now **open on prerequisites** — pattern-add at add 3, subtract at add 5, multiply at add 7 — so the ladder *widens* as it is climbed and everything open has a chance to come up. Liveness is transitive: a track whose own prerequisite has not opened cannot open the next.
 
-### Multiply ↔ Divide — 12 steps, interleaved
+**Regrouping is no longer controlled for.** The old levels 4a–5b used rejection sampling on whether the ones digit carried, making "no regrouping" and "with regrouping" distinct rungs rather than wider ranges. The CSV ladder expresses difficulty as operand ranges only. That is a real loss of precision, traded for a ladder a parent can edit in a spreadsheet without touching code — and the reason it is written down here rather than quietly dropped.
 
-| # | Op | Step | Range | Example |
-|---|---|---|---|---|
-| 1 | × | Tiny facts | 1–3 × 1–3 | 2×3=6 |
-| 2 | × | Small facts | 1–5 × 1–5 | 4×3=12 |
-| 3 | ÷ | Tiny facts, inverse | quotient 1–3, divisor 1–3 | 6÷2=3 |
-| 4 | ÷ | Small facts, inverse | quotient 1–5, divisor 1–5 | 12÷4=3 |
-| 5 | × | Small anchor, mixed | 1–5 × 1–10 | 4×8=32 |
-| 6 | ÷ | Small anchor, mixed | quotient 1–5, divisor 1–10 | 32÷4=8 |
-| 7 | × | Harder tables only | 1–5 × 6–10 | 3×9=27 |
-| 8 | ÷ | Harder tables only | divisor 6–10, quotient 1–5 | 27÷9=3 |
-| 9 | × | Flipped orientation | 1–10 × 1–5 | 8×4=32 |
-| 10 | ÷ | Flipped orientation | quotient 1–10, divisor 1–5 | 32÷4=8 |
-| 11 | × | Full range | 1–10 × 1–10 | 7×9=63 |
-| 12 | ÷ | Full range | quotient 1–10, divisor 1–10 | 63÷9=7 |
+**Visual Math leads the early rungs and stops where the sheet says.** It is a rendering of the same questions, not a source of its own, and `visual` is a column per level rather than the code guessing from the numbers. Multiplication visuals always show at least 2 groups — a single group (`5×1`) doesn't demonstrate repeated addition.
 
-**Visual Math** (equal-groups pictures) leads Steps 1–2 as the "why multiplication works" concept, then fades to Review the same way — capped at 1–6, can't represent 6–10 range facts legibly.
+**Division never leaves a remainder.** The quotient is chosen first, from those that land the dividend inside the row's range.
 
-**Patterns** only weave into Steps 1–6 and 11–12 — the fixed ×1..×4 shape can't represent "harder tables only" (7–8) or "flipped orientation" (9–10), which depend on a specific second-operand range the pattern structure can't express.
+**A subtraction pattern has to start high enough to take every step** without going below zero — anchor ≥ step × 4. Where only part of a row's anchor range qualifies, the anchor is drawn from that part; where none does, that step is skipped silently, which is a trap worth knowing when editing the sheet (see `data/README.md`).
 
 ---
 
@@ -151,13 +142,17 @@ Both `promote_5_pct` and `promote_10_pct` are per level, read from the row. Curr
 
 ## My progress
 
-One status page per kid — where each trail's frontier sits right now, how close it is to promoting, and the trend behind that number. Each card shows:
+One status page per kid — where each trail's frontier sits right now, how close it is to promoting, and the trend behind that number. A week of daily round counts comes first, then **Spelling** and **Reading** get a card each and **maths gets two**, one per family, because eight full cards is a scroll nobody reads.
+
+A card, or a maths track opened out of its family row, shows:
 
 - Track name and current level label
 - Days at the current level
-- Last-10 and Last-20 progress bars with exact fractions
-- A rolling-accuracy trend chart plotting Last-10 and Last-20 % over recent attempts, with dashed threshold lines at the 80% (Last-20 gate) and 100% (Last-10 gate) promotion thresholds
-- A ★ marker wherever a 5/5 instant promotion happened, and a dashed "Leveled up" line wherever the slower 8/10 path fired instead
+- One progress bar per promotion gate, with exact fractions — Last 5 and Last 10 on the word trails, Last 5 / 10 / 20 on maths
+- A rolling-accuracy trend chart over recent attempts, with a dashed line at each gate's percentage, drawn from whichever gates that track actually has rather than a fixed pair
+- A ★ marker wherever the shortest window promoted outright, and a dashed "Leveled up" line wherever a slower gate fired instead
+
+The two maths cards are headed with the family's summed level — `+ / −` out of 31, `× / ÷` out of 26 — then list their four tracks as rows. Locked tracks are listed too, greyed, with what opens them.
 
 ---
 

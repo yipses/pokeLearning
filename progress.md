@@ -6,11 +6,11 @@ How the project got from a basic spelling/math quiz to where it is now, and the 
 
 ## Where things stand
 
-Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both word ladders in editable CSVs.
+Everything speced is built and published on GitHub Pages: ten Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and every ladder in editable CSVs.
 
-Maths is CSV-driven too now — eight tracks, 57 levels, prerequisites and promotion gates all authored in the spreadsheet.
+**Maths is eight tracks over 57 levels** — add, subtract, multiply, divide and a skip-counting pattern track for each — with prerequisites and promotion gates authored in the spreadsheet. Tracks open on each other's progress rather than in sequence, so the ladder widens as it is climbed. Home and My progress collapse the eight into two families, `+ / −` and `× / ÷`.
 
-The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all four tables authored in a spreadsheet and read at boot. No word ladder, word list or promotion gate remains in code.
+The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all authored in a spreadsheet and read at boot. **No ladder, word list or promotion gate remains in code**, maths included.
 
 ## Open threads
 
@@ -32,10 +32,19 @@ A first pass written on paper turned out to be 30% unspeakable; the rewrite meas
 
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **`fonts/OFL.txt` is missing.** The Open Font Licence requires its text to travel with the font files; `fonts/README.md` says where to get it. A licence obligation, not a runtime one.
-- **Settings overflows horizontally at 360px wide** — about 115px, from the level `<select>` elements taking their width from the longest option text ("Within 100, with regrouping"). A `max-width` and text-overflow would settle it.
+- **Settings overflows horizontally at 360px wide** — measured 115px, from the level `<select>` elements taking their width from the longest option text. The culprit is now Reading's *"Level 10 — Words to level 9 + 9-word, 5 to choose from"* at 352px, not the maths option it used to be. A `max-width` and text-overflow would settle it.
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is caught automatically now, but an item whose picture is *unique and still wrong* is not.
-- **The answer's position leans early on the division levels** — 30% first of six, 2.6% last, because those answers run 1–10 and there are not five whole numbers below 2. Flat everywhere else. Flattening it means offering negatives, which is not a mistake a five-year-old makes.
+- **The answer's position leans early on three of the four operations.** Re-measured against the CSV ladder, 3,000 questions per level:
+
+  | track | 1st | 2nd | 3rd | 4th | 5th | 6th |
+  |---|---|---|---|---|---|---|
+  | `add` | 19.7% | 18.3% | 17.2% | 16.0% | 14.5% | 14.2% |
+  | `sub` | 29.0% | 22.5% | 16.0% | 12.9% | 10.5% | 9.1% |
+  | `mul` | 23.3% | 22.0% | 19.3% | 14.4% | 12.4% | 8.6% |
+  | `div` | 30.1% | 29.6% | 19.0% | 11.2% | 6.8% | 3.2% |
+
+  The cause is the same everywhere: small answers have no room for five wrong options below them. `add` is near-flat because its answers get large; `div` is worst because its quotients run 1–5 on most rows. This was previously recorded as division-only, which the new ladder's smaller `mul` and `sub` answers made untrue. Flattening it means offering negatives, which is not a mistake a five-year-old makes.
 - **Three-operand questions are unbuilt.** `num3_min`/`num3_max` are carried through the CSV and are null on every row; nothing reads them yet.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it. The `This file` timestamp beside it is automatic and cannot go stale.
 
@@ -115,6 +124,16 @@ Opening any Pokémon entry says its name aloud — one rule covering the catch p
 
 **My progress** leads with rounds per day over the last 7 days. No new storage was needed — the streak record has always kept `{date: rounds}` uncapped, so the chart was correct from the day it shipped.
 
+### Phases 42–48 — the home screen, and maths by choice
+
+The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
+
+The three stat cards became a **HUD**: icon and number, no cards, no labels. Its icons are drawn as inline SVG rather than typed as emoji, because emoji ink differs inside identical boxes and the metrics belong to whichever font the device has — there is no offset that is right everywhere. The four level tiles followed, with `123` on both maths rows and the operation in the label.
+
+Maths answers became **six numbers in order** instead of a keypad. The wrong five are built from the mistakes each operation invites, not sampled from the level's range. Two things had to be measured to get it right: the range could not be the source at all, because four division levels have fewer than six possible answers; and sorting the six centred the answer until the *split* — how many sit below it — was chosen first.
+
+The trade, on the record: a blind guess now lands 1 in 6, and a round can be brute-forced in about three taps. Promotion resists it, since every wrong tap marks the attempt unclean, but the practice is weaker than composing the number was.
+
 ### Phase 49 — The Pokédex family showed two of three
 
 The evolution strip walked one hop back and one hop forward, which is the whole family only if you happen to be standing in the middle of a three-stage line. From Bulbasaur it showed Bulbasaur and Ivysaur and stopped; from Venusaur, Ivysaur and Venusaur. **269 of the 1,021 species saw a family missing at least one member** — measured, because "it only shows 2" could have been one bad row rather than a structural fault.
@@ -185,17 +204,6 @@ Two layout bugs, both found by rendering at 4× rather than from the assertions,
 ### Phase 55 — Spelling hint caps, from the sheet
 
 `max_hints` was the only column in the sheet that had moved. It now caps at **3** from level 11 up; the CSV still held the old escalating values that ran to 7 by level 25. Nine cells, all in that one column — every other spelling, reading and maths cell already matched. Levels 13, 16, 18, 19, 21, 22, 23, 24 and 25 came down from 4, 4, 4, 5, 5, 6, 4, 5 and 7.
-
-### Phases 42–48 — the home screen, and maths by choice
-
-The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
-
-The three stat cards became a **HUD**: icon and number, no cards, no labels. Its icons are drawn as inline SVG rather than typed as emoji, because emoji ink differs inside identical boxes and the metrics belong to whichever font the device has — there is no offset that is right everywhere. The four level tiles followed, with `123` on both maths rows and the operation in the label.
-
-Maths answers became **six numbers in order** instead of a keypad. The wrong five are built from the mistakes each operation invites, not sampled from the level's range. Two things had to be measured to get it right: the range could not be the source at all, because four division levels have fewer than six possible answers; and sorting the six centred the answer until the *split* — how many sit below it — was chosen first.
-
-The trade, on the record: a blind guess now lands 1 in 6, and a round can be brute-forced in about three taps. Promotion resists it, since every wrong tap marks the attempt unclean, but the practice is weaker than composing the number was.
-
 
 ## Doc roles
 
