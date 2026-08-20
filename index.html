@@ -656,11 +656,13 @@
      of 25 and level 3 of 10 are not the same place. Reading it is optional;
      Start Playing stays above it and above the fold. */
   .levels-card{
-    margin:0 0 14px; padding:15px 16px 17px; border-radius:var(--radius);
+    margin:0 0 14px; padding:14px 16px 15px; border-radius:var(--radius);
     background:rgba(255,255,255,.72); box-shadow:var(--shadow-sm);
     display:grid; grid-template-columns:repeat(2,1fr); gap:15px 18px;
   }
   .level-tile{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .level-icon{ display:inline-grid; place-items:center; width:17px; height:17px; flex:0 0 auto; }
+  .level-icon svg{ display:block; width:100%; height:100%; }
   .level-name{
     display:flex; align-items:center; gap:5px; font-size:.68rem; font-weight:800;
     text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);
@@ -1181,7 +1183,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 56;
+const APP_BUILD = 58;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -2054,23 +2056,51 @@ function renderTiles(el){
    Deliberately below Start Playing: every reference app puts play first and the
    profile second, and a five-year-old opening this is not here to read four
    progress bars. It is a panel to glance at, not a gate to get past. */
+/* Level-tile icons, drawn on the same 24×24 grid as the HUD's and for the same
+   reason — the emoji they replace (🔤 📖 ➕ ✖️) had four different optical sizes
+   and two of them rendered monochrome.
+
+   The numerals are set in the app's own webfont rather than drawn as paths:
+   it is self-hosted, so it is certainly present, and "123" at 17px is legible
+   as *numbers* in a way three hand-drawn digits at 6px each would not be.
+   `text-transform` has to be reset explicitly — the tile label above is
+   uppercase and SVG text inherits it, which turns "Aa" into "AA". */
+const LEVEL_ICONS = {
+  spelling: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18.5"
+      text-anchor="middle" textLength="21" lengthAdjust="spacingAndGlyphs"
+      font-family="M PLUS Rounded 1c, sans-serif" font-size="19" font-weight="900"
+      style="text-transform:none" fill="currentColor">Aa</text></svg>`,
+  reading: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">
+      <path d="M3 5.1C5.3 3.7 8 3.2 11.1 3.9v15.9c-3.1-.7-5.8-.2-8.1 1.1z"/>
+      <path d="M21 5.1C18.7 3.7 16 3.2 12.9 3.9v15.9c3.1-.7 5.8-.2 8.1 1.1z" opacity=".58"/></svg>`,
+  // Both maths tracks carry the same numerals: the icon's job is to say "this
+  // is maths", and the label beside it says which operation. Two different
+  // symbols there made them look like two unrelated subjects.
+  addsub: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18.5"
+      text-anchor="middle" textLength="22" lengthAdjust="spacingAndGlyphs"
+      font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
+      style="text-transform:none" fill="currentColor">123</text></svg>`,
+};
+
+LEVEL_ICONS.muldiv = LEVEL_ICONS.addsub;
+
 const LEVEL_TRACKS = [
-  {id:"spelling", icon:"🔤", label:"Spelling",  color:"var(--sky-deep)"},
-  {id:"reading",  icon:"📖", label:"Reading",   color:"#9a6bd6"},
-  {id:"addsub",   icon:"➕", label:"Add / Sub", color:"var(--berry-deep)"},
-  {id:"muldiv",   icon:"✖️", label:"× and ÷",   color:"var(--sun-deep)"},
+  {id:"spelling", label:"Spelling",  color:"var(--sky-deep)"},
+  {id:"reading",  label:"Reading",   color:"#9a6bd6"},
+  {id:"addsub",   label:"+ / −",     color:"var(--berry-deep)"},
+  {id:"muldiv",   label:"× / ÷",     color:"var(--sun-deep)"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
   if(!el) return;
-  el.innerHTML = LEVEL_TRACKS.map(({id, icon, label, color})=>{
+  el.innerHTML = LEVEL_TRACKS.map(({id, label, color})=>{
     const levels = trackLevels(id);
     const level = currentLevel(id);
     if(!levels.length || !level) return "";
     const at = frontierIndex(id) + 1;
     const pct = Math.round((at / levels.length) * 100);
     return `<div class="level-tile">
-      <span class="level-name"><span aria-hidden="true">${icon}</span>${label}</span>
+      <span class="level-name"><span class="level-icon" style="color:${color}">${LEVEL_ICONS[id]}</span>${label}</span>
       <span class="level-num">Level ${level.id}<span class="of">of ${levels.length}</span></span>
       <span class="level-bar" role="img" aria-label="${label}: level ${level.id} of ${levels.length}">
         <span class="level-fill" style="width:${pct}%; background:${color}"></span>
@@ -3366,7 +3396,7 @@ function finishMissingLetter(){
    Error-shaped distractors have no such floor, and they reach outside the
    range, which is correct — off-by-one is a real mistake whether or not the
    result happens to be a legal answer at this level. */
-function mathDistractors(q, want){
+function mathCandidates(q){
   const { a, b, sym, ans } = q;
   // A tens-column slip is only a mistake you can make once there is a tens
   // column. Offering 17 beside an answer of 7 is not a near miss, it is a
@@ -3393,17 +3423,43 @@ function mathDistractors(q, want){
     seen.add(v); out.push(v);
   };
   near.forEach(take);
-  // A small answer can exhaust its own neighbourhood, so walk outwards. Never
+  // Walk outwards on both sides, so neither pool below runs dry early. Never
   // below zero: a negative number is not a mistake a five-year-old is making.
-  for(let k = 1; out.length < want && k < 80; k++){ take(ans+k); take(ans-k); }
-  // Two spare, so the same sum doesn't offer the identical five every time, but
-  // never reaching past the plausible end of the list.
-  return shuffle(out.slice(0, want + 2)).slice(0, want);
+  for(let k = 1; out.length < 14 && k < 80; k++){ take(ans+k); take(ans-k); }
+  return out;
+}
+
+/* The six, in order, with the answer's *position* deliberately varied.
+
+   Sorting alone was worse than the shuffle it replaced. The wrong options
+   straddle the answer — ±1, ±2, ±3 — so sorting parked it 3rd or 4th in 75% of
+   questions and never 6th: tap one of the middle two and be right three times
+   in four without doing any maths.
+
+   So the split is chosen first — how many of the five sit below the answer —
+   and the options are drawn from each side to match. Where the answer is small
+   there may not be three numbers below it, and the range narrows to what is
+   possible rather than inventing negatives. */
+function mathChoiceSet(q){
+  const want = MATH_CHOICES - 1;
+  const cands = mathCandidates(q);
+  const below = cands.filter(v => v < q.ans);
+  const above = cands.filter(v => v > q.ans);
+  const lo = Math.max(0, want - above.length);
+  const hi = Math.min(want, below.length);
+  const k = lo + Math.floor(Math.random() * (hi - lo + 1));
+  // One spare from each side, so the same sum doesn't offer an identical set
+  // every time without reaching past the plausible end of either list.
+  const draw = (pool, n) => shuffle(pool.slice(0, n + 1)).slice(0, n);
+  return [q.ans, ...draw(below, k), ...draw(above, want - k)].sort((x,y)=> x-y);
 }
 
 const MATH_CHOICES = 6;
 function mathChoicesHTML(id, q){
-  const options = shuffle([q.ans, ...mathDistractors(q, MATH_CHOICES - 1)]);
+  // In order, not scattered. A shuffled grid makes finding the answer a visual
+  // search; sorted, the six read as a stretch of number line and the child
+  // compares against neighbours, which is the thing being practised.
+  const options = mathChoiceSet(q);
   return `<div class="choices" id="${id}">` + options.map(v =>
     `<button class="choice" type="button" data-val="${v}">${v}</button>`).join("") + `</div>`;
 }
@@ -3946,6 +4002,11 @@ function show(which){
   // hand everywhere but home. A round has its own progress bar and a Quit
   // button; a second row of counters there would be two things to read.
   $("#homeTop").classList.toggle("hidden", which !== "setup");
+  // Home is rebuilt on the way in rather than by whoever changed something.
+  // Setting a level in Settings moved the frontier and left the levels panel
+  // showing the old one; so would promoting mid-round and then quitting. Both
+  // are the same bug, and patching each caller invites a third.
+  if(which === "setup" && window.__dataReady) renderHomeTiles();
   window.scrollTo({top:0, behavior:"smooth"});
   // Widths only exist once the section is displayed, so the tab strip is sized
   // here rather than in renderPokedex, which usually runs one line earlier.
