@@ -170,7 +170,7 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 **A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
-Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ and the **Next ▶** button above the fold. A correct answer shows a large animated ✅ and no caption text.
+Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ above the fold. A correct answer shows a large animated ✅ and no caption text, then the round moves on by itself after a short beat. **There is no Next button anywhere**: with the choices gone there is nothing left on screen to act on, so a tap to continue would buy the child nothing. Maths advances exactly as Spelling and Reading do.
 
 **Add/Subtract — 8 levels**, from *within 5* to *within 100 with regrouping* (see `LessonTrails.md`). Each level auto-generates a mix of addition and subtraction within its range. Levels 4a–5b use rejection sampling to control specifically for whether the ones digit carries or borrows, making "no regrouping" and "with regrouping" genuinely distinct steps rather than just wider ranges.
 

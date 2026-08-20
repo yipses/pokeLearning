@@ -1199,7 +1199,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 62;
+const APP_BUILD = 63;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -3558,9 +3558,6 @@ function renderMath(p){
     <div class="math-q">${p.a} ${p.sym} ${p.b} = ?</div>
     ${mathChoicesHTML("mathChoices", p)}
     <div class="feedback" id="feedback"></div>
-    <div class="actions">
-      <button class="btn green" id="mathNext" disabled>Next ▶</button>
-    </div>
   `;
   mathState = {p, hadMistake:false};
   wireMathChoices("mathChoices", (val, btn)=>{
@@ -3573,11 +3570,9 @@ function renderMath(p){
     btn.classList.add("picked");
     $("#mathChoices").classList.add("done");
     fb.className="feedback good big-check"; fb.textContent="✅";
-    const nextBtn = $("#mathNext");
-    nextBtn.disabled = false; nextBtn.focus();
+    markMathDone();
     return true;
   });
-  $("#mathNext").addEventListener("click", markMathDone);
 }
 let mathState=null;
 
@@ -3586,8 +3581,7 @@ function markMathDone(){
   if(mathState && mathState.p.track && mathState.p.isFrontier){
     recordAttempt(mathState.p.track, !mathState.hadMistake);
   }
-  mathState = null;
-  next();
+  lockAndAdvance();
 }
 
 /* ---------------- VISUAL MATH ---------------- */
@@ -3639,9 +3633,6 @@ function renderVisual(p){
     ${visualHTML}
     ${mathChoicesHTML("visualChoices", p)}
     <div class="feedback" id="feedback"></div>
-    <div class="actions">
-      <button class="btn green" id="visualNext" disabled>Next ▶</button>
-    </div>
   `;
 
   visualState = {p, hadMistake:false};
@@ -3655,11 +3646,9 @@ function renderVisual(p){
     btn.classList.add("picked");
     $("#visualChoices").classList.add("done");
     fb.className="feedback good big-check"; fb.textContent="✅";
-    const nextBtn = $("#visualNext");
-    nextBtn.disabled = false; nextBtn.focus();
+    markVisualDone();
     return true;
   });
-  $("#visualNext").addEventListener("click", markVisualDone);
 }
 
 function markVisualDone(){
@@ -3669,8 +3658,7 @@ function markVisualDone(){
   if(visualState && visualState.p.track && visualState.p.isFrontier){
     recordAttempt(visualState.p.track, !visualState.hadMistake);
   }
-  visualState = null;
-  next();
+  lockAndAdvance();
 }
 
 /* ---------------- READING (Read & Choose / Reverse Read & Choose) ---------------- */
@@ -3772,9 +3760,6 @@ function renderPattern(p){
     <div class="pattern-list" id="patternList"></div>
     <div id="patternChoiceWrap"></div>
     <div class="feedback" id="feedback"></div>
-    <div class="actions">
-      <button class="btn green" id="patternNext" disabled>Next ▶</button>
-    </div>
   `;
 
   const listEl = $("#patternList");
@@ -3788,7 +3773,6 @@ function renderPattern(p){
 
   patternState = { p, slots:[...listEl.querySelectorAll(".pattern-slot")], at:0, hadMistake:false };
   openPatternRow();
-  $("#patternNext").addEventListener("click", markPatternDone);
 }
 
 function openPatternRow(){
@@ -3814,8 +3798,7 @@ function openPatternRow(){
     if(st.at < slots.length){ openPatternRow(); return true; }
     wrap.innerHTML = "";
     fb.className="feedback good big-check"; fb.textContent="✅";
-    const nextBtn = $("#patternNext");
-    nextBtn.disabled = false; nextBtn.focus();
+    markPatternDone();
     return true;
   });
 }
@@ -3825,14 +3808,19 @@ function markPatternDone(){
   if(patternState && patternState.p.track && patternState.p.isFrontier){
     recordAttempt(patternState.p.track, !patternState.hadMistake);
   }
-  patternState = null;
-  next();
+  lockAndAdvance();
 }
 
 /* ---------------- shared advance ---------------- */
-/* Freeze the controls, then move on. `waitFor` lets a caller hold the round open
+/* Every mode advances on its own; nothing waits for a Next tap. Maths used to,
+   and the button had nothing to offer: `.choices.done` hides the whole grid the
+   moment an answer is right, so the screen was a question still reading "= ?", a
+   checkmark, and a button with one possible action. A tap that buys nothing.
+
+   Freeze the controls, then move on. `waitFor` lets a caller hold the round open
    until something finishes — the word trails use it so a word is spoken in full
-   before the next question replaces it. Everything else keeps the fixed beat. */
+   before the next question replaces it. Maths has no such payload and keeps the
+   fixed beat. */
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
   const go = ()=>{
