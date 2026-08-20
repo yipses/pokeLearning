@@ -249,6 +249,14 @@ Laid out against what comparable apps actually do, rather than from taste. The c
 - **Numerals are set in the app's own webfont**, not drawn as paths — it is self-hosted since Phase 38, so it is certainly there, and real type at 17px beats six-pixel outlines.
 - 360×640 went 1px over the fold, the 17px icon box being a pixel taller than the emoji; two pixels off the levels card's padding settled it.
 
+## Phase 48 — Sorting the options, and the exploit it opened
+
+- **"Random is challenging, but not in a learning sort of way."** Right: a scattered grid makes finding the answer a visual search rather than a sum. Sorted, the six read as a stretch of number line and the child compares against neighbours.
+- **Sorting alone was worse than the shuffle it replaced**, which the change itself would never have shown — it took measuring where the answer *landed*. The wrong options straddle the answer by construction (±1, ±2, ±3), so sorting parked it 3rd or 4th in **75%** of questions and never 6th. Tap one of the middle two, be right three times in four, do no maths at all.
+- **Fixed by choosing the split before the options.** How many of the five sit below the answer is picked first, and each side is drawn to match. Middle two: 75% → 32%. Addition is near-flat at 17.9% / 15.2% across the six positions.
+- **Division still leans early** — 30% first, 2.6% last — because its answers are 1 to 10 and there are not five numbers below 2. The only way to flatten it is to offer negatives, which is not a mistake a five-year-old makes. Recorded rather than papered over.
+- **Both maths tiles now carry `123`.** The icon says *this is maths*; the label beside it — `+ / −`, `× / ÷` — says which. Two different symbols made them read as unrelated subjects.
+
 ## Where things stand
 
 Everything speced is built and published on GitHub Pages: four Lesson Trails promoting, the Dashboard, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and both ladders in editable CSVs.
@@ -263,6 +271,7 @@ Open threads, roughly by how much they'd bite:
 - **The word grading is a first pass.** `tools/classify_words.py` reproduces 91 of the 100 originally hand-graded words; the rest are flagged `differs`. Several words match three patterns at once, and which one a teacher would name is a judgement the rules only approximate. `word_levels.csv` is the file to correct — item levels follow from it.
 - **~820 un-eyeballed Pokopia items**, for name/image mismatches. Shared artwork is now caught automatically (Phase 34), but an item whose picture is *unique and still wrong* isn't. Easier now that it's a spreadsheet.
 - **`fonts/OFL.txt` is missing.** The webfont is now served from `fonts/`, and the Open Font Licence requires its text to travel with the files. It could not be fetched from the sandbox the change was made in — `fonts/README.md` says where to get it. Nothing breaks without it; it is a licence obligation, not a runtime one.
+- **The answer's position leans early on the division levels.** 30% first of six, 2.6% last, because those answers run 1–10 and there are not five whole numbers below 2. Flat everywhere else (Phase 48).
 - **Settings overflows horizontally on a narrow phone.** ~115px at 360px wide, from the level `<select>` elements taking their width from the longest option text. Long-standing; a `max-width` and text-overflow on the selects would settle it.
 - **`APP_BUILD` is bumped by hand.** No build step stamps it, and a stale number defeats the About card's purpose. The `This file` timestamp beside it is automatic and can't go stale.
 

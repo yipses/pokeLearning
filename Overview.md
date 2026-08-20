@@ -144,7 +144,9 @@ Two tracks. **Answers are picked from six numbers**, two rows of three, styled l
 | `×` | the neighbouring table rows — `a×(b±1)`, `(a±1)×b` — then ±1, `a + b`, ±10 |
 | `÷` | ±1, ±2, the divisor, `a − b`, ±3, the dividend |
 
-Two spare candidates are kept and five drawn from them, so the same sum doesn't offer an identical set every time without ever reaching past the plausible end of the list. **A tens-column slip is only offered once there is a tens column** — 17 beside an answer of 7 is not a near miss, it is a giveaway.
+**A tens-column slip is only offered once there is a tens column** — 17 beside an answer of 7 is not a near miss, it is a giveaway.
+
+**The six are shown in order, and the answer's position is deliberately varied.** A shuffled grid makes finding the answer a visual search rather than a sum; sorted, the six read as a stretch of number line and the child compares against neighbours. But sorting alone was *worse* than the shuffle: the wrong options straddle the answer, so it landed 3rd or 4th in **75%** of questions and never 6th — tap one of the middle two and be right three times in four without doing any maths. So the split is chosen first, how many of the five sit below the answer, and the options are drawn from each side to match. That takes the middle two down to 32%. Where the answer is small there may not be three numbers below it, so division still leans early; the alternative would be inventing negatives, which is not a mistake a five-year-old makes.
 
 **A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
@@ -222,7 +224,7 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 Directly under the wordmark, a panel of four tiles in a 2×2 grid — Spelling, Reading, Add / Sub, × and ÷ — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is.
 
-**The icons are drawn, on the same 24×24 grid as the HUD's** and for the same reason. Spelling is `Aa`, Reading an open book, Add / Sub `123`, and × and ÷ the two operators; each takes the colour of its own progress bar. The numerals are set in the app's own webfont rather than drawn as paths — it is self-hosted, so it is certainly present, and `123` at 17px reads as *numbers* in a way three hand-drawn digits at 6px each would not. `text-transform` has to be reset on the SVG text: the label beside it is uppercase and SVG inherits that, which turns `Aa` into `AA`.
+**The icons are drawn, on the same 24×24 grid as the HUD's** and for the same reason. Spelling is `Aa`, Reading an open book, and **both maths tracks carry `123`** — the icon's job is to say *this is maths*, and the label beside it (`+ / −`, `× / ÷`) says which operation. Two different symbols there made them read as unrelated subjects. Each takes the colour of its own progress bar. The numerals are set in the app's own webfont rather than drawn as paths — it is self-hosted, so it is certainly present, and `123` at 17px reads as *numbers* in a way three hand-drawn digits at 6px each would not. `text-transform` has to be reset on the SVG text: the label beside it is uppercase and SVG inherits that, which turns `Aa` into `AA`.
 
 **The bar is there because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and the number by itself implies they are.
 
