@@ -130,6 +130,16 @@ The evolution strip walked one hop back and one hop forward, which is the whole 
 
 Now it climbs to the root and walks down breadth-first, one group per stage. Eevee's nine render as one plus eight, Wurmple's branch keeps `silcoon, cascoon → beautifly, dustox` in the right stages, and the count of species seeing an incomplete family is zero.
 
+### Phase 50 — The family an uncaught entry was not showing
+
+Reported as "the base Pokémon doesn't show evos anymore", with a screenshot that turned out to be a different case from the one I first reproduced. Mine had the species caught, and the strip was there. Theirs was an **uncaught** entry, where `renderPokeModal` passed `revealed ? poke : null` and the strip never rendered at all — long-standing, not from Phase 49. The screenshot settled in seconds what the description could not.
+
+The strip now shows either way, and each relative reveals itself independently: caught ones in colour with their names, uncaught ones as silhouettes. It gives away nothing an uncaught entry is holding back, and it answers what the card is opened to ask — what is this, and what does it become. Viewing an uncaught Bulbasaur having caught only Ivysaur shows silhouette → **Ivysaur** → silhouette, which is the collection filling in.
+
+One subtlety that had to change with it: `chip(p, current)` treated *current* as implying *caught*, which was harmless while the strip only rendered for caught entries and would have made an uncaught one name and un-silhouette itself in its own family.
+
+**Back is gone.** The trail existed so that following a family line was not a one-way trip, which mattered when the strip showed one hop each way. Now that it shows the whole family, every relative you could have come from is still one tap away, so **Okay** is the only button from every entry. Checked that the catch-reveal hazard the trail guarded against is still safe: drilling into a relative mid-reveal and pressing Okay fires the pending callback exactly once.
+
 ### Phases 42–48 — the home screen, and maths by choice
 
 The home screen was laid out against what comparable apps do rather than from taste: **HUD → wordmark → levels → Pokémon → buttons**, and all of it above the fold down to 360×640. Everything there is a fixed cost except the Pokémon, so that is the part that gives way — its frame is sized from viewport *height* and shrinks from 196px to 115px.
