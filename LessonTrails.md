@@ -107,7 +107,7 @@ Note that a word's level and an *item's* level pull apart: 58 words are level 1,
 
 ### Spelling — 25 levels
 
-Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the word given away: 50% → 25% → 0%. Above zero the task is Missing Letter; at zero it is Full Spelling from empty tiles. **`max_hints`** rises as `hinted_pct` falls — the level that shows least offers most help finding the rest.
+Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the word given away: 50% → 25% → 0%. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles. **`max_hints`** rises as `hinted_pct` falls — the level that shows least offers most help finding the rest.
 
 Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
 

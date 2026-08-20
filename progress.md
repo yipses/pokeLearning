@@ -100,7 +100,7 @@ Condensed. Where a later phase replaced one of these outright — the Phase A/B 
 
 The Spelling and Reading trails moved wholesale into `data/*.csv`: word levels, item levels, both ladders, and the promotion gates. Nothing about difficulty remains in code. The old Phase A/B ladder had a broken seam — the phonics half ended on *Refrigerator* (12 letters) and the fluency half began on a 3-letter cap — and grading items by their **hardest component word** brought all 909 usable names into play instead of 100.
 
-Four bugs in the same stretch, each reported from a screenshot: a `.tiles` class collision reflowed the letter bank; filled Missing Letter boxes rendered lowercase; **21 Pokémon names were graded as ordinary vocabulary** and had to be excluded from Spelling, since an invented name is memorised rather than decoded; and the pity timer overwrote the drop rate — 50% produced an encounter every single time. That last one is now calibrated so the setting *is* the measured outcome, pity included.
+Four bugs in the same stretch, each reported from a screenshot: a `.tiles` class collision reflowed the letter bank; filled Missing Letters boxes rendered lowercase; **21 Pokémon names were graded as ordinary vocabulary** and had to be excluded from Spelling, since an invented name is memorised rather than decoded; and the pity timer overwrote the drop rate — 50% produced an encounter every single time. That last one is now calibrated so the setting *is* the measured outcome, pity included.
 
 ### Phases 30–36 — one way to answer, and sounds attached to it
 
@@ -112,7 +112,7 @@ Then four context rules — `c`, `y` (twice) and `ow` reading the word around th
 
 **97 items share byte-identical artwork**, found by hashing all 922 files. One generic building icon serves ten place names, which is why one screen offered both `Boutique` and `Snowbelle City` for the same picture. Ninety leave both trails: a picture that names two things names neither.
 
-Missing Letter's bank held exactly the missing chunks, so a one-blank word offered **one tile** — 9% of all such questions, 45% of level 2. It is padded with same-phonics-class decoys to a floor of four.
+Missing Letters' bank held exactly the missing chunks, so a one-blank word offered **one tile** — 9% of all such questions, 45% of level 2. It is padded with same-phonics-class decoys to a floor of four.
 
 ### Phases 37–41 — self-hosted type, spoken names, and the week
 
@@ -230,6 +230,24 @@ A sawtooth with a fixed period. Rolling accuracy **resets at every promotion**, 
 The bars already answer the question the screen exists for, exactly and with fractions. So `renderTrendChart` is gone, along with the CSS only it used. The **This week** chart stays — different question, not implicated, and specifically asked for. `trend` is still recorded, correctly now, so nothing is lost if a chart returns; the level at any point can be reconstructed from the `promoted` flags walking back from the current frontier, which was verified exactly against a real sequence.
 
 If it does return it should plot **level over time** — a staircase that accumulates and only goes up, where a flat stretch means stuck. That is the journey. Rolling accuracy is not.
+
+### Phase 57 — The trophy band names its generation, and a label loses its singular
+
+**The showcase counts its set.** A caught Pokémon shown big says *you have this one*; it did not say *and here is the set it belongs to*, which is the thing that makes a shelf a collection. `GENERATION 1` over `3 / 147` now sits under the greeting. It names the generation of the Pokémon **on screen** rather than the one being hunted — those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card.
+
+It cost 44px on a screen that had none spare, and 360×640 overflowed by 43. The documented trade applied rather than being renegotiated: the Pokémon is the one element that can be smaller without losing what it says, so a `max-height: 700px` query drops the frame from 115px to 86px and tightens the block. Re-measured at 360×640, 390×844, 414×736, 768×1024 and 360×780 — all fit, no horizontal overflow.
+
+**"Missing Letter" was reported as wrong, and it was — but not the way it looked.** The screenshot showed Doduo with four blanks and one letter given, which reads like the mode over-blanking. It is correct: `blanksFor('doduo', 25)` is 4, and 25%-shown is what levels 3, 6, 9, 12, 15, 18, 21 and 24 ask for. Measuring the whole mode settled which half was wrong:
+
+| blanks | share of questions |
+|---|---|
+| 1 | 4.0% |
+| 2 | 21.3% |
+| 3 | 20.3% |
+| 4 | 20.6% |
+| 5+ | 33.8% |
+
+**96% of Missing Letters questions have more than one blank.** The singular was wrong almost always, so the label is plural now — in the app and in every doc and comment that names the mode, since a mode called one thing on screen and another in its own source is exactly the drift this repo keeps paying for.
 
 ## Doc roles
 
