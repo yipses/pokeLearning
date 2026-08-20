@@ -243,7 +243,7 @@ It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds eac
 
 **A screen with chrome does not also carry a heading card.** My progress and the Pokédex both had one, stating a name the chrome now states; both are gone, and both screens start most of a screen higher.
 
-The HUD is **identical wherever it appears** — home, results, and every chrome screen. Two counters, the same two, in the same order. A counter that differs by screen is not persistent chrome, it is three similar things; the collection count lives on the Pokémon card (§8c) and in the Pokédex's own generation header, both of which name what they are counting.
+The HUD is **identical wherever it appears** — home, results, and every chrome screen. Three counters, the same three, in the same order. A counter that differs by screen is not persistent chrome, it is several similar things.
 
 **Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
 
@@ -255,7 +255,7 @@ The HUD is **identical wherever it appears** — home, results, and every chrome
 | flame | consecutive days that met the rounds goal | My progress |
 | dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
-**The home HUD has two counters, not three.** Its collection counter moved into the Pokémon card (§8c), where the row it sits on names the generation it is counting and carries the tap through to the Pokédex. Unlabelled in the HUD it said the same two numbers twice on one screen and explained neither. Results keeps it, having no card to move it to.
+**The collection counter appears twice on the home screen, deliberately.** The HUD's is chrome: same corner, every screen, a fixed route to the Pokédex. The Pokémon card's (§8c) names the generation it is counting and belongs to the Pokémon above it. Same numbers, two jobs — and both derive from roster members rather than stored ids, so they cannot disagree.
 
 **No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
 

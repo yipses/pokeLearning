@@ -233,6 +233,16 @@ Two things the change turned up:
 
 One false alarm worth recording: a regression check reported the Pokédex HUD as empty. The HUD was fine — the *test* still queried `#dexTiles`, an id the chrome no longer emits. A stale selector reads exactly like a broken feature, so the check was fixed rather than the app.
 
+### Phase 62 — The collection counter comes back to the HUD
+
+Removed over two phases: first by reading *"move the Pokédex icon beside the collection numbers"* as literally moving it out of the HUD, then by reading *"the HUD should stay persistent and the same"* as *the same across screens* rather than *unchanged*. The second was a misread — the instruction was to leave the HUD alone, and it was taken as licence to strip the last counter out of it.
+
+It is back, three counters on every screen that shows the HUD. **The Pokémon card keeps its own count as well**, and the duplication is the point: the HUD's is chrome — same corner, every screen, a fixed route to the Pokédex — while the card's names the generation it counts and belongs to the Pokémon above it.
+
+**Putting them side by side immediately exposed a bug.** The HUD read `58/147` and the card `60/147` on the same screen. The card counted *stored ids* falling inside the generation's number range; the HUD counted *roster members*. Two ids in the test collection — 29 and 32, Nidoran♀ and ♂ — are excluded from the roster, so the card counted catches that cannot exist. Real play cannot store them, which is why nothing had caught it. Both derive from the roster now and cannot disagree.
+
+A second thing that looked wrong and was not: a caught Pokémon appeared in an empty frame. The screenshot fired before the image decoded. Waiting on `img.complete && naturalWidth > 0` rather than a fixed delay shows the artwork every time, and is what the check does now.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
