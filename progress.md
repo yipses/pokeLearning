@@ -16,11 +16,13 @@ The Spelling and Reading trails share one graded vocabulary — all **807 distin
 
 Roughly by how much they'd bite.
 
-### 1. The maths sheet's own gaps
+### 1. The maths sheet's remaining tight spots
 
-The maths ladder is CSV-driven now, and building it surfaced three rows the sheet cannot satisfy. **PatternSubtract level 2** (anchor 0–9, steps 2 and 3) has *no* anchor that can take four steps of 3 without going below zero — it needs 12. The code skips that step and draws from the usable part of the range on levels 1 and 3, so nothing negative is ever shown, but level 2 is quietly running on step 2 alone.
+The three rows the first cut of the sheet could not satisfy have been fixed at source: `PatternSubtract` levels 1 and 2 now anchor at 5–9 and 10–19 instead of 0–9, and `MathAdd` level 4 is no longer `visual`. A 114,000-question audit against the corrected CSV finds **0 violations**, and every pattern step now has at least one usable anchor — level 2 uses both step 2 and step 3, which it could not before.
 
-Also from the sheet as it stands: **add levels 4 and 5 are flagged `visual`** with operands up to 19 + 9. That draws 28 icons. Icons now scale to their count so it is legible rather than 956px tall, but a picture of 28 things is not doing what a picture is for.
+Two rows still clear the bar only just: `pattern_sub` level 2 step 3 loses 2 anchors of 10 to the clamp, level 3 step 5 loses 1 of 11. Raising either `step` without widening the anchor range would silently drop the step again.
+
+The tallest visual question left is **`div` level 5** — 25 ÷ 5 draws 25 icons over five groups, 919px on a 390×844 phone. It reads fine and does not overflow sideways; it is 75px below the fold, which the old 19 + 9 case beat at 956px.
 
 ### 2. The phoneme respellings still have not been heard
 
@@ -140,6 +142,17 @@ The last hardcoded ladder. Two tracks of 8 and 12 levels became **eight tracks o
 - **A round is split in thirds**, not evenly across tracks: eight maths tracks against one each for spelling and reading would have made a round 80% maths without anyone choosing that.
 - **Home still shows two maths tiles**, each summing its four tracks — `+ / −` out of 31, `× / ÷` out of 26 — so eight tracks don't become eight tiles on a screen that has to stay above the fold. Settings and My progress list all eight, since a parent reads those.
 - **Maths progress resets.** The old levels don't map: old Add/Subtract 5 was "within 100, no regrouping" and new add 5 is 10–19 plus 10–19. Spelling and Reading are untouched.
+- **The sheet was corrected rather than worked around.** `PatternSubtract` 1 and 2 re-anchored to 5–9 and 10–19, `MathAdd` 4 un-flagged as visual. Re-running the audit on the corrected CSV: 114,000 questions, 0 violations, and level 2 now draws on both of its steps instead of one.
+
+### Phase 52 — Two bugs, one of them quietly eating progress
+
+**Setting a level in Settings made it climb.** Set spelling to 5, back out, and it read 8; refresh and it read 14, then 25. The cause was one line that was never written. `migrateFrontiers()` stamps `progress.ladderVersion` so a one-off rescale runs once — but `loadProgress()` rebuilds the object from `TRACK_IDS` alone, and `ladderVersion` is not a track. Every load therefore looked unstamped, and the migration re-ran on top of its own output. Modelled before fixing: spelling 5 → 8 → 14 → 25, reading 3 → 5 → 8 → 10, which is exactly what was reported.
+
+The same line was silently wiping the new maths frontiers on every single load, since the current migration resets maths. Nobody would have called that a bug — maths simply never seemed to stick. Four consecutive reloads now hold at what was set.
+
+Worth naming as a class: **a persisted object rebuilt from a whitelist drops anything that isn't on the whitelist.** The stamp was written, saved, and thrown away on read, so no amount of reading `migrateFrontiers` would have shown it.
+
+**"Welcome back!" is gone from the Pokédex.** It belongs on the home screen's trophy band, where it greets you once beside one Pokémon you chose to look at. In the dex it appeared on every caught entry — a sentence to skip past thirty times while browsing a list. The home band keeps it.
 
 ### Phases 42–48 — the home screen, and maths by choice
 

@@ -611,7 +611,6 @@
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
   .catch-name{ font-weight:800; font-size:1.4rem; color:var(--ink); text-transform:capitalize; margin:2px 0 8px; }
-  .catch-greet{ margin:0 0 8px; font-weight:800; font-size:1rem; color:var(--leaf-deep); }
   .catch-types{ margin-bottom:4px; }
   /* Needs to out-specify `.poke-frame img`, which sets its own drop-shadow filter. */
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
@@ -1185,7 +1184,6 @@
       </div>
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
-      <p class="catch-greet hidden" id="catchGreet"></p>
       <div class="rarity-chip hidden" id="catchRarity"></div>
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
@@ -1201,8 +1199,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 61;
-const APP_BUILD_DATE = "19 Aug 2026";
+const APP_BUILD = 62;
+const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -1445,6 +1443,11 @@ function loadProgress(){
         };
       }
     });
+    // Carry the migration stamp. It is written by migrateFrontiers but lives
+    // outside TRACK_IDS, so rebuilding `base` from the track list alone dropped
+    // it — every load then looked unstamped and re-ran the migration, which
+    // rescaled a level you had just set in Settings on top of itself.
+    if(typeof saved.ladderVersion === "number") base.ladderVersion = saved.ladderVersion;
   }
   return base;
 }
@@ -2333,10 +2336,9 @@ function maybeStartGrassEncounter(){
 }
 
 /* One modal serves two callers: the grass catch reveal, and tapping an entry in
-   the Pokédex. A caught entry reads: picture, number, name, "Welcome back!". An
-   uncaught one gets the outline and its type and nothing else — no name, no
-   "???", no caption — so browsing the dex can't spoil what's still out there to
-   find, and there is no word on screen the child has to decode for no payoff.
+   the Pokédex. A caught entry reads: picture, number, name. An uncaught one
+   gets the outline and its type and nothing else — no name, no "???", no
+   caption — so browsing the dex can't spoil what's still out there to find, and there is no word on screen the child has to decode for no payoff.
    Backdrop-dismissal is opt-in: the catch reveal deliberately requires the Okay
    button, but browsing the dex means opening and closing a lot of these.
 
@@ -2412,14 +2414,12 @@ function clearCelebration(){
 
 function renderPokeModal(poke, opts){
   modalCurrent = { poke, opts };
-  const { caption = "🎉 Caught!", greet = "", revealed = true, dismissOnBackdrop = false,
+  const { caption = "🎉 Caught!", revealed = true, dismissOnBackdrop = false,
           celebrate = false } = opts || {};
   // Walking to a relative re-renders this card; the previous burst goes with it.
   clearCelebration();
   $("#catchCaption").textContent = caption;
   $("#catchCaption").classList.toggle("hidden", !caption);
-  $("#catchGreet").textContent = greet;
-  $("#catchGreet").classList.toggle("hidden", !greet);
   $("#catchImg").src = artwork(poke.id);
   $("#catchImg").alt = revealed ? cap(poke.n) : "Not caught yet";
   $("#catchImg").classList.toggle("silhouette", !revealed);
@@ -2514,7 +2514,6 @@ function renderEvoRow(poke){
       markSeen(target.id);
       showPokeModal(target, {
         caption: "",
-        greet: got ? "Welcome back!" : "",
         revealed: got,
         // Inherit the backdrop rule from where we came from: a catch reveal that
         // has to be acknowledged must not become dismissable by walking one hop
@@ -2679,7 +2678,6 @@ function renderPokedex(){
       }
       showPokeModal(poke, {
         caption: "",
-        greet: got ? "Welcome back!" : "",
         revealed: got,
         dismissOnBackdrop: true
       });

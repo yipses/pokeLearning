@@ -146,6 +146,6 @@ Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed
 
 **Traps.**
 
-- **A subtraction pattern needs room to descend.** Four rows of `step` means the anchor must be at least `step × 4`, or the set goes below zero. Where only part of `num1_min`–`num1_max` qualifies the anchor is drawn from that part; where none does, that step is silently skipped. `pattern_sub` level 2 is in exactly that state — step 3 needs an anchor of 12 from a range of 0–9, so that level only ever uses step 2.
+- **A subtraction pattern needs room to descend.** Four rows of `step` means the anchor must be at least `step × 4`, or the set goes below zero. Where only part of `num1_min`–`num1_max` qualifies the anchor is drawn from that part; where none does, that step is silently skipped — a level can lose a step without any error. Every `pattern_sub` row currently has at least one usable anchor per step, but two rows only just: level 2 step 3 loses 2 anchors of 10, level 3 step 5 loses 1 of 11. Widen `num1_min`–`num1_max` before raising a `step`, not after.
 - **Division is always exact.** The quotient is chosen first, from those whose dividend lands inside `num1`, so a row can be written that has no valid question at all — check that some multiple of the divisor falls in the dividend range.
 - **A prerequisite can point past its track's last level**, which locks the dependent forever. Nothing validates this; `tools/` has no checker for it yet.
