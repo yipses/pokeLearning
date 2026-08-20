@@ -188,7 +188,9 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 
 ## 8b. Home HUD
 
-A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the ⚙️ Settings button at the far right of the same line. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
+A **HUD** on the very first line of the page — above the logo, not below it — icon and number sitting straight on the background with no card around them, and the Settings button at the far right of the same line.
+
+**The icons are drawn, not typed.** Emoji were the obvious choice and the wrong one: their em-boxes line up but their *ink* does not — the target is round and wide, the flame narrow, the book tall and narrow, and the gear renders flat grey beside three colour glyphs, so the row read ragged. It cannot be nudged straight either, because those metrics belong to whichever emoji font the device happens to have; an offset tuned against one is wrong on another. Drawn as inline SVG on one 24×24 grid, every icon has the same optical size and the same centre on every device, and takes its colour from the counter it belongs to via `currentColor`. The wordmark follows it, set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and with **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
 The HUD is home-only. A round has its own progress bar and a ✕, and a second row of counters there would be two things to read at once.
 
@@ -196,13 +198,13 @@ The HUD is home-only. A round has its own progress bar and a ✕, and a second r
 
 | Counter | Shows | Goes to |
 |---|---|---|
-| 🎯 | rounds finished today against the daily goal; the number turns **green** once met | My progress |
-| 🔥 | consecutive days that met the rounds goal | My progress |
-| 📕 | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
+| target | rounds finished today against the daily goal; the number turns **green** once met | My progress |
+| flame | consecutive days that met the rounds goal | My progress |
+| dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
 **No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
 
-The same HUD appears on the results screen, centred rather than left-aligned to match that card. The ⚙️ button is home-only.
+The same HUD appears on the results screen, centred rather than left-aligned to match that card. The gear is home-only.
 
 A "round" is one full session; how many questions make up a round, and how many rounds a day the streak needs, are both Settings values.
 

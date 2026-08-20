@@ -634,16 +634,17 @@
   }
   .hud-item:hover{ background:rgba(255,255,255,.55); }
   .hud-item:active{ transform:translateY(1px); }
-  .hud-icon{ font-size:1.05rem; line-height:1; }
-  .hud-val{
-    font-size:.92rem; font-weight:900; line-height:1;
-    font-variant-numeric:tabular-nums; color:var(--ink-soft);
-  }
-  /* Colour carries the meaning the labels used to. Today goes green on the day
-     it is met, which is the one state worth noticing. */
-  .hud-item.streak .hud-val{ color:#e0812f; }
-  .hud-item.dex .hud-val{ color:var(--berry-deep); }
-  .hud-item.met .hud-val{ color:var(--leaf-deep); }
+  /* One box, one optical size, whatever the icon is. */
+  .hud-icon{ display:inline-grid; place-items:center; width:1.3rem; height:1.3rem; }
+  .hud-icon svg{ display:block; width:100%; height:100%; }
+  .hud-val{ font-size:.92rem; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; }
+  /* Colour carries the meaning the labels used to, and the icon takes it from
+     the counter it belongs to rather than from an emoji font's own palette.
+     Today goes green on the day it is met, the one state worth noticing. */
+  .hud-item{ color:var(--ink-soft); }
+  .hud-item.streak{ color:#e0812f; }
+  .hud-item.dex{ color:var(--berry-deep); }
+  .hud-item.met{ color:var(--leaf-deep); }
 
   /* ---------- home levels ---------- */
   /* Four trails, four tiles, two by two. A list of four rows would have been
@@ -719,11 +720,12 @@
   /* Same footprint as a HUD counter, at the far end of the line. */
   .gear-btn{
     flex:0 0 auto; margin-left:auto; padding:5px 8px; border:0; border-radius:999px;
-    background:transparent; cursor:pointer; font:inherit; font-size:1.05rem; line-height:1;
+    background:transparent; cursor:pointer; font:inherit; line-height:1; color:var(--ink-soft);
     display:grid; place-items:center; -webkit-tap-highlight-color:transparent;
     transition: transform .06s, background-color .15s;
   }
-  .gear-btn:hover{ background:rgba(255,255,255,.55); }
+  .gear-btn svg{ display:block; width:1.3rem; height:1.3rem; }
+  .gear-btn:hover{ background:rgba(255,255,255,.55); color:var(--ink); }
   .gear-btn:active{ transform:translateY(1px); }
 
   /* ---------- About / build identity ---------- */
@@ -943,7 +945,7 @@
 
   <div class="home-top" id="homeTop">
     <div class="home-tiles" id="homeTiles"></div>
-    <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings">⚙️</button>
+    <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings"></button>
   </div>
 
   <div class="brand">
@@ -1179,7 +1181,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 55;
+const APP_BUILD = 56;
 const APP_BUILD_DATE = "19 Aug 2026";
 
 function renderAbout(){
@@ -1982,6 +1984,29 @@ function renderShowcase(){
   });
 }
 
+/* HUD icons are drawn, not typed. Emoji were the obvious choice and the wrong
+   one: their em-boxes line up but their *ink* does not — measured on one device
+   the target is round and wide, the flame narrow, the book tall and narrow, and
+   the gear renders flat grey beside three colour glyphs. The row read ragged.
+
+   It cannot be nudged straight either, because the metrics belong to whichever
+   emoji font the device has — an offset tuned against Noto is wrong on Apple.
+   Drawn on one 24x24 grid, every icon has the same optical weight and the same
+   centre everywhere, and takes its colour from the counter it belongs to. */
+const HUD_ICONS = {
+  today: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.6"/>
+    <circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>`,
+  streak: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d="M12 2.4c3 4.4 6.1 6.9 6.1 11.1a6.1 6.1 0 0 1-12.2 0c0-3 2-4.9 3.6-6.6.3 2 1 3 1.9 3.5-.5-3.4-.3-5.9.6-8z"/></svg>`,
+  dex: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <rect x="3.6" y="2.9" width="16.8" height="18.2" rx="2.4" fill="currentColor"/>
+    <rect x="6.7" y="2.9" width="2" height="18.2" fill="#fff" opacity=".5"/>
+    <circle cx="14.9" cy="12" r="2.5" fill="#fff" opacity=".5"/></svg>`,
+  gear: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.5 7.5 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7.5 7.5 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.7 8.8a.5.5 0 0 0 .1.6L4.8 11a7.7 7.7 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3a.5.5 0 0 0 .6.2l2.4-1c.5.4 1.1.7 1.7 1l.4 2.5a.5.5 0 0 0 .5.4h3.8a.5.5 0 0 0 .5-.4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1a.5.5 0 0 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6zM12 15.4A3.4 3.4 0 1 1 15.4 12 3.4 3.4 0 0 1 12 15.4z"/></svg>`,
+};
+
 function renderTiles(el){
   if(!el) return;
   const data = loadStreak();
@@ -2006,13 +2031,13 @@ function renderTiles(el){
   const hud = (id, icon, value, label, mod) => `
     <button class="hud-item${mod ? " "+mod : ""}" type="button" data-go="${id}"
             aria-label="${label}" title="${label}">
-      <span class="hud-icon" aria-hidden="true">${icon}</span><span class="hud-val">${value}</span>
+      <span class="hud-icon">${HUD_ICONS[icon]}</span><span class="hud-val">${value}</span>
     </button>`;
 
   el.innerHTML =
-    hud("dashboard", "🎯", `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
-    hud("dashboard", "🔥", streak, `Day streak: ${streak}`, "streak") +
-    hud("pokedex", "📕", dexBig, `${dexSmall}: ${dexBig} caught`, "dex");
+    hud("dashboard", "today",  `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
+    hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak") +
+    hud("pokedex",   "dex",    dexBig, `${dexSmall}: ${dexBig} caught`, "dex");
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;
@@ -3998,6 +4023,7 @@ function migrateFrontiers(){
 $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
 $("#battleBackBtn").addEventListener("click", ()=> show("setup"));
+$("#settingsBtn").innerHTML = HUD_ICONS.gear;
 $("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"); });
 // The Pokédex and Progress screens are reached through the home tiles now, so
 // the home screen keeps to one job: pick a mode and play.
