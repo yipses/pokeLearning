@@ -149,8 +149,8 @@ A card, or a maths track opened out of its family row, shows:
 - Track name and current level label
 - Days at the current level
 - One progress bar per promotion gate, with exact fractions — Last 5 and Last 10 on the word trails, Last 5 / 10 / 20 on maths
-- A rolling-accuracy trend chart over recent attempts, with a dashed line at each gate's percentage, drawn from whichever gates that track actually has rather than a fixed pair
-- A ★ marker wherever the shortest window promoted outright, and a dashed "Leveled up" line wherever a slower gate fired instead
+
+There is no per-track accuracy chart. Rolling accuracy resets at every promotion, so charting it across levels drew a sawtooth against gate lines that were crossed once per tooth. The bars answer what the screen is for. `trend` is still recorded per attempt; nothing draws it.
 
 The two maths cards are headed with the family's summed level — `+ / −` out of 31, `× / ÷` out of 26 — then list their four tracks as rows. Locked tracks are listed too, greyed, with what opens them.
 

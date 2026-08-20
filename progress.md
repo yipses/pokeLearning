@@ -205,6 +205,32 @@ Two layout bugs, both found by rendering at 4× rather than from the assertions,
 
 `max_hints` was the only column in the sheet that had moved. It now caps at **3** from level 11 up; the CSV still held the old escalating values that ran to 7 by level 25. Nine cells, all in that one column — every other spelling, reading and maths cell already matched. Levels 13, 16, 18, 19, 21, 22, 23, 24 and 25 came down from 4, 4, 4, 5, 5, 6, 4, 5 and 7.
 
+### Phase 56 — The trend charts come out
+
+Two cards, reported a minute apart, that turned out to be one bug seen from both sides:
+
+```
+SPELLING after 3 clean answers     READING after 5 clean answers
+  bars  : Last 5  3/3               bars  : Last 5  0/0
+  trend : [0, 0, 0]                 trend : [0, 0, 0, 0, 100 ★]
+```
+
+`recordAttempt` used one function for two jobs. `pctOf` returns `null` until a window is **full**, which is right for promotion — 3 clean out of a gate of 5 must not promote. But the same value fed the chart, where `?? 0` turned *not enough data yet* into *scored zero*. Every level's first four answers were logged as a flat 0% however well they went. Spelling showed it directly, bars contradicting the chart on one card; Reading showed it after a promotion cleared `history`, so four fake zeros sat beside the one real 100% that earned the star.
+
+Fixed by splitting the two: `pctOf` stays strict for the gate check, `soFar` records the accuracy over whatever the window holds. Promotion timing is unchanged — verified 5 clean promotes on 5, 3 clean never promotes, `1,0,1,1,1,1` promotes on 7 and not before, ten wrong never promotes, on both a two-gate and a three-gate track.
+
+**Then the charts came out entirely.** Simulating a real learner — 85% clean, 60 attempts — showed the deeper problem the 0% bug was sitting on top of:
+
+```
+[80,80] [80,80] [80,80] [100,100 ★] [0,0] [0,0] [0,0] [0,0] [100,100 ★] …
+```
+
+A sawtooth with a fixed period. Rolling accuracy **resets at every promotion**, and a level lasts 5–10 attempts, so the line drew the same tooth over and over and the gate lines were crossed once per tooth rather than being a target anything approached. The y-axis did not even mean the same thing across the chart: 92% at level 3 and 92% at level 7 are accuracy on different material, drawn as one continuous line.
+
+The bars already answer the question the screen exists for, exactly and with fractions. So `renderTrendChart` is gone, along with the CSS only it used. The **This week** chart stays — different question, not implicated, and specifically asked for. `trend` is still recorded, correctly now, so nothing is lost if a chart returns; the level at any point can be reconstructed from the `promoted` flags walking back from the current frontier, which was verified exactly against a real sequence.
+
+If it does return it should plot **level over time** — a staircase that accumulates and only goes up, where a flat stretch means stuck. That is the journey. Rolling accuracy is not.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

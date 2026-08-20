@@ -283,12 +283,13 @@ Then **Spelling** and **Reading** get a card each, showing:
 
 - The track's current level, in plain language.
 - Days at the current level.
-- One clean-answer progress bar per promotion gate — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths.
-- A live SVG trend chart of rolling accuracy, with a line at each gate's percentage, a gold star marker at each instant promotion, and a dashed "Leveled up" line at each slower one.
+- One clean-answer progress bar per promotion gate, with exact fractions — Last 5 and Last 10 for the word trails, Last 5 / 10 / 20 for maths. The bar fills against however many answers the window actually holds, so three clean out of three reads full.
+
+**There is no per-track accuracy chart.** The bars are the whole of it. An accuracy chart plotted a rolling window that *resets on every promotion*, so it drew the same sawtooth over and over — climb, spike, promote, restart — and the gate lines it was drawn against were crossed once per tooth rather than being anything a reader was watching a track approach.
 
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
-- **Tapping a row opens the full detail** — level in plain language, days at it, every gate bar, and the trend chart. Only one tap's worth is built at a time; eight trend charts nobody asked for is the scroll this split exists to avoid.
+- **Tapping a row opens the full detail** — level in plain language, days at it, and every gate bar. Only one tap's worth is built at a time.
 - **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply pattern 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
 
 ## 10. Battle Mode

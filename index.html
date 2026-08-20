@@ -169,11 +169,6 @@
   .streak-stars{ font-size:1.25rem; letter-spacing:3px; }
   .streak-empty{ color:var(--ink-soft); font-style:italic; font-size:.85rem; }
 
-  .placeholder{
-    border:3px dashed var(--cream-2); border-radius:var(--radius-sm);
-    padding:16px; text-align:center; color:var(--ink-soft); font-style:italic;
-  }
-
   /* ---------- Buttons ---------- */
   .btn{
     font: inherit; font-weight:800; cursor:pointer; border:none;
@@ -890,7 +885,7 @@
   .window-track{ flex:1; height:12px; background:var(--cream-2); border-radius:999px; overflow:hidden; }
   .window-fill{ display:block; height:100%; border-radius:999px; transition:width .3s ease; }
   .window-val{ width:44px; flex:0 0 auto; text-align:right; font-weight:800; font-size:.85rem; color:var(--ink); }
-  .trend-wrap{ margin-top:14px; }
+  .trend-wrap{ margin-top:14px; }   /* the week chart; the per-track charts are gone */
 
   /* Maths on this screen is two group cards, one per family, each listing its
      four tracks as a slim row. Eight full cards was an enormous scroll on a
@@ -920,7 +915,6 @@
   .track-caret{ flex:0 0 auto; font-size:.7rem; color:var(--ink-soft); transition:transform .2s ease; }
   .track-row[aria-expanded="true"] .track-caret{ transform:rotate(90deg); }
   .track-detail{ padding:4px 2px 14px; }
-  .trend-chart{ width:100%; height:auto; overflow:visible; }
   .days-chart{ width:100%; height:auto; overflow:visible; }
   .day-base{ fill:var(--cream-2); }
   .day-bar{ fill:var(--sky-deep); }
@@ -931,11 +925,6 @@
   .axis-label{ font-size:8px; fill:var(--ink-soft); }
   .threshold-line{ stroke:var(--sun-deep); stroke-width:1; stroke-dasharray:4 3; opacity:.6; }
   .threshold-label{ font-size:7px; fill:var(--ink-soft); }
-  .trend-line{ stroke-width:2; opacity:.35; fill:none; }
-  .trend-line-10{ stroke-width:2.4; opacity:1; }
-  .star-marker{ font-size:12px; fill:var(--sun-deep); }
-  .promo-line{ stroke:var(--leaf-deep); stroke-width:1.5; stroke-dasharray:3 2; }
-  .promo-label{ font-size:7px; fill:var(--leaf-deep); font-weight:700; }
 
   /* ---------- Results ---------- */
   .result{ text-align:center; }
@@ -1228,7 +1217,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 64;
+const APP_BUILD = 65;
 const APP_BUILD_DATE = "20 Aug 2026";
 
 function renderAbout(){
@@ -1525,15 +1514,25 @@ function recordAttempt(track, wasClean){
   const gates = promoteGates(track);
   p.history.push(wasClean ? 1 : 0);
   if(p.history.length > gateWindow(track)) p.history.shift();
+  // Two different questions, and they were being answered by one function.
+  // PROMOTION needs a FULL window — 3 clean out of a gate of 5 must not promote,
+  // so a short window is `null` here and cannot clear any bar.
   const pctOf = n => {
     const w = p.history.slice(-n);
     return w.length === n ? Math.round(w.reduce((a,b)=>a+b,0)/w.length*100) : null;
   };
+  // The RECORD wants the accuracy so far. Reusing `pctOf` and defaulting its null
+  // to 0 logged every level's first four answers as a flat zero however well they
+  // went — a card could show bars of 3/3 beside a stored 0%.
+  const soFar = n => {
+    const w = p.history.slice(-n);
+    return w.length ? Math.round(w.reduce((a,b)=>a+b,0)/w.length*100) : 0;
+  };
   // The shortest window that clears its bar wins, so a clean run promotes on the
   // spot rather than waiting for a longer window to fill.
   const met = gates.find(g => { const v = pctOf(g.questions); return v != null && v >= g.percent; });
-  const fastPct = pctOf(gates[0].questions) ?? 0;
-  const winPct  = pctOf(gates[gates.length-1].questions) ?? fastPct;
+  const fastPct = soFar(gates[0].questions);
+  const winPct  = soFar(gates[gates.length-1].questions);
   let promoted = false;
   let promotedVia = null;
   if(met){
@@ -2824,7 +2823,7 @@ function renderDashboard(){
         </div>
         <div class="dash-days">${daysAtLevel(id)}</div>
       </div>
-      ${trackDetailHTML(id, label, color)}
+      ${trackDetailHTML(id, color)}
     `;
     grid.appendChild(card);
   });
@@ -2869,7 +2868,7 @@ function renderDashboard(){
         if(!open && !detail.innerHTML){
           detail.innerHTML = `<div class="dash-level">${levelLine(t.id)}</div>`
                            + `<div class="dash-days">${daysAtLevel(t.id)}</div>`
-                           + trackDetailHTML(t.id, t.label, color);
+                           + trackDetailHTML(t.id, color);
         }
         btn.setAttribute("aria-expanded", String(!open));
         detail.classList.toggle("hidden", open);
@@ -2887,70 +2886,29 @@ function daysAtLevel(id){
   const days = Math.max(0, Math.floor((Date.now()-progress[id].frontierSince)/86400000));
   return days===0 ? "Started today" : `${days} day${days===1?"":"s"} at this level`;
 }
-/* The promotion windows and the trend chart — the same block whether it is a word
-   track's own card or a maths track opened out of its group row. */
-function trackDetailHTML(id, label, color){
+/* The promotion windows — the same block whether it is a word track's own card or
+   a maths track opened out of its group row.
+
+   There is no accuracy chart here. It plotted a rolling window that RESETS on every
+   promotion, so a learner drew the same sawtooth over and over — climb, spike to
+   100%, promote, restart — and the gate lines it was drawn against were crossed
+   once per tooth rather than being a target anything approached. Worse, the two
+   halves of a card disagreed: bars reading 3/3 beside a chart reading 0%. The bars
+   answer the question the screen is for — how close is this track to promoting —
+   and they answer it exactly. `trend` is still recorded; nothing draws it yet. */
+function trackDetailHTML(id, color){
   const p = progress[id];
-  const windows = promoteGates(id).map(g => {
+  return promoteGates(id).map(g => {
     const w = p.history.slice(-g.questions);
-    return { n: g.questions, hits: w.reduce((a,b)=>a+b,0), of: w.length };
-  });
-  const trend = p.trend.length >= 2
-    ? renderTrendChart(p.trend, color, promoteGates(id))
-    : `<div class="placeholder">Play a few ${label} rounds to see a trend here!</div>`;
-  return windows.map(w => `<div class="window-row">
-      <span class="window-label">Last ${w.n}</span>
-      <span class="window-track"><span class="window-fill" style="width:${w.of ? (w.hits/w.of*100) : 0}%; background:${color}"></span></span>
-      <span class="window-val">${w.hits}/${w.of}</span>
-    </div>`).join("")
-    + `<div class="trend-wrap">${trend}</div>`;
+    const hits = w.reduce((a,b)=>a+b,0);
+    return `<div class="window-row">
+      <span class="window-label">Last ${g.questions}</span>
+      <span class="window-track"><span class="window-fill" style="width:${w.length ? (hits/w.length*100) : 0}%; background:${color}"></span></span>
+      <span class="window-val">${hits}/${w.length}</span>
+    </div>`;
+  }).join("");
 }
 
-// Rolling accuracy over the two promotion windows, plus markers for how each
-// promotion happened — a gold star for a clean fast run, a dashed "Leveled up"
-// line for the slower percentage path. Points saved under the older gates are
-// read through their old keys so an existing chart doesn't break.
-function renderTrendChart(trend, color, gates){
-  const W=320, H=170, xL=30, xR=308, yTop=14, yBot=150;
-  const n = trend.length;
-  const xAt = i => n<=1 ? xL : xL + (xR-xL) * (i/(n-1));
-  const yAt = pct => yBot - (pct/100)*(yBot-yTop);
-  const fastOf = t => t.fast ?? t.last10 ?? 0;
-  const winOf  = t => t.win  ?? t.last20 ?? 0;
-  const pathOf = get => trend.map((t,i)=> `${xAt(i).toFixed(1)} ${yAt(get(t)).toFixed(1)}`).join(" L ");
-
-  let svg = `<svg class="trend-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Rolling accuracy trend">`;
-  [0,50,100].forEach(pct=>{
-    const y = yAt(pct).toFixed(1);
-    svg += `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" class="grid-line"/>`;
-    svg += `<text x="${xL-5}" y="${Number(y)+3}" class="axis-label" text-anchor="end">${pct}</text>`;
-  });
-  // One line per gate, drawn from whatever that track's gates are — the word
-  // trails have two, maths has three.
-  const seenPct = new Set();
-  gates.forEach((g, gi) => {
-    if(seenPct.has(g.percent)) return;
-    seenPct.add(g.percent);
-    const y = yAt(g.percent).toFixed(1);
-    svg += `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" class="threshold-line"/>`;
-    svg += `<text x="${gi % 2 ? xR : xL}" y="${Number(y)-4}" class="threshold-label"`
-         + `${gi % 2 ? ' text-anchor="end"' : ''}>${g.percent}% · Last ${g.questions} gate</text>`;
-  });
-  svg += `<path d="M ${pathOf(winOf)}" fill="none" class="trend-line" style="stroke:${color}"/>`;
-  svg += `<path d="M ${pathOf(fastOf)}" fill="none" class="trend-line trend-line-10" style="stroke:${color}"/>`;
-  trend.forEach((t,i)=>{
-    const x = xAt(i).toFixed(1);
-    svg += `<circle cx="${x}" cy="${yAt(fastOf(t)).toFixed(1)}" r="2.2" class="trend-pt" style="fill:${color}"><title>Attempt ${i+1}: short window ${fastOf(t)}%, long window ${winOf(t)}%</title></circle>`;
-    if(t.promoted==="instant"){
-      svg += `<text x="${x}" y="9" class="star-marker" text-anchor="middle">★<title>Cleared the shortest window — instant promotion</title></text>`;
-    } else if(t.promoted==="standard"){
-      svg += `<line x1="${x}" y1="${yTop-4}" x2="${x}" y2="${yBot}" class="promo-line"/>`;
-      svg += `<text x="${x}" y="${H-4}" class="promo-label" text-anchor="middle">Leveled up</text>`;
-    }
-  });
-  svg += `</svg>`;
-  return svg;
-}
 
 /* ---------------- SPELLING ---------------- */
 /* Full Spelling. Slots and tiles both hold a *chunk*, not a letter: "torch" is
