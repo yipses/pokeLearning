@@ -200,6 +200,14 @@ That forced a structural change: the card **was** one big button, so tapping any
 
 Two headings cost height, and 360×640 went over by 3px. Taken back from the gap under a six-letter label rather than from the Pokémon, which has given way enough.
 
+### Phase 59 — The count moves under the Pokémon, and types come back
+
+The generation count spanned the whole card, below both columns, which read as a footer belonging to the card rather than to the one species above it. It sits in the right-hand column now, under the name — the frame leaves that column plenty of room, and the card came out *shorter* for it.
+
+**Type badges show on a caught card too.** They had been the uncaught state's consolation, the one thing a card gave up besides the outline. On a caught card they are one more fact about something already on the shelf, and the column had the space.
+
+**One thing that looked like a bug and was not.** The empty state's silhouette appeared to be missing — a blank circle where the outline should be. Rendered at 4× it is plainly there: `brightness(0) opacity(.28)` on a cream ground is faint at a phone's own scale and washes out entirely in a screenshot. The reverse of the usual trap, and the same fix — magnify before concluding.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
