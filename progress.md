@@ -16,7 +16,20 @@ The Spelling and Reading trails share one graded vocabulary — all **807 distin
 
 Roughly by how much they'd bite.
 
-### 1. The maths sheet's remaining tight spots
+### 1. A round can fail to end — known, accepted for now
+
+A round finishes after N questions answered with at most `Mistakes allowed` slips (default 1). A child who averages **more** slips than that earns no credits at all and plays forever: simulated to a 400-question guard without finishing. **There is no cap.**
+
+It lands hardest on exactly the child the change was built for — spam hard enough and the app never lets you out — so it is a real risk, not a theoretical one. Shipped knowingly, to see whether a progress bar that visibly refuses to move is enough on its own before adding machinery.
+
+Two shapes a fix could take, neither built:
+
+- **A ceiling.** The round ends after some number of questions regardless — a hard stop, or a soft one where the tail draws from the Review band so the last few get easier until they clear.
+- **Scale the allowance to the question.** The allowance is per question, but questions are not the same size: a maths question takes one answer, a pattern set four, a Full Spelling word one placement per chunk, and Missing Letters up to eighteen blanks at the top of the ladder. One slip is a far harder bar on a nine-chunk word than on a single sum, which makes Spelling quietly the strictest mode.
+
+Demotion on repeated failure was discussed alongside this and deliberately **not** built: "wrong many times in a row" is the spam signature as much as the too-hard signature, and tuning a demotion rule against that noise would mean tuning it against the very behaviour this change is meant to remove. Worth revisiting once the behaviour settles.
+
+### 2. The maths sheet's remaining tight spots
 
 The three rows the first cut of the sheet could not satisfy have been fixed at source: `PatternSubtract` levels 1 and 2 now anchor at 5–9 and 10–19 instead of 0–9, and `MathAdd` level 4 is no longer `visual`. A 114,000-question audit against the corrected CSV finds **0 violations**, and every pattern step now has at least one usable anchor — level 2 uses both step 2 and step 3, which it could not before.
 
@@ -24,11 +37,11 @@ Two rows still clear the bar only just: `pattern_sub` level 2 step 3 loses 2 anc
 
 The tallest visual question left is **`div` level 5** — 25 ÷ 5 draws 25 icons over five groups, 919px on a 390×844 phone. It reads fine and does not overflow sideways; it is 75px below the fold, which the old 19 + 9 case beat at 956px.
 
-### 2. The phoneme respellings still have not been heard
+### 3. The phoneme respellings still have not been heard
 
 A first pass written on paper turned out to be 30% unspeakable; the rewrite measures at 1%, but *measured* only against a rough test for whether a string can be said at all — not whether it says the **right** sound. `tools/phonemes.html` plays every row and takes about five minutes. `ee` is the one to listen to first.
 
-### 3. Smaller, and each self-contained
+### 4. Smaller, and each self-contained
 
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **`fonts/OFL.txt` is missing.** The Open Font Licence requires its text to travel with the font files; `fonts/README.md` says where to get it. A licence obligation, not a runtime one.
