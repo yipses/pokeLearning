@@ -16,7 +16,20 @@ The Spelling and Reading trails share one graded vocabulary — all **807 distin
 
 Roughly by how much they'd bite.
 
-### 1. The maths sheet's remaining tight spots
+### 1. A round can fail to end — known, accepted for now
+
+A round finishes after N questions answered with at most `Mistakes allowed` slips (default 1). A child who averages **more** slips than that earns no credits at all and plays forever: simulated to a 400-question guard without finishing. **There is no cap.**
+
+It lands hardest on exactly the child the change was built for — spam hard enough and the app never lets you out — so it is a real risk, not a theoretical one. Shipped knowingly, to see whether a progress bar that visibly refuses to move is enough on its own before adding machinery.
+
+Two shapes a fix could take, neither built:
+
+- **A ceiling.** The round ends after some number of questions regardless — a hard stop, or a soft one where the tail draws from the Review band so the last few get easier until they clear.
+- **Scale the allowance to the question.** The allowance is per question, but questions are not the same size: a maths question takes one answer, a pattern set four, a Full Spelling word one placement per chunk, and Missing Letters up to eighteen blanks at the top of the ladder. One slip is a far harder bar on a nine-chunk word than on a single sum, which makes Spelling quietly the strictest mode.
+
+Demotion on repeated failure was discussed alongside this and deliberately **not** built: "wrong many times in a row" is the spam signature as much as the too-hard signature, and tuning a demotion rule against that noise would mean tuning it against the very behaviour this change is meant to remove. Worth revisiting once the behaviour settles.
+
+### 2. The maths sheet's remaining tight spots
 
 The three rows the first cut of the sheet could not satisfy have been fixed at source: `PatternSubtract` levels 1 and 2 now anchor at 5–9 and 10–19 instead of 0–9, and `MathAdd` level 4 is no longer `visual`. A 114,000-question audit against the corrected CSV finds **0 violations**, and every pattern step now has at least one usable anchor — level 2 uses both step 2 and step 3, which it could not before.
 
@@ -24,11 +37,11 @@ Two rows still clear the bar only just: `pattern_sub` level 2 step 3 loses 2 anc
 
 The tallest visual question left is **`div` level 5** — 25 ÷ 5 draws 25 icons over five groups, 919px on a 390×844 phone. It reads fine and does not overflow sideways; it is 75px below the fold, which the old 19 + 9 case beat at 956px.
 
-### 2. The phoneme respellings still have not been heard
+### 3. The phoneme respellings still have not been heard
 
 A first pass written on paper turned out to be 30% unspeakable; the rewrite measures at 1%, but *measured* only against a rough test for whether a string can be said at all — not whether it says the **right** sound. `tools/phonemes.html` plays every row and takes about five minutes. `ee` is the one to listen to first.
 
-### 3. Smaller, and each self-contained
+### 4. Smaller, and each self-contained
 
 - **46 unverified pronunciations**, all Gen 8–9, each with a stated reason for existing. They surface as the collection reaches them; `tools/pronounce.html` filters to exactly this set.
 - **`fonts/OFL.txt` is missing.** The Open Font Licence requires its text to travel with the font files; `fonts/README.md` says where to get it. A licence obligation, not a runtime one.
@@ -232,6 +245,41 @@ Two things the change turned up:
 - **My progress said its own name twice**, once in the chrome and once in a card below it. That card is gone, for the same reason the Pokédex's was.
 
 One false alarm worth recording: a regression check reported the Pokédex HUD as empty. The HUD was fine — the *test* still queried `#dexTiles`, an id the chrome no longer emits. A stale selector reads exactly like a broken feature, so the check was fixed rather than the app.
+
+### Phase 62 — The collection counter comes back to the HUD
+
+Removed over two phases: first by reading *"move the Pokédex icon beside the collection numbers"* as literally moving it out of the HUD, then by reading *"the HUD should stay persistent and the same"* as *the same across screens* rather than *unchanged*. The second was a misread — the instruction was to leave the HUD alone, and it was taken as licence to strip the last counter out of it.
+
+It is back, three counters on every screen that shows the HUD. **The Pokémon card keeps its own count as well**, and the duplication is the point: the HUD's is chrome — same corner, every screen, a fixed route to the Pokédex — while the card's names the generation it counts and belongs to the Pokémon above it.
+
+**Putting them side by side immediately exposed a bug.** The HUD read `58/147` and the card `60/147` on the same screen. The card counted *stored ids* falling inside the generation's number range; the HUD counted *roster members*. Two ids in the test collection — 29 and 32, Nidoran♀ and ♂ — are excluded from the roster, so the card counted catches that cannot exist. Real play cannot store them, which is why nothing had caught it. Both derive from the roster now and cannot disagree.
+
+A second thing that looked wrong and was not: a caught Pokémon appeared in an empty frame. The screenshot fired before the image decoded. Waiting on `img.complete && naturalWidth > 0` rather than a fixed delay shows the artwork every time, and is what the check does now.
+
+### Phase 63 — Zoom off
+
+Pinch and double-tap zoom are disabled. A five-year-old holding a tablet triggers both by accident and cannot undo either, and a screen stuck at 2.4× is a broken app to them.
+
+It takes three mechanisms, because no single one covers every browser: `user-scalable=no` on the viewport meta (honoured by Chrome and Android, **ignored by iOS Safari**, which treats pinch-zoom as an accessibility guarantee), `touch-action: pan-x pan-y` on `html,body` (the standards-based half, and what actually stops the gesture in Chrome), and `preventDefault` on Safari's non-standard `gesture*` events, which is the only thing that stops it on iOS. Other browsers never fire those, so it costs them nothing.
+
+**One version of this was written and then deleted before it shipped.** The usual recipe for killing double-tap zoom is to `preventDefault` any `touchend` within 300ms of the last. It also cancels the synthesised click that follows — and this game is played by tapping letter tiles in quick succession, so it would have eaten real taps. `touch-action` already covers double-tap zoom everywhere it is supported, iOS included, so the hack bought nothing and would have cost gameplay. Checked by tapping two different controls 80ms apart: both still register.
+
+Worth being clear about the trade: this is an accessibility guarantee being switched off on purpose. It is right for a game held by a child who cannot undo an accidental gesture, and it would be wrong for a page of text.
+
+### Phase 64 — A round is ten answered, not ten shown
+
+Reported as a child spamming answers until he could move on. Tracing it first changed what the fix had to be: **every mode already retries until the answer is right**, verified in all six — a wrong tap never advances anything. So a round already ended after ten *correct* answers, and spamming never skipped a question, it only resolved one faster.
+
+What spamming actually bought was narrower than it looked. The Lesson Trails were **already immune** — `recordAttempt` counts only spotless questions. What was being farmed was the round ending and the Pokémon being caught, since an encounter resolves on a correct answer however many wrong taps came first.
+
+A round now ends after **N questions answered with at most `Mistakes allowed` slips** — a Settings value, default 1, counting wrong taps and hints alike. The queue tops up a batch at a time rather than being built once, so it keeps `buildQueue`'s thirds and no-repeat rule. **The progress bar measures credits**, which is the honest number and also the lesson: guessing leaves the bar where it was.
+
+**Two definitions of clean, deliberately separate.** `spotless()` — nothing wrong at all — still gates promotion, unchanged. `countsForRound()` — at most the allowance — gates only the round. Conflating them would have quietly loosened the ladder while nobody was looking at it. The eight places that set a boolean flag now increment a count on the question instead, so both rules read the same number.
+
+Two things measurement turned up that are worth deciding on rather than discovering later:
+
+- **A round can fail to end.** At allowance 1, a child averaging two slips a question earns no credits at all and plays forever. Simulated to a 400-question guard without finishing. There is no cap.
+- **The allowance is per question, but questions are not the same size.** A maths question takes one answer; a pattern set takes four; a Full Spelling word takes one placement per chunk, and Missing Letters runs to eighteen blanks at the top of the ladder. One slip allowed is a far harder bar on a nine-chunk word than on a single sum.
 
 ## Doc roles
 

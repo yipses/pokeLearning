@@ -45,6 +45,12 @@ Settings, Lesson Trails progress, the Pokédex collection, and the play streak p
 
 ## 5. Sessions
 
+**A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. A question counts toward the round when it is answered with at most **`Mistakes allowed`** slips — a Settings value, default 1, where a slip is a wrong tap *or* a hint. Hints count because hinting through a word to reach the end of a round is the same loophole in a different costume.
+
+**Two different bars, deliberately kept apart.** The Lesson Trails still promote only on a **spotless** question — nothing wrong at all, no hints — exactly as before. `Mistakes allowed` governs only whether a question moves the *round* along. Loosening the round does not loosen the ladder.
+
+**The progress bar measures credits**, so guessing your way through a question leaves it exactly where it was. That is the feedback the change exists to give.
+
 Each mode toggles on/off in Settings. A session of **N** challenges is **split in thirds** — spelling, reading, maths — rather than drawn evenly across every track, and never repeats the same mode back-to-back. The maths third is shared among whichever maths tracks are currently open; without the split, a fully-unlocked child would get eight questions in ten as maths purely because maths has the most tracks. A mode with nothing enabled inside it drops out of the pool automatically.
 
 ## 6. Lesson Trails
@@ -243,7 +249,7 @@ It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds eac
 
 **A screen with chrome does not also carry a heading card.** My progress and the Pokédex both had one, stating a name the chrome now states; both are gone, and both screens start most of a screen higher.
 
-The HUD is **identical wherever it appears** — home, results, and every chrome screen. Two counters, the same two, in the same order. A counter that differs by screen is not persistent chrome, it is three similar things; the collection count lives on the Pokémon card (§8c) and in the Pokédex's own generation header, both of which name what they are counting.
+The HUD is **identical wherever it appears** — home, results, and every chrome screen. Three counters, the same three, in the same order. A counter that differs by screen is not persistent chrome, it is several similar things.
 
 **Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
 
@@ -253,9 +259,9 @@ The HUD is **identical wherever it appears** — home, results, and every chrome
 |---|---|---|
 | target | rounds finished today against the daily goal; the number turns **green** once met | My progress |
 | flame | consecutive days that met the rounds goal | My progress |
-| dex | caught/total for the **current generation only** — the one the collection gate is on. **Results screen only** | Pokédex |
+| dex | caught/total for the **current generation only** — the one the collection gate is on | Pokédex |
 
-**The home HUD has two counters, not three.** Its collection counter moved into the Pokémon card (§8c), where the row it sits on names the generation it is counting and carries the tap through to the Pokédex. Unlabelled in the HUD it said the same two numbers twice on one screen and explained neither. Results keeps it, having no card to move it to.
+**The collection counter appears twice on the home screen, deliberately.** The HUD's is chrome: same corner, every screen, a fixed route to the Pokédex. The Pokémon card's (§8c) names the generation it is counting and belongs to the Pokémon above it. Same numbers, two jobs — and both derive from roster members rather than stored ids, so they cannot disagree.
 
 **No labels.** "TODAY", "STREAK" and "GEN 1" were words a five-year-old wasn't reading; the icon says which counter it is and colour carries the one state worth noticing — green when the day's goal is met. Each counter keeps its own `aria-label` for anything that needs the meaning spelled out.
 
@@ -345,7 +351,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 12. Settings & Persistence
 
-- **General**: Questions per round (session length across all active modes, default 10), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
+- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
 - **Per trail**: a frontier dropdown showing the current level in plain language — *Level 1 — Words to level 1, 25% shown*, *Level 1 — 0–3 + 0–3* — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
@@ -381,6 +387,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 
 - Warm, pastel, "cozy life-sim" visual style (leaf greens, sky blues, cream, sun yellow, berry pink) consistent across every mode.
 - Mobile-first responsive layout: touch targets sized for small screens, a dedicated `@media (max-width:480px)` breakpoint, no horizontal page scroll.
+- **Pinch and double-tap zoom are off.** A small child holding a tablet triggers them by accident and cannot undo them, and a screen stuck at 2.4× is a broken app to them. It takes three mechanisms because no one of them covers every browser: `user-scalable=no` on the viewport meta, `touch-action: pan-x pan-y` on `html,body`, and `preventDefault` on Safari's non-standard `gesture*` events. Panning and scrolling are untouched. The obvious fourth — cancelling any `touchend` within 300ms of the last, to stop double-tap zoom — is deliberately **not** used: it also cancels the click that follows, and this game is played by tapping tiles in quick succession.
 - Speech synthesis is used in Spelling, Battle, Reading and the Pokédex — in Reading, only ever to name a picture (§7.2). Utterances are pinned to `en-US`, since otherwise the OS default voice applies its own language's phonetics to English spellings. Names the synthesiser mangles are respelled via `data/pronunciations.csv` (§13); overrides affect **speech only**.
 - Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letters, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
