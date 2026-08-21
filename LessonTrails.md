@@ -51,7 +51,7 @@ The old design was **Add/Subtract, 8 levels** and an interleaved **Multiply↔Di
 
 - **A shared frontier hides a real gap.** Multiply and divide moved together, so a child fluent at `4×3` and lost at `12÷4` had one number describing both, and could not practise the weaker one without re-proving the stronger.
 - **Patterns as a 30% dice roll cannot be practised.** Counting by 3s turned up when it turned up. As its own track it has its own levels, its own frontier and its own promotion, so it can be worked at.
-- **The ladder was a queue, not a map.** One list marched through in order. Tracks now **open on prerequisites** — pattern-add at add 3, subtract at add 5, multiply at add 7 — so the ladder *widens* as it is climbed and everything open has a chance to come up. Liveness is transitive: a track whose own prerequisite has not opened cannot open the next.
+- **The ladder was a queue, not a map.** One list marched through in order. Tracks now **open on prerequisites**: the four operations chain (subtract at add 5, multiply at add 7, divide at multiply 5) and each pattern track hangs off its own operation at level 3 — so the ladder *widens* as it is climbed and everything open has a chance to come up. Liveness is transitive: a track whose own prerequisite has not opened cannot open the next.
 
 **Regrouping is no longer controlled for.** The old levels 4a–5b used rejection sampling on whether the ones digit carried, making "no regrouping" and "with regrouping" distinct rungs rather than wider ranges. The CSV ladder expresses difficulty as operand ranges only. That is a real loss of precision, traded for a ladder a parent can edit in a spreadsheet without touching code — and the reason it is written down here rather than quietly dropped.
 

@@ -141,7 +141,7 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 **Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. 57 levels in total. Nothing about maths difficulty lives in code.
 
-**Tracks open on prerequisites rather than in sequence.** `data/math_tracks.csv` gives each track the track and level that unlocks it: pattern-add opens at add 3, subtract at add 5, multiply at add 7, and so on. Add is open from the start, and **everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list. Liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
+**Tracks open on prerequisites rather than in sequence.** `data/math_tracks.csv` gives each track the track and level that unlocks it. The four operations chain — subtract at add 5, multiply at add 7, divide at multiply 5 — and **each pattern track hangs off its own operation at level 3**, so counting by 3s opens once subtracting has started rather than waiting on an unrelated track. Add is open from the start, and **everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list. Liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
 
 | column | means |
 |---|---|
@@ -327,7 +327,7 @@ Then **Spelling** and **Reading** get a card each, showing:
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
 - **Tapping a row opens the full detail** — level in plain language, days at it, and every gate bar. Only one tap's worth is built at a time.
-- **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply pattern 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
+- **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
 
 ## 10. Battle Mode
 

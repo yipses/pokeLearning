@@ -213,6 +213,21 @@ A round now ends after **N questions answered with at most `Mistakes allowed` sl
 
 The risk this shipped with is open thread #1.
 
+### Phase 65 — Prerequisites re-pointed from the sheet
+
+Two cells changed in the tuning sheet and nothing else: `pattern_sub` now opens at **subtract 3** rather than subtract 6, and `pattern_div` at **divide 3** rather than multiply-pattern 5. Everything else in it — all 57 maths levels, both word ladders, the promotion gates — already matched, checked cell by cell rather than by eye.
+
+The second change is the interesting one: it re-points a dependency at a **different track**, not just a different level. The graph is symmetric now — the four operations chain, and each pattern track hangs off its own operation at level 3 — where `pattern_div` used to wait on `pattern_mul`, a sibling rather than its own subject.
+
+The unlock order moves with it:
+
+```
+was:  add → pattern_add → sub → mul → pattern_mul → pattern_sub → div → pattern_div
+now:  add → pattern_add → sub → pattern_sub → mul → pattern_mul → div → pattern_div
+```
+
+Skip-counting backwards now arrives with subtraction instead of trailing three tracks behind it. Re-verified after the change: no cycles, no prerequisite pointing past its track's last level, all eight reachable, and the audit still clean at 114,000 questions with 0 violations.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
