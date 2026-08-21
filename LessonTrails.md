@@ -24,7 +24,9 @@ These windows are deliberately short. A child who has a level shouldn't have to 
 
 ### What counts as "right"
 
-The app itself never changes — every question can still be retried until it's solved, same as always, no new fail state. But for the purposes of promotion tracking, an answer only counts as **correct** if it's right on the **first attempt**, with **no wrong guesses and no hints used**. Getting there on the second try, or after a hint, still feels like success to the kid and still moves the session on — it just doesn't count toward Last 5 / Last 10. This is the only definition of "correct" used anywhere in this document.
+The app itself never changes — every question can still be retried until it's solved, same as always, no new fail state. But for the purposes of promotion tracking, an answer only counts as **correct** if it's right on the **first attempt**, with **no wrong guesses and no hints used**. Getting there on the second try, or after a hint, still feels like success to the kid and still moves the session on — it just doesn't count toward Last 5 / Last 10. **This is the only definition used anywhere in this document**, and it is the strict one.
+
+The app has a second, looser bar that this file is not about: a question counts toward **finishing a round** if it took at most `Mistakes allowed` slips (a Settings value, default 1). That governs how long a round runs, never what promotes. Loosening the round does not loosen the ladder — see `Overview.md` §5.
 
 ---
 

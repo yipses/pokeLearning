@@ -12,6 +12,8 @@ Everything speced is built and published on GitHub Pages: ten Lesson Trails prom
 
 The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all authored in a spreadsheet and read at boot. **No ladder, word list or promotion gate remains in code**, maths included.
 
+**A round ends after ten questions answered well enough, not ten shown** — at most `Mistakes allowed` slips each, default 1 — and the progress bar measures those credits, so guessing does not move it. Promotion is a stricter bar and unchanged: still spotless only.
+
 ## Open threads
 
 Roughly by how much they'd bite.
@@ -74,6 +76,8 @@ Each of these cost real time at least once.
 **Centring is not reflowing.** A layout that looks fine on a phone and is merely *centred* at every larger size is width-blind, not responsive. The home trophy card read as mostly empty on a tablet because it was a 360px stack sitting in the middle of a 724px card, using 27% of it. Nothing was stretched and nothing was broken, which is why it survived so long.
 
 **Measure before designing, and measure the thing that actually matters.** The pity timer was fixed by simulation rather than reasoning. Six answer choices only worked once the answer *space* per level was counted — four division levels have fewer than six possible answers. And sorting those choices was verified by measuring where the answer *landed*, which turned up an exploit the change itself would never have shown: sorted alone, the answer sat 3rd or 4th in 75% of questions.
+
+**Scope a measurement to the thing being measured.** `.hud-item` matches the results screen's HUD as well as the home one, and hidden copies measure at zero width while still contributing flex gaps. That reported 41px of free space on the home row when the real figure was 60px, and it nearly settled a layout decision on a number that was measuring the wrong element. A measurement is a query, and a query with a loose selector lies confidently.
 
 **Structural assertions are not enough — look at it.** Several bugs passed every DOM assertion while being visibly broken. The reverse happens too: reported misaligned HUD icons measured *correct* on every number available, and the real cause — different ink inside identical boxes — was obvious the moment the row was rendered at 4×.
 
@@ -173,113 +177,41 @@ The trade, on the record: a blind guess now lands 1 in 6, and a round can be bru
 
 **"Missing Letter" was reported as wrong, and it was — but not the way it looked (57).** The screenshot showed Doduo with four blanks and one letter given, which reads like over-blanking. It is correct: 25%-shown is what eight of the levels ask for. Measuring the mode settled which half was wrong — **96% of its questions have more than one blank**, so the singular was wrong almost always. Renamed in the app and in every doc and comment, since a mode called one thing on screen and another in its own source is the drift this repo keeps paying for.
 
-### Phase 58 — the home trophy card stops being a phone layout in a wide box
+### Phases 58–60 — the home screen earns its width
 
-Reported as *"the layout here has a lot of white space"*, from a tablet screenshot. It was, and the measurement said where: the showcase card **never used more than 32% of its own width**, and 27% at 768px — **264px dead on each side**. The cause was not the card, which is content-height and never stretched. It was the content: a centred vertical stack is a 360px phone layout centred inside a card that grows to 724px. Centring is not reflowing.
+**The trophy card was a phone layout centred in a wide box.** Reported as *"a lot of white space"* from a tablet screenshot, and the measurement said where: the card used **32% of its own width at 360px and 27% at 768** — 264px dead on each side. The card was never the problem; a centred vertical stack is a 360px layout no matter how wide the box grows. Centring is not reflowing.
 
-**Four candidates were measured before one was built**, and the obvious one lost. Growing the trophy — the first instinct, since the disc is the emptiest thing on the card — *cost* 41px of height at 360×640 and still reached only 28% at 768, because the frame is clamped against viewport height and a 1024-tall screen has none spare to give it. Capping the card to its content width worked but only moved the emptiness onto the page background. Adding a bar under the generation count scored 91% at phone width, which flattered it: that was the bar alone spanning the card, with the text still a narrow column behind it.
+**Four candidates were measured and the obvious one lost.** Growing the disc — the emptiest thing on the card — *cost* 41px of height at 360×640 and still reached only 28% at 768, because the frame clamps against viewport height and a tall screen has none to spare. What shipped is two columns: **88–93% of card width used at every supported size**, verified at six of them, with no breakpoint. And the trophy got *bigger*, which was the objection to a left-hand thumbnail and turned out backwards — moving the text out from under the frame frees more height than a larger frame spends, so the circle went 86px → 122px at 360 while the card still *shortened*, buying Start Playing 58px of clearance.
 
-What shipped is the two-column layout with the bar: **88–93% of card width used at every supported size**, verified at 360×640, 390×844, 414×736, 360×780, 768×1024 and 1280×900. No breakpoint — the frame and the text both clamp, so one arrangement covers the range.
+One prototype detail was dropped on measurement: the mock raised the image cap inside the circle from 68% to 78%. A square image centred in a circle keeps its corners inside only up to **1/√2 = 70.7%**, so 78% would have clipped any zero-padding sprite. 68% was already at the geometric limit.
 
-**The trophy got bigger, not smaller**, which was the objection to a left-hand thumbnail and turned out to be backwards. Moving the text out from under the frame frees more height than a larger frame spends: the circle goes 86px → 122px at 360 and 196px → 225px at 768, *and* the card still shortens, leaving Start Playing 58px more clearance above the fold than the centred stack gave it.
+**The wordmark moved into the HUD row**, and the first measurement of the free space was wrong in a way that nearly decided the design. `.hud-item` matches the results screen's HUD as well as home's, and hidden copies counted as zero width while still contributing gaps — reporting **41px free at 360** and making the wordmark look impossible at every width. Scoped to `#homeTiles` the real figure is 60px at 360 and 460px at 768: the words were never impossible, only impossible *on a phone*. Below the sheet's existing 480px breakpoint the words go and the ball stands alone. Another 46px of clearance, putting Start at 456 of 640 where it had been 560.
 
-**One prototype detail was dropped on measurement.** The mock also raised the image cap inside the circle from 68% to 78% of the frame. A square image centred in a circle keeps its corners inside only up to 1/√2 — **70.7%** — so 78% would have clipped artwork on any zero-padding sprite, and the existing 68% is already at the geometric limit. The frame growth alone made the picture bigger anyway: 58px → 83px at 360.
+**Then the card was named and reordered.** Both home cards took headings — `YOUR PROGRESS` and `YOUR POKÉMON`, set through `text-transform` so the accent survives. Inside the second: the **number above the name** (the number is the slot, the name is what fills it), **"Welcome back!" gone** once the card had a heading of its own, **type badges shown whether or not it is caught**, and the generation count moved into the right-hand column under the Pokémon it describes rather than spanning the card as a footer.
 
-Two things fell out for free. The `max-width:480px` frame override is gone, because `min(22vh, 34vw)` covers short and narrow with one rule. And caught and uncaught card heights are now **identical** (154px at 360) where they differed by 22px, so Start stops shifting when the shelf is empty — something §8c claimed and only roughly had.
+### Phases 61–63 — one chrome, one HUD, and zoom off
 
-Still true and not fixed: a landscape phone (740×360) scrolls. It scrolled before too — Start at 577 against a 360px viewport, now 486 — and 360px of height cannot hold the HUD, wordmark, levels, card and buttons. The supported set is portrait.
+**The Pokédex opened onto a card, not the collection.** A full card headed *"My Pokédex"* with a `60 / 1021 caught` pill pushed the first grid row most of a screen down, to state a total nobody works toward — the generation is the unit being filled, and its own header already said where it stood. The card went; the grid now starts about **240px** down at every width. In its place: a ✕ matching the round screen, the HUD, and a bar under each generation header — the same `.level-bar` the home card uses, replacing the dashed rule the header carried. The rule separated header from grid; the bar does that *and* says how full the generation is.
 
-### Phase 59 — the wordmark stops owning a row
+**The chrome became one thing.** Settings, Battle, the Pokédex and My progress each had a hand-written top bar: three said "← Back", one said ✕, one carried a badge, none carried the HUD. They now share two rows — the HUD, then a ✕ beside the screen's name — declared once in a `SCREEN_CHROME` map and rendered by `show()`. Four sections dropped from five-to-nine lines of markup each to a single `<div class="chrome"></div>`, and four separately-bound back buttons went with them.
 
-Reported the same way as the card: *"we don't need a large obvious logo like this on its own row."* It moves into the HUD line, right-aligned with the gear beside it.
+Two things that shook out: **Battle's record was written before the chrome existed** (`newBattle()` calls `updateBattleRecord()` and only then `show()`), fixed by making the extra slot part of the map — a function the chrome calls on every render — rather than by reordering two calls. And **My progress said its own name twice**, once in the chrome and once in a card, so that card went the way the Pokédex's had.
 
-**The first measurement of the free space was wrong, and the wrong number nearly decided the design.** `.hud-item` matches the results screen's HUD as well as home's, and the hidden copies were counted at zero width while still contributing gaps — which reported **41px free at 360** and made the wordmark look impossible at every width. Scoped to `#homeTiles` the real figure is **60px at 360, 130 at 430, 291 at 591, 460 at 768**. The words were never impossible; they were impossible *on a phone*. A screenshot saying "I see lots of space" is what prompted the re-measure.
+**The collection counter was removed from the HUD and then put back**, which is worth recording as a misread rather than a redesign: *"the HUD should stay persistent and the same"* meant *leave it alone*, and was taken as *make it uniform across screens*. It is three counters everywhere again, and the Pokémon card keeps its own count — the HUD's is chrome with a fixed route to the Pokédex, the card's names the generation it counts.
 
-Ball plus words needs 150px even at 14px, so the cut is at the sheet's existing **480px** breakpoint — below it the words go and the ball stands alone. 480 rather than a fourth breakpoint value: the row actually needs 452px, and 28px is not worth another number to keep in step. An attempt at 449px wrapped the counters onto a second line at exactly 450, caught only because the row height came back as 68px instead of 31.
+**Putting the two side by side immediately exposed a bug.** The HUD read `58/147` and the card `60/147` on the same screen: the card counted stored ids inside the generation's number range, the HUD counted roster members, and two ids in the test collection (Nidoran♀ and ♂) are excluded from the roster. Real play cannot store them, which is why nothing had caught it. The duplication the change introduced is what surfaced it.
 
-Height freed: **46px more clearance above the fold at 360**, on top of the 58px the two-column card had already bought. Start Playing now sits at 456 of 640, where it was 560 two changes ago.
-
-**Six screens lost their logo, and that is the change worth looking at**, not the home screen. `.brand` sat outside `#homeTop`, so it rendered on all seven; inside it, it renders on one. Settings, Pokédex, My progress and Battle each open with their own **← Back**, and a round now opens with the ✕ and the progress bar — which is what `Overview.md` §8b already said that screen should hold and never quite did.
-
-### Phase 58 — Two headings, and the collection counter moves where it is explained
-
-The home screen's two cards had no headings, so a panel of four levels and a card holding one Pokémon both began mid-sentence. **Your progress** and **Your Pokémon** now label them, set through `text-transform` so the accent survives.
-
-Inside the Pokémon card: the **number goes above the name** — the number is the slot in the collection, the name is what fills it — and **"Welcome back!" is gone**, which read as a caption with nothing to caption once the card had a heading of its own.
-
-**The collection counter moved out of the HUD.** Its dex slot said `5/147` with no label, and the card below it said `GENERATION 1` over `5 / 147` — the same two numbers twice on one screen, one of them explaining nothing. The icon and the tap moved down to the count row, which names the generation it is counting. The results screen keeps its counter, having no card to move it into.
-
-That forced a structural change: the card **was** one big button, so tapping anywhere re-rolled the Pokémon. A button inside a button is invalid and browsers disagree about what to do with one, so the card is a plain container now with two buttons in it — the picture re-rolls, the count row opens the Pokédex. Verified there are zero nested buttons and both taps do what they claim.
-
-Two headings cost height, and 360×640 went over by 3px. Taken back from the gap under a six-letter label rather than from the Pokémon, which has given way enough.
-
-### Phase 59 — The count moves under the Pokémon, and types come back
-
-The generation count spanned the whole card, below both columns, which read as a footer belonging to the card rather than to the one species above it. It sits in the right-hand column now, under the name — the frame leaves that column plenty of room, and the card came out *shorter* for it.
-
-**Type badges show on a caught card too.** They had been the uncaught state's consolation, the one thing a card gave up besides the outline. On a caught card they are one more fact about something already on the shelf, and the column had the space.
-
-**One thing that looked like a bug and was not.** The empty state's silhouette appeared to be missing — a blank circle where the outline should be. Rendered at 4× it is plainly there: `brightness(0) opacity(.28)` on a cream ground is faint at a phone's own scale and washes out entirely in a screenshot. The reverse of the usual trap, and the same fix — magnify before concluding.
-
-### Phase 60 — The Pokédex opens onto the collection
-
-It opened onto a card headed *"My Pokédex"* with a `60 / 1021 caught` pill under it, which pushed the first row of the grid most of a screen down to state a total nobody is working toward — the generation is the unit being filled, and its own header already said where it stood. The card is gone and the grid starts about **195px down** at every supported width.
-
-Three things replaced it, each doing a job the card was not:
-
-- **The HUD follows you here, unchanged.** It is persistent chrome, so it sits where it always does and says what it always says. That settled an inconsistency left over from the previous phase: the counter had been two items on home and three on results. It is **two everywhere** now — the collection count lives on the Pokémon card and in the generation header, both of which name what they are counting, and a counter that differs by screen is not persistent chrome but three similar things.
-- **Below the HUD, the ✕ on its own line beside POKÉDEX.** That row names the place you are in and gets you out of it — different work from the HUD's, and putting the ✕ on the HUD line made it read as a fourth counter. A ✕ rather than "← Back", matching the round screen.
-- **A bar under each generation header**, the same `.level-bar` the home card and the level tiles use. It replaces the dashed rule the header carried — the rule separated header from grid, the bar does that *and* says how full the generation is. `58 / 147` is exactly the fraction that cannot be felt without one.
-
-One thing checked rather than assumed: the tab strip clips its last pill at the scroll edge, which looks like the ‹ › arrow overlapping it. The arrows are flex siblings, not overlays — that is the strip scrolling, and it predates this change.
-
-### Phase 61 — The chrome becomes one thing, on every screen
-
-Settings, Battle, the Pokédex and My progress each had their own hand-written top bar: three said "← Back", one said ✕, one carried a badge, and none carried the HUD. They wear **the same two rows** now — the HUD, then a ✕ beside the screen's name.
-
-**Declared once rather than per screen.** A `SCREEN_CHROME` map holds each title and, optionally, something to show beside it; `show()` renders it. Four sections went from five to nine lines of markup each down to one `<div class="chrome"></div>`, and the four separately-bound back buttons went with them. Adding a screen is now a row in that map.
-
-Two things the change turned up:
-
-- **Battle's record was written before the chrome existed.** `newBattle()` calls `updateBattleRecord()` and only then `show()`, so the slot it wrote into was still null. Making the extra slot part of the map — a function the chrome calls on every render — fixed it at the shape level rather than by reordering two calls, and `updateBattleRecord` is now one line that re-renders the chrome.
-- **My progress said its own name twice**, once in the chrome and once in a card below it. That card is gone, for the same reason the Pokédex's was.
-
-One false alarm worth recording: a regression check reported the Pokédex HUD as empty. The HUD was fine — the *test* still queried `#dexTiles`, an id the chrome no longer emits. A stale selector reads exactly like a broken feature, so the check was fixed rather than the app.
-
-### Phase 62 — The collection counter comes back to the HUD
-
-Removed over two phases: first by reading *"move the Pokédex icon beside the collection numbers"* as literally moving it out of the HUD, then by reading *"the HUD should stay persistent and the same"* as *the same across screens* rather than *unchanged*. The second was a misread — the instruction was to leave the HUD alone, and it was taken as licence to strip the last counter out of it.
-
-It is back, three counters on every screen that shows the HUD. **The Pokémon card keeps its own count as well**, and the duplication is the point: the HUD's is chrome — same corner, every screen, a fixed route to the Pokédex — while the card's names the generation it counts and belongs to the Pokémon above it.
-
-**Putting them side by side immediately exposed a bug.** The HUD read `58/147` and the card `60/147` on the same screen. The card counted *stored ids* falling inside the generation's number range; the HUD counted *roster members*. Two ids in the test collection — 29 and 32, Nidoran♀ and ♂ — are excluded from the roster, so the card counted catches that cannot exist. Real play cannot store them, which is why nothing had caught it. Both derive from the roster now and cannot disagree.
-
-A second thing that looked wrong and was not: a caught Pokémon appeared in an empty frame. The screenshot fired before the image decoded. Waiting on `img.complete && naturalWidth > 0` rather than a fixed delay shows the artwork every time, and is what the check does now.
-
-### Phase 63 — Zoom off
-
-Pinch and double-tap zoom are disabled. A five-year-old holding a tablet triggers both by accident and cannot undo either, and a screen stuck at 2.4× is a broken app to them.
-
-It takes three mechanisms, because no single one covers every browser: `user-scalable=no` on the viewport meta (honoured by Chrome and Android, **ignored by iOS Safari**, which treats pinch-zoom as an accessibility guarantee), `touch-action: pan-x pan-y` on `html,body` (the standards-based half, and what actually stops the gesture in Chrome), and `preventDefault` on Safari's non-standard `gesture*` events, which is the only thing that stops it on iOS. Other browsers never fire those, so it costs them nothing.
-
-**One version of this was written and then deleted before it shipped.** The usual recipe for killing double-tap zoom is to `preventDefault` any `touchend` within 300ms of the last. It also cancels the synthesised click that follows — and this game is played by tapping letter tiles in quick succession, so it would have eaten real taps. `touch-action` already covers double-tap zoom everywhere it is supported, iOS included, so the hack bought nothing and would have cost gameplay. Checked by tapping two different controls 80ms apart: both still register.
-
-Worth being clear about the trade: this is an accessibility guarantee being switched off on purpose. It is right for a game held by a child who cannot undo an accidental gesture, and it would be wrong for a page of text.
+**Pinch and double-tap zoom are off.** Three mechanisms, because no single one covers every browser: `user-scalable=no` (ignored by iOS Safari, which treats pinch-zoom as an accessibility guarantee), `touch-action: pan-x pan-y`, and `preventDefault` on Safari's non-standard `gesture*` events. A fourth was written and deleted before it shipped — cancelling any `touchend` within 300ms of the last also cancels the click that follows, and this game is played by tapping tiles in quick succession, so it would have eaten real taps. Switching off an accessibility guarantee is right for a game a child holds and cannot undo a gesture on; it would be wrong for a page of text.
 
 ### Phase 64 — A round is ten answered, not ten shown
 
-Reported as a child spamming answers until he could move on. Tracing it first changed what the fix had to be: **every mode already retries until the answer is right**, verified in all six — a wrong tap never advances anything. So a round already ended after ten *correct* answers, and spamming never skipped a question, it only resolved one faster.
+Reported as a child spamming answers until he could move on. Tracing it first changed what the fix had to be: **every mode already retries until the answer is right**, verified in all six — a wrong tap never advances anything. So a round already ended after ten *correct* answers, and spamming never skipped a question, it only resolved one faster. The Lesson Trails were **already immune** too, since `recordAttempt` counts only spotless questions. What was actually being farmed was the round ending and the Pokémon being caught.
 
-What spamming actually bought was narrower than it looked. The Lesson Trails were **already immune** — `recordAttempt` counts only spotless questions. What was being farmed was the round ending and the Pokémon being caught, since an encounter resolves on a correct answer however many wrong taps came first.
+A round now ends after **N questions answered with at most `Mistakes allowed` slips** — a Settings value, default 1, counting wrong taps and hints alike, because hinting through a word to reach the end is the same loophole in a different costume. The queue tops up a batch at a time rather than being built once, keeping `buildQueue`'s thirds and no-repeat rule. **The progress bar measures credits**, which is the honest number and also the lesson: guessing leaves the bar where it was.
 
-A round now ends after **N questions answered with at most `Mistakes allowed` slips** — a Settings value, default 1, counting wrong taps and hints alike. The queue tops up a batch at a time rather than being built once, so it keeps `buildQueue`'s thirds and no-repeat rule. **The progress bar measures credits**, which is the honest number and also the lesson: guessing leaves the bar where it was.
+**Two definitions of clean, deliberately separate.** `spotless()` — nothing wrong at all — still gates promotion, unchanged. `countsForRound()` — at most the allowance — gates only the round. Conflating them would have quietly loosened the ladder while nobody was looking at it.
 
-**Two definitions of clean, deliberately separate.** `spotless()` — nothing wrong at all — still gates promotion, unchanged. `countsForRound()` — at most the allowance — gates only the round. Conflating them would have quietly loosened the ladder while nobody was looking at it. The eight places that set a boolean flag now increment a count on the question instead, so both rules read the same number.
-
-Two things measurement turned up that are worth deciding on rather than discovering later:
-
-- **A round can fail to end.** At allowance 1, a child averaging two slips a question earns no credits at all and plays forever. Simulated to a 400-question guard without finishing. There is no cap.
-- **The allowance is per question, but questions are not the same size.** A maths question takes one answer; a pattern set takes four; a Full Spelling word takes one placement per chunk, and Missing Letters runs to eighteen blanks at the top of the ladder. One slip allowed is a far harder bar on a nine-chunk word than on a single sum.
+The risk this shipped with is open thread #1.
 
 ## Doc roles
 
