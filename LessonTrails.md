@@ -24,24 +24,17 @@ These windows are deliberately short. A child who has a level shouldn't have to 
 
 ### What counts as "right"
 
-The app itself never changes — every question can still be retried until it's solved, same as always, no new fail state. But for the purposes of promotion tracking, an answer only counts as **correct** if it's right on the **first attempt**, with **no wrong guesses and no hints used**. Getting there on the second try, or after a hint, still feels like success to the kid and still moves the session on — it just doesn't count toward Last 5 / Last 10. This is the only definition of "correct" used anywhere in this document.
+The app itself never changes — every question can still be retried until it's solved, same as always, no new fail state. But for the purposes of promotion tracking, an answer only counts as **correct** if it's right on the **first attempt**, with **no wrong guesses and no hints used**. Getting there on the second try, or after a hint, still feels like success to the kid and still moves the session on — it just doesn't count toward Last 5 / Last 10. **This is the only definition used anywhere in this document**, and it is the strict one.
+
+The app has a second, looser bar that this file is not about: a question counts toward **finishing a round** if it took at most `Mistakes allowed` slips (a Settings value, default 1). That governs how long a round runs, never what promotes. Loosening the round does not loosen the ladder — see `Overview.md` §5.
 
 ---
 
 ## Maths
 
-Eight tracks, every level of every one in `data/math_levels.csv`, their prerequisites in `data/math_tracks.csv` and their promotion gates in `data/math_promotion.csv`. Nothing about maths difficulty lives in code, and nothing about it lives in this file either — the tables below were replaced by those CSVs, and the spreadsheet is the copy that gets edited.
+Eight tracks — add, subtract, multiply, divide, and a skip-counting pattern track for each. Levels live in `data/math_levels.csv`, prerequisites in `data/math_tracks.csv`, promotion gates in `data/math_promotion.csv`.
 
-| track | levels | runs from | to |
-|---|---|---|---|
-| `add` | 8 | `0–3 + 0–3` | `20–39 + 20–39` |
-| `sub` | 7 | `0–5 − 0–5` | `20–29 − 20–29` |
-| `mul` | 6 | `1–2 × 1–2` | `1–5 × 1–5` |
-| `div` | 6 | `2–4 ÷ 2` | `6–30 ÷ 6` |
-| `pattern_add` | 8 | count by 1 from 0–3 | any step to 10 from 10–19 |
-| `pattern_sub` | 8 | count back by 1 from 5–9 | count back by 10 from 79–99 |
-| `pattern_mul` | 7 | ×1–2 | the whole 1–10 table |
-| `pattern_div` | 7 | ÷1–2 | the whole 1–10 table |
+**The numbers are not in this file.** How many levels a track has, what ranges each asks for, and which track unlocks which are all authored in [the design sheet](https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit) and exported to those CSVs. This file is the *why*; the sheet is the *what*, and restating it here only gives it somewhere to drift.
 
 ### What replaced the two strands
 
@@ -49,7 +42,7 @@ The old design was **Add/Subtract, 8 levels** and an interleaved **Multiply↔Di
 
 - **A shared frontier hides a real gap.** Multiply and divide moved together, so a child fluent at `4×3` and lost at `12÷4` had one number describing both, and could not practise the weaker one without re-proving the stronger.
 - **Patterns as a 30% dice roll cannot be practised.** Counting by 3s turned up when it turned up. As its own track it has its own levels, its own frontier and its own promotion, so it can be worked at.
-- **The ladder was a queue, not a map.** One list marched through in order. Tracks now **open on prerequisites** — pattern-add at add 3, subtract at add 5, multiply at add 7 — so the ladder *widens* as it is climbed and everything open has a chance to come up. Liveness is transitive: a track whose own prerequisite has not opened cannot open the next.
+- **The ladder was a queue, not a map.** One list marched through in order. Tracks now **open on prerequisites**: the four operations chain (subtract at add 5, multiply at add 7, divide at multiply 5) and each pattern track hangs off its own operation at level 3 — so the ladder *widens* as it is climbed and everything open has a chance to come up. Liveness is transitive: a track whose own prerequisite has not opened cannot open the next.
 
 **Regrouping is no longer controlled for.** The old levels 4a–5b used rejection sampling on whether the ones digit carried, making "no regrouping" and "with regrouping" distinct rungs rather than wider ranges. The CSV ladder expresses difficulty as operand ranges only. That is a real loss of precision, traded for a ladder a parent can edit in a spreadsheet without touching code — and the reason it is written down here rather than quietly dropped.
 

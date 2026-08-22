@@ -139,9 +139,11 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 ### 7.3 Math Trails
 
-**Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. 57 levels in total. Nothing about maths difficulty lives in code.
+**Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. Nothing about maths difficulty lives in code: how many levels a track has, what ranges each one asks for, and which track unlocks which are all sheet values.
 
-**Tracks open on prerequisites rather than in sequence.** `data/math_tracks.csv` gives each track the track and level that unlocks it: pattern-add opens at add 3, subtract at add 5, multiply at add 7, and so on. Add is open from the start, and **everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list. Liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
+**Tracks open on prerequisites rather than in sequence.** Each row of `data/math_tracks.csv` names the track and level that unlocks it; one track opens from the start. **Everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list, and liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
+
+Which track waits on which is tuning, not spec: it is authored in [the design sheet](https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit) and read from the CSV. This document does not restate it, because a value written in two places drifts and the CSV is the one the app obeys.
 
 | column | means |
 |---|---|
@@ -155,7 +157,7 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 **A pattern set is an anchor and a step, four rows.** Anchor 2 with step 2 gives `2+2, 2+4, 2+6, 2+8` — the second operand stepping. Divide mirrors multiply so every answer stays whole. A subtraction pattern has to start high enough to take every step without going below zero (anchor ≥ step × 4); where only part of a row's anchor range can, the anchor comes from that part, and where none can, that step is skipped.
 
-**Promotion is its own table**, `data/math_promotion.csv`: **5 at 100%, 10 at 90%, 20 at 85%**, whichever lands first, per track. That is stricter at ten than the word trails' 80% and adds a twenty-question window they don't have.
+**Promotion is its own table**, `data/math_promotion.csv` — any number of windows, whichever lands first, applied to every maths track. It currently holds three (5 at 100%, 10 at 90%, 20 at 85%), but the gates themselves are sheet values, not spec. That is stricter at ten than the word trails' 80% and adds a twenty-question window they don't have.
 
 **A round is split in thirds** — spelling, reading, maths — not evenly across every track. Maths has eight tracks to the others' one each, so an even split would hand a fully-unlocked child eight questions in ten as maths. The maths third is shared among whichever tracks are open.
 
@@ -177,19 +179,6 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 **A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
 Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ above the fold. A correct answer shows a large animated ✅ and no caption text, then the round moves on by itself after a short beat. **There is no Next button anywhere**: with the choices gone there is nothing left on screen to act on, so a tap to continue would buy the child nothing. Maths advances exactly as Spelling and Reading do.
-
-**The eight tracks and where they lead:**
-
-| track | levels | runs from | to |
-|---|---|---|---|
-| `add` | 8 | `0–3 + 0–3` | `20–39 + 20–39` |
-| `sub` | 7 | `0–5 − 0–5` | `20–29 − 20–29` |
-| `mul` | 6 | `1–2 × 1–2` | `1–5 × 1–5` |
-| `div` | 6 | `2–4 ÷ 2` | `6–30 ÷ 6` |
-| `pattern_add` | 8 | count by 1 from 0–3 | any step to 10 from 10–19 |
-| `pattern_sub` | 8 | count back by 1 from 5–9 | count back by 10 from 79–99 |
-| `pattern_mul` | 7 | ×1–2 | the whole 1–10 table |
-| `pattern_div` | 7 | ÷1–2 | the whole 1–10 table |
 
 **A pattern track is its own track, not a dice roll inside another one.** Skip-counting has four tracks with their own levels, prerequisites and frontiers, so counting by 3s is practised at its own pace rather than turning up at random. **All four equations stay on screen** — seeing `3×1, 3×2, 3×3, 3×4` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear.
 
@@ -225,8 +214,7 @@ The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no in
 - **The family is the whole family, from wherever you are standing in it.** The strip climbs to the root of the line and then walks down breadth-first, one group per stage with an arrow between stages — so Bulbasaur, Ivysaur and Venusaur all show the same three, and Eevee shows all eight of its second stage. Siblings stay grouped inside their stage, and a wide stage wraps within its own group so the arrow keeps meaning *this stage becomes that stage* rather than pointing at one sibling. Depth is capped and the climb is bounded, since `evolves_from` is hand-editable and a cycle would otherwise hang the popup.
 - **Opening an entry says its name aloud.** One rule covers every way in — tapping a Pokédex cell, tapping a relative in the evolution family, tapping a catch on the results screen, and the catch popup itself. A name a child has only ever read is a name they can't yet use, and the picture is on screen at the moment it's said.
   - It hangs off *opening*, not rendering: re-rendering a card that is already on screen stays silent, because a name repeated without a new thing to look at is noise rather than teaching.
-  - An uncaught entry shows no name, so it says none — the silhouette, number and type are all it gives up, and the speaker is hidden.
-  - The 🔊 button covers repeats. An uncaught one gets the outline, its number, its **type** and its family strip — nothing else: no name, no greeting, no read-aloud. Type is the one thing shown either way; it is a single short word, it says something useful about a slot still to fill, and it doesn't name what's hiding in it.
+  - The 🔊 button covers repeats, and an uncaught entry has none — it gives up the outline, its number, its **type** and its family strip, and nothing else: no name, no greeting, no read-aloud. Type is the one thing shown either way; it is a single short word, it says something useful about a slot still to fill, and it doesn't name what's hiding in it.
 - **The popup navigates to itself, and there is no Back.** Tapping a relative replaces what's on screen with that relative; **Okay** is the only button, from every entry. A back trail is unnecessary now the strip shows the *whole* family from wherever you land in it — every relative you could have come from is still one tap away, so walking a line in either direction uses the same control.
 - **Why the strip earns its place:** National Dex order already puts 83% of families side by side, but cross-generation evolutions can sit hundreds of slots apart — Pichu is #172 and Pikachu #25 — and no amount of scrolling the grid makes that relationship visible.
 - A newly caught Pokémon is flagged with a **NEW** badge in the grid until its entry is opened, so a catch made mid-session can be found again without hunting through a thousand entries. The flag is stored separately from the collection itself.
@@ -237,7 +225,7 @@ A **HUD** on the very first line of the page — icon and number sitting straigh
 
 **The logo does not get a row of its own.** A full-width mark cost 40–46px of height to tell a five-year-old the name of the app they had just opened, which is the argument that removed the tagline applied to the thing the tagline sat under. It rides in the HUD instead, at a 26px ball and 15–20px of type. Below the sheet's **480px** breakpoint the words drop and the ball stands alone: the row holds 60px of free space at 360 and 130 at 430, while the ball and words together need 150px even at an already-too-small 14px, so there is no size at which the full mark fits a phone.
 
-Because the mark now lives in the HUD, it is **home-only** — the other six screens have no logo. Each already opens with its own **← Back** or, in a round, with the ✕ and progress bar §8b says should be the only things there.
+Because the mark now lives in the HUD, it is **home-only** — the other six screens have no logo. Four of them open with the shared chrome instead (a ✕ beside the screen's name), and a round opens with the ✕ and progress bar §8b says should be the only things there.
 
 **The icons are drawn, not typed** — inline SVG on one 24×24 grid, taking their colour from the counter they belong to via `currentColor`. Emoji cannot do this job: their em-boxes align but their *ink* does not, and the metrics belong to whichever emoji font the device happens to have, so there is no offset that is right everywhere. Drawn, every icon has the same optical size and the same centre on every device. The wordmark beside them is set in **caps** — via `text-transform`, so "POKÉ" keeps its accent rather than losing it to a retype — and carries **no tagline**: "Spell, count, and catch!" was a sentence for whoever installed the app, read once and then in the way of the thing it introduced.
 
@@ -253,7 +241,7 @@ The HUD is **identical wherever it appears** — home, results, and every chrome
 
 **Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
 
-**The round's top bar is a ✕ and a bar, nothing else.** The bar's fill says how far along the round is, so a `3 / 10` beside it would be the same fact written twice — and neither number means anything to a child who cannot yet read them. Quitting is an icon rather than the word "Quit" for the same reason. The ✕ keeps an `aria-label`, and the ← Back links on the other screens are unchanged: they are for whoever is navigating, not mid-round.
+**The round's top bar is a ✕ and a bar, nothing else.** The bar's fill says how far along the round is, so a `3 / 10` beside it would be the same fact written twice — and neither number means anything to a child who cannot yet read them. Quitting is an icon rather than the word "Quit" for the same reason. The ✕ keeps an `aria-label`. Every screen you can back out of now closes the same way, so this is the same control everywhere rather than a round-only exception.
 
 | Counter | Shows | Goes to |
 |---|---|---|
@@ -279,11 +267,11 @@ Headed **"Your Pokémon"**, the middle band of the Start screen shows **one of t
 
 **The card holds two targets, so it is not itself a button.** Tapping the picture re-rolls the pick, as does every return to the home screen; tapping the count row below opens the Pokédex. A button inside a button is invalid and browsers disagree about what to do with one, so the card is a plain container with two buttons in it.
 
-**Two columns, at every width.** A centred stack was a 360px phone layout centred inside a card that grows to 724px: it used 32% of its own width on a phone and 27% on a tablet, leaving 264px empty on each side. The card is now the trophy on the left and everything that labels it on the right, which uses 88–93% at every supported size. There is no breakpoint — the frame and the text both clamp, so the arrangement holds from 360 to 1280 and only breathes.
+**Two columns at every width, with no breakpoint** — the frame and the text both clamp, so one arrangement holds from 360 to 1280 and uses 88–93% of the card at every supported size. The frame is the larger for it: putting the text beside the trophy rather than under it frees more height than a bigger circle spends.
 
-**The trophy got bigger, not smaller.** Moving the text out from under the frame frees more height than a larger frame spends, so the circle grows from 86px to 122px at 360×640 and from 196px to 225px at 768×1024 — and the card still gets *shorter*, leaving 58px more clearance above the fold than the centred stack did.
+**Last in that column, the generation and how much of it is filled** — the Pokédex icon, then `GENERATION 1` over `3 / 147`, over a bar in the Pokédex's colour. It sits under the Pokémon it describes rather than spanning the card, because a full-width row reads as a footer belonging to the whole card instead of to the one species above it. The bar is the level tiles' own `.level-bar`: `3 / 147` has exactly the problem the panel above already argues a bar solves.
 
-**Last in that column, the generation and how much of it is filled** — the Pokédex icon, then `GENERATION 1` over `3 / 147`, over a bar. It sits in the right-hand column under the Pokémon it describes rather than spanning the card: the frame leaves that column room, and a full-width row read as a footer belonging to the whole card instead of to the one species above it. The icon is the HUD's own dex glyph and the row is the Pokédex entry point that the HUD slot used to be. The bar is the level tiles' own `.level-bar`, reused rather than reinvented: the panel directly above already argues that a number needs one beside it because *Level 3 of 25* and *Level 3 of 10* are not the same place, and `3 / 147` has exactly that problem. It takes the Pokédex's own colour, the same one the counter carries on the results screen. Being horizontal by nature, it is also what gives the right-hand column a right edge. The trophy says *you caught this one*; the count says *and here is the set it belongs to*, which is what makes a shelf a collection rather than a pile. It names the generation of the Pokémon **on screen**, not the one being hunted: those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card.
+It names the generation of the Pokémon **on screen**, not the one being hunted. Those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card. The trophy says *you caught this one*; the count says *and here is the set it belongs to*.
 
 It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
 
@@ -328,7 +316,7 @@ Then **Spelling** and **Reading** get a card each, showing:
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
 - **Tapping a row opens the full detail** — level in plain language, days at it, and every gate bar. Only one tap's worth is built at a time.
-- **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply pattern 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
+- **Locked tracks are listed too**, greyed, with what opens them — *Opens at &lt;track&gt; &lt;level&gt;*, read from the CSV. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
 
 ## 10. Battle Mode
 
@@ -353,13 +341,13 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 - **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
-- **Per trail**: a frontier dropdown showing the current level in plain language — *Level 1 — Words to level 1, 25% shown*, *Level 1 — 0–3 + 0–3* — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
+- **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
 ## 13. Data & Offline Assets
 
-All game data lives in **`data/*.csv`**, fetched and parsed at startup rather than embedded in code, so it can be maintained in a spreadsheet without touching the app. `data/README.md` documents every column and the editing traps. Rows may be reordered freely; the app sorts where order matters.
+All game data lives in **`data/*.csv`**, fetched and parsed at startup rather than embedded in code, so it can be maintained in a spreadsheet without touching the app. **The ladders are authored in [the design sheet](https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit)** and exported here; `data/README.md` documents every column and the editing traps. Rows may be reordered freely; the app sorts where order matters.
 
 | File | Rows | Columns |
 |---|---|---|
@@ -409,7 +397,7 @@ The reader is five and still learning to read. Every word on a child-facing scre
 ## 15. Technical Architecture
 
 - **Stack**: vanilla HTML/CSS/JS, no framework, no build step, no package manager.
-- **Data loading**: `loadData()` fetches all eleven CSVs in parallel at startup and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
+- **Data loading**: `loadData()` fetches **ten** of the eleven CSVs in parallel at startup — `word_levels.csv` is the grading source, not a runtime file; the app reads the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
 - **State**: in-memory JS objects for the active session/battle; `localStorage` for everything persisted.
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
 - **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all ten tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.
