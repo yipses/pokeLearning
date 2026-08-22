@@ -32,18 +32,9 @@ The app has a second, looser bar that this file is not about: a question counts 
 
 ## Maths
 
-Eight tracks, every level of every one in `data/math_levels.csv`, their prerequisites in `data/math_tracks.csv` and their promotion gates in `data/math_promotion.csv`. Nothing about maths difficulty lives in code, and nothing about it lives in this file either — the tables below were replaced by those CSVs, and the spreadsheet is the copy that gets edited.
+Eight tracks — add, subtract, multiply, divide, and a skip-counting pattern track for each. Levels live in `data/math_levels.csv`, prerequisites in `data/math_tracks.csv`, promotion gates in `data/math_promotion.csv`.
 
-| track | levels | runs from | to |
-|---|---|---|---|
-| `add` | 8 | `0–3 + 0–3` | `20–39 + 20–39` |
-| `sub` | 7 | `0–5 − 0–5` | `20–29 − 20–29` |
-| `mul` | 6 | `1–2 × 1–2` | `1–5 × 1–5` |
-| `div` | 6 | `2–4 ÷ 2` | `6–30 ÷ 6` |
-| `pattern_add` | 8 | count by 1 from 0–3 | any step to 10 from 10–19 |
-| `pattern_sub` | 8 | count back by 1 from 5–9 | count back by 10 from 79–99 |
-| `pattern_mul` | 7 | ×1–2 | the whole 1–10 table |
-| `pattern_div` | 7 | ÷1–2 | the whole 1–10 table |
+**The numbers are not in this file.** How many levels a track has, what ranges each asks for, and which track unlocks which are all authored in [the design sheet](https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit) and exported to those CSVs. This file is the *why*; the sheet is the *what*, and restating it here only gives it somewhere to drift.
 
 ### What replaced the two strands
 

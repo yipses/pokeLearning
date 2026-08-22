@@ -139,9 +139,11 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 ### 7.3 Math Trails
 
-**Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. 57 levels in total. Nothing about maths difficulty lives in code.
+**Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. Nothing about maths difficulty lives in code: how many levels a track has, what ranges each one asks for, and which track unlocks which are all sheet values.
 
-**Tracks open on prerequisites rather than in sequence.** `data/math_tracks.csv` gives each track the track and level that unlocks it. The four operations chain — subtract at add 5, multiply at add 7, divide at multiply 5 — and **each pattern track hangs off its own operation at level 3**, so counting by 3s opens once subtracting has started rather than waiting on an unrelated track. Add is open from the start, and **everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list. Liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
+**Tracks open on prerequisites rather than in sequence.** Each row of `data/math_tracks.csv` names the track and level that unlocks it; one track opens from the start. **Everything open has a chance to come up**, so the ladder widens as it is climbed instead of marching through one list, and liveness is transitive — a track whose own prerequisite hasn't opened can't open the next.
+
+Which track waits on which is tuning, not spec: it is authored in [the design sheet](https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit) and read from the CSV. This document does not restate it, because a value written in two places drifts and the CSV is the one the app obeys.
 
 | column | means |
 |---|---|
@@ -155,7 +157,7 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 
 **A pattern set is an anchor and a step, four rows.** Anchor 2 with step 2 gives `2+2, 2+4, 2+6, 2+8` — the second operand stepping. Divide mirrors multiply so every answer stays whole. A subtraction pattern has to start high enough to take every step without going below zero (anchor ≥ step × 4); where only part of a row's anchor range can, the anchor comes from that part, and where none can, that step is skipped.
 
-**Promotion is its own table**, `data/math_promotion.csv`: **5 at 100%, 10 at 90%, 20 at 85%**, whichever lands first, per track. That is stricter at ten than the word trails' 80% and adds a twenty-question window they don't have.
+**Promotion is its own table**, `data/math_promotion.csv` — any number of windows, whichever lands first, applied to every maths track. It currently holds three (5 at 100%, 10 at 90%, 20 at 85%), but the gates themselves are sheet values, not spec. That is stricter at ten than the word trails' 80% and adds a twenty-question window they don't have.
 
 **A round is split in thirds** — spelling, reading, maths — not evenly across every track. Maths has eight tracks to the others' one each, so an even split would hand a fully-unlocked child eight questions in ten as maths. The maths third is shared among whichever tracks are open.
 
@@ -177,19 +179,6 @@ A Reading answer is **clean** when the first tap was the correct one. Using a pi
 **A wrong tap is spent**: that option dims and goes dead, so the same mistake can't be made twice and the field narrows as the child reasons. It also marks the answer unclean, exactly as a wrong entry did before, so promotion is unaffected.
 
 Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ above the fold. A correct answer shows a large animated ✅ and no caption text, then the round moves on by itself after a short beat. **There is no Next button anywhere**: with the choices gone there is nothing left on screen to act on, so a tap to continue would buy the child nothing. Maths advances exactly as Spelling and Reading do.
-
-**The eight tracks and where they lead:**
-
-| track | levels | runs from | to |
-|---|---|---|---|
-| `add` | 8 | `0–3 + 0–3` | `20–39 + 20–39` |
-| `sub` | 7 | `0–5 − 0–5` | `20–29 − 20–29` |
-| `mul` | 6 | `1–2 × 1–2` | `1–5 × 1–5` |
-| `div` | 6 | `2–4 ÷ 2` | `6–30 ÷ 6` |
-| `pattern_add` | 8 | count by 1 from 0–3 | any step to 10 from 10–19 |
-| `pattern_sub` | 8 | count back by 1 from 5–9 | count back by 10 from 79–99 |
-| `pattern_mul` | 7 | ×1–2 | the whole 1–10 table |
-| `pattern_div` | 7 | ÷1–2 | the whole 1–10 table |
 
 **A pattern track is its own track, not a dice roll inside another one.** Skip-counting has four tracks with their own levels, prerequisites and frontiers, so counting by 3s is practised at its own pace rather than turning up at random. **All four equations stay on screen** — seeing `3×1, 3×2, 3×3, 3×4` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear.
 
@@ -327,7 +316,7 @@ Then **Spelling** and **Reading** get a card each, showing:
 **Maths gets two cards, one per family** — `+ / −` and `× / ÷` — rather than eight. Each is headed with the same summed level the home tile shows (*Level 7 of 31*), then lists its four tracks as a slim row: name, level out of that track's own total, and a bar of how far through it the child is.
 
 - **Tapping a row opens the full detail** — level in plain language, days at it, and every gate bar. Only one tap's worth is built at a time.
-- **Locked tracks are listed too**, greyed, with what opens them: *Opens at Multiply 5*. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
+- **Locked tracks are listed too**, greyed, with what opens them — *Opens at &lt;track&gt; &lt;level&gt;*, read from the CSV. The road ahead is worth seeing, and the section keeps its shape instead of re-flowing under the reader every time something unlocks.
 
 ## 10. Battle Mode
 
@@ -352,13 +341,13 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 - **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
-- **Per trail**: a frontier dropdown showing the current level in plain language — *Level 1 — Words to level 1, 25% shown*, *Level 1 — 0–3 + 0–3* — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
+- **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
 ## 13. Data & Offline Assets
 
-All game data lives in **`data/*.csv`**, fetched and parsed at startup rather than embedded in code, so it can be maintained in a spreadsheet without touching the app. `data/README.md` documents every column and the editing traps. Rows may be reordered freely; the app sorts where order matters.
+All game data lives in **`data/*.csv`**, fetched and parsed at startup rather than embedded in code, so it can be maintained in a spreadsheet without touching the app. **The ladders are authored in [the design sheet](https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit)** and exported here; `data/README.md` documents every column and the editing traps. Rows may be reordered freely; the app sorts where order matters.
 
 | File | Rows | Columns |
 |---|---|---|

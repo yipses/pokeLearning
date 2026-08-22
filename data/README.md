@@ -2,7 +2,16 @@
 
 These CSVs are the source of truth for the app's Pokémon data. `index.html`
 fetches them at startup, so editing a CSV changes the app — no code change and
-no build step. They are plain comma-separated UTF-8 with a header row, designed
+no build step.
+
+**The ladders come from the design sheet** — spelling, reading and all eight
+maths tracks, including which track unlocks which:
+
+<https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit>
+
+Edit there and export, rather than hand-editing the ladder CSVs, or the two
+copies drift. The other files here (roster, items, pronunciations, phonemes)
+have no upstream and are edited directly. They are plain comma-separated UTF-8 with a header row, designed
 to be opened, sorted and edited in Google Sheets or Excel and exported straight
 back.
 

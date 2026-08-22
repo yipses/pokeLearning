@@ -213,7 +213,7 @@ A round now ends after **N questions answered with at most `Mistakes allowed` sl
 
 The risk this shipped with is open thread #1.
 
-### Phase 65 — Prerequisites re-pointed from the sheet
+### Phase 65 — Prerequisites re-pointed, and the docs stop restating the sheet
 
 Two cells changed in the tuning sheet and nothing else: `pattern_sub` now opens at **subtract 3** rather than subtract 6, and `pattern_div` at **divide 3** rather than multiply-pattern 5. Everything else in it — all 57 maths levels, both word ladders, the promotion gates — already matched, checked cell by cell rather than by eye.
 
@@ -227,6 +227,10 @@ now:  add → pattern_add → sub → pattern_sub → mul → pattern_mul → di
 ```
 
 Skip-counting backwards now arrives with subtraction instead of trailing three tracks behind it. Re-verified after the change: no cycles, no prerequisite pointing past its track's last level, all eight reachable, and the audit still clean at 114,000 questions with 0 violations.
+
+**Then the docs stopped restating the sheet.** Updating those two cells meant editing the unlock order in two files, and it had been wrong in both since the previous sheet change — the second time this has happened. `Overview.md` and `LessonTrails.md` now describe the *mechanism* and link to the sheet instead of listing the values: the prerequisite chain, the eight-row table of level counts and ranges, the promotion percentages and the Settings dropdown example are all gone. The sheet URL was nowhere in the repo at all; it now sits in `data/README.md` for whoever is editing, and in Overview §13.
+
+The rule that fell out of it: **a tunable value written in prose is a value with somewhere to drift.** Overview describes what the app does with a number, never what the number is.
 
 ## Doc roles
 
