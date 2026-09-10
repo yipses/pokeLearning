@@ -150,7 +150,11 @@ Three columns of `data/reading_levels.csv` control it:
 - **`alpha_blanks`** — how many of those are gaps.
 - **`alpha_blank_position`** — where the gaps may fall: `first` and `last` are the solid block at either end, `middle` is every gap strictly inside the run, and `mixed` is any shape that is neither the first block nor the last one. `mixed` is the only setting that can put three gaps in a run of four without them being one solid end.
 
-Two things are fixed in code rather than in the sheet: there are always **four options**, and the wrong ones are the Pokémon of the **letters nearest the answer**. "Nearest" is recomputed for each gap rather than once per question, because the run fills in as it is answered — a letter already on screen can be ruled out by looking, so it would be a dead option, while a letter belonging to a gap still to come is fair game and is the sharpest wrong answer there is: at `G H _ _` the choice between I and J is the entire question.
+Two things are fixed in code rather than in the sheet: there are always **four options**, and they are **spread at least four letters apart** — from each other and from the answer.
+
+**The options are spread because the distractors are not where the difficulty lives.** A child answers by reciting from the song, deriving "M", and then going looking for it — the options play no part in deriving it. Crowding them around the answer would only add a second, unrelated task afterwards, telling M from N, O and P in a lineup, which is letter-shape recognition: work out M, tap Noivern, and the failure says nothing about which step broke. M N O P is the slurred stretch of the alphabet song besides, so a gap after L would draw its options from exactly the letters least likely to have been pulled apart yet. Spread out, a correctly derived answer is unambiguously findable and a guess is unlikely to land, so the derivation is what decides right or wrong. Difficulty rides on the three sheet columns instead.
+
+Letters already on screen are excluded as well, worked out per gap rather than once per question because the run fills in as it is answered: given or filled a moment ago, a visible letter can be ruled out by looking, so it is a free elimination.
 
 The mode draws from the **whole roster, not the caught generations**. A single generation covers only 7–13 of the 23 four-letter runs, so gating it the way the word pools are gated would leave most of the alphabet unreachable. Nothing is spoiled by this — the question is which letter comes next, not which Pokémon the child owns.
 
