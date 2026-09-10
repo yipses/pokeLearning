@@ -156,7 +156,7 @@ Two things are fixed in code rather than in the sheet: there are always **four o
 
 Letters already on screen are excluded as well, worked out per gap rather than once per question because the run fills in as it is answered: given or filled a moment ago, a visible letter can be ruled out by looking, so it is a free elimination.
 
-The mode draws from the **whole roster, not the caught generations**. A single generation covers only 7–13 of the 23 four-letter runs, so gating it the way the word pools are gated would leave most of the alphabet unreachable. Nothing is spoiled by this — the question is which letter comes next, not which Pokémon the child owns.
+The mode draws from the **whole roster, not the caught generations**. There are 23 runs of four consecutive letters and 22 of five; the full roster fills every one of them, a single generation only 7–13. Gating this the way the word pools are gated would leave most of the alphabet unreachable. Nothing is spoiled by this — the question is which letter comes next, not which Pokémon the child owns.
 
 **Nothing is read aloud in this mode.** Every name on screen is a first letter, so speaking any of them would hand over the sort the child is doing. This is the read-aloud rule above applied, not an exception to it.
 
