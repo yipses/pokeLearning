@@ -433,6 +433,21 @@
   .alpha-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
   .alpha-opt.shake{ animation: shake .42s; }
 
+  /* Bounded failure: the answer lit up after enough wrong taps. Deliberately NOT
+     the green of a correct answer — this says "here it is", not "you got it" —
+     and it pulses so it reads as an invitation to tap rather than a result. */
+  @keyframes answer-lit-pulse{
+    0%,100%{ box-shadow:0 0 0 3px rgba(255,171,107,.55), var(--shadow-sm); }
+    50%    { box-shadow:0 0 0 8px rgba(255,171,107,.28), var(--shadow-sm); }
+  }
+  .answer-lit{
+    border-color:var(--sun-deep) !important;
+    animation: answer-lit-pulse 1.25s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .answer-lit{ animation:none; box-shadow:0 0 0 5px rgba(255,171,107,.5), var(--shadow-sm); }
+  }
+
   /* math question + answer choices */
   .math-q{ font-size: clamp(40px, 11vw, 64px); font-weight:800; color:var(--ink); margin:2px 0 10px; }
 
@@ -1201,6 +1216,12 @@
         <input type="number" id="mistakeAllowance" min="0" max="5" value="1">
       </div>
       <div class="field">
+        <label>Show the answer after
+          <span class="hint">Wrong taps on one question before the right answer lights up. They still have to tap it themselves. Always kept at least one above Mistakes allowed, so a shown answer never counts toward finishing the round</span>
+        </label>
+        <input type="number" id="revealAfter" min="1" max="6" value="2">
+      </div>
+      <div class="field">
         <label>Rounds per day
           <span class="hint">Rounds needed to keep the streak going</span>
         </label>
@@ -1363,7 +1384,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 81;
+const APP_BUILD = 82;
 const APP_BUILD_DATE = "10 Sep 2026";
 
 function renderAbout(){
@@ -2254,6 +2275,7 @@ function saveSettings(){
   const settings = {
     totalCount: $("#totalCount").value, grassRate: $("#grassRate").value,
     mistakeAllowance: $("#mistakeAllowance").value,
+    revealAfter: $("#revealAfter").value,
     spellOn: $("#spellOn").checked,
     readingOn: $("#readingOn").checked,
     mathOn: $("#mathOn").checked,
@@ -2268,6 +2290,7 @@ function loadSettings(){
   if(!saved) return;
   if(saved.totalCount!=null) $("#totalCount").value = saved.totalCount;
   if(saved.mistakeAllowance!=null) $("#mistakeAllowance").value = saved.mistakeAllowance;
+  if(saved.revealAfter!=null) $("#revealAfter").value = saved.revealAfter;
   if(saved.grassRate!=null) $("#grassRate").value = saved.grassRate;
   if(saved.spellOn!=null) $("#spellOn").checked = saved.spellOn;
   if(saved.readingOn!=null) $("#readingOn").checked = saved.readingOn;
@@ -2578,6 +2601,7 @@ function updateProgress(){
 
 function renderProblem(){
   updateProgress();
+  resetStepMisses();
   const p = queue[idx];
   if(!p){ finish(); return; }
   maybeStartGrassEncounter();
@@ -2611,6 +2635,41 @@ function next(){
    Hints count as mistakes for both. A hint is not a wrong tap, but hinting through
    a word to reach the end of a round is the same loophole in a different costume. */
 function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
+
+/* ---------------- bounded failure ----------------
+   Every mode blocks until the answer is right, and there is no skip. That is
+   deliberate — being told the answer costs the struggle that makes it stick —
+   but it leaves one dead end: a question built on something never taught has no
+   exit, and tapping every option is the only move the screen offers. That isn't
+   the child giving up, it's the only input the app accepts.
+
+   So after `revealAfter` wrong taps ON THE SAME STEP the right answer lights up,
+   and they still have to tap it themselves. Failure stays bounded, the answer is
+   still produced rather than handed over, and — where the reason is on screen,
+   as in Alphabet's run of letters or Reading's picture — there is something to
+   infer from. Bare arithmetic is the weak case: lighting up "5" for 14−9 shows
+   the fact and not the borrowing. That wants its own support and doesn't have it
+   yet.
+
+   It cannot become a give-up button because it isn't a button: it is triggered
+   by failing, not chosen, so there is nothing to press early. And it can never
+   be worth failing on purpose, because the reveal always lands at least one
+   mistake past the allowance, by which point the credit is already lost.
+
+   `stepMisses` counts the CURRENT step, not the question — a Pattern row and an
+   Alphabet gap are each their own challenge, and two misses spread across two
+   rows shouldn't light up the second one. */
+const REVEAL_AFTER_DEFAULT = 2;
+function revealAfter(){
+  const n = clampInt($("#revealAfter")?.value, 1, 6, REVEAL_AFTER_DEFAULT);
+  return Math.max(n, mistakeAllowance() + 1);
+}
+let stepMisses = 0;
+function resetStepMisses(){ stepMisses = 0; }
+function missAndMaybeReveal(answerEl){
+  stepMisses++;
+  if(answerEl && stepMisses >= revealAfter()) answerEl.classList.add("answer-lit");
+}
 function spotless(p){ return !p || !p._mistakes; }
 function countsForRound(p){ return (p && p._mistakes || 0) <= mistakeAllowance(); }
 
@@ -4000,7 +4059,7 @@ function mathChoicesHTML(id, q){
 /* `onPick` gets the tapped number and its button and answers whether it was
    right; the shake and the spent-tile lock are handled here, so all three modes
    behave the same on a wrong tap. */
-function wireMathChoices(id, onPick){
+function wireMathChoices(id, ans, onPick){
   const box = $("#"+id);
   box.addEventListener("click", e=>{
     const btn = e.target.closest(".choice");
@@ -4009,6 +4068,9 @@ function wireMathChoices(id, onPick){
     btn.disabled = true;                       // a wrong one is spent, not repeatable
     btn.classList.add("shake");
     setTimeout(()=> btn.classList.remove("shake"), 450);
+    // Maths, Visual Math and Pattern all answer through here, so bounded failure
+    // is wired once for the three of them.
+    missAndMaybeReveal(box.querySelector('.choice[data-val="' + ans + '"]'));
   });
   return box;
 }
@@ -4024,7 +4086,7 @@ function renderMath(p){
     <div class="feedback" id="feedback"></div>
   `;
   mathState = {p};
-  wireMathChoices("mathChoices", (val, btn)=>{
+  wireMathChoices("mathChoices", p.ans, (val, btn)=>{
     const fb = $("#feedback");
     if(val !== p.ans){
       bumpMistake(p);
@@ -4100,7 +4162,7 @@ function renderVisual(p){
   `;
 
   visualState = {p};
-  wireMathChoices("visualChoices", (val, btn)=>{
+  wireMathChoices("visualChoices", p.ans, (val, btn)=>{
     const fb = $("#feedback");
     if(val !== p.ans){
       bumpMistake(p);
@@ -4146,6 +4208,7 @@ function renderReading(p){
     p.options.forEach(opt=>{
       const btn = document.createElement("button");
       btn.className = "reading-opt reading-opt-word";
+      if(opt === p.target) btn.dataset.answer = "1";
       btn.textContent = cap(opt.n);
       btn.addEventListener("click", ()=> pickReading(opt, btn));
       wrap.appendChild(btn);
@@ -4170,6 +4233,7 @@ function renderReading(p){
       cell.className = "reading-img-cell";
       const btn = document.createElement("button");
       btn.className = "reading-opt reading-opt-img";
+      if(opt === p.target) btn.dataset.answer = "1";
       const src = opt.img || artwork(opt.id);
       btn.innerHTML = `<img alt="${cap(opt.n)}" src="${src}">`;
       btn.addEventListener("click", ()=> pickReading(opt, btn));
@@ -4183,7 +4247,8 @@ function renderReading(p){
       wrap.appendChild(cell);
     });
   }
-  readingState = { p, done:false };
+  // `wrap` is scoped to each branch above, so query the stage rather than reuse it.
+  readingState = { p, done:false, answerEl: $("#readingOptions .reading-opt[data-answer]") };
 }
 
 function pickReading(opt, btn){
@@ -4204,6 +4269,7 @@ function pickReading(opt, btn){
     btn.disabled = true;
     btn.classList.add("wrong", "shake");
     setTimeout(()=> btn.classList.remove("shake"), 450);
+    missAndMaybeReveal(readingState.answerEl);
   }
 }
 
@@ -4259,9 +4325,11 @@ function openAlphaGap(){
     btn.className = "alpha-opt";
     const src = opt.img || artwork(opt.id);
     btn.innerHTML = `<img alt="" src="${src}"><span class="alpha-opt-name">${cap(opt.n)}</span>`;
+    if(opt === st.p.slots[i].answer) btn.dataset.answer = "1";
     btn.addEventListener("click", ()=> pickAlphabet(opt, btn));
     opts.appendChild(btn);
   });
+  resetStepMisses();   // each gap is its own challenge
 }
 
 function pickAlphabet(opt, btn){
@@ -4276,6 +4344,7 @@ function pickAlphabet(opt, btn){
     btn.classList.add("wrong", "shake");
     setTimeout(()=> btn.classList.remove("shake"), 450);
     fb.className = "feedback bad"; fb.textContent = "❌ Try again!";
+    missAndMaybeReveal($("#alphaOpts .alpha-opt[data-answer]"));
     return;
   }
   if(fb.classList.contains("bad")){ fb.textContent = ""; fb.className = "feedback"; }
@@ -4339,7 +4408,8 @@ function openPatternRow(){
   const item = p.items[at];
   const wrap = $("#patternChoiceWrap");
   wrap.innerHTML = mathChoicesHTML("patternChoices", { a:item.a, b:item.b, sym:p.sym, ans:item.ans });
-  wireMathChoices("patternChoices", (val)=>{
+  resetStepMisses();   // each row is its own challenge
+  wireMathChoices("patternChoices", item.ans, (val)=>{
     const fb = $("#feedback");
     if(val !== item.ans){
       bumpMistake(st.p);

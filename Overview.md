@@ -49,6 +49,16 @@ Settings, Lesson Trails progress, the Pokédex collection, and the play streak p
 
 **Two different bars, deliberately kept apart.** The Lesson Trails still promote only on a **spotless** question — nothing wrong at all, no hints — exactly as before. `Mistakes allowed` governs only whether a question moves the *round* along. Loosening the round does not loosen the ladder.
 
+**Failure is bounded: after `Show the answer after` wrong taps on one step, the right answer lights up and the child still has to tap it.** Every mode blocks until the answer is right and there is no skip — deliberately, since being told the answer costs the struggle that makes it stick. But that left a dead end: a question resting on something never taught has no exit, and tapping every option in turn is the only move the screen offers. That is not a child giving up, it is the only input the app accepts.
+
+The answer lights in an amber pulse — never the green of a correct answer, because it says *here it is*, not *you got it*. Three properties make it safe:
+
+- **It cannot become a give-up button, because it is not a button.** It is triggered by failing rather than chosen, so there is nothing to press early.
+- **It can never pay to fail on purpose.** The reveal always lands at least one mistake past `Mistakes allowed`, so by the time it appears the question has already stopped counting toward the round. The Settings value is raised to enforce that if it is set too low.
+- **It counts the current step, not the question.** A Pattern row and an Alphabet gap are each their own challenge, so two slips spread across two rows never light up the second one.
+
+Where the reason is on screen — Alphabet's run of letters, Reading's picture — there is something to infer from. Bare arithmetic is the weak case: lighting up `5` for `14 − 9` shows the fact and not the borrowing, and that wants its own support, which it does not have yet. Spelling is untouched: it has its own graduated help in `hinted_pct` and `max_hints`.
+
 **The progress bar measures credits**, so guessing your way through a question leaves it exactly where it was. That is the feedback the change exists to give.
 
 Each mode toggles on/off in Settings. A session of **N** challenges is **split in thirds** — spelling, reading, maths — rather than drawn evenly across every track, and never repeats the same mode back-to-back. The maths third is shared among whichever maths tracks are currently open; without the split, a fully-unlocked child would get eight questions in ten as maths purely because maths has the most tracks. A mode with nothing enabled inside it drops out of the pool automatically.
@@ -364,7 +374,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 12. Settings & Persistence
 
-- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
+- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), **Show the answer after** (wrong taps on one step before the answer lights up, default 2 — always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
 - **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
