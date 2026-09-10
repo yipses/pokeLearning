@@ -252,6 +252,7 @@
   .kind-pattern{ background:linear-gradient(160deg,#ffdd88,var(--sun-deep)); }
   .kind-visual{ background:linear-gradient(160deg,#8fd08f,var(--leaf-deep)); }
   .kind-reading{ background:linear-gradient(160deg,#c9a6f0,#9a6bd6); }
+  .kind-alpha{ background:linear-gradient(160deg,#9fd8c8,#2e9e86); }
   .kind-battle{ background:linear-gradient(160deg,#ffab6b,#d84315); }
 
   /* The number pad is tall, and on a phone the maths screens ran past the fold
@@ -393,6 +394,44 @@
     box-shadow:var(--shadow-sm);
   }
   .reading-say-mini:active{ transform:translateY(1px); }
+
+  /* alphabet: the run of letters, then the four Pokémon to choose from */
+  /* The run must NOT wrap. Its whole meaning is that it reads left to right, and
+     a fourth card dropped onto a second line reads as a new sequence rather than
+     the end of this one — so the cards share the width instead, however many
+     the row asks for. */
+  .alpha-strip{ display:flex; flex-wrap:nowrap; align-items:stretch; justify-content:center; gap:8px; margin:10px 0 6px; }
+  .alpha-card{
+    flex:1 1 0; min-width:0; max-width:110px; padding:8px 6px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    border-radius:var(--radius-sm); border:3px solid var(--cream-2); background:var(--white);
+  }
+  .alpha-letter{ font-size:1.5rem; font-weight:800; line-height:1.1; color:var(--ink); }
+  .alpha-pic{ width:100%; max-width:56px; height:56px; object-fit:contain; }
+  .alpha-name{
+    font-size:.8rem; font-weight:700; line-height:1.15; color:var(--ink);
+    max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  /* An unanswered gap is the same box with a dashed edge, so the run keeps its
+     rhythm — a narrower or shorter gap would read as a smaller step. */
+  .alpha-gap{ border-style:dashed; border-color:var(--sky-deep); justify-content:center; }
+  .alpha-gap .alpha-letter{ color:var(--sky-deep); }
+  .alpha-card.current{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
+  .alpha-card.alpha-correct{ border-style:solid; border-color:var(--leaf); background:var(--cream); }
+  .alpha-opts{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:14px 0 6px; }
+  .alpha-opt{
+    font:inherit; cursor:pointer; border-radius:var(--radius-sm); padding:10px 6px;
+    border:3px solid var(--sky-deep); background:linear-gradient(180deg,var(--white),var(--cream));
+    box-shadow:0 4px 0 var(--sky-deep), var(--shadow-sm);
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    transition: transform .05s, opacity .15s, border-color .15s, box-shadow .15s, background .15s;
+  }
+  .alpha-opt:hover:not(:disabled){ border-color:var(--sun-deep); background:linear-gradient(180deg,var(--white),var(--cream-2)); }
+  .alpha-opt:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--sky-deep); }
+  .alpha-opt img{ width:60px; height:60px; object-fit:contain; }
+  .alpha-opt-name{ font-size:.9rem; font-weight:800; line-height:1.15; color:var(--ink); word-break:break-word; }
+  .alpha-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
+  .alpha-opt.shake{ animation: shake .42s; }
 
   /* math question + answer choices */
   .math-q{ font-size: clamp(40px, 11vw, 64px); font-weight:800; color:var(--ink); margin:2px 0 10px; }
@@ -1081,6 +1120,14 @@
     .reading-opt-img img{ width:48px; height:48px; }
     .reading-say-mini{ width:26px; height:26px; font-size:12px; }
     .reading-opt-word{ font-size:.95rem; }
+    .alpha-strip{ gap:5px; }
+    .alpha-card{ padding:6px 3px 8px; }
+    .alpha-letter{ font-size:1.25rem; }
+    .alpha-pic{ max-width:46px; height:46px; }
+    .alpha-name{ font-size:.68rem; }
+    .alpha-opts{ grid-template-columns:repeat(2,1fr); gap:10px; }
+    .alpha-opt img{ width:54px; height:54px; }
+    .alpha-opt-name{ font-size:.85rem; }
     .pattern-eq{ min-width:110px; font-size:1.1rem; }
     .pattern-slot{ width:70px; font-size:1.1rem; }
     .choice{ min-height:52px; font-size:1.5rem; }
@@ -1316,8 +1363,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 78;
-const APP_BUILD_DATE = "20 Aug 2026";
+const APP_BUILD = 79;
+const APP_BUILD_DATE = "10 Sep 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -1353,6 +1400,7 @@ let ITEMS = [];
 let GRADED_ITEMS = [];
 let PHONEMES = {};
 let SPELLING_ROWS = [];
+let ALPHABET_POOL = {};   // "A" -> Pokémon whose names start with it; see loadData
 let READING_ROWS = [];
 let MATH_TRACK_ROWS = [], MATH_LEVEL_ROWS = [], MATH_PROMO_ROWS = [];
 
@@ -1502,6 +1550,10 @@ async function loadData(){
     pokemonLetters: n(r.pokemon_letters), wrongAnswers: n(r.wrong_answers),
     distractorLevel: n(r.distractor_level),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
+    // Alphabet mode: how long the run of letters is, how many of them are blank,
+    // and where the blanks may fall. See ALPHA_POSITIONS.
+    alphaLength: n(r.alpha_length), alphaBlanks: n(r.alpha_blanks),
+    alphaBlankPos: String(r.alpha_blank_position || "").trim().toLowerCase(),
   }));
 
   // Keyed chunk|context. A blank say_as is meaningful — the silent e says nothing.
@@ -1513,6 +1565,66 @@ async function loadData(){
   if(!GRADED_ITEMS.length) throw new Error("data/item_levels.csv graded no items");
   if(!SPELLING_ROWS.length) throw new Error("data/spelling_levels.csv is empty");
   if(!READING_ROWS.length) throw new Error("data/reading_levels.csv is empty");
+
+  /* Every Pokémon filed under the letter its name starts with. The alphabet mode
+     draws from the whole roster rather than the caught generations: a single
+     generation covers only 7-13 of the 23 four-letter windows, so gating it the
+     way the word pools are gated would leave most of the alphabet unreachable.
+     Nothing is spoiled by this — the mode asks which letter comes next, not
+     which Pokémon the child owns. */
+  ALPHABET_POOL = {};
+  for(const p of SPELLABLE_POKEMON){
+    const L = p.n[0].toUpperCase();
+    if(L >= "A" && L <= "Z") (ALPHABET_POOL[L] ||= []).push(p);
+  }
+  for(const row of READING_ROWS) checkAlphaRow(row);
+}
+
+/* Which blank patterns each `alpha_blank_position` allows, as index sets within
+   the run. "first"/"last" are the solid block at either end; "middle" is every
+   blank strictly inside; "mixed" is anything that is neither the first block nor
+   the last one — which includes the middle shapes, and is the only setting that
+   can put three blanks in a run of four without them being one solid end. */
+const ALPHA_POSITIONS = ["first", "last", "middle", "mixed"];
+function alphaBlankShapes(len, blanks, pos){
+  const all = [];
+  (function pick(from, got){
+    if(got.length === blanks){ all.push(got.slice()); return; }
+    for(let i = from; i < len; i++){ got.push(i); pick(i+1, got); got.pop(); }
+  })(0, []);
+  const head = [...Array(blanks).keys()];
+  const tail = head.map(i => i + len - blanks);
+  const is = (c, want) => c.join() === want.join();
+  if(pos === "first")  return all.filter(c => is(c, head));
+  if(pos === "last")   return all.filter(c => is(c, tail));
+  if(pos === "middle") return all.filter(c => c.every(i => i > 0 && i < len - 1));
+  return all.filter(c => !is(c, head) && !is(c, tail));
+}
+/* Start indices (0 = A) of every run of `len` consecutive letters that the
+   roster can actually fill. Today all 23 four-letter runs qualify — every letter
+   has at least three Pokémon — but a thinner roster would silently produce
+   unanswerable questions, so this is computed rather than assumed. */
+function alphaWindows(len){
+  const out = [];
+  for(let s = 0; s + len <= 26; s++){
+    let ok = true;
+    for(let i = 0; i < len && ok; i++) ok = !!(ALPHABET_POOL[String.fromCharCode(65+s+i)] || []).length;
+    if(ok) out.push(s);
+  }
+  return out;
+}
+/* A reading row that can't produce an alphabet question is a data error, not a
+   thing to paper over at play time: three blanks in a run of two has no answer,
+   and neither does "middle" with more blanks than there are interior slots. */
+function checkAlphaRow(row){
+  const at = `data/reading_levels.csv level ${row.level}`;
+  if(!(row.alphaLength >= 2)) throw new Error(`${at}: alpha_length must be 2 or more`);
+  if(!(row.alphaBlanks >= 1)) throw new Error(`${at}: alpha_blanks must be 1 or more`);
+  if(row.alphaBlanks >= row.alphaLength) throw new Error(`${at}: alpha_blanks (${row.alphaBlanks}) must be fewer than alpha_length (${row.alphaLength})`);
+  if(!ALPHA_POSITIONS.includes(row.alphaBlankPos)) throw new Error(`${at}: alpha_blank_position "${row.alphaBlankPos}" is not one of ${ALPHA_POSITIONS.join(", ")}`);
+  if(!alphaBlankShapes(row.alphaLength, row.alphaBlanks, row.alphaBlankPos).length)
+    throw new Error(`${at}: no ${row.alphaBlankPos} pattern puts ${row.alphaBlanks} blanks in a run of ${row.alphaLength}`);
+  if(!alphaWindows(row.alphaLength).length) throw new Error(`${at}: the roster has no run of ${row.alphaLength} consecutive letters`);
 }
 
 function showDataError(err){
@@ -1924,14 +2036,83 @@ function mkSpelling(row){
           blankLetters: blanksFor(poke.n, row.hintedPct), hintLimit: row.maxHints};
 }
 
-function mkReadingRow(row){
+function mkReadingRow(row, mode){
   const targets = poolForRow(row);
   const dRow = READING_ROWS.find(r => r.level === row.distractorLevel) || row;
   const target = pickFrom(targets, "reading");
   const rest = poolForRow(dRow).filter(p => p !== target && p.n !== target.n);
   const wrong = shuffle(rest).slice(0, row.wrongAnswers);
-  return {kind:"reading", mode: rand(2) ? "choose" : "reverse",
-          target, options: shuffle([target, ...wrong])};
+  return {kind:"reading", mode, target, options: shuffle([target, ...wrong])};
+}
+
+/* ---------------- Alphabet ----------------
+   A run of consecutive letters is laid out left to right, each shown as the
+   Pokémon whose name starts with it, and one or more of them are blank. The
+   child works out which letter the gap is and picks the Pokémon whose name
+   starts with it.
+
+   Two things the row controls, both from the sheet:
+
+     alpha_length          how much of the alphabet is on screen. A run of 4 is
+                           A B C _; a run of 2 is A _ . SHORTER IS HARDER — less
+                           of the sequence is there to count along.
+     alpha_blanks          how many of those are gaps, filled left to right.
+     alpha_blank_position  where the gaps may be (see ALPHA_POSITIONS).
+
+   The option count is fixed here rather than in the sheet, and so is where the
+   wrong answers come from: the letters nearest the answer, which is the only
+   pool that makes the question about ordering rather than about noticing the
+   one plausible name. What counts as "nearest" is worked out per gap, not per
+   question, because the run fills in as it is answered: a letter already on
+   screen — given, or filled a moment ago — can be ruled out by looking, so it
+   would be a dead option. A letter belonging to a gap still to come is fair
+   game, and is the sharpest wrong answer there is: at G H _ _ the choice
+   between I and J is the whole question.
+
+   Nothing is read aloud in this mode. Every name on screen is a first letter,
+   so speaking any of them would hand over the sort the child is doing. */
+const ALPHA_OPTIONS = 4;
+function alphaDistractors(letter, shown, want){
+  const code = letter.charCodeAt(0);
+  const near = [];
+  for(let c = 65; c <= 90; c++){
+    const L = String.fromCharCode(c);
+    if(L === letter || shown.includes(L) || !(ALPHABET_POOL[L] || []).length) continue;
+    near.push({ L, d: Math.abs(c - code) });
+  }
+  // Shuffle first, then a stable sort by distance: the nearest letters win, but
+  // which side of the answer they come from varies question to question.
+  return shuffle(near).sort((a,b) => a.d - b.d).slice(0, want)
+    .map(x => pickFrom(ALPHABET_POOL[x.L], "alphaWrong"));
+}
+function mkAlphabet(row){
+  const len = row.alphaLength;
+  const starts = alphaWindows(len);
+  const start = starts[rand(starts.length)];
+  const letters = [];
+  for(let i = 0; i < len; i++) letters.push(String.fromCharCode(65 + start + i));
+  const shapes = alphaBlankShapes(len, row.alphaBlanks, row.alphaBlankPos);
+  const blanks = shapes[rand(shapes.length)];
+  const slots = letters.map((letter,i) => blanks.includes(i)
+    ? { letter, blank:true }
+    : { letter, blank:false, poke: pickFrom(ALPHABET_POOL[letter], "alphaShown") });
+  blanks.forEach((i,k) => {
+    // Visible when THIS gap opens: every given letter, plus the gaps already
+    // filled. Gaps are answered left to right, so those are blanks 0..k-1.
+    const visible = letters.filter((L,j) => !blanks.includes(j) || blanks.indexOf(j) < k);
+    const answer = pickFrom(ALPHABET_POOL[letters[i]], "alphaAnswer");
+    slots[i].answer = answer;
+    slots[i].options = shuffle([answer, ...alphaDistractors(letters[i], visible, ALPHA_OPTIONS - 1)]);
+  });
+  return { kind:"alpha", letters, slots, blanks };
+}
+
+// Reading serves three modes in equal share: picture-to-word, word-to-picture,
+// and the alphabet run.
+function mkReading(row){
+  const pick = rand(3);
+  if(pick === 0) return mkAlphabet(row);
+  return mkReadingRow(row, pick === 1 ? "choose" : "reverse");
 }
 
 // Both ladders are built from their CSV rows. The label is what Settings and the
@@ -1951,7 +2132,7 @@ function buildReadingLevels(){
     label: `Words to level ${row.wordLevel}` +
            (row.compoundLevel ? ` + ${row.compoundLevel}-word` : "") +
            `, ${row.wrongAnswers + 1} to choose from`,
-    gen: ()=> mkReadingRow(row),
+    gen: ()=> mkReading(row),
   }));
 }
 let SPELLING_LEVELS = [], READING_LEVELS = [];
@@ -2367,6 +2548,7 @@ function renderProblem(){
   maybeStartGrassEncounter();
   if(p.kind==="spell"){ if(p.task==="missing") renderMissingLetter(p); else renderSpell(p); }
   else if(p.kind==="reading") renderReading(p);
+  else if(p.kind==="alpha") renderAlphabet(p);
   else if(p.kind==="pattern") renderPattern(p);
   else if(p.kind==="visual") renderVisual(p);
   else renderMath(p);
@@ -3990,6 +4172,99 @@ function pickReading(opt, btn){
   }
 }
 
+/* ---------------- ALPHABET ---------------- */
+/* The whole run stays on screen while it is being filled, the same way Math
+   Pattern keeps all four equations up: the sequence IS the question, and hiding
+   the letters already found would turn "what comes after C" into a guess.
+   Blanks open left to right, one at a time, and each carries its own four
+   options.
+
+   The run shows its letters; the options do not. That split is the exercise —
+   the letters say what is being asked for, and the only way to answer is to read
+   an option's name and see what it starts with. Printing the letter on the
+   option tiles too would leave nothing to read. */
+let alphaState = null;
+
+function alphaCardHTML(slot){
+  const img = slot.poke.img || artwork(slot.poke.id);
+  return `<span class="alpha-letter">${slot.letter}</span>
+    <img class="alpha-pic" alt="" src="${img}">
+    <span class="alpha-name">${cap(slot.poke.n)}</span>`;
+}
+
+function renderAlphabet(p){
+  const stage = $("#stage");
+  stage.innerHTML = `
+    <div class="kind-tag kind-alpha">Alphabet</div>
+    <div class="alpha-strip" id="alphaStrip"></div>
+    <div id="alphaChoiceWrap"></div>
+    <div class="feedback" id="feedback"></div>
+  `;
+  const strip = $("#alphaStrip");
+  p.slots.forEach((slot,i)=>{
+    const card = document.createElement("div");
+    card.className = "alpha-card" + (slot.blank ? " alpha-gap" : "");
+    card.dataset.i = i;
+    card.innerHTML = slot.blank ? `<span class="alpha-letter">?</span>` : alphaCardHTML(slot);
+    strip.appendChild(card);
+  });
+  alphaState = { p, cards:[...strip.querySelectorAll(".alpha-card")], at:0 };
+  openAlphaGap();
+}
+
+function openAlphaGap(){
+  const st = alphaState;
+  const i = st.p.blanks[st.at];
+  st.cards.forEach((c,j)=> c.classList.toggle("current", j === i));
+  const wrap = $("#alphaChoiceWrap");
+  wrap.innerHTML = `<div class="alpha-opts" id="alphaOpts"></div>`;
+  const opts = $("#alphaOpts");
+  st.p.slots[i].options.forEach(opt=>{
+    const btn = document.createElement("button");
+    btn.className = "alpha-opt";
+    const src = opt.img || artwork(opt.id);
+    btn.innerHTML = `<img alt="" src="${src}"><span class="alpha-opt-name">${cap(opt.n)}</span>`;
+    btn.addEventListener("click", ()=> pickAlphabet(opt, btn));
+    opts.appendChild(btn);
+  });
+}
+
+function pickAlphabet(opt, btn){
+  const st = alphaState;
+  if(!st || st.done || btn.disabled) return;
+  const i = st.p.blanks[st.at];
+  const slot = st.p.slots[i];
+  const fb = $("#feedback");
+  if(opt !== slot.answer){
+    bumpMistake(st.p);
+    btn.disabled = true;
+    btn.classList.add("wrong", "shake");
+    setTimeout(()=> btn.classList.remove("shake"), 450);
+    fb.className = "feedback bad"; fb.textContent = "❌ Try again!";
+    return;
+  }
+  if(fb.classList.contains("bad")){ fb.textContent = ""; fb.className = "feedback"; }
+  slot.poke = opt;
+  const card = st.cards[i];
+  card.classList.remove("alpha-gap", "current");
+  card.classList.add("alpha-correct");
+  card.innerHTML = alphaCardHTML(slot);
+  st.at++;
+  if(st.at < st.p.blanks.length){ openAlphaGap(); return; }
+  st.done = true;
+  $("#alphaChoiceWrap").innerHTML = "";
+  fb.className = "feedback good big-check"; fb.textContent = "✅";
+  markAlphabetDone();
+}
+
+function markAlphabetDone(){
+  correct++;
+  if(alphaState && alphaState.p.track && alphaState.p.isFrontier){
+    recordAttempt(alphaState.p.track, spotless(alphaState.p));
+  }
+  lockAndAdvance();
+}
+
 /* ---------------- MATH PATTERNS ---------------- */
 /* All four equations stay on screen — seeing 3×1, 3×2, 3×3, 3×4 stacked is the
    whole point of the mode, and hiding three of them to ask one would throw that
@@ -4071,7 +4346,7 @@ function markPatternDone(){
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
   const go = ()=>{
-    spellState=null; missingState=null; mathState=null; readingState=null; patternState=null; visualState=null;
+    spellState=null; missingState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
     next();
   };
   if(typeof waitFor === "function") waitFor(go);

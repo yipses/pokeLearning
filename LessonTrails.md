@@ -123,7 +123,11 @@ Same three selection columns, two of its own:
 - **`wrong_answers`** — decoy count. Choices run 3, 4, then 5 from level 3 on.
 - **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. Always at or above the level's own row, so decoys come from a superset of the target pool. A child meets harder words as options before being asked to read them, and it fixes the thinness at the bottom: level 1 targets from 6 words but draws decoys from 12.
 
-This replaced a "tricky distractor" flag that hand-picked same-length or same-first-letter decoys. Difficulty now comes from pool breadth instead, and the two formats (Read & Choose, Reverse Read & Choose) are chosen at random per question rather than being rungs of their own.
+This replaced a "tricky distractor" flag that hand-picked same-length or same-first-letter decoys. Difficulty now comes from pool breadth instead, and the three formats (Read & Choose, Reverse Read & Choose, Alphabet) are chosen at random per question rather than being rungs of their own.
+
+**Alphabet** shares the trail but none of its word pools, and ramps on three columns of its own: `alpha_length`, `alpha_blanks` and `alpha_blank_position`. It is here rather than in a trail of its own because it is the same skill one rung earlier — a child who cannot yet decode a word can still know that D follows C, and the mode gives the Reading frontier something to do at every level rather than only at the bottom.
+
+Its difficulty runs on an axis the rest of the file does not have. `alpha_length` is **shorter is harder**: a run of four gives three letters to count along from, a run of two gives one. And the gaps walk backwards through the run as the levels climb — `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on; then `mixed`.
 
 ### Why the frontiers are separate
 
