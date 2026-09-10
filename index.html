@@ -590,6 +590,64 @@
   .visual-groups.grouped .visual-icon,
   .visual-groups.grouped .visual-icon-wrap{ width:20px; height:20px; }
   .visual-groups.grouped .visual-op{ font-size:1rem; }
+  /* A full ten: five across, two down, framed so it reads as ONE thing. The
+     frame is what carries the meaning — the icons inside are texture at this
+     size and are not meant to be counted. */
+  .ten-box{
+    display:inline-grid; grid-template-columns:repeat(5,auto); gap:2px;
+    padding:5px 6px; border-radius:12px;
+    /* Blue, not amber: amber already means "this is the answer, tap it" since
+       the bounded-failure reveal, and one colour cannot mean two things on the
+       same screen. The operand's own frame is gone in this layout, so a blue
+       frame now unambiguously means "this is ten". */
+    border:3px solid var(--sky-deep); background:var(--white);
+  }
+  .ten-box .visual-icon{ width:24px; height:24px; }
+  .visual-groups.dense .ten-box .visual-icon{ width:22px; height:22px; }
+  .visual-groups.packed .ten-box{ gap:1.5px; padding:4px; }
+  .visual-groups.packed .ten-box .visual-icon{ width:19px; height:19px; }
+  @media (max-width:480px){
+    .ten-box .visual-icon{ width:21px; height:21px; }
+    .visual-groups.packed .ten-box .visual-icon{ width:17px; height:17px; }
+  }
+
+  /* Operands stacked, operator between them. In this layout the operand's own
+     container drops its frame: with ten-boxes on screen a frame has to mean
+     exactly one thing — "this is ten" — and a second framed box wrapped around
+     it read as a bigger ten. */
+  .visual-groups.stacked{ flex-direction:column; gap:4px; }
+  .visual-groups.stacked .visual-box{
+    border:none; background:transparent; box-shadow:none; padding:2px;
+    max-width:100%;
+  }
+  .visual-groups.stacked .visual-op{ margin:0; }
+  /* Nine loose ones must fit on ONE line. Wrapped as eight-then-one they read
+     as "eight and one" rather than nine, and nine-versus-ten is the comparison
+     this whole layout exists to make visible. */
+  .tens-row, .ones-row{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+    gap:5px; width:100%;
+  }
+  .tens-row{ margin-bottom:2px; }
+  /* Sized by the ROW rather than by the layout class, so it holds whether or
+     not the question reached two digits — nine ones fit on one line either way.
+     `.visual-icon-wrap` is the crossed-out variant and needs the same size: it
+     carries its own dimensions and the icon inside it is absolutely positioned,
+     so missing it left subtraction's crossed ones at full size. */
+  .visual-groups .ones-row .visual-icon,
+  .visual-groups .ones-row .visual-icon-wrap{ width:30px; height:30px; }
+  .visual-groups.packed .ones-row .visual-icon,
+  .visual-groups.packed .ones-row .visual-icon-wrap{ width:28px; height:28px; }
+  .visual-groups .ten-box .visual-icon{ width:22px; height:22px; }
+  @media (max-width:480px){
+    .tens-row, .ones-row{ gap:4px; }
+    .visual-groups .ones-row .visual-icon,
+    .visual-groups .ones-row .visual-icon-wrap{ width:27px; height:27px; }
+    .visual-groups.packed .ones-row .visual-icon,
+    .visual-groups.packed .ones-row .visual-icon-wrap{ width:25px; height:25px; }
+    .visual-groups .ten-box .visual-icon{ width:19px; height:19px; }
+  }
+
   .visual-icon.crossed{ opacity:.35; }
   .visual-icon-wrap{ position:relative; display:inline-grid; place-items:center; width:56px; height:56px; }
   .visual-icon-wrap .visual-icon{ position:absolute; }
@@ -1384,7 +1442,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 83;
+const APP_BUILD = 84;
 const APP_BUILD_DATE = "10 Sep 2026";
 
 function renderAbout(){
@@ -4151,33 +4209,89 @@ function markMathDone(){
 /* ---------------- VISUAL MATH ---------------- */
 let visualState=null;
 
+/* ---------------- tens and ones ----------------
+   A count drawn as full tens plus loose ones: ten icons in a framed 5x2 grid,
+   then the remainder loose beside it.
+
+   This is what makes two-digit questions drawable at all. Counting icons one
+   per unit scales with MAGNITUDE — 29 + 19 is 48 of them, which is neither
+   legible nor countable by a five-year-old — while tens-and-ones scales with
+   DIGITS: the same question is 3 boxes and 18 loose, and 4 boxes and 8 loose
+   once it is regrouped. Twenty-one objects instead of forty-eight.
+
+   The count is the lesser point. Twenty-five identical icons have to be counted
+   one at a time; "two full boxes and nine" is read. The frame is what does that
+   work, not the legibility of what is inside — at this size the icons are
+   texture, and that is fine.
+
+   They are the SAME Pokémon as the loose ones, deliberately. "One box and four
+   Pokémon" is only fourteen Pokémon if the box contains Pokémon, and when a box
+   opens to make a borrow possible the ten that spill out have to have been there
+   all along. Ten plain squares would break that the moment they turned into
+   Charizards.
+
+   Opening a box on a borrow, and closing ten loose ones into a box on a carry,
+   is the part that actually teaches regrouping — and is NOT built yet. Until it
+   is, subtraction falls back to all-loose whenever the units digit is too small
+   to take the subtrahend, since crossing out nine of a box-and-five is exactly
+   the move that needs the box to open. */
+function tensAndOnes(n, iconHTML){
+  const tens = Math.floor(n / 10), ones = n % 10;
+  const box = `<span class="ten-box">${iconHTML.repeat(10)}</span>`;
+  // Tens on their own row, ones on theirs. Letting them flow together put a
+  // stray loose one on the end of the box row, where it reads as part of the
+  // tens; kept apart, the split IS the place value.
+  const rows = [];
+  if(tens) rows.push(`<span class="tens-row">${box.repeat(tens)}</span>`);
+  if(ones) rows.push(`<span class="ones-row">${iconHTML.repeat(ones)}</span>`);
+  return rows.join("") || `<span class="ones-row"></span>`;
+}
+// How many separate things end up on screen — boxes count as one apiece. This
+// drives the size class, which used to count raw icons and so over-shrank
+// anything two-digit.
+function visualObjectCount(n){ return Math.floor(n / 10) + (n % 10); }
+
 function renderVisual(p){
   const stage = $("#stage");
   const icon = ()=> `<img class="visual-icon" src="${artwork(p.poke.id)}" alt="${cap(p.poke.n)}">`;
   const crossedIcon = ()=> `<span class="visual-icon-wrap">${icon()}<span class="cross"></span></span>`;
+  // Subtraction can only use boxes while the loose ones cover what is taken
+  // away; anything more needs a box to open, which is the unbuilt half.
+  const subNeedsBorrow = p.op === "sub" && p.b > (p.a % 10);
 
-  // Total icons on screen decides how big they can be. The level rows go up to
-  // 19 + 9, and at full size that question is taller than the phone.
+  const useTens = (p.op === "add") || (p.op === "sub" && !subNeedsBorrow);
+  // Once an operand carries a full ten it is tall, and a flex ROW leaves the
+  // operator marooned beside the first one while the second wraps underneath —
+  // which reads as "29 +" and then a stray 19. Stack them instead, so the
+  // operator sits between the two the way a column sum does.
+  const stacked = useTens && (p.a >= 10 || p.b >= 10) ? " stacked" : "";
   const totalIcons = p.op==="add" ? p.a + p.b
                    : p.op==="sub" ? p.a
                    : p.op==="mul" ? p.a * p.b
                    : p.ans * p.b;
+  const objects = !useTens ? totalIcons
+                : p.op==="add" ? visualObjectCount(p.a) + visualObjectCount(p.b)
+                : visualObjectCount(p.a);
   const grouped = (p.op === "mul" ? p.b : p.op === "div" ? p.b : 1) > 1;
-  const density = (totalIcons > 24 ? " packed" : totalIcons > 12 ? " dense" : "")
+  const density = (objects > 24 ? " packed" : objects > 12 ? " dense" : "")
                 + (grouped && totalIcons > 12 ? " grouped" : "");
 
   let visualHTML, eqText;
   if(p.op==="add"){
     eqText = `${p.a} + ${p.b} = ?`;
-    visualHTML = `<div class="visual-groups${density}">
-      <div class="visual-box">${icon().repeat(p.a)}</div>
+    visualHTML = `<div class="visual-groups${density}${stacked}">
+      <div class="visual-box">${tensAndOnes(p.a, icon())}</div>
       <span class="visual-op">+</span>
-      <div class="visual-box">${icon().repeat(p.b)}</div>
+      <div class="visual-box">${tensAndOnes(p.b, icon())}</div>
     </div>`;
   } else if(p.op==="sub"){
     eqText = `${p.a} − ${p.b} = ?`;
-    visualHTML = `<div class="visual-groups${density}">
-      <div class="visual-box">${crossedIcon().repeat(p.b)}${icon().repeat(p.a-p.b)}</div>
+    const body = useTens
+      ? tensAndOnes(p.a - p.b, icon()) +
+        (p.b ? `<span class="ones-row">${crossedIcon().repeat(p.b)}</span>` : "")
+      : crossedIcon().repeat(p.b) + icon().repeat(p.a - p.b);
+    visualHTML = `<div class="visual-groups${density}${stacked}">
+      <div class="visual-box">${body}</div>
     </div>`;
   } else if(p.op==="mul"){
     eqText = `${p.a} × ${p.b} = ?`;

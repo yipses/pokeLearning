@@ -234,6 +234,14 @@ Not a separate question source — a **rendering** of Math Trails questions as p
 
 The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no instructional caption text.
 
+**Tens and ones.** Addition and subtraction draw any count of ten or more as full **ten-boxes** — ten icons in a framed 5×2 grid — plus the remainder loose beside them, tens on one row and ones on the next. This is what makes two-digit questions drawable at all: one icon per unit scales with *magnitude*, so `29 + 19` is forty-eight of them, while tens-and-ones scales with *digits* and the same question is three boxes and eighteen loose — twenty-one objects instead of forty-eight.
+
+The count is the lesser point. Twenty-five identical icons have to be counted one at a time; "two full boxes and nine" is read. The **frame** does that work, not the legibility of what is inside — at this size the icons are texture, and that is fine. They are the same Pokémon as the loose ones deliberately: "one box and four Pokémon" is only fourteen Pokémon if the box contains Pokémon.
+
+Two constraints the layout exists to satisfy. Operands **stack** with the operator between them once either reaches ten, because a flex row leaves the operator marooned beside the first operand while the second wraps underneath. And nine loose ones must fit on **one line** — wrapped as eight-then-one they read as "eight and one", and nine-versus-ten is the comparison the whole layout exists to make visible. The operand's own frame is dropped in this layout so that a frame means exactly one thing: *this is ten*. For the same reason the frame is blue rather than amber, which already means "this is the answer, tap it".
+
+**Not yet reachable in play, and not yet teaching.** No level in `data/math_levels.csv` currently pairs `visual` with two-digit operands, so nothing draws a ten-box until the sheet says so. And the part that would actually teach regrouping — a box **opening** into ten loose ones for a borrow, ten loose ones **closing** into a box for a carry — is not built. Until it is, subtraction falls back to all-loose whenever the units digit is too small to take the subtrahend, since that is exactly the case needing a box to open.
+
 ## 8. Pokédex & Catching
 
 - Every challenge screen shows a decorative grass strip. At a configurable rate (Settings, default 10%), it shakes to signal a Pokémon is hiding.

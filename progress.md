@@ -298,6 +298,35 @@ Every mode in the app now has a floor under failure. There is nowhere left to ge
 
 **What it does to the ladder work.** It bounds the cost of a cliff, so a too-big step becomes survivable rather than a wall, and the ladder can tolerate coarser granularity than it otherwise would. It also produces the signal the difficulty modelling wanted: "needed the reveal" is an unambiguous *couldn't do this at all*, distinct from an ordinary unclean answer — no response-time heuristics, no guessing at intent.
 
+### Phase 68 — Tens and ones, so two-digit questions can be drawn
+
+Visual Math could not reach the levels that most needed it. Measured: the picture support switches off exactly where the hard concept arrives. For addition it survives single-digit carrying (9+9 is 18 icons, drawable) and dies at level 4 where operands go two-digit — which is where carrying becomes *columnar* carrying. For subtraction it is worse: `visual` is already off at level 3 and borrowing does not appear until level 5, so the pictures are gone two levels before the concept that needs them.
+
+The cause is that one icon per unit scales with **magnitude**. `add` L8 is 48 icons. Drawing a ten as one framed object scales with **digits** instead:
+
+| worst case | icons | tens-and-ones |
+|---|---|---|
+| `add` L8, 29+19 | 48 | **21** |
+| `add` L6, 19+19 | 38 | 20 |
+| `sub` L7, 19−19 | 20 | 10 |
+| `sub` L6, 15−9 | 15 | **6** |
+
+The count is the lesser point: twenty-five identical icons must be *counted*, where "two full boxes and nine" is *read*.
+
+**Rejected: `[icon] ×10`.** Compact, and it solved the theming question, but `×` is gated behind `add` level 7 in `math_tracks.csv` — so at `add` L4, where this first matters, he has never seen a multiplication sign. It would explain carrying with a symbol from a locked ladder, and the ten would still be a numeral. A visible box of ten can be checked rather than taken on trust.
+
+**They are the same Pokémon, not squares.** "One box and four Pokémon" is only fourteen Pokémon if the box contains Pokémon — and when a box opens for a borrow, the ten that spill out must have been there all along. At 20px they read as texture, which is fine: the frame carries the meaning. The size is not a new low either, since the `grouped` layout already draws Pokémon at 20px for × and ÷.
+
+Three things the screenshots caught that the numbers did not:
+
+- **The operator was marooned.** A flex row put `+` beside the first operand while the second wrapped underneath, reading as "29 +" then a stray 19. Operands stack now, operator between them, like a column sum.
+- **A box inside a box.** The ten-box and the operand container had the same blue frame, so the outer one read as a bigger ten. The operand's frame is dropped in this layout — with ten-boxes on screen a frame must mean exactly one thing.
+- **Nine wrapped as eight-then-one**, which reads as "eight and one". Nine-versus-ten is the comparison the layout exists to make visible, so the loose row is sized to hold nine on one line.
+
+Two CSS traps on the way: sizing keyed to the layout class instead of the row missed `.visual-icon-wrap`, leaving subtraction's crossed-out ones at full size; and a bare `.ones-row .visual-icon` loses on specificity to `.visual-groups.dense .visual-icon`, so the density rule silently won and the nines wrapped again.
+
+**Deliberately incomplete.** No level pairs `visual` with two-digit operands yet, so nothing draws a box in normal play — verified, 1560 questions across every reachable level and zero ten-boxes. And the regrouping itself — a box opening for a borrow, ten closing for a carry — is not built. That is the half that actually teaches; this half only makes it drawable.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
