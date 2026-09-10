@@ -245,7 +245,7 @@ Re-verified after the change: 114,000 questions, **0 violations**; no cycles, no
 Three decisions worth not re-litigating:
 
 - **The run prints its letters; the options do not.** That split *is* the exercise — the run says what is being asked for, and the only way to answer is to read an option's name and see what it starts with. Printing the letter on the options too would leave nothing to read.
-- **Whole roster, not the caught generations.** Measured before designing: the full roster covers **23 of 23** four-letter runs, a single generation only **7–13**. Gating this the way the word pools are gated would leave most of the alphabet unreachable.
+- **Whole roster, not the caught generations.** Measured before designing: the full roster covers **every** run — 23 of 23 at four letters, 22 of 22 at five — where a single generation covers only **7–13**. Gating this the way the word pools are gated would leave most of the alphabet unreachable.
 - **Nothing is spoken.** Every name on screen is a first letter, so a speaker anywhere would hand over the sort.
 
 Two things the screenshots caught that the assertions did not, both about the run: it **wrapped to a second line** at 360px, which reads as a new sequence rather than the end of this one — the cards share the width now and never wrap, whatever the row's length; and a long name **broke mid-word** ("Houndston/e"), so the run's names clip with an ellipsis instead. The letter above them is what's being read; the name is context.
@@ -265,6 +265,10 @@ So crowding them around the answer doesn't harden the step being taught. It bolt
 The rule now is **spacing**: every option at least four letters from every other, the answer included, drawn from anywhere not already on screen. A correctly derived answer is unambiguously findable, a guess is unlikely to land, and what decides right or wrong is the derivation. Difficulty rides on the three sheet columns, which is where it belongs.
 
 Re-measured after the change: the closest any two options ever come is **4 letters** — the spacing never has to ease — and the 87% rank lean is gone, the four ranks now running roughly 14 / 29 / 29 / 28. The residual is geometric, not a rule: `last` gaps sit high in the alphabet on average, so there is more room below them than above, and `first` gaps mirror it. At its worst that is a 3-point edge over chance, against 62 before.
+
+**The reading ladder was then rebuilt in the sheet**, and the guard earned its keep on the first try. The new shape is a grid: gap counts 1, 2 and 3, each walked across `last` → `middle` → `first`, then `mixed` last. The first cut of it put all ten rows at `alpha_length 4`, and level 8 — `middle` with 3 gaps — **has no valid shape there**. A run of 4 has exactly two interior slots, so `middle` caps at two gaps; a third has to touch an end, and then it *is* `first` (`___x`) or `last` (`x___`). Measured across the whole grid, it was the only empty cell of the twelve. The load guard rejected the row by name rather than letting the app start and fail at play time, and the fix was in the sheet: levels 7–10 moved to `alpha_length 5`, the shortest run where `middle`/3 exists at all (`x___x`).
+
+That bought variety as a side effect: `mixed`/3 goes from 2 shapes at length 4 to **8** at length 5, so the top rung stops repeating itself. Runs of 5 have 22 windows rather than 23, and the roster fills all of them. The strip holds five cards on one row down to 360px — measured at 51px a card, worst case being the longest name under every letter, which clips to an ellipsis under a letter that stays legible.
 
 **The lesson, which is the one this repo keeps relearning.** The lean was found by measuring, but measuring only said the distribution was skewed — it could not say the rule was wrong. What did that was asking who the question is actually for and how they answer it. Numbers rule things out; they don't tell you what the exercise is.
 
