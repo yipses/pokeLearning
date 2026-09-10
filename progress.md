@@ -272,6 +272,24 @@ That bought variety as a side effect: `mixed`/3 goes from 2 shapes at length 4 t
 
 **The lesson, which is the one this repo keeps relearning.** The lean was found by measuring, but measuring only said the distribution was skewed — it could not say the rule was wrong. What did that was asking who the question is actually for and how they answer it. Numbers rule things out; they don't tell you what the exercise is.
 
+### Phase 67 — Failure gets a floor
+
+The dead end this closes was watched, not theorised: a question resting on something he has never been taught, and spamming every option because **that is all he CAN do**. Not gaming, not frustration — the only input the screen accepts. Every mode blocks until correct, there is no skip, and only Spelling has hints.
+
+Now, after `Show the answer after` wrong taps on a step, the right answer lights in an amber pulse and he still has to tap it himself.
+
+**Two rejected designs, both worth not revisiting.** An "I don't know" button was the obvious move and is wrong twice over: it becomes the fast path out of every question, and being told the answer costs the productive struggle that makes it stick. A *reveal after failing* has neither problem, because it is not chosen — there is nothing to press early, so it cannot be spammed.
+
+**Why it can never pay to fail on purpose.** The reveal is held at least one mistake past `Mistakes allowed`, so by the time it appears the credit is already gone. Verified across all 36 allowance × threshold combinations: a revealed answer never counts toward the round and never counts as spotless, and the floor never over-corrects — a question at exactly the allowance still counts in all six cases.
+
+**It counts the step, not the question.** A Pattern row and an Alphabet gap are each their own challenge; two slips spread across two rows must not light the second one. Verified in both modes.
+
+**Where it teaches, and where it only rescues.** In Alphabet the run of letters is on screen, so a lit answer has a visible reason; the same in Reading, where the pairing is the lesson. Bare arithmetic is the weak case — lighting `5` for `14 − 9` shows the fact, not the borrowing. Switching those to their visual form on reveal is the obvious fix, `toVisual()` already exists, and it is deliberately **not** built yet.
+
+Wired once for Maths, Visual Math and Pattern by giving `wireMathChoices` the answer, and inline for Reading and Alphabet, which build their own options. Spelling is untouched — its `hinted_pct` and `max_hints` are the same idea already. **Open:** those hints are *capped*, so exhausting them on a long word re-creates exactly this dead end. Unresolved.
+
+**What it does to the ladder work.** It bounds the cost of a cliff, so a too-big step becomes survivable rather than a wall, and the ladder can tolerate coarser granularity than it otherwise would. It also produces the signal the difficulty modelling wanted: "needed the reveal" is an unambiguous *couldn't do this at all*, distinct from an ordinary unclean answer — no response-time heuristics, no guessing at intent.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
