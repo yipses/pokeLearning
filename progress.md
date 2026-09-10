@@ -31,11 +31,11 @@ Two shapes a fix could take, neither built:
 
 Demotion on repeated failure was discussed alongside this and deliberately **not** built: "wrong many times in a row" is the spam signature as much as the too-hard signature, and tuning a demotion rule against that noise would mean tuning it against the very behaviour this change is meant to remove. Worth revisiting once the behaviour settles.
 
-### 2. The maths sheet's remaining tight spots
+### 2. The maths sheet's remaining tight spots — closed
 
-The three rows the first cut of the sheet could not satisfy have been fixed at source: `PatternSubtract` levels 1 and 2 now anchor at 5–9 and 10–19 instead of 0–9, and `MathAdd` level 4 is no longer `visual`. A 114,000-question audit against the corrected CSV finds **0 violations**, and every pattern step now has at least one usable anchor — level 2 uses both step 2 and step 3, which it could not before.
+Both tight rows are gone, at source. The Phase 66 retune gave every `pattern_sub` level a **single** step matching its level number (level 4 steps by 4), against anchor ranges that clear four rows of it, so the clamp no longer eats anchors anywhere: measured, **every pattern step in all four pattern tracks can use its whole anchor range**, where `pattern_sub` level 2 step 3 used to lose 2 of 10 and level 3 step 5 lost 1 of 11.
 
-Two rows still clear the bar only just: `pattern_sub` level 2 step 3 loses 2 anchors of 10 to the clamp, level 3 step 5 loses 1 of 11. Raising either `step` without widening the anchor range would silently drop the step again.
+What made the old rows tight is worth keeping in mind for the next edit: a pattern shows four rows, so a step of *k* needs its anchor to survive *4k*. Pairing a large step with a low anchor range silently drops the step rather than failing.
 
 The tallest visual question left is **`div` level 5** — 25 ÷ 5 draws 25 icons over five groups, 919px on a 390×844 phone. It reads fine and does not overflow sideways; it is 75px below the fold, which the old 19 + 9 case beat at 956px.
 
@@ -231,6 +231,42 @@ Skip-counting backwards now arrives with subtraction instead of trailing three t
 **Then the docs stopped restating the sheet.** Updating those two cells meant editing the unlock order in two files, and it had been wrong in both since the previous sheet change — the second time this has happened. `Overview.md` and `LessonTrails.md` now describe the *mechanism* and link to the sheet instead of listing the values: the prerequisite chain, the eight-row table of level counts and ranges, the promotion percentages and the Settings dropdown example are all gone. The sheet URL was nowhere in the repo at all; it now sits in `data/README.md` for whoever is editing, and in Overview §13.
 
 The rule that fell out of it: **a tunable value written in prose is a value with somewhere to drift.** Overview describes what the app does with a number, never what the number is.
+
+### Phase 66 — The maths sheet retuned, and an alphabet mode
+
+**Twenty-three cells changed in the tuning sheet**, all of them in `add`, `pattern_add`, `sub` and `pattern_sub`; multiply, divide, both their pattern tracks, all eight prerequisites and the promotion gates were already identical. Checked cell by cell against a transcription of the sheet rather than by eye, which is how the count is exact.
+
+Subtraction is the substantial one. It used to jump to two-digit work at level 3 and spend its top five levels there; it now spends four levels inside 0–9 before crossing ten, and its ceiling comes down from 20–29 minus 20–29 to 10–20 minus 0–20. Addition shifts the same way one rung at a time. `pattern_sub` drops its step *pairs* for a single step per level — level 4 steps by 4 — which is what closed open thread 2 above.
+
+Re-verified after the change: 114,000 questions, **0 violations**; no cycles, no prerequisite past its track's last level, all eight tracks reachable; and every pattern step now uses its whole anchor range.
+
+**Then a third Reading mode: Alphabet.** A run of consecutive letters, each shown as a Pokémon whose name starts with it, some of them gaps. The child works out which letter a gap is and picks the Pokémon for it. Three new columns in `data/reading_levels.csv` drive it — `alpha_length`, `alpha_blanks`, `alpha_blank_position` — and the ten rows walk the gaps from the end of the run to the start and then anywhere.
+
+Three decisions worth not re-litigating:
+
+- **The run prints its letters; the options do not.** That split *is* the exercise — the run says what is being asked for, and the only way to answer is to read an option's name and see what it starts with. Printing the letter on the options too would leave nothing to read.
+- **Whole roster, not the caught generations.** Measured before designing: the full roster covers **23 of 23** four-letter runs, a single generation only **7–13**. Gating this the way the word pools are gated would leave most of the alphabet unreachable.
+- **Nothing is spoken.** Every name on screen is a first letter, so a speaker anywhere would hand over the sort.
+
+Two things the screenshots caught that the assertions did not, both about the run: it **wrapped to a second line** at 360px, which reads as a new sequence rather than the end of this one — the cards share the width now and never wrap, whatever the row's length; and a long name **broke mid-word** ("Houndston/e"), so the run's names clip with an ellipsis instead. The letter above them is what's being read; the name is context.
+
+One defect the audit caught only after it was extended: distractors excluded the letters *given* in the run, but not the ones the child had **just filled in** — so at `G H _ _` the gap for I could offer a G, dead on arrival. The exclusion is now recomputed per gap rather than per question.
+
+Verified at 30,000 questions across all ten rows: 0 violations against slot count, gap count, consecutive letters, the position rule, answer-in-options, distinct initials, the per-gap exclusion and the nearest-letter rule; all 26 letters reachable; every level reaching all 23 runs. Load-time guards reject the five ways a row can be unanswerable.
+
+**Then the distractor rule was measured, argued, and replaced.** Two things were measured, and they are different questions about the same four tiles. *On-screen position* — which tile the answer physically sits in — was flat at ~25% each on every level, so the shuffle was fine. Its *alphabetical rank* — where the answer sits when you sort the four options' letters — was not: on the `last` levels the answer was the alphabetically-lowest option **87%** of the time, and on the `first` levels the highest 87%. That fell straight out of the rule: nearest letters, minus the visible ones, means that when the visible letters are all below the gap the nearest available ones are all above it.
+
+The defence of near distractors was that they test precision — with M N O P you have to know M comes *immediately* after L, where random distractors would let "somewhere around M" win. **That defence is wrong, and it is worth writing down why**, because it is an easy thing to talk yourself into:
+
+> It only describes a child answering by comparing the options against the run — elimination. Elimination needs the alphabet you are still teaching. A learner recites from the song, derives "M", and then goes looking for it; the distractors take no part in deriving the answer.
+
+So crowding them around the answer doesn't harden the step being taught. It bolts on a second, unrelated one — telling M from N, O and P in a lineup, which is letter-shape recognition — and a child who derives M correctly and then taps Noivern has failed at something the mode isn't about, with no way to tell from the result which step broke. Worse than generic: **M N O P is the slurred stretch of the alphabet song**, the one a five-year-old is least likely to have pulled apart, so a gap right after L was building its options out of exactly the letters still fused together in the recall being used to answer it.
+
+The rule now is **spacing**: every option at least four letters from every other, the answer included, drawn from anywhere not already on screen. A correctly derived answer is unambiguously findable, a guess is unlikely to land, and what decides right or wrong is the derivation. Difficulty rides on the three sheet columns, which is where it belongs.
+
+Re-measured after the change: the closest any two options ever come is **4 letters** — the spacing never has to ease — and the 87% rank lean is gone, the four ranks now running roughly 14 / 29 / 29 / 28. The residual is geometric, not a rule: `last` gaps sit high in the alphabet on average, so there is more room below them than above, and `first` gaps mirror it. At its worst that is a 3-point edge over chance, against 62 before.
+
+**The lesson, which is the one this repo keeps relearning.** The lean was found by measuring, but measuring only said the distribution was skewed — it could not say the rule was wrong. What did that was asking who the question is actually for and how they answer it. Numbers rule things out; they don't tell you what the exercise is.
 
 ## Doc roles
 

@@ -121,10 +121,11 @@ The earliest levels have single-figure pools, so the generator never repeats the
 
 **10 levels, defined entirely in `data/reading_levels.csv`,** selecting words by exactly the same three columns as Spelling — one vocabulary grading feeds both trails, so a word met in Reading at level 4 is a word Spelling asks for at level 4. The two frontiers move independently, which lets Reading run ahead: recognising a word is easier than producing it.
 
-Two formats, picked at random per question:
+Three formats, picked at random per question in equal share:
 
 - **Read & Choose** — one picture, N word options.
 - **Reverse Read & Choose** — one written word, N picture options.
+- **Alphabet** — a run of consecutive letters with gaps in it (see below).
 
 Difficulty ramps on two columns of its own:
 
@@ -136,6 +137,30 @@ Difficulty ramps on two columns of its own:
 **Finding the right word speaks it**, and the round waits for that too. This doesn't breach the rule above: the rule guards the *prompt*, and by the time it's spoken the child has already answered, so it confirms rather than tells.
 
 A Reading answer is **clean** when the first tap was the correct one. Using a picture's speaker does not affect cleanliness.
+
+#### Alphabet
+
+A run of consecutive letters is laid out left to right, each shown as a Pokémon whose name starts with it, and some of them are gaps. The child works out which letter a gap is and picks the Pokémon whose name starts with it. Gaps open one at a time, left to right, and the run stays on screen while it fills — the sequence *is* the question, so hiding the letters already found would turn "what comes after C" into a guess.
+
+**The run prints its letters; the options do not.** That split is the whole exercise: the run says what is being asked for, and the only way to answer is to read an option's name and see what it starts with. Printing the letter on the options too would leave nothing to read.
+
+Three columns of `data/reading_levels.csv` control it:
+
+- **`alpha_length`** — how much of the alphabet is on screen. **Shorter is harder**, not easier: a run of 4 gives three letters to count along, a run of 2 gives one.
+- **`alpha_blanks`** — how many of those are gaps.
+- **`alpha_blank_position`** — where the gaps may fall: `first` and `last` are the solid block at either end, `middle` is every gap strictly inside the run, and `mixed` is any shape that is neither the first block nor the last one. `mixed` is the only setting that can put three gaps in a run of four without them being one solid end.
+
+Two things are fixed in code rather than in the sheet: there are always **four options**, and they are **spread at least four letters apart** — from each other and from the answer.
+
+**The options are spread because the distractors are not where the difficulty lives.** A child answers by reciting from the song, deriving "M", and then going looking for it — the options play no part in deriving it. Crowding them around the answer would only add a second, unrelated task afterwards, telling M from N, O and P in a lineup, which is letter-shape recognition: work out M, tap Noivern, and the failure says nothing about which step broke. M N O P is the slurred stretch of the alphabet song besides, so a gap after L would draw its options from exactly the letters least likely to have been pulled apart yet. Spread out, a correctly derived answer is unambiguously findable and a guess is unlikely to land, so the derivation is what decides right or wrong. Difficulty rides on the three sheet columns instead.
+
+Letters already on screen are excluded as well, worked out per gap rather than once per question because the run fills in as it is answered: given or filled a moment ago, a visible letter can be ruled out by looking, so it is a free elimination.
+
+The mode draws from the **whole roster, not the caught generations**. A single generation covers only 7–13 of the 23 four-letter runs, so gating it the way the word pools are gated would leave most of the alphabet unreachable. Nothing is spoiled by this — the question is which letter comes next, not which Pokémon the child owns.
+
+**Nothing is read aloud in this mode.** Every name on screen is a first letter, so speaking any of them would hand over the sort the child is doing. This is the read-aloud rule above applied, not an exception to it.
+
+A row that cannot produce a question is rejected at load rather than papered over at play time: more gaps than letters, a run shorter than two, a `middle` asking for more gaps than the run has interior slots, an unknown position, or a run length the roster cannot fill.
 
 ### 7.3 Math Trails
 
@@ -376,8 +401,8 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - Warm, pastel, "cozy life-sim" visual style (leaf greens, sky blues, cream, sun yellow, berry pink) consistent across every mode.
 - Mobile-first responsive layout: touch targets sized for small screens, a dedicated `@media (max-width:480px)` breakpoint, no horizontal page scroll.
 - **Pinch and double-tap zoom are off.** A small child holding a tablet triggers them by accident and cannot undo them, and a screen stuck at 2.4× is a broken app to them. It takes three mechanisms because no one of them covers every browser: `user-scalable=no` on the viewport meta, `touch-action: pan-x pan-y` on `html,body`, and `preventDefault` on Safari's non-standard `gesture*` events. Panning and scrolling are untouched. The obvious fourth — cancelling any `touchend` within 300ms of the last, to stop double-tap zoom — is deliberately **not** used: it also cancels the click that follows, and this game is played by tapping tiles in quick succession.
-- Speech synthesis is used in Spelling, Battle, Reading and the Pokédex — in Reading, only ever to name a picture (§7.2). Utterances are pinned to `en-US`, since otherwise the OS default voice applies its own language's phonetics to English spellings. Names the synthesiser mangles are respelled via `data/pronunciations.csv` (§13); overrides affect **speech only**.
-- Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letters, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option.
+- Speech synthesis is used in Spelling, Battle, Reading and the Pokédex — in Reading, only ever to name a picture, and never in its Alphabet mode (§7.2). Utterances are pinned to `en-US`, since otherwise the OS default voice applies its own language's phonetics to English spellings. Names the synthesiser mangles are respelled via `data/pronunciations.csv` (§13); overrides affect **speech only**.
+- Read-aloud has one consistent affordance: a round speaker button sitting **on the picture itself**, at the lower-right of the circular frame, rather than a labelled button in the action row below. That holds across Spelling, Missing Letters, Read & Choose, and the Pokédex popup; Reverse Read & Choose applies the same idea at smaller scale, one speaker per picture option. Alphabet has no speaker anywhere — every name on screen is a first letter, so speaking one would give the answer away.
 - The favicon is the app's own Pokéball mark, inlined as an SVG data URI so it needs no extra file.
 - Instructional text is treated as a UX smell for this audience: a pre-reading child can't use text they can't read, so captions are omitted wherever the numbers, pictures, or controls already carry the meaning.
 - Circular `.poke-frame` images are capped at 65% rather than fitted to the frame, so that even a zero-padding square image's bounding-box corners stay inside the circle's radius. On the maths screens the frame takes a `compact` modifier and drops from 220px to 96px: the answer choices need the room, and the Pokémon is decoration on a sum, so it is what gives way.
