@@ -57,7 +57,11 @@ The answer lights in an amber pulse — never the green of a correct answer, bec
 - **It can never pay to fail on purpose.** The reveal always lands at least one mistake past `Mistakes allowed`, so by the time it appears the question has already stopped counting toward the round. The Settings value is raised to enforce that if it is set too low.
 - **It counts the current step, not the question.** A Pattern row and an Alphabet gap are each their own challenge, so two slips spread across two rows never light up the second one.
 
-Where the reason is on screen — Alphabet's run of letters, Reading's picture — there is something to infer from. Bare arithmetic is the weak case: lighting up `5` for `14 − 9` shows the fact and not the borrowing, and that wants its own support, which it does not have yet. Spelling is untouched: it has its own graduated help in `hinted_pct` and `max_hints`.
+**Spelling lights a tile in the bank** — the chunk that comes next in Full Spelling, the one that fills the next blank in Missing Letters — and each chunk is its own step. Its 💡 Hint button is unchanged and still capped by `max_hints`; the two are deliberately different bargains. A hint is *chosen*, rationed, and **places** the chunk for you. The light is *automatic*, uncapped, and only **shows** which tile while the child still taps it. The stronger help stays rationed; the weaker one is always there, so running out of hints can no longer strand anybody.
+
+Note that hints already count as slips, so they feed the same counter as wrong taps and no special case is needed for "hints exhausted" — which would in fact have been wrong, since `max_hints` is `1` at spelling levels 1, 2 and 5, where spending the only hint leaves the question still counting.
+
+Where the reason is on screen — Alphabet's run of letters, Reading's picture — there is something to infer from. Bare arithmetic is the weak case: lighting up `5` for `14 − 9` shows the fact and not the borrowing, and that wants its own support, which it does not have yet.
 
 **The progress bar measures credits**, so guessing your way through a question leaves it exactly where it was. That is the feedback the change exists to give.
 

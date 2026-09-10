@@ -1384,7 +1384,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 82;
+const APP_BUILD = 83;
 const APP_BUILD_DATE = "10 Sep 2026";
 
 function renderAbout(){
@@ -2666,9 +2666,35 @@ function revealAfter(){
 }
 let stepMisses = 0;
 function resetStepMisses(){ stepMisses = 0; }
+function noteStepMiss(){ stepMisses++; }
+function revealDue(){ return stepMisses >= revealAfter(); }
+/* For the option modes the answer is a fixed element, so it can just be lit.
+   The spelling banks need `syncSpellLight` / `syncMissingLight` instead: which
+   tile is "next" moves as chunks go down and come back off, so a class left on
+   the old one would be pointing at the wrong letter. */
 function missAndMaybeReveal(answerEl){
-  stepMisses++;
-  if(answerEl && stepMisses >= revealAfter()) answerEl.classList.add("answer-lit");
+  noteStepMiss();
+  if(answerEl && revealDue()) answerEl.classList.add("answer-lit");
+}
+function syncSpellLight(){
+  if(!spellState) return;
+  spellState.tileEls.forEach(t => t.classList.remove("answer-lit"));
+  if(!revealDue()) return;
+  const want = spellState.target[spellState.filled.length];
+  if(want == null) return;
+  const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.dataset.chunk === want);
+  if(tile) tile.classList.add("answer-lit");
+}
+function syncMissingLight(){
+  const st = missingState;
+  if(!st) return;
+  const tiles = [...($("#missingTiles")?.children || [])];
+  tiles.forEach(t => t.classList.remove("answer-lit"));
+  if(!revealDue()) return;
+  const slot = nextMissingSlot();
+  if(!slot) return;
+  const tile = tiles.find(t => !t.classList.contains("used") && t.dataset.chunk === slot.dataset.answer);
+  if(tile) tile.classList.add("answer-lit");
 }
 function spotless(p){ return !p || !p._mistakes; }
 function countsForRound(p){ return (p && p._mistakes || 0) <= mistakeAllowance(); }
@@ -3520,6 +3546,8 @@ function placeChunk(chunk, tileEl){
   // Right chunk: say it. Wrong taps stay silent — a child who taps for the noise
   // would otherwise be rewarded for guessing.
   speakChunk(spellState.chunks, spellState.chunkAt[pos]);
+  resetStepMisses();          // each chunk is its own step, as a Pattern row is
+  syncSpellLight();
   if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
@@ -3529,6 +3557,7 @@ function backspaceChunk(){
   const last = spellState.filled.pop();
   last.tile.classList.remove("used");
   $("#feedback").textContent=""; $("#feedback").className="feedback";
+  syncSpellLight();            // the next expected chunk just changed
   refreshSlots();
 }
 function clearSpell(){
@@ -3583,7 +3612,12 @@ function markWrong(){
   const slots = $("#slots");
   slots.classList.add("shake");
   setTimeout(()=>{ slots.classList.remove("shake"); }, 450);
-  if(spellState){ bumpMistake(spellState.p); backspaceChunk(); }   // remove the wrong chunk, keep the correct ones before it
+  if(spellState){
+    bumpMistake(spellState.p);
+    backspaceChunk();          // remove the wrong chunk, keep the correct ones before it
+    noteStepMiss();
+    syncSpellLight();
+  }
   fb.className="feedback bad";
   fb.textContent = "❌ Not that one — try again!";
 }
@@ -3923,6 +3957,8 @@ function placeMissingChunk(chunk, tileEl){
     setTimeout(()=> tileEl.classList.remove("shake"), 450);
     fb.className="feedback bad";
     fb.textContent = "❌ Not that one — try again!";
+    noteStepMiss();
+    syncMissingLight();
     return;                                   // deliberately silent on a miss
   }
   fillMissingSlot(slot, tileEl);
@@ -3938,6 +3974,8 @@ function fillMissingSlot(slot, tileEl){
   speakChunk(st.chunks, Number(slot.dataset.chunk));
   const next = nextMissingSlot();
   if(next) next.classList.add("current");
+  resetStepMisses();          // each blank is its own step
+  syncMissingLight();
   if(st.filledCount === st.slots.length) finishMissingLetter();
 }
 

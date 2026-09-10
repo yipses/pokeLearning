@@ -286,7 +286,15 @@ Now, after `Show the answer after` wrong taps on a step, the right answer lights
 
 **Where it teaches, and where it only rescues.** In Alphabet the run of letters is on screen, so a lit answer has a visible reason; the same in Reading, where the pairing is the lesson. Bare arithmetic is the weak case — lighting `5` for `14 − 9` shows the fact, not the borrowing. Switching those to their visual form on reveal is the obvious fix, `toVisual()` already exists, and it is deliberately **not** built yet.
 
-Wired once for Maths, Visual Math and Pattern by giving `wireMathChoices` the answer, and inline for Reading and Alphabet, which build their own options. Spelling is untouched — its `hinted_pct` and `max_hints` are the same idea already. **Open:** those hints are *capped*, so exhausting them on a long word re-creates exactly this dead end. Unresolved.
+Wired once for Maths, Visual Math and Pattern by giving `wireMathChoices` the answer, and inline for Reading and Alphabet, which build their own options.
+
+**Then spelling, where the obvious wiring would have been wrong.** The instinct was to light the tiles once `max_hints` runs out — he has failed by then, so the credit is gone. It isn't: `max_hints` is **1** at spelling levels 1, 2 and 5, and with `Mistakes allowed` at its default 1, spending that single hint leaves the question *still counting clean*. Wiring the light to hint-exhaustion would have handed out free credits at the three easiest levels — the exploit the whole floor exists to prevent. Caught by reading `data/spelling_levels.csv` rather than trusting the premise, and confirmed in the app: `after spending the only hint: mistakes=1 counts=true lit=dark`.
+
+So spelling gets no special case. Hints already call `bumpMistake`, so they feed the same per-step counter as wrong taps and the same threshold applies, with the same guarantee. The cap stops being a dead end without being lifted: a hint is chosen, rationed, and *places* the chunk; the light is automatic, uncapped, and only *shows* the tile while the child still taps it. The stronger help stays rationed.
+
+The spelling banks can't just have a class stuck on the right tile, either — which chunk is "next" moves as chunks go down and come back off, including via Backspace and Clear — so `syncSpellLight` / `syncMissingLight` relight the bank from scratch after every board change.
+
+Every mode in the app now has a floor under failure. There is nowhere left to get stuck with no way through.
 
 **What it does to the ladder work.** It bounds the cost of a cliff, so a too-big step becomes survivable rather than a wall, and the ladder can tolerate coarser granularity than it otherwise would. It also produces the signal the difficulty modelling wanted: "needed the reveal" is an unambiguous *couldn't do this at all*, distinct from an ordinary unclean answer — no response-time heuristics, no guessing at intent.
 
