@@ -388,6 +388,30 @@ Two values are now unused but still legal, the same shape of thing as Full Spell
 
 Verified: 30,000 questions, 0 violations; all ten levels build; every window filled at both run lengths (23/23 at four letters, 22/22 at five); all 26 letters reachable; options still spread with the closest pair 4 letters apart, and the alphabetical lean still flat at 13–31% against the 87% it started at.
 
+### Phase 72 — The spelling floor counts the word, not the letter
+
+The bounded-failure light was firing far less often in Spelling than it looked like it should, and the reason was a choice made in Phase 67 that seemed consistent and wasn't.
+
+`stepMisses` counted the current *step*, and for Spelling a step was one blank. So a seven-blank word needed **two wrong taps on the same letter** before anything lit. A child scattering one wrong tap across five different blanks was five mistakes deep, had long since lost the credit, and had been offered no help at all — precisely the flailing the mechanism exists to catch. Measured before changing anything:
+
+```
+one wrong on blank 1  ->  dark
+one wrong on blank 2  ->  dark      (2 wrong in the word, nothing lights)
+```
+
+A spelling word is now **one challenge in its entirety**. Two slips anywhere in it light the tile for whatever comes next, and it stays lit for the rest of the word. Same shape as before:
+
+```
+one wrong on blank 1  ->  dark
+one wrong on blank 2  ->  LIT
+```
+
+**The unit is deliberately not uniform across modes, and that is the point.** A Pattern row and an Alphabet gap are each a single answer — like a maths question — so they stay per-step and two misses spread across two rows still must not light the second. A spelling word is many answers to one question. Treating those the same was the error; the modes are different shapes.
+
+Nothing to game: by the time the light appears the question counts for neither the round nor promotion, and it cost real wrong taps to get there. Verified 36/36 settings combinations still safe, both ends of the spelling ladder still lighting the correct tile, and Pattern and Alphabet unchanged.
+
+One stale test found on the way, worth noting because it hung rather than failed: it searched for an alphabet level with two or more gaps at row index 3, which the Phase 71 regroup changed to `middle`/1 — an unsatisfiable loop inside `page.evaluate`.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
