@@ -127,7 +127,7 @@ This replaced a "tricky distractor" flag that hand-picked same-length or same-fi
 
 **Alphabet** shares the trail but none of its word pools, and ramps on three columns of its own: `alpha_length`, `alpha_blanks` and `alpha_blank_position`. It is here rather than in a trail of its own because it is the same skill one rung earlier — a child who cannot yet decode a word can still know that D follows C, and the mode gives the Reading frontier something to do at every level rather than only at the bottom.
 
-Its difficulty runs on an axis the rest of the file does not have. `alpha_length` is **shorter is harder**: a run of four gives three letters to count along from, a run of two gives one. And the gaps walk backwards through the run as the levels climb — `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on; then `mixed`.
+Its difficulty runs on an axis the rest of the file does not have. `alpha_length` is **shorter is harder**: a run of four gives three letters to count along from, a run of two gives one. And the gaps walk backwards through the run as the levels climb — `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on. The top rung gives only the final letter of five and asks for the four before it, which is the hardest thing the mode can pose. `mixed` remains a legal value but no level asks for it.
 
 ### Why the frontiers are separate
 

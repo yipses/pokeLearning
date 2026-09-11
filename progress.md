@@ -373,6 +373,21 @@ That is only safe because of the bounded-failure floor from Phase 67. Verified a
 
 Two guards worth knowing, since the count can now exceed the word: `blanksFor` clamps to `letters − 1` so at least one blank always remains, and `pickBlankChunks` independently caps at `candidates − 1` so at least one chunk always stays showing. The worst case is 17 taps at level 25.
 
+### Phase 71 — The reading ladder regrouped by gap position
+
+The alphabet ramp was a grid of gap-count × position; it is now **grouped by position**, which is the axis that actually orders difficulty: `last` (levels 1–3), `middle` (4–6), `first` (7–10). Continuing a sequence forward is what the alphabet song practises; asking what comes *before* has no song to lean on.
+
+Run length moves with it — four letters through level 5, five from level 6 — and the gap count climbs inside each group.
+
+**The top rung is now the hardest thing the mode can pose.** Level 10 is `first`/4 at length 5: only the final letter is shown, and because gaps fill left to right the first question asked is the letter *four before* the only one on screen. Rendered: `? ? ? ? M`, first gap asking for I.
+
+Two values are now unused but still legal, the same shape of thing as Full Spelling in Phase 70:
+
+- **`mixed`** — no level asks for it.
+- Levels **1 and 2 are identical on the alphabet axis** (`last`/1 at length 4, one shape each). Their word pools differ, so the Reading modes still separate them; the alphabet question does not.
+
+Verified: 30,000 questions, 0 violations; all ten levels build; every window filled at both run lengths (23/23 at four letters, 22/22 at five); all 26 letters reachable; options still spread with the closest pair 4 letters apart, and the alphabetical lean still flat at 13–31% against the 87% it started at.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
