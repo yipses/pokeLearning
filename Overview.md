@@ -93,12 +93,14 @@ Every row selects words three ways at once:
 
 Pokémon are gated by length rather than by phonics level because invented names have no decoding pattern to grade — length is the only honest measure for them. Item words do have one: the grading lives in `data/word_levels.csv` and is rolled up per item in `data/item_levels.csv` (§13).
 
-The ladder is nine tiers of three, and within a tier only **`hinted_pct`** changes — the share of the word given away, 50% → 25% → 0%:
+The ladder is nine tiers of three, and within a tier only **`hinted_letters`** changes — **the number of letters given away** before the child starts, falling as the tier climbs.
+
+A count, not a share, and the difference matters. As a percentage the help scaled with the word, so a twelve-letter name at 50% still handed over six letters and the hardest words stayed the most supported. Two letters is two letters, so a long word is now genuinely harder than a short one — which is the thing being taught.
 
 - **Above 0% it's Missing Letters** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
 
   **The bank is padded with decoys to a floor of four tiles.** Holding only the missing chunks made a one-blank word a guaranteed tap — `MEW` showed `M` and a single `EW` tile — which was 9% of all Missing Letters questions and 45% of level 2. Four blanks or more get no decoys, so the hard end is untouched. Each decoy is drawn from the same phonics class as a chunk it competes with — single vowels, vowel teams, r-controlled vowels, digraphs, blends, single consonants — and is never a chunk the word contains. Class matters: beside a vowel team, `str` can be ruled out by eye without knowing the answer, and `oo` cannot. A wrong tap shakes the tile, says so, and costs the clean answer.
-- **At 0% it's Full Spelling** — empty slots, the whole word built from shuffled tiles (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear.
+- **At 0 it's Full Spelling** — empty slots, the whole word built from shuffled tiles (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear. **No level currently asks for 0**, so this task does not appear in play; the mechanism is kept and a `0` in the column brings it back.
 
 **Both tasks answer the same way, in the same units: tap a tile holding a chunk.** `torch` is three slots and three tiles — `T`, `OR`, `CH` — in both. A chunk is the thing with a sound, so a tile can say what it is, and the same group is the same group on every screen. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next, so `t-o-r-c-h` fills `T`, then `OR`, then `CH`.
 
@@ -125,7 +127,7 @@ Respellings live in `data/phonemes.csv` (§13), keyed by chunk and context, beca
 
 `tools/phonemes.html` plays every row for checking by ear, shading the ones a rough test thinks may not be pronounceable and collecting whatever is marked wrong.
 
-**`max_hints`** is per level and applies to both tasks. It rises as `hinted_pct` falls, so the level that gives away least of the word offers most help finding the rest. A hint costs the answer its "clean" status either way.
+**`max_hints`** is per level and applies to both tasks. It is now **flat at 1 everywhere** — three hints on a long word was enough to hint most of the way through it, which is a different costume for the same loophole the round rules close. One hint, and after that the bounded-failure light (§4) does the rest: it is uncapped, so running out still cannot strand anybody. A hint costs the answer its "clean" status either way.
 
 **Pokémon-branded items are excluded from Spelling.** 25 item names are built from a Pokémon name — `Hoppip water bottle`, `Pikachu doll` — and their phonics level is fiction: an invented proper noun is memorised, not decoded, so asking a child to produce one isn't spelling practice. They're flagged `proper_noun` in `data/item_levels.csv` and skipped here. Reading keeps them, because recognising a name the child already knows by sight is a fair reading task, and the names themselves remain reachable through the Pokémon pool under the generation gate.
 
@@ -409,7 +411,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/pronunciations.csv` | 184 | `name`, `say_as`, `source` |
 | `data/word_levels.csv` | 807 | `word`, `level`, `pattern`, `letters`, `syllables`, `compound_parts`, `also_matches`, `proper_noun`, `used_in_items`, `previous_level`, `review` |
 | `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `shared_art`, `letters`, `longest_word`, `spellable` |
-| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_pct`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
+| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_letters`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |

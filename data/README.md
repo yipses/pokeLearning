@@ -115,7 +115,9 @@ The Spelling (25) and Reading (10) trails, one row per level. **These are the la
 
 Shared columns: `word_level` (single-word items at or below this level), `compound_level` (multi-word items at or below this; `0` = none), `pokemon_letters` (name length cap, still generation-gated), `promote_5_pct` and `promote_10_pct` (the two promotion gates, per level).
 
-Spelling adds `hinted_pct` — the share of the word shown, where `0` means the empty-tile task — and `max_hints`.
+Spelling adds `hinted_letters` — **a count of letters shown, not a share** — and `max_hints`.
+
+`hinted_letters` is the one difficulty column in these files that is an absolute number rather than something scaled to the item. Two letters is two letters, so the same value is much harsher on a twelve-letter name than a four-letter one; that is the point, and it is why the counts rise again at the top of the ladder where the words get long. A count larger than the word is safe — at least one blank always remains — and `0` means the empty-tile Full Spelling task, which no level currently asks for.
 
 Reading adds `wrong_answers` (decoy count) and `distractor_level`, which names **another reading level** whose pool supplies the wrong answers. Keep it at or above the row's own level, or decoys end up easier than the target.
 
