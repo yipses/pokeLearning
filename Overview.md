@@ -194,7 +194,7 @@ Which track waits on which is tuning, not spec: it is authored in [the design sh
 
 **Division never leaves a remainder.** The row gives a dividend range and a divisor; the quotient is chosen first, from those that land the dividend inside the range, so `3 ÷ 2` can never be asked.
 
-**A pattern set is an anchor and a step, four rows.** Anchor 2 with step 2 gives `2+2, 2+4, 2+6, 2+8` — the second operand stepping. Divide mirrors multiply so every answer stays whole. A subtraction pattern has to start high enough to take every step without going below zero (anchor ≥ step × 4); where only part of a row's anchor range can, the anchor comes from that part, and where none can, that step is skipped.
+**A pattern set is an anchor and a step, three rows.** Anchor 2 with step 2 gives `2+2, 2+4, 2+6` — the second operand stepping. Four rows made a single question four answers long, which is a long time on one screen and left the mode disproportionate to every other kind; three still shows a sequence, since two steps is a pattern and one is a coincidence. Divide mirrors multiply so every answer stays whole. A subtraction pattern has to start high enough to take every step without going below zero (anchor ≥ step × the row count); where only part of a row's anchor range can, the anchor comes from that part, and where none can, that step is skipped.
 
 **Promotion is its own table**, `data/math_promotion.csv` — any number of windows, whichever lands first, applied to every maths track. It currently holds three (5 at 100%, 10 at 90%, 20 at 85%), but the gates themselves are sheet values, not spec. That is stricter at ten than the word trails' 80% and adds a twenty-question window they don't have.
 
@@ -219,7 +219,7 @@ Which track waits on which is tuning, not spec: it is authored in [the design sh
 
 Once the answer is right the choices **hide** rather than greying out — they have nothing left to do, and on a phone that is what lifts the ✅ above the fold. A correct answer shows a large animated ✅ and no caption text, then the round moves on by itself after a short beat. **There is no Next button anywhere**: with the choices gone there is nothing left on screen to act on, so a tap to continue would buy the child nothing. Maths advances exactly as Spelling and Reading do.
 
-**A pattern track is its own track, not a dice roll inside another one.** Skip-counting has four tracks with their own levels, prerequisites and frontiers, so counting by 3s is practised at its own pace rather than turning up at random. **All four equations stay on screen** — seeing `3×1, 3×2, 3×3, 3×4` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear.
+**A pattern track is its own track, not a dice roll inside another one.** Skip-counting has four tracks with their own levels, prerequisites and frontiers, so counting by 3s is practised at its own pace rather than turning up at random. **Every equation stays on screen** — seeing `3×1, 3×2, 3×3` stacked is the point of the mode — but only one row is open at a time, and the six choices belong to that row, built from its own equation. Each answered row fills in, the next opens, and a fresh six appear.
 
 ### 7.4 Visual Math
 
@@ -246,7 +246,7 @@ The **loose ones are spent first**, and only then a box. That is what keeps a wh
 
 This shows the borrow as a *fact* — the ten was dipped into — rather than as an *action*. A tappable box that opened into ten loose ones would show the trade itself, and is deliberately not built: much more machinery for one increment of understanding, and nothing here rules it out.
 
-**Not yet reachable in play.** No level in `data/math_levels.csv` currently pairs `visual` with two-digit operands, so nothing draws a ten-box until the sheet says so.
+**Live from the sheet.** Every level of the add and subtract ladders is now `visual`, so two-digit questions are drawn rather than left as bare numerals. Measured across those ladders, roughly three questions in ten use a ten-box, and the tallest that does is 227px — shorter than the tallest grouped multiply, so the boxes cost no height.
 
 ## 8. Pokédex & Catching
 
