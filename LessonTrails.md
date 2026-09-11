@@ -100,13 +100,13 @@ Note that a word's level and an *item's* level pull apart: 58 words are level 1,
 
 ### Spelling — 25 levels
 
-Nine tiers of three. Within a tier only **`hinted_pct`** moves, the share of the word given away: 50% → 25% → 0%. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles. **`max_hints`** rises as `hinted_pct` falls — the level that shows least offers most help finding the rest.
+Nine tiers of three. Within a tier only **`hinted_letters`** moves, the number of letters given away, falling as the tier climbs. A count rather than a share: as a percentage the help scaled with the word, so the longest names stayed the most supported, where two letters is two letters and a long word is genuinely harder. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles, which no level currently asks for. **`max_hints`** is flat at 1 — rationing the chosen help, while the uncapped bounded-failure light stops anyone being stranded.
 
 Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
 
 Level 1 is a single rung rather than three, so the opening six words are five questions rather than fifteen.
 
-**Both tasks answer the same way, in the same units:** tap a tile holding a chunk. `torch` is three slots and three tiles — `T`, `OR`, `CH` — whether it is being built from nothing or repaired. Input method and difficulty are deliberately independent: `hinted_pct` is the difficulty knob, and how a child answers should have nothing to do with it. Two earlier splits welded them together — first tiles for one task and a typed box for the other, which put an on-screen keyboard over most of the ladder; then chunk tiles on one screen and letter tiles on the other, so `CH` was one group in one place and two in another. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next.
+**Both tasks answer the same way, in the same units:** tap a tile holding a chunk. `torch` is three slots and three tiles — `T`, `OR`, `CH` — whether it is being built from nothing or repaired. Input method and difficulty are deliberately independent: `hinted_letters` is the difficulty knob, and how a child answers should have nothing to do with it. Two earlier splits welded them together — first tiles for one task and a typed box for the other, which put an on-screen keyboard over most of the ladder; then chunk tiles on one screen and letter tiles on the other, so `CH` was one group in one place and two in another. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next.
 
 ### Sounding out
 

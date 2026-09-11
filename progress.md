@@ -351,6 +351,28 @@ Re-verified after both changes: **136,000 maths questions, 0 violations** (up fr
 
 One thing worth noting about `sub` L13 — `10–19` minus `1–12` — where the subtrahend range reaches above the minuend's floor, so `10 − 12` is drawable from the ranges alone. The generator already handles it and the audit's negative check confirms it, but it is the first row in the sheet where those ranges overlap that way.
 
+### Phase 70 — Hinted letters becomes a count, and hints flatten to one
+
+**`hinted_pct` is now `hinted_letters`, a count rather than a share.** The column was renamed as well as retyped: a column whose name says *pct* while holding a count is exactly the drift this repo keeps paying for.
+
+The change is real, not cosmetic. As a percentage the help *scaled with the word*, so a twelve-letter name at 50% still handed over six letters and the hardest words stayed the most supported. Two letters is two letters, so length now bites.
+
+Measured across 12,500 generated questions, in taps the child actually makes — the honest unit, since whole chunks are blanked until the letter target is met, so `CH` costs one tap and hides two letters:
+
+| | first rung of a tier | last rung of a tier |
+|---|---|---|
+| effect | **+0.3 to +1.0 taps** | **−1.0 to −1.6 taps** |
+
+The ladder **compressed**. Every level now sits between about 2 and 7 taps, where a tier used to swing from 2.2 up to 8.7 across its three rungs. The easy rung got harder and the hard rung easier, which is what finer granularity looks like.
+
+**Full Spelling has disappeared from play.** `0` was the switch from Missing Letters to the empty-tile task, and the new sheet's smallest count is 1 — so in 15,000 generated questions, **zero** Full Spelling tasks. The mechanism is kept and a `0` anywhere in the column brings it back, but as authored the app no longer contains the mode. Flagged rather than fixed: that is a sheet decision.
+
+**`max_hints` flattened to 1** — three hints on a long word was enough to hint most of the way through it, the same loophole the round rules close, in a different costume.
+
+That is only safe because of the bounded-failure floor from Phase 67. Verified at both ends of the ladder: one hint, then the button disables; the question still counts after it (one mistake, at the allowance); two further misses light the tile, by which point it does not. The rationed help got stricter and the unrationed help caught the slack.
+
+Two guards worth knowing, since the count can now exceed the word: `blanksFor` clamps to `letters − 1` so at least one blank always remains, and `pickBlankChunks` independently caps at `candidates − 1` so at least one chunk always stays showing. The worst case is 17 taps at level 25.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
