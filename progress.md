@@ -8,7 +8,7 @@ How the project got from a basic spelling/math quiz to where it is now, and the 
 
 Everything speced is built and published on GitHub Pages: ten Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and every ladder in editable CSVs.
 
-**Maths is eight tracks over 57 levels** — add, subtract, multiply, divide and a skip-counting pattern track for each — with prerequisites and promotion gates authored in the spreadsheet. Tracks open on each other's progress rather than in sequence, so the ladder widens as it is climbed. Home and My progress collapse the eight into two families, `+ / −` and `× / ÷`.
+**Maths is eight tracks over 68 levels** — add, subtract, multiply, divide and a skip-counting pattern track for each — with prerequisites and promotion gates authored in the spreadsheet. Tracks open on each other's progress rather than in sequence, so the ladder widens as it is climbed. Home and My progress collapse the eight into two families, `+ / −` and `× / ÷`.
 
 The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all authored in a spreadsheet and read at boot. **No ladder, word list or promotion gate remains in code**, maths included.
 
@@ -35,7 +35,7 @@ Demotion on repeated failure was discussed alongside this and deliberately **not
 
 Both tight rows are gone, at source. The Phase 66 retune gave every `pattern_sub` level a **single** step matching its level number (level 4 steps by 4), against anchor ranges that clear four rows of it, so the clamp no longer eats anchors anywhere: measured, **every pattern step in all four pattern tracks can use its whole anchor range**, where `pattern_sub` level 2 step 3 used to lose 2 of 10 and level 3 step 5 lost 1 of 11.
 
-What made the old rows tight is worth keeping in mind for the next edit: a pattern shows four rows, so a step of *k* needs its anchor to survive *4k*. Pairing a large step with a low anchor range silently drops the step rather than failing.
+What made the old rows tight is worth keeping in mind for the next edit: a pattern shows `PATTERN_TERMS` rows, so a step of *k* needs its anchor to survive *k* × that. Pairing a large step with a low anchor range silently drops the step rather than failing. (The row count dropped to three in Phase 69, which loosened this further.)
 
 The tallest visual question left is **`div` level 5** — 25 ÷ 5 draws 25 icons over five groups, 919px on a 390×844 phone. It reads fine and does not overflow sideways; it is 75px below the fold, which the old 19 + 9 case beat at 956px.
 
@@ -336,6 +336,20 @@ It shows the borrow as a *fact* rather than an *action* — you see the ten was 
 **Deliberately incomplete.** No level pairs `visual` with two-digit operands yet, so nothing draws a box in normal play — verified, 1560 questions across every reachable level and zero ten-boxes. Flipping those flags is a ladder decision.
 
 One defect fixed on the way, caught only by looking: the cross is a fixed-thickness stroke sized for a 56px icon, so at the smaller ones-row and in-box sizes it swamped the Pokémon underneath and nine crossed ones read as nine red X marks with nothing beneath them.
+
+### Phase 69 — The add and subtract ladders rebuilt, and Math Pattern shortened
+
+**Add and subtract went from 8 and 7 levels to 13 each**, with much finer steps — `add` now walks `0–2`, `1–3`, `2–4`, `3–5` before it reaches `4–7`, where it used to jump `0–9` straight to `10–15`. The ladder is 57 levels no longer; it is **68**.
+
+The part that matters more: **every level of both ladders is now `visual`.** That was the whole point of the tens-and-ones work in Phases 68 and the one after — the ten-box made two-digit questions drawable, and the sheet has now said so. Verified: of 4080 visual questions generated across every reachable level, **1211 use a ten-box**, where the number was zero before. The picture support no longer switches off exactly where the hard concept arrives.
+
+It costs nothing in height. The tallest question that draws a ten-box is **227px** (`add` L10, `13 + 9`) — comfortably under the 390px tallest overall, which is still a grouped `mul` L3. Boxing a number makes it *shorter*, not taller.
+
+**Math Pattern dropped from four rows to three.** Four made a single question four answers long, disproportionate to every other kind and a long time to hold one child on one screen. Three still shows a sequence: two steps is a pattern, one is a coincidence. It is one constant, `PATTERN_TERMS`, which also drives the subtraction anchor floor (`step × PATTERN_TERMS`) — so the floor relaxed automatically and every `pattern_sub` step keeps its full anchor range.
+
+Re-verified after both changes: **136,000 maths questions, 0 violations** (up from 114,000 with the extra levels); no cycles and all eight tracks reachable, with every prerequisite still inside its track's range now that add has 13 rungs; 861 subtraction pairs still crossing correctly; 30,000 alphabet questions clean; a full round still playing to 10 credits.
+
+One thing worth noting about `sub` L13 — `10–19` minus `1–12` — where the subtrahend range reaches above the minuend's floor, so `10 − 12` is drawable from the ranges alone. The generator already handles it and the audit's negative check confirms it, but it is the first row in the sheet where those ranges overlap that way.
 
 ## Doc roles
 
