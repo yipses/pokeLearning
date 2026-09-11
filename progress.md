@@ -325,7 +325,17 @@ Three things the screenshots caught that the numbers did not:
 
 Two CSS traps on the way: sizing keyed to the layout class instead of the row missed `.visual-icon-wrap`, leaving subtraction's crossed-out ones at full size; and a bare `.ones-row .visual-icon` loses on specificity to `.visual-groups.dense .visual-icon`, so the density rule silently won and the nines wrapped again.
 
-**Deliberately incomplete.** No level pairs `visual` with two-digit operands yet, so nothing draws a box in normal play — verified, 1560 questions across every reachable level and zero ten-boxes. And the regrouping itself — a box opening for a borrow, ten closing for a carry — is not built. That is the half that actually teaches; this half only makes it drawable.
+**Then the borrow fell out for free, once the box stopped being treated as an atom.** The plan was a tappable box that animates open into ten loose ones. It wasn't needed: a box is ten *visible icons in a frame*, so a subtraction needing more than the loose ones can supply just crosses into the box. `15 − 9` is one box with four crossed inside it and five crossed loose, leaving six — and the old fallback, which drew fifteen loose icons and handed the HARDER question the less structured picture, is gone entirely. No special case for borrowing at all.
+
+The ordering took one correction mid-build. Crossing **boxes first** was tried and is wrong: it breaks a box open even when the loose ones would have covered the subtraction, so `19 − 9` stops reading as "one full box left" and has to be counted. Spending the **loose ones first** keeps a whole box meaning ten, and only a real borrow ever breaks one. Survivors are drawn before casualties so the answer gathers at the start, and boxes are spent from the right so whole ones stay on the left.
+
+Verified across every subtraction pair from 0−0 to 40−40: **861 renders, 0 violations** — exactly `b` crossed, exactly `a` drawn, the right number of boxes, no fallbacks, and a box broken into only when the loose ones cannot cover it.
+
+It shows the borrow as a *fact* rather than an *action* — you see the ten was dipped into, not the trade of one ten for ten ones. The tappable version is still available later and nothing here rules it out.
+
+**Deliberately incomplete.** No level pairs `visual` with two-digit operands yet, so nothing draws a box in normal play — verified, 1560 questions across every reachable level and zero ten-boxes. Flipping those flags is a ladder decision.
+
+One defect fixed on the way, caught only by looking: the cross is a fixed-thickness stroke sized for a 56px icon, so at the smaller ones-row and in-box sizes it swamped the Pokémon underneath and nine crossed ones read as nine red X marks with nothing beneath them.
 
 ## Doc roles
 

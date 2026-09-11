@@ -240,7 +240,13 @@ The count is the lesser point. Twenty-five identical icons have to be counted on
 
 Two constraints the layout exists to satisfy. Operands **stack** with the operator between them once either reaches ten, because a flex row leaves the operator marooned beside the first operand while the second wraps underneath. And nine loose ones must fit on **one line** — wrapped as eight-then-one they read as "eight and one", and nine-versus-ten is the comparison the whole layout exists to make visible. The operand's own frame is dropped in this layout so that a frame means exactly one thing: *this is ten*. For the same reason the frame is blue rather than amber, which already means "this is the answer, tap it".
 
-**Not yet reachable in play, and not yet teaching.** No level in `data/math_levels.csv` currently pairs `visual` with two-digit operands, so nothing draws a ten-box until the sheet says so. And the part that would actually teach regrouping — a box **opening** into ten loose ones for a borrow, ten loose ones **closing** into a box for a carry — is not built. Until it is, subtraction falls back to all-loose whenever the units digit is too small to take the subtrahend, since that is exactly the case needing a box to open.
+**Subtraction crosses into the boxes.** A box is not an atom — it is ten visible icons in a frame — so a subtraction needing more than the loose ones can supply simply crosses into a box, and the ten is visibly raided. `15 − 9` is one box with four crossed inside it and all five loose ones crossed, leaving six. There is no special case for borrowing.
+
+The **loose ones are spent first**, and only then a box. That is what keeps a whole box meaning ten: at `19 − 9` the box is left untouched, so the answer reads as one full box rather than having to be counted, and only a real borrow ever breaks a box open. Within a box and within the loose row alike, **survivors are drawn before casualties** so the answer gathers at the start, and boxes are spent from the right so whole ones stay on the left.
+
+This shows the borrow as a *fact* — the ten was dipped into — rather than as an *action*. A tappable box that opened into ten loose ones would show the trade itself, and is deliberately not built: much more machinery for one increment of understanding, and nothing here rules it out.
+
+**Not yet reachable in play.** No level in `data/math_levels.csv` currently pairs `visual` with two-digit operands, so nothing draws a ten-box until the sheet says so.
 
 ## 8. Pokédex & Catching
 
