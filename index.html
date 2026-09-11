@@ -638,14 +638,38 @@
   .visual-groups .ones-row .visual-icon-wrap{ width:30px; height:30px; }
   .visual-groups.packed .ones-row .visual-icon,
   .visual-groups.packed .ones-row .visual-icon-wrap{ width:28px; height:28px; }
-  .visual-groups .ten-box .visual-icon{ width:22px; height:22px; }
+  .visual-groups .ten-box .visual-icon,
+  .visual-groups .ten-box .visual-icon-wrap{ width:22px; height:22px; }
+  .visual-groups .ten-box .visual-icon-wrap .cross::before,
+  .visual-groups .ten-box .visual-icon-wrap .cross::after{
+    height:3px; border-radius:1.5px; box-shadow:0 0 0 1px var(--white);
+  }
   @media (max-width:480px){
     .tens-row, .ones-row{ gap:4px; }
     .visual-groups .ones-row .visual-icon,
     .visual-groups .ones-row .visual-icon-wrap{ width:27px; height:27px; }
     .visual-groups.packed .ones-row .visual-icon,
     .visual-groups.packed .ones-row .visual-icon-wrap{ width:25px; height:25px; }
-    .visual-groups .ten-box .visual-icon{ width:19px; height:19px; }
+    .visual-groups .ten-box .visual-icon,
+    .visual-groups .ten-box .visual-icon-wrap{ width:19px; height:19px; }
+    .visual-groups .ten-box .visual-icon-wrap .cross::before,
+    .visual-groups .ten-box .visual-icon-wrap .cross::after{
+      height:2.5px; box-shadow:0 0 0 .75px var(--white);
+    }
+  }
+
+  /* The cross is a fixed-thickness stroke sized for a 56px icon. At the smaller
+     ones-row sizes it swamped the Pokémon underneath, so nine crossed ones read
+     as nine red X marks rather than as nine taken away. Scale it to match. */
+  .visual-groups .ones-row .visual-icon-wrap .cross::before,
+  .visual-groups .ones-row .visual-icon-wrap .cross::after{
+    height:4px; border-radius:2px; box-shadow:0 0 0 1.5px var(--white);
+  }
+  @media (max-width:480px){
+    .visual-groups .ones-row .visual-icon-wrap .cross::before,
+    .visual-groups .ones-row .visual-icon-wrap .cross::after{
+      height:3.5px; box-shadow:0 0 0 1.25px var(--white);
+    }
   }
 
   .visual-icon.crossed{ opacity:.35; }
@@ -1442,7 +1466,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 84;
+const APP_BUILD = 85;
 const APP_BUILD_DATE = "10 Sep 2026";
 
 function renderAbout(){
@@ -4235,15 +4259,42 @@ let visualState=null;
    is, subtraction falls back to all-loose whenever the units digit is too small
    to take the subtrahend, since crossing out nine of a box-and-five is exactly
    the move that needs the box to open. */
-function tensAndOnes(n, iconHTML){
+function tensAndOnes(n, iconHTML, crossedHTML, crossed){
   const tens = Math.floor(n / 10), ones = n % 10;
-  const box = `<span class="ten-box">${iconHTML.repeat(10)}</span>`;
+  /* Crossing out spends the LOOSE ONES FIRST and only then reaches into a box.
+     A box is not an atom — it is ten visible icons in a frame — so a subtraction
+     needing more than the loose ones can supply just crosses into the box, and
+     the ten is visibly raided. That is what removed the old borrow fallback:
+     15 − 9 used to give up on tens entirely and draw fifteen loose icons, which
+     handed the HARDER question the less structured picture. It is now one box
+     with four crossed inside it and all five loose ones crossed.
+
+     Spending the loose ones first is what keeps a whole box meaning ten: at
+     19 − 9 the box is left untouched, so the answer reads as one full box
+     rather than having to be counted. Only a real borrow breaks a box open.
+
+     Survivors are drawn before casualties, in the boxes and in the loose row
+     alike, so what is LEFT — the answer — gathers at the start rather than being
+     scattered among the crossed ones. Boxes are spent from the right for the
+     same reason: whole boxes stay on the left.
+
+     This shows the borrow as a fact rather than as an action — you can see the
+     ten was dipped into, but not the trade of one ten for ten ones. A tappable
+     box that opens would show the action, and is deliberately not built: much
+     more machinery for one increment, and this does not rule it out. */
+  const oc = Math.min(ones, crossed || 0);
+  const boxCrossed = (crossed || 0) - oc;
+  const boxes = [];
+  for(let t = 0; t < tens; t++){
+    const c = Math.max(0, Math.min(10, boxCrossed - 10 * (tens - 1 - t)));
+    boxes.push(`<span class="ten-box">${iconHTML.repeat(10 - c)}${crossedHTML.repeat(c)}</span>`);
+  }
   // Tens on their own row, ones on theirs. Letting them flow together put a
   // stray loose one on the end of the box row, where it reads as part of the
   // tens; kept apart, the split IS the place value.
   const rows = [];
-  if(tens) rows.push(`<span class="tens-row">${box.repeat(tens)}</span>`);
-  if(ones) rows.push(`<span class="ones-row">${iconHTML.repeat(ones)}</span>`);
+  if(tens) rows.push(`<span class="tens-row">${boxes.join("")}</span>`);
+  if(ones) rows.push(`<span class="ones-row">${iconHTML.repeat(ones - oc)}${crossedHTML.repeat(oc)}</span>`);
   return rows.join("") || `<span class="ones-row"></span>`;
 }
 // How many separate things end up on screen — boxes count as one apiece. This
@@ -4255,11 +4306,7 @@ function renderVisual(p){
   const stage = $("#stage");
   const icon = ()=> `<img class="visual-icon" src="${artwork(p.poke.id)}" alt="${cap(p.poke.n)}">`;
   const crossedIcon = ()=> `<span class="visual-icon-wrap">${icon()}<span class="cross"></span></span>`;
-  // Subtraction can only use boxes while the loose ones cover what is taken
-  // away; anything more needs a box to open, which is the unbuilt half.
-  const subNeedsBorrow = p.op === "sub" && p.b > (p.a % 10);
-
-  const useTens = (p.op === "add") || (p.op === "sub" && !subNeedsBorrow);
+  const useTens = (p.op === "add") || (p.op === "sub");
   // Once an operand carries a full ten it is tall, and a flex ROW leaves the
   // operator marooned beside the first one while the second wraps underneath —
   // which reads as "29 +" and then a stray 19. Stack them instead, so the
@@ -4271,7 +4318,7 @@ function renderVisual(p){
                    : p.ans * p.b;
   const objects = !useTens ? totalIcons
                 : p.op==="add" ? visualObjectCount(p.a) + visualObjectCount(p.b)
-                : visualObjectCount(p.a);
+                : visualObjectCount(p.a);   // sub draws all of `a`, some crossed
   const grouped = (p.op === "mul" ? p.b : p.op === "div" ? p.b : 1) > 1;
   const density = (objects > 24 ? " packed" : objects > 12 ? " dense" : "")
                 + (grouped && totalIcons > 12 ? " grouped" : "");
@@ -4280,18 +4327,15 @@ function renderVisual(p){
   if(p.op==="add"){
     eqText = `${p.a} + ${p.b} = ?`;
     visualHTML = `<div class="visual-groups${density}${stacked}">
-      <div class="visual-box">${tensAndOnes(p.a, icon())}</div>
+      <div class="visual-box">${tensAndOnes(p.a, icon(), crossedIcon(), 0)}</div>
       <span class="visual-op">+</span>
-      <div class="visual-box">${tensAndOnes(p.b, icon())}</div>
+      <div class="visual-box">${tensAndOnes(p.b, icon(), crossedIcon(), 0)}</div>
     </div>`;
   } else if(p.op==="sub"){
     eqText = `${p.a} − ${p.b} = ?`;
-    const body = useTens
-      ? tensAndOnes(p.a - p.b, icon()) +
-        (p.b ? `<span class="ones-row">${crossedIcon().repeat(p.b)}</span>` : "")
-      : crossedIcon().repeat(p.b) + icon().repeat(p.a - p.b);
+    // Draw all of `a`, with `b` of them crossed out — boxes first.
     visualHTML = `<div class="visual-groups${density}${stacked}">
-      <div class="visual-box">${body}</div>
+      <div class="visual-box">${tensAndOnes(p.a, icon(), crossedIcon(), p.b)}</div>
     </div>`;
   } else if(p.op==="mul"){
     eqText = `${p.a} × ${p.b} = ?`;
