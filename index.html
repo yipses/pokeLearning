@@ -1466,7 +1466,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 88;
+const APP_BUILD = 89;
 const APP_BUILD_DATE = "10 Sep 2026";
 
 function renderAbout(){
@@ -2758,9 +2758,22 @@ function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
    be worth failing on purpose, because the reveal always lands at least one
    mistake past the allowance, by which point the credit is already lost.
 
-   `stepMisses` counts the CURRENT step, not the question — a Pattern row and an
-   Alphabet gap are each their own challenge, and two misses spread across two
-   rows shouldn't light up the second one. */
+   `stepMisses` counts misses against the current CHALLENGE, and what counts as
+   one differs by mode — deliberately, because the modes are different shapes.
+
+   A Pattern row and an Alphabet gap are each their own challenge: they are a
+   single answer, like a maths question, so two misses spread across two rows
+   must not light up the second one.
+
+   A SPELLING WORD is one challenge in its entirety, not one per letter. Counting
+   per letter looked consistent and was wrong in practice: a seven-blank word
+   takes two misses on the SAME letter before anything lights, so a child
+   scattering one wrong tap across five different blanks is five mistakes deep,
+   has already lost the credit, and has been offered no help at all — which is
+   exactly the flailing this mechanism exists to catch. Once the threshold is
+   reached the tile for whatever comes next stays lit for the rest of the word.
+   There is nothing to game: by then the question counts for neither the round
+   nor promotion, and it cost real wrong taps to get there. */
 const REVEAL_AFTER_DEFAULT = 2;
 function revealAfter(){
   const n = clampInt($("#revealAfter")?.value, 1, 6, REVEAL_AFTER_DEFAULT);
@@ -3648,8 +3661,7 @@ function placeChunk(chunk, tileEl){
   // Right chunk: say it. Wrong taps stay silent — a child who taps for the noise
   // would otherwise be rewarded for guessing.
   speakChunk(spellState.chunks, spellState.chunkAt[pos]);
-  resetStepMisses();          // each chunk is its own step, as a Pattern row is
-  syncSpellLight();
+  syncSpellLight();           // counter deliberately NOT cleared — see stepMisses
   if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
@@ -4078,8 +4090,7 @@ function fillMissingSlot(slot, tileEl){
   speakChunk(st.chunks, Number(slot.dataset.chunk));
   const next = nextMissingSlot();
   if(next) next.classList.add("current");
-  resetStepMisses();          // each blank is its own step
-  syncMissingLight();
+  syncMissingLight();         // counter deliberately NOT cleared — see stepMisses
   if(st.filledCount === st.slots.length) finishMissingLetter();
 }
 
