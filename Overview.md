@@ -164,7 +164,7 @@ Three columns of `data/reading_levels.csv` control it:
 
 - **`alpha_length`** — how much of the alphabet is on screen. **Shorter is harder**, not easier: a run of 4 gives three letters to count along, a run of 2 gives one.
 - **`alpha_blanks`** — how many of those are gaps.
-- **`alpha_blank_position`** — where the gaps may fall: `first` and `last` are the solid block at either end, `middle` is every gap strictly inside the run, and `mixed` is any shape that is neither the first block nor the last one. `mixed` is the only setting that can put three gaps in a run of four without them being one solid end.
+- **`alpha_blank_position`** — where the gaps may fall: `first` and `last` are the solid block at either end, `middle` is every gap strictly inside the run, and `mixed` is any shape that is neither the first block nor the last one. The ladder walks `last` → `middle` → `first`, which is the order of difficulty: continuing a sequence forward is what the alphabet song practises, while `first` asks what comes *before* and has no song to lean on. **No level currently uses `mixed`** — the value is still accepted, nothing asks for it.
 
 Two things are fixed in code rather than in the sheet: there are always **four options**, and they are **spread at least four letters apart** — from each other and from the answer.
 
