@@ -557,6 +557,29 @@ Worth noting beyond the display: changing a level in Settings calls `setFrontier
 
 **Found while verifying, not fixed:** the three word-trail dropdowns overflow their card and scroll the whole Settings page sideways — reading by 115px at 390px wide, spelling by 97, alphabet by 71. Only the maths selects fit, because their labels are short. Measured against the deployed build 93 as well, so it predates all of this; the level labels have simply always been longer than the card. Still open.
 
+## Phase 78 — one box shape for single-digit add and subtract
+
+Asked for after a screenshot of `4 + 5`: the two operand boxes were visibly different sizes. They shrink-wrapped their contents, so measured across every visual level the same kind of sum ranged **76px to 220px wide**, and the two operands of a single question rarely matched.
+
+The rule, as specified: **always five columns wide, one row up to five, two rows from six.**
+
+Measured first, which changed the design. Two things came out of it:
+
+**Nothing ever needs more than ten.** Across every visual level and thousands of draws, the most a framed box ever holds is **9** — add and subtract switch to the ten-box layout the moment an operand reaches ten. So a ten-capacity box can never overflow.
+
+**Two five-wide boxes do not fit side by side on a phone.** 177px each against 280px of card. They were already wrapping, which left the "+" stranded beside the first box with the second underneath — the very problem the ten-box layout had been stacked to fix, reached by accident on ordinary single-digit questions. Verified identical on the deployed build, so it was not new. Below 560px the pair now stacks deliberately with the operator between.
+
+Contents sit flush left rather than centred: four icons centred in a five-wide box float with a half gap either side and read as a different arrangement, not as *one short*.
+
+Two implementation notes worth keeping, both caught by measuring rather than by reading:
+
+- `.visual-box` carries `min-height:76px` so a one-icon box is not a sliver. It silently overrode the one-row height, and **every** box came out at the two-row height until it was cleared.
+- `dense` trims box padding to squeeze icons in, which made a dense question's box 194px against a plain one's 200px. Six pixels, but the entire point is that a box is the same object every time, so `.slot5` now carries its own padding token. The width is derived from the icon and gap tokens rather than hardcoded, and the tokens follow the icons down at the phone breakpoint — without that, a full row of five stopped short of the right edge, which is the one thing a full box must not do.
+
+Verified over 1,020 questions per width at 360px and 900px: exactly two box sizes per breakpoint, `slot5` never applied to multiplication, division or the ten-box layout and never missing from single-digit add/sub, never more than five per row, never more than two rows, always flush left, answer buttons never below the fold, no horizontal scroll, no console errors.
+
+**Found while verifying, not fixed:** nine loose ones in the ten-box layout wrap as **8+1** at phone width, which the code comment beside them explicitly forbids — "wrapped as eight-then-one they read as eight and one, and nine-versus-ten is the comparison this whole layout exists to make visible". Nine icons need 275px against 276px available, so it loses on rounding. Confirmed identical on the deployed build, so it predates this. Still open.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

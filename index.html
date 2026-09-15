@@ -583,6 +583,14 @@
   }
 
   /* visual math */
+  /* The ones-row icon size and the box padding live as tokens because `.slot5`
+     derives its WIDTH from them — five icons, four gaps, two paddings and the
+     border. Change a size here and the box follows; hardcoding the width is how
+     the two drift apart. Every value below is the one the rules further down
+     already set, lifted rather than invented. */
+  .visual-groups{ --one:30px; --onegap:5px; --bpad:12px; --slotpad:10px; }
+  .visual-groups.dense{ --bpad:9px; }
+  .visual-groups.packed{ --one:28px; --bpad:8px; }
   .visual-groups{ display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin:10px 0; }
   .visual-box{
     display:flex; flex-wrap:wrap; align-content:flex-start; justify-content:center; gap:8px;
@@ -603,6 +611,45 @@
   .visual-groups.packed .visual-box{ max-width:230px; gap:4px; padding:8px; }
   .visual-groups.packed .visual-icon,
   .visual-groups.packed .visual-icon-wrap{ width:26px; height:26px; }
+  /* A STANDARD BOX: always five columns wide, one row up to five and two rows
+     from six. Boxes that shrink-wrapped their contents made every question a
+     different shape — add ranged 76px to 220px wide for the same kind of sum —
+     so there was nothing to compare across questions or even between the two
+     operands of one. Fixed, "4 + 5" is two identical frames with one gap and no
+     gaps, and how far each is from five is something you can see rather than
+     count.
+
+     Contents sit LEFT, not centred: a centred four-in-a-five-box floats with a
+     half gap either side, which reads as a different arrangement rather than as
+     "one short". Filling from the left leaves the shortfall in one place. */
+  .visual-box.slot5{
+    /* Its OWN padding, not the density classes' — `dense` trims the padding to
+       squeeze more icons in, which made a dense question's box 194px against a
+       plain one's 200px. Six pixels, but the whole point is that a box is the
+       same object every time, so the one thing that varied had to stop. */
+    padding: var(--slotpad);
+    width: calc(5*var(--one) + 4*var(--onegap) + 2*var(--slotpad) + 6px);
+    /* `.visual-box` carries min-width/min-height 76px so a one-icon box is not a
+       sliver. A fixed box sets both dimensions outright, and the 76px floor was
+       overriding the one-row height — every box came out the two-row height. */
+    max-width:none; min-width:0; min-height:0;
+    justify-content:flex-start; align-content:flex-start;
+  }
+  .visual-box.slot5.rows1{ height: calc(var(--one) + 2*var(--slotpad) + 6px); }
+  .visual-box.slot5.rows2{ height: calc(2*var(--one) + var(--onegap) + 2*var(--slotpad) + 6px); }
+  .visual-box.slot5 .ones-row{ justify-content:flex-start; align-content:flex-start; gap:var(--onegap); }
+
+  /* Two standard boxes never fit side by side on a phone: five-wide is 181px at
+     the phone icon size and the card gives 280px. They used to WRAP, which left
+     the operator stranded beside the first box with the second underneath — the
+     same marooned-operator problem the ten-box layout was stacked to fix, just
+     reached by accident instead of on purpose. Stack them deliberately so the
+     operator sits between the two the way a column sum does. */
+  @media (max-width:560px){
+    .visual-groups.pair{ flex-direction:column; align-items:center; gap:6px; }
+    .visual-groups.pair .visual-op{ margin:0; line-height:1; }
+  }
+
   /* × and ÷ draw one box per group, and a box wide enough for a whole group is
      nearly the card's width — so four groups became four rows. Grouped layouts
      get narrower boxes and smaller icons, sized so a group still sits on one
@@ -670,6 +717,11 @@
     height:3px; border-radius:1.5px; box-shadow:0 0 0 1px var(--white);
   }
   @media (max-width:480px){
+    /* The tokens must follow the icons down, or `.slot5` keeps sizing itself for
+       30px icons and a full row of five stops short of the right edge — which is
+       the one thing a "full" box must not do. */
+    .visual-groups{ --one:27px; --onegap:4px; }
+    .visual-groups.packed{ --one:25px; }
     .tens-row, .ones-row{ gap:4px; }
     .visual-groups .ones-row .visual-icon,
     .visual-groups .ones-row .visual-icon-wrap{ width:27px; height:27px; }
@@ -1510,7 +1562,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 94;
+const APP_BUILD = 95;
 const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
@@ -4479,19 +4531,26 @@ function renderVisual(p){
   const density = (objects > 24 ? " packed" : objects > 12 ? " dense" : "")
                 + (grouped && totalIcons > 12 ? " grouped" : "");
 
+  /* A standard five-wide box, one row up to five and two from six. Only for the
+     single-digit layout: once an operand carries a ten it is drawn as ten-boxes
+     inside an unframed container (`stacked`), where a second frame around them
+     would read as a bigger ten. */
+  const slot5 = n => stacked ? "" : ` slot5 ${n > 5 ? "rows2" : "rows1"}`;
+  const pair = stacked ? "" : " pair";
+
   let visualHTML, eqText;
   if(p.op==="add"){
     eqText = `${p.a} + ${p.b} = ?`;
-    visualHTML = `<div class="visual-groups${density}${stacked}">
-      <div class="visual-box">${tensAndOnes(p.a, icon(), crossedIcon(), 0)}</div>
+    visualHTML = `<div class="visual-groups${density}${stacked}${pair}">
+      <div class="visual-box${slot5(p.a)}">${tensAndOnes(p.a, icon(), crossedIcon(), 0)}</div>
       <span class="visual-op">+</span>
-      <div class="visual-box">${tensAndOnes(p.b, icon(), crossedIcon(), 0)}</div>
+      <div class="visual-box${slot5(p.b)}">${tensAndOnes(p.b, icon(), crossedIcon(), 0)}</div>
     </div>`;
   } else if(p.op==="sub"){
     eqText = `${p.a} − ${p.b} = ?`;
     // Draw all of `a`, with `b` of them crossed out — boxes first.
     visualHTML = `<div class="visual-groups${density}${stacked}">
-      <div class="visual-box">${tensAndOnes(p.a, icon(), crossedIcon(), p.b)}</div>
+      <div class="visual-box${slot5(p.a)}">${tensAndOnes(p.a, icon(), crossedIcon(), p.b)}</div>
     </div>`;
   } else if(p.op==="mul"){
     eqText = `${p.a} × ${p.b} = ?`;
