@@ -115,21 +115,30 @@ The Spelling (25) and Reading (10) trails, one row per level. **These are the la
 
 Shared columns: `word_level` (single-word items at or below this level), `compound_level` (multi-word items at or below this; `0` = none), `pokemon_letters` (name length cap, still generation-gated), `promote_5_pct` and `promote_10_pct` (the two promotion gates, per level).
 
-Spelling adds `hinted_letters` — **a count of letters shown, not a share** — and `max_hints`.
+Spelling adds `hinted_letters` — **a count of letters shown, not a share**.
 
 `hinted_letters` is the one difficulty column in these files that is an absolute number rather than something scaled to the item. Two letters is two letters, so the same value is much harsher on a twelve-letter name than a four-letter one; that is the point, and it is why the counts rise again at the top of the ladder where the words get long. A count larger than the word is safe — at least one blank always remains — and `0` means the empty-tile Full Spelling task, which no level currently asks for.
 
 Reading adds `wrong_answers` (decoy count) and `distractor_level`, which names **another reading level** whose pool supplies the wrong answers. Keep it at or above the row's own level, or decoys end up easier than the target.
 
-Reading also carries three columns for the **Alphabet** mode, which uses none of the word pools above:
+### `data/alphabet_levels.csv`
 
-| Column | Notes |
-|---|---|
-| `alpha_length` | how many consecutive letters are on screen. **Shorter is harder** — fewer letters to count along — so this column runs the opposite way to every other difficulty column in the file |
+The **Alphabet** trail — seven levels, its own ladder. It shares none of the word pools above: a run of consecutive letters is shown as Pokémon whose names start with them, some of them blank, and the child picks the Pokémon for the missing letter.
+
+It was carved out of `reading_levels.csv`, where it could not stay: seven levels against Reading's ten means the top three reading levels had no alphabet row to index, and its own `promote_5_pct` / `promote_10_pct` would never have been read.
+
+| column | meaning |
+| --- | --- |
+| `alpha_length` | how many consecutive letters are on screen. **Shorter is harder** — fewer letters to count along — so this column runs the opposite way to every other difficulty column in these files |
 | `alpha_blanks` | how many of those are gaps. Must be fewer than `alpha_length` |
 | `alpha_blank_position` | `first`, `last`, `middle` or `mixed`. `first`/`last` are the solid block at that end; `middle` is every gap strictly inside the run; `mixed` is any shape that is neither end block — the only setting that fits three gaps into a run of four |
+| `promote_5_pct`, `promote_10_pct` | the two promotion gates, as everywhere else |
 
-Traps: rows are read in file order but `level` is what the app reports, so keep them consistent. A `distractor_level` pointing at a level that doesn't exist falls back to the row itself. The alphabet columns are checked at load and a row that cannot produce a question **stops the app with a message naming the level** rather than failing quietly — `middle` needs a run of 5 before it can hold 3 blanks — in a run of 4 there are only two interior slots and a third blank would have to touch an end, at which point it is `first` or `last` — and no row can have `alpha_blanks` at or above `alpha_length`. The option count (4) and the rule the wrong answers follow — every option at least four letters from every other, the answer included — are **not** in this file; they live in `index.html`. Regenerating `word_levels.csv` does not rewrite these — they are hand-authored from the design spreadsheet.
+Every row is checked at load, and one that cannot produce a question **stops the app with a message naming the level** rather than failing quietly: no row may have `alpha_blanks` at or above `alpha_length`, and `middle` needs a run of 5 before it can hold 3 blanks — in a run of 4 there are only two interior slots, so a third blank would have to touch an end, at which point it is `first` or `last`.
+
+The option count (4) and the rule the wrong answers follow — every option at least four letters from every other, the answer included — are **not** in this file; they live in `index.html`.
+
+Traps for `reading_levels.csv`: rows are read in file order but `level` is what the app reports, so keep them consistent. A `distractor_level` pointing at a level that doesn't exist falls back to the row itself. Regenerating `word_levels.csv` does not rewrite these — they are hand-authored from the design spreadsheet.
 
 ## `phonemes.csv` — what each chunk says out loud
 

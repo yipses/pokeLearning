@@ -12,7 +12,7 @@
 
 Poké Learning is a no-build, no-dependency HTML/CSS/JS app — one page plus a folder of CSV data and local artwork — that turns spelling, reading, and math practice into short, randomized, Pokémon-themed mini-games. A session mixes challenges from whichever modes are turned on, tracks a score, and ends with a results screen.
 
-Difficulty is not a setting a parent picks and re-picks. Ten **Lesson Trails** — Spelling, Reading, and eight maths tracks — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
+Difficulty is not a setting a parent picks and re-picks. Eleven **Lesson Trails** — Spelling, Reading, Alphabet, and eight maths tracks — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
 
 ## 2. Goals
 
@@ -45,21 +45,44 @@ Settings, Lesson Trails progress, the Pokédex collection, and the play streak p
 
 ## 5. Sessions
 
-**A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. A question counts toward the round when it is answered with at most **`Mistakes allowed`** slips — a Settings value, default 1, where a slip is a wrong tap *or* a hint. Hints count because hinting through a word to reach the end of a round is the same loophole in a different costume.
+**A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. How a question earns that credit depends on the mode. In **maths, reading and alphabet** it counts when answered with at most **`Mistakes allowed`** wrong taps — a Settings value, default 1. **Spelling scores differently**: wrong taps are free, and what is counted is how many letters the word had to *show* (§5.1).
 
-**Two different bars, deliberately kept apart.** The Lesson Trails still promote only on a **spotless** question — nothing wrong at all, no hints — exactly as before. `Mistakes allowed` governs only whether a question moves the *round* along. Loosening the round does not loosen the ladder.
+**Two different bars, deliberately kept apart.** The Lesson Trails still promote only on a **spotless** question — nothing wrong at all, nothing shown — in every mode, spelling included. The round bar governs only whether a question moves the *round* along. Loosening the round does not loosen the ladder.
 
 **Failure is bounded: after `Show the answer after` wrong taps on one step, the right answer lights up and the child still has to tap it.** Every mode blocks until the answer is right and there is no skip — deliberately, since being told the answer costs the struggle that makes it stick. But that left a dead end: a question resting on something never taught has no exit, and tapping every option in turn is the only move the screen offers. That is not a child giving up, it is the only input the app accepts.
 
-The answer lights in an amber pulse — never the green of a correct answer, because it says *here it is*, not *you got it*. Three properties make it safe:
+The answer lights in a pulse — never a still highlight, because a correct answer never moves. **Maths, Reading and Alphabet light amber**, deliberately not the green those modes already use for "you got it". **Spelling lights green** instead, because amber is taken there: the blank being filled wears an amber ring as a cursor on every question, from the moment it loads and with nothing wrong. Two near-identical ambers meant a parent watching could not tell *you are here* from *here is the answer* — the help was invisible, which is the one thing it must not be. Green is free in the spelling bank: a correct chunk turns the **slot** green and fades its tile out, so no tile ever wears green to mean "right".
+
+Three properties make the light safe:
 
 - **It cannot become a give-up button, because it is not a button.** It is triggered by failing rather than chosen, so there is nothing to press early.
-- **It can never pay to fail on purpose.** The reveal always lands at least one mistake past `Mistakes allowed`, so by the time it appears the question has already stopped counting toward the round. The Settings value is raised to enforce that if it is set too low.
-- **It counts the current *challenge*, and what that means differs by mode.** A Pattern row and an Alphabet gap are each a single answer, so two slips spread across two rows never light up the second one. A **spelling word is one challenge in its entirety**, not one per letter — two slips anywhere in the word light the tile for whatever comes next, and it stays lit for the rest of the word.
+- **Outside spelling it can never pay to fail on purpose.** The reveal lands at least one mistake past `Mistakes allowed`, so by the time it appears the question has already stopped counting toward the round. The Settings value is raised to enforce that if it is set too low. Spelling buys the same guarantee through its own budget instead (§5.1), so it is exempt from the raise.
+- **It counts the current *challenge*, and what that means differs by mode.** A Pattern row and an Alphabet gap are each a single answer, so two slips spread across two rows never light up the second one. A **spelling word accumulates across the whole word**, not per letter.
+- **The light is spent when it pays out.** Taking the lit tile re-arms the counter, so the next blank costs its own wrong taps.
 
-**Spelling lights a tile in the bank** — the chunk that comes next in Full Spelling, the one that fills the next blank in Missing Letters — counted across the **whole word**. Counting per letter looked consistent and was wrong in practice: a seven-blank word took two slips on the *same* letter before anything lit, so a child scattering one wrong tap across five different blanks was five mistakes deep, had already lost the credit, and had been offered no help at all — which is exactly the flailing this exists to catch. Its 💡 Hint button is unchanged and still capped by `max_hints`; the two are deliberately different bargains. A hint is *chosen*, rationed, and **places** the chunk for you. The light is *automatic*, uncapped, and only **shows** which tile while the child still taps it. The stronger help stays rationed; the weaker one is always there, so running out of hints can no longer strand anybody.
+**Spelling lights a tile in the bank** — the chunk that comes next in Full Spelling, the one that fills the next blank in Missing Letters — counted across the **whole word**. Counting per letter looked consistent and was wrong in practice: a seven-blank word took two slips on the *same* letter before anything lit, so a child scattering one wrong tap across five different blanks was five mistakes deep, had already lost the credit, and had been offered no help at all — which is exactly the flailing this exists to catch.
 
-Note that hints already count as slips, so they feed the same counter as wrong taps and no special case is needed for "hints exhausted" — which would in fact have been wrong, since `max_hints` is `1` at spelling levels 1, 2 and 5, where spending the only hint leaves the question still counting.
+**But the light is spent when it pays out.** Leaving it on walked a child through the entire rest of the word: two wrong taps on `soft mat` lit its six blanks one after another, and he tapped six letters without spelling any of them. Taking a lit tile now re-arms the counter, so the next blank has to earn its own light. Struggling still gets help on every letter that needs it; coasting pays for each one.
+
+### 5.1 Spelling credit
+
+Every other mode asks *how many times did you get it wrong*. Spelling asks **how many letters did you have to be told**, and forgives wrong taps entirely. A letter bank invites tapping — with six tiles on screen, trying one is how a five-year-old explores, and punishing that punishes the wrong thing. Being shown a letter is the honest signal, so that is what is counted.
+
+The budget scales with the word, because two letters told out of twelve is not the same event as two out of two. It is **`blanks ÷ 3`, rounded down**:
+
+| Blanks | Free | Share of spelling questions |
+| --- | --- | --- |
+| 1–2 | 0 | 30% |
+| 3–5 | 1 | 47% |
+| 6+ | 2, and up — 18 blanks earns 6 | 23% |
+
+The mix moves on its own as the ladder climbs: levels 1–2 are **100%** short words, level 25 is **70%** long ones, so the rule grows more generous exactly where the words get harder, with nothing to tune per level.
+
+Spam is still caught, indirectly: spam earns lights, lights spend the budget. At the default of two wrong taps per light that works out at roughly **one free wrong tap per blank** — two on a two-blank word, twelve on a twelve. Busting it only ever means the round runs one question longer.
+
+**Promotion is untouched** and still demands a spotless question: zero wrong taps, nothing told. Letting a told letter promote would inflate the ladder and strand a child on a rung they cannot actually spell, which is the cliff all of this exists to avoid. The budget governs the progress bar, never the trail.
+
+**The light is the only help spelling offers.** There is no hint button: help is earned by failing, never chosen, so there is nothing to press when a child would rather opt out. That makes `Show the answer after` the single dial governing how long a stuck child flails before a letter appears.
 
 Where the reason is on screen — Alphabet's run of letters, Reading's picture — there is something to infer from. Bare arithmetic is the weak case: lighting up `5` for `14 − 9` shows the fact and not the borrowing, and that wants its own support, which it does not have yet.
 
@@ -100,7 +123,7 @@ A count, not a share, and the difference matters. As a percentage the help scale
 - **Above 0% it's Missing Letters** — the word appears with that share of its letters showing and the rest as blanks, filled by tapping from a bank of **chunks**. Blanks are placed by a `chunkWord()` tokenizer that treats digraphs, blends, vowel teams and r-controlled vowels as atomic, so a blank never splits a sound; whole chunks are hidden until the level's letter target is reached, always leaving one chunk visible.
 
   **The bank is padded with decoys to a floor of four tiles.** Holding only the missing chunks made a one-blank word a guaranteed tap — `MEW` showed `M` and a single `EW` tile — which was 9% of all Missing Letters questions and 45% of level 2. Four blanks or more get no decoys, so the hard end is untouched. Each decoy is drawn from the same phonics class as a chunk it competes with — single vowels, vowel teams, r-controlled vowels, digraphs, blends, single consonants — and is never a chunk the word contains. Class matters: beside a vowel team, `str` can be ruled out by eye without knowing the answer, and `oo` cannot. A wrong tap shakes the tile, says so, and costs the clean answer.
-- **At 0 it's Full Spelling** — empty slots, the whole word built from shuffled tiles (tap or keyboard). Controls: 🔊 on the picture, 💡 Hint, Backspace, Clear. **No level currently asks for 0**, so this task does not appear in play; the mechanism is kept and a `0` in the column brings it back.
+- **At 0 it's Full Spelling** — empty slots, the whole word built from shuffled tiles (tap or keyboard). Controls: 🔊 on the picture, Backspace, Clear. **No level currently asks for 0**, so this task does not appear in play; the mechanism is kept and a `0` in the column brings it back.
 
 **Both tasks answer the same way, in the same units: tap a tile holding a chunk.** `torch` is three slots and three tiles — `T`, `OR`, `CH` — in both. A chunk is the thing with a sound, so a tile can say what it is, and the same group is the same group on every screen. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next, so `t-o-r-c-h` fills `T`, then `OR`, then `CH`.
 
@@ -127,8 +150,6 @@ Respellings live in `data/phonemes.csv` (§13), keyed by chunk and context, beca
 
 `tools/phonemes.html` plays every row for checking by ear, shading the ones a rough test thinks may not be pronounceable and collecting whatever is marked wrong.
 
-**`max_hints`** is per level and applies to both tasks. It is now **flat at 1 everywhere** — three hints on a long word was enough to hint most of the way through it, which is a different costume for the same loophole the round rules close. One hint, and after that the bounded-failure light (§4) does the rest: it is uncapped, so running out still cannot strand anybody. A hint costs the answer its "clean" status either way.
-
 **Pokémon-branded items are excluded from Spelling.** 25 item names are built from a Pokémon name — `Hoppip water bottle`, `Pikachu doll` — and their phonics level is fiction: an invented proper noun is memorised, not decoded, so asking a child to produce one isn't spelling practice. They're flagged `proper_noun` in `data/item_levels.csv` and skipped here. Reading keeps them, because recognising a name the child already knows by sight is a fair reading task, and the names themselves remain reachable through the Pokémon pool under the generation gate.
 
 The earliest levels have single-figure pools, so the generator never repeats the immediately-previous word for a track when there's an alternative.
@@ -137,11 +158,12 @@ The earliest levels have single-figure pools, so the generator never repeats the
 
 **10 levels, defined entirely in `data/reading_levels.csv`,** selecting words by exactly the same three columns as Spelling — one vocabulary grading feeds both trails, so a word met in Reading at level 4 is a word Spelling asks for at level 4. The two frontiers move independently, which lets Reading run ahead: recognising a word is easier than producing it.
 
-Three formats, picked at random per question in equal share:
+Two formats, picked at random per question in equal share:
 
 - **Read & Choose** — one picture, N word options.
 - **Reverse Read & Choose** — one written word, N picture options.
-- **Alphabet** — a run of consecutive letters with gaps in it (see below).
+
+Alphabet used to be a third format here. It is now **its own trail** (§6.3), with its own ladder, frontier, promotion and Settings switch.
 
 Difficulty ramps on two columns of its own:
 
@@ -154,13 +176,15 @@ Difficulty ramps on two columns of its own:
 
 A Reading answer is **clean** when the first tap was the correct one. Using a picture's speaker does not affect cleanliness.
 
-#### Alphabet
+### 6.3 Alphabet — its own trail
 
 A run of consecutive letters is laid out left to right, each shown as a Pokémon whose name starts with it, and some of them are gaps. The child works out which letter a gap is and picks the Pokémon whose name starts with it. Gaps open one at a time, left to right, and the run stays on screen while it fills — the sequence *is* the question, so hiding the letters already found would turn "what comes after C" into a guess.
 
 **The run prints its letters; the options do not.** That split is the whole exercise: the run says what is being asked for, and the only way to answer is to read an option's name and see what it starts with. Printing the letter on the options too would leave nothing to read.
 
-Three columns of `data/reading_levels.csv` control it:
+**It has its own ladder, not Reading's.** It used to sit inside Reading and read its shape off the reading row, and that could not survive the sheet: the alphabet ladder has **seven** levels to Reading's **ten**, and a track indexes its levels by its own frontier — so at Reading 8, 9 and 10 there was no alphabet row to read at all. It carries its own promotion percentages too, which a borrowed ladder would never consult. Two arithmetic reasons, not a matter of taste. Knowing the alphabet and reading words are different skills moving at different speeds, which is the same argument that already gives Spelling and Reading separate frontiers.
+
+Seven levels in `data/alphabet_levels.csv`, three columns controlling them:
 
 - **`alpha_length`** — how much of the alphabet is on screen. **Shorter is harder**, not easier: a run of 4 gives three letters to count along, a run of 2 gives one.
 - **`alpha_blanks`** — how many of those are gaps.
@@ -169,6 +193,8 @@ Three columns of `data/reading_levels.csv` control it:
 Two things are fixed in code rather than in the sheet: there are always **four options**, and they are **spread at least four letters apart** — from each other and from the answer.
 
 **The options are spread because the distractors are not where the difficulty lives.** A child answers by reciting from the song, deriving "M", and then going looking for it — the options play no part in deriving it. Crowding them around the answer would only add a second, unrelated task afterwards, telling M from N, O and P in a lineup, which is letter-shape recognition: work out M, tap Noivern, and the failure says nothing about which step broke. M N O P is the slurred stretch of the alphabet song besides, so a gap after L would draw its options from exactly the letters least likely to have been pulled apart yet. Spread out, a correctly derived answer is unambiguously findable and a guess is unlikely to land, so the derivation is what decides right or wrong. Difficulty rides on the three sheet columns instead.
+
+**A round is split evenly between the modes that are on.** With spelling, reading, alphabet and maths all switched on that is a quarter each — the maths quarter then shared among whichever maths tracks are live. As one third of Reading's third, alphabet was about **11%** of a round; as a mode of its own it is **25%**. The Settings switch is how to turn it back down.
 
 Letters already on screen are excluded as well, worked out per gap rather than once per question because the run fills in as it is answered: given or filled a moment ago, a visible letter can be ruled out by looking, so it is a free elimination.
 
@@ -255,7 +281,8 @@ This shows the borrow as a *fact* — the ten was dipped into — rather than as
 - Every challenge screen shows a decorative grass strip. At a configurable rate (Settings, default 10%), it shakes to signal a Pokémon is hiding.
 - **A pity timer caps droughts.** A pure per-question roll can go cold for a long stretch, which to a young child reads as the feature being broken rather than unlucky, so an encounter is *guaranteed* the moment a drought runs **one question past the average wait** — the 11th question at 10%, the 3rd at 50%. The counter **resets at the start of every round** — each round is its own experience, so a cold streak never follows the child into the next one.
 - **The Settings field is the outcome, not the dice roll.** A guarantee adds encounters on top of the roll, so a raw roll of R always produces more than R — and "longer than average" is a one-in-three event, not a rare one, so the gap is several points (a raw 25% roll with this pity lands at 33%). The app therefore solves for the roll that *lands* on the number: for a drought capped at `k`, the encounter rate is `p / (1 - (1-p)^k)`, which increases with `p`, so a short binary search finds it. Set 25% and the roll used is 11.2%, with the pity making up the difference. Measured over 200,000 questions per setting, every value from 1% to 100% lands on itself.
-- Answering the current question correctly catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer) — the only button on the card, from every entry. **The name is said aloud**, shortly after the card appears — see the popup rule in §9. This doesn't breach the read-aloud rule in §7.2, which guards the *prompt*: the question is already answered, and what's being named is a picture. A **catch is celebrated**: confetti falls through the card and a burst of light blooms behind the artwork. Rarer catches get half again as many pieces and a gold palette, so the fuss itself signals the rarity to a child who can't yet read the chip. It fires on real catches only — browsing the Pokédex opens the same card dozens of times, and confetti every time would be noise — and is switched off entirely under `prefers-reduced-motion`. Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
+- **The question has to earn it.** A Pokémon is a reward for answering, not for arriving: the encounter is rolled *before* the question is attempted, and a question that does not count toward the round (§5) does not pay one out. It is **kept rather than spent** — the grass keeps rustling and the next question can still claim the same Pokémon. Keeping it matters for more than kindness: the drought counter resets when an encounter is *rolled*, not when one is caught, so discarding an unclaimed encounter would quietly push the real catch rate below the rate the pity timer guarantees. Because nothing is discarded, **every encounter rolled is eventually caught** — measured at 20,000 questions per setting, rolled and caught are equal in every run. What a struggling child loses is timing, not Pokémon: at the default 10% drop, a child failing 30% of questions still catches 9.5% and waits at worst 17 questions instead of 11.
+- Answering the current question well enough catches it: a popup shows **"Caught!"**, the Pokémon's artwork, Dex number, name, and type badges, dismissed with an **Okay** button (no auto-dismiss timer) — the only button on the card, from every entry. **The name is said aloud**, shortly after the card appears — see the popup rule in §9. This doesn't breach the read-aloud rule in §7.2, which guards the *prompt*: the question is already answered, and what's being named is a picture. A **catch is celebrated**: confetti falls through the card and a burst of light blooms behind the artwork. Rarer catches get half again as many pieces and a gold palette, so the fuss itself signals the rarity to a child who can't yet read the chip. It fires on real catches only — browsing the Pokédex opens the same card dozens of times, and confetti every time would be noise — and is switched off entirely under `prefers-reduced-motion`. Catching a legendary or mythical species changes the banner to **"✨ Legendary Catch!"** / **"✨ Mythical Catch!"**.
 - Encounters are **generation-gated** — only the lowest generation not yet fully caught can appear, so progress moves through the National Dex in order rather than randomly across all 1,021 at once. The Pokémon side of both the Spelling and Reading pools respects the same gate.
 - **The screen opens straight onto the collection.** The HUD, then a ✕ beside **POKÉDEX**, then the tabs, then the grid — the first cell sits about 240px down at every supported width. It used to carry a full card headed *"My Pokédex"* with a `60 / 1021 caught` pill under it, which pushed the grid most of a screen down to state a total nobody is working toward: the generation is the unit being filled, and its own header already says where it stands.
 - **The HUD comes first, unchanged.** It is persistent chrome and reads as belonging to the app, so it sits where it always does and says what it always says.
@@ -394,7 +421,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 12. Settings & Persistence
 
-- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (slips a question may take and still count, default 1; `0` means it must be right first time), **Show the answer after** (wrong taps on one step before the answer lights up, default 2 — always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
+- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (wrong taps a maths, reading or alphabet question may take and still count, default 1; `0` means it must be right first time — spelling is scored on letters told instead, §5.1), **Show the answer after** (wrong taps before the answer lights up, default 2; the light goes out once taken, so the next one is earned again — outside spelling it is always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per mode**: an on/off toggle for Spelling, Reading, Math, and Visual Math.
 - **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
@@ -411,8 +438,9 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/pronunciations.csv` | 184 | `name`, `say_as`, `source` |
 | `data/word_levels.csv` | 807 | `word`, `level`, `pattern`, `letters`, `syllables`, `compound_parts`, `also_matches`, `proper_noun`, `used_in_items`, `previous_level`, `review` |
 | `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `shared_art`, `letters`, `longest_word`, `spellable` |
-| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_letters`, `max_hints`, `promote_5_pct`, `promote_10_pct` |
+| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
+| `data/alphabet_levels.csv` | 7 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |

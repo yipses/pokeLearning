@@ -433,9 +433,10 @@
   .alpha-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
   .alpha-opt.shake{ animation: shake .42s; }
 
-  /* Bounded failure: the answer lit up after enough wrong taps. Deliberately NOT
-     the green of a correct answer — this says "here it is", not "you got it" —
-     and it pulses so it reads as an invitation to tap rather than a result. */
+  /* Bounded failure: the answer lit up after enough wrong taps. It pulses, so it
+     reads as an invitation to tap rather than a result — a correct answer never
+     moves. In Maths, Reading and Alphabet it is amber, deliberately not the green
+     those modes already use to mean "you got it". */
   @keyframes answer-lit-pulse{
     0%,100%{ box-shadow:0 0 0 3px rgba(255,171,107,.55), var(--shadow-sm); }
     50%    { box-shadow:0 0 0 8px rgba(255,171,107,.28), var(--shadow-sm); }
@@ -446,6 +447,30 @@
   }
   @media (prefers-reduced-motion: reduce){
     .answer-lit{ animation:none; box-shadow:0 0 0 5px rgba(255,171,107,.5), var(--shadow-sm); }
+  }
+
+  /* SPELLING lights green instead, because amber is already taken there: the blank
+     being filled wears an amber ring as a cursor (.slot.active / .mw-slot.current),
+     on every question, from the moment it loads and with nothing wrong. Two
+     near-identical ambers meant a parent watching could not tell "you are here"
+     from "here is the answer" — the help was invisible, which is the one thing it
+     must not be. Green is free here: a correct chunk turns the SLOT green and
+     fades its tile out, so no tile in the bank ever wears green to mean "right".
+     A resting tile is already leaf-bordered, so this has to out-shout it —
+     hence the deeper border, the filled face and the wider halo. */
+  @keyframes answer-lit-green-pulse{
+    0%,100%{ box-shadow:0 0 0 4px rgba(78,157,99,.55), 0 5px 0 var(--leaf-deep); }
+    50%    { box-shadow:0 0 0 10px rgba(78,157,99,.22), 0 5px 0 var(--leaf-deep); }
+  }
+  #tiles .tile.answer-lit, #missingTiles .tile.answer-lit{
+    border-color:var(--leaf-deep) !important;
+    background:linear-gradient(180deg,#e2f6e6,#c2e9ca);
+    animation: answer-lit-green-pulse 1.25s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #tiles .tile.answer-lit, #missingTiles .tile.answer-lit{
+      animation:none; box-shadow:0 0 0 6px rgba(78,157,99,.5), 0 5px 0 var(--leaf-deep);
+    }
   }
 
   /* math question + answer choices */
@@ -1293,13 +1318,13 @@
       </div>
       <div class="field">
         <label>Mistakes allowed
-          <span class="hint">Wrong taps or hints a question may take and still count toward finishing the round. 0 means it must be right first time</span>
+          <span class="hint">Wrong taps a maths, reading or alphabet question may take and still count toward finishing the round. 0 means it must be right first time. Spelling is scored differently — on how many letters it had to show, which scales with the length of the word</span>
         </label>
         <input type="number" id="mistakeAllowance" min="0" max="5" value="1">
       </div>
       <div class="field">
         <label>Show the answer after
-          <span class="hint">Wrong taps on one question before the right answer lights up. They still have to tap it themselves. Always kept at least one above Mistakes allowed, so a shown answer never counts toward finishing the round</span>
+          <span class="hint">Wrong taps before the right answer lights up. They still have to tap it themselves, and the light goes out once taken — the next one has to be earned again. Outside spelling it is always kept at least one above Mistakes allowed, so a shown answer never counts toward finishing the round</span>
         </label>
         <input type="number" id="revealAfter" min="1" max="6" value="2">
       </div>
@@ -1338,7 +1363,7 @@
 
     <div class="card">
       <h2><span class="chip">📖</span> Reading Trail</h2>
-      <p class="sub">Fixed 5-choice formats — Read &amp; Choose (see a picture, pick the word) and Reverse Read &amp; Choose (see a word, pick the picture) — so difficulty stays constant round to round.</p>
+      <p class="sub">Fixed 5-choice formats — Read &amp; Choose (see a picture, pick the word) and Reverse Read &amp; Choose (see a word, pick the picture) — so difficulty stays constant round to round. The alphabet run has its own trail below.</p>
 
       <div class="field">
         <label>Turn on reading
@@ -1352,6 +1377,25 @@
           <span class="hint" id="readingLevelHint">—</span>
         </label>
         <select id="readingFrontier"></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="chip">🔤</span> Alphabet Trail</h2>
+      <p class="sub">A run of the alphabet with gaps in it, filled by picking the Pok&eacute;mon whose name starts with the missing letter. Its own ladder in <code>data/alphabet_levels.csv</code> — the run grows, the gaps multiply, and they move between the start, middle and end.</p>
+
+      <div class="field">
+        <label>Turn on alphabet
+          <span class="hint">Include alphabet-run rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="alphaOn" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="field">
+        <label>Alphabet level
+          <span class="hint" id="alphabetLevelHint">—</span>
+        </label>
+        <select id="alphabetFrontier"></select>
       </div>
     </div>
 
@@ -1466,8 +1510,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 89;
-const APP_BUILD_DATE = "10 Sep 2026";
+const APP_BUILD = 92;
+const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -1505,6 +1549,7 @@ let PHONEMES = {};
 let SPELLING_ROWS = [];
 let ALPHABET_POOL = {};   // "A" -> Pokémon whose names start with it; see loadData
 let READING_ROWS = [];
+let ALPHABET_ROWS = [];
 let MATH_TRACK_ROWS = [], MATH_LEVEL_ROWS = [], MATH_PROMO_ROWS = [];
 
 // Minimal RFC-4180-ish parser: handles quoted fields and doubled quotes inside
@@ -1568,7 +1613,7 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
    the CSV by hand, so don't "normalise" them back. */
 
 async function loadData(){
-  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, phonemeRows,
+  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
@@ -1576,6 +1621,7 @@ async function loadData(){
     fetchCsv("data/item_levels.csv"),
     fetchCsv("data/spelling_levels.csv"),
     fetchCsv("data/reading_levels.csv"),
+    fetchCsv("data/alphabet_levels.csv"),
     fetchCsv("data/phonemes.csv"),
     fetchCsv("data/math_tracks.csv"),
     fetchCsv("data/math_levels.csv"),
@@ -1645,7 +1691,7 @@ async function loadData(){
 
   SPELLING_ROWS = spellRows.map(r => ({
     level: n(r.level), wordLevel: n(r.word_level), compoundLevel: n(r.compound_level),
-    pokemonLetters: n(r.pokemon_letters), hintedLetters: n(r.hinted_letters), maxHints: n(r.max_hints),
+    pokemonLetters: n(r.pokemon_letters), hintedLetters: n(r.hinted_letters),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
   READING_ROWS = readRows.map(r => ({
@@ -1653,10 +1699,15 @@ async function loadData(){
     pokemonLetters: n(r.pokemon_letters), wrongAnswers: n(r.wrong_answers),
     distractorLevel: n(r.distractor_level),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
-    // Alphabet mode: how long the run of letters is, how many of them are blank,
-    // and where the blanks may fall. See ALPHA_POSITIONS.
+  }));
+  /* Alphabet is its own trail with its own ladder — see §alphabet track. How long
+     the run of letters is, how many of them are blank, and where the blanks may
+     fall. See ALPHA_POSITIONS. */
+  ALPHABET_ROWS = alphaRows.map(r => ({
+    level: n(r.level),
     alphaLength: n(r.alpha_length), alphaBlanks: n(r.alpha_blanks),
     alphaBlankPos: String(r.alpha_blank_position || "").trim().toLowerCase(),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
 
   // Keyed chunk|context. A blank say_as is meaningful — the silent e says nothing.
@@ -1668,6 +1719,7 @@ async function loadData(){
   if(!GRADED_ITEMS.length) throw new Error("data/item_levels.csv graded no items");
   if(!SPELLING_ROWS.length) throw new Error("data/spelling_levels.csv is empty");
   if(!READING_ROWS.length) throw new Error("data/reading_levels.csv is empty");
+  if(!ALPHABET_ROWS.length) throw new Error("data/alphabet_levels.csv is empty");
 
   /* Every Pokémon filed under the letter its name starts with. The alphabet mode
      draws from the whole roster rather than the caught generations: a single
@@ -1680,7 +1732,7 @@ async function loadData(){
     const L = p.n[0].toUpperCase();
     if(L >= "A" && L <= "Z") (ALPHABET_POOL[L] ||= []).push(p);
   }
-  for(const row of READING_ROWS) checkAlphaRow(row);
+  for(const row of ALPHABET_ROWS) checkAlphaRow(row);
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
@@ -1716,11 +1768,11 @@ function alphaWindows(len){
   }
   return out;
 }
-/* A reading row that can't produce an alphabet question is a data error, not a
-   thing to paper over at play time: three blanks in a run of two has no answer,
-   and neither does "middle" with more blanks than there are interior slots. */
+/* An alphabet row that can't produce a question is a data error, not a thing to
+   paper over at play time: three blanks in a run of two has no answer, and
+   neither does "middle" with more blanks than there are interior slots. */
 function checkAlphaRow(row){
-  const at = `data/reading_levels.csv level ${row.level}`;
+  const at = `data/alphabet_levels.csv level ${row.level}`;
   if(!(row.alphaLength >= 2)) throw new Error(`${at}: alpha_length must be 2 or more`);
   if(!(row.alphaBlanks >= 1)) throw new Error(`${at}: alpha_blanks must be 1 or more`);
   if(row.alphaBlanks >= row.alphaLength) throw new Error(`${at}: alpha_blanks (${row.alphaBlanks}) must be fewer than alpha_length (${row.alphaLength})`);
@@ -1757,7 +1809,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
-const TRACK_IDS = ["spelling","reading", ...MATH_TRACK_IDS];
+const TRACK_IDS = ["spelling","reading","alphabet", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -1789,6 +1841,7 @@ let progress = loadProgress();
 function trackLevels(track){
   if(track==="spelling") return SPELLING_LEVELS;
   if(track==="reading") return READING_LEVELS;
+  if(track==="alphabet") return ALPHABET_LEVELS;
   return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
 function frontierIndex(track){
@@ -1803,7 +1856,8 @@ function currentLevel(track){ return trackLevels(track)[frontierIndex(track)]; }
    prove it twenty times, and one they haven't got comes back around through the
    review band anyway.
 
-   Spelling and Reading carry their two percentages per level in their own CSVs.
+   Spelling, Reading and Alphabet carry their two percentages per level in their
+   own CSVs.
    Maths has one table for every track, in `data/math_promotion.csv`, and it is
    a different shape — three gates rather than two, and stricter at ten. */
 const PROMOTE = { fastN: 5, windowN: 10 };
@@ -2073,7 +2127,7 @@ function mathGroupProgress(groupId){
    What differs is the third axis. Spelling ramps `hinted_letters`, how many
    letters are given away before the child starts — a COUNT, not a share, so a
    long word is genuinely harder than a short one instead of being handed
-   proportionally more help. `max_hints` sits alongside it. Reading ramps the option count and where the wrong
+   proportionally more help. Reading ramps the option count and where the wrong
    answers come from: `distractor_level` names another *reading* level whose
    pool supplies them, which is always a superset of the target's, so a child
    meets harder words as decoys before ever being asked to read them.
@@ -2153,10 +2207,10 @@ function mkSpelling(row){
      so Full Spelling does not appear in play. Putting a 0 in `hinted_letters`
      brings it back. */
   if(row.hintedLetters <= 0){
-    return {kind:"spell", task:"full", poke, hintLimit: row.maxHints};
+    return {kind:"spell", task:"full", poke};
   }
   return {kind:"spell", task:"missing", poke,
-          blankLetters: blanksFor(poke.n, row.hintedLetters), hintLimit: row.maxHints};
+          blankLetters: blanksFor(poke.n, row.hintedLetters)};
 }
 
 function mkReadingRow(row, mode){
@@ -2265,12 +2319,21 @@ function mkAlphabet(row){
   return { kind:"alpha", letters, slots, blanks };
 }
 
-// Reading serves three modes in equal share: picture-to-word, word-to-picture,
-// and the alphabet run.
+/* ---------------- §alphabet track ----------------
+   Alphabet used to be one of three modes inside Reading, reading its shape off
+   the reading row. It could not stay there. The sheet gives it SEVEN levels to
+   Reading's TEN, and every track indexes its levels by its own frontier — so at
+   Reading 8, 9 and 10 there is simply no alphabet row to read. It also carries
+   its own promotion percentages, which a borrowed ladder would never consult.
+   Two independent reasons, both arithmetic rather than taste.
+
+   Knowing the alphabet and being able to read words are different skills that
+   move at different speeds anyway, which is the same argument that already gives
+   Spelling and Reading separate frontiers. */
+
+// Reading serves two modes in equal share: picture-to-word and word-to-picture.
 function mkReading(row){
-  const pick = rand(3);
-  if(pick === 0) return mkAlphabet(row);
-  return mkReadingRow(row, pick === 1 ? "choose" : "reverse");
+  return mkReadingRow(row, rand(2) === 0 ? "choose" : "reverse");
 }
 
 // Both ladders are built from their CSV rows. The label is what Settings and the
@@ -2293,17 +2356,33 @@ function buildReadingLevels(){
     gen: ()=> mkReading(row),
   }));
 }
-let SPELLING_LEVELS = [], READING_LEVELS = [];
+/* The label names the shape of the run, because that IS the difficulty here —
+   there are no word pools to describe. "A run of 3, 2 blanks at the end". */
+function buildAlphabetLevels(){
+  return ALPHABET_ROWS.map(row => ({
+    id: String(row.level), row,
+    label: `A run of ${row.alphaLength}, ` +
+           `${row.alphaBlanks} ${row.alphaBlanks === 1 ? "blank" : "blanks"} ` +
+           ({first:"at the start", last:"at the end", middle:"in the middle", mixed:"anywhere inside"}[row.alphaBlankPos] || row.alphaBlankPos),
+    gen: ()=> mkAlphabet(row),
+  }));
+}
+let SPELLING_LEVELS = [], READING_LEVELS = [], ALPHABET_LEVELS = [];
 
 
 /* ---------------- build a session queue ---------------- */
 // Each active mode contributes a generator; every challenge slot picks a random active mode.
-/* A round is split in thirds — spelling, reading, maths — rather than evenly
-   across every track. Maths has eight tracks to Spelling's and Reading's one
-   each, so an even split would hand a fully-unlocked child eight questions in
-   ten as maths and reduce spelling to one. The maths third is then shared among
-   whichever tracks are live, so newly opened ones start appearing immediately.
-   Turning a mode off gives its share to the others. */
+/* A round is split evenly between the modes that are ON — spelling, reading,
+   alphabet, maths — rather than evenly across every TRACK. Maths has eight tracks
+   to the others' one each, so a per-track split would hand a fully-unlocked child
+   eight questions in ten as maths and reduce spelling to one. The maths share is
+   then divided among whichever tracks are live, so newly opened ones start
+   appearing immediately. Turning a mode off gives its share to the others.
+
+   Alphabet became its own share when it became its own trail (§alphabet track).
+   It used to be one third of Reading's third — about 11% of a round; as a mode in
+   its own right it is a quarter. That is a real change in what a round feels
+   like, and the switch above is how to undo it. */
 function buildQueue(){
   const wordPick = track => () => {
     const {level, isFrontier} = pickBand(track);
@@ -2328,6 +2407,7 @@ function buildQueue(){
   const groups = [];
   if($("#spellOn").checked)   groups.push(wordPick("spelling"));
   if($("#readingOn").checked) groups.push(wordPick("reading"));
+  if($("#alphaOn").checked)   groups.push(wordPick("alphabet"));
   if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
   if(groups.length === 0) return [];
 
@@ -2380,6 +2460,7 @@ function saveSettings(){
     revealAfter: $("#revealAfter").value,
     spellOn: $("#spellOn").checked,
     readingOn: $("#readingOn").checked,
+    alphaOn: $("#alphaOn").checked,
     mathOn: $("#mathOn").checked,
     visualOn: $("#visualOn").checked
   };
@@ -2396,6 +2477,7 @@ function loadSettings(){
   if(saved.grassRate!=null) $("#grassRate").value = saved.grassRate;
   if(saved.spellOn!=null) $("#spellOn").checked = saved.spellOn;
   if(saved.readingOn!=null) $("#readingOn").checked = saved.readingOn;
+  if(saved.alphaOn!=null) $("#alphaOn").checked = saved.alphaOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
 }
@@ -2625,6 +2707,13 @@ const LEVEL_ICONS = {
   reading: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">
       <path d="M3 5.1C5.3 3.7 8 3.2 11.1 3.9v15.9c-3.1-.7-5.8-.2-8.1 1.1z"/>
       <path d="M21 5.1C18.7 3.7 16 3.2 12.9 3.9v15.9c3.1-.7 5.8-.2 8.1 1.1z" opacity=".58"/></svg>`,
+  // Alphabet is letters in sequence, which is exactly what the trail is about,
+  // and "ABC" reads differently enough from Spelling's "Aa" to tell the two
+  // tiles apart at a glance.
+  alphabet: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18.5"
+      text-anchor="middle" textLength="22" lengthAdjust="spacingAndGlyphs"
+      font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
+      style="text-transform:none" fill="currentColor">ABC</text></svg>`,
   // Both maths tracks carry the same numerals: the icon's job is to say "this
   // is maths", and the label beside it says which operation. Two different
   // symbols there made them look like two unrelated subjects.
@@ -2639,6 +2728,7 @@ LEVEL_ICONS.muldiv = LEVEL_ICONS.addsub;
 const LEVEL_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
   {id:"reading",  label:"Reading",  color:"#9a6bd6"},
+  {id:"alphabet", label:"Alphabet", color:"#e08a4f"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
@@ -2715,8 +2805,17 @@ function renderProblem(){
   else renderMath(p);
 }
 
+/* A Pokémon is a reward for ANSWERING, not for arriving. The encounter is rolled
+   in renderProblem — before the question is even attempted — and used to pay out
+   however the question went, so a child who was shown the answer caught one
+   exactly as if he had spelled it himself. The round bar not moving was the only
+   consequence he could perceive, against a Pikachu he got anyway, which made
+   every rule above it decorative.
+
+   A question that doesn't count for the round doesn't pay one out. The encounter
+   is KEPT rather than spent — see maybeStartGrassEncounter. */
 function next(){
-  if(grassEncounter && !grassEncounter.caught){
+  if(grassEncounter && !grassEncounter.caught && countsForRound(queue[idx])){
     grassEncounter.caught = true;
     document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
     revealGrassCatch(grassEncounter.poke, advanceQueue);
@@ -2726,16 +2825,18 @@ function next(){
 }
 
 /* A question carries a count of everything that went wrong on it — every wrong
-   tap and every hint. Two different rules read that count, and keeping them apart
-   matters:
+   tap. Two different rules read it, and keeping them apart matters:
 
      spotless()  — nothing went wrong at all. This is what the Lesson Trails have
-                   always demanded to promote, and it is deliberately unchanged.
-     countsForRound() — at most `mistakeAllowance` went wrong. This is the softer
-                   bar a question has to clear to move the round along.
+                   always demanded to promote, and it is deliberately unchanged
+                   in every mode, spelling included.
+     countsForRound() — the softer bar a question clears to move the round along.
 
-   Hints count as mistakes for both. A hint is not a wrong tap, but hinting through
-   a word to reach the end of a round is the same loophole in a different costume. */
+   The two modes answer that second question differently, on purpose:
+
+     everything else  at most `mistakeAllowance` wrong taps.
+     SPELLING         at most `freeHints` letters TOLD — wrong taps alone no
+                      longer spend it. See §spelling credit below. */
 function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
 
 /* ---------------- bounded failure ----------------
@@ -2754,9 +2855,10 @@ function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
    yet.
 
    It cannot become a give-up button because it isn't a button: it is triggered
-   by failing, not chosen, so there is nothing to press early. And it can never
-   be worth failing on purpose, because the reveal always lands at least one
-   mistake past the allowance, by which point the credit is already lost.
+   by failing, not chosen, so there is nothing to press early. Outside spelling it
+   also can never be worth failing on purpose, because the light lands at least one
+   mistake past the allowance, by which point the credit is already lost. Spelling
+   buys that guarantee a different way — see §spelling credit.
 
    `stepMisses` counts misses against the current CHALLENGE, and what counts as
    one differs by mode — deliberately, because the modes are different shapes.
@@ -2765,24 +2867,69 @@ function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
    single answer, like a maths question, so two misses spread across two rows
    must not light up the second one.
 
-   A SPELLING WORD is one challenge in its entirety, not one per letter. Counting
-   per letter looked consistent and was wrong in practice: a seven-blank word
-   takes two misses on the SAME letter before anything lights, so a child
-   scattering one wrong tap across five different blanks is five mistakes deep,
-   has already lost the credit, and has been offered no help at all — which is
-   exactly the flailing this mechanism exists to catch. Once the threshold is
-   reached the tile for whatever comes next stays lit for the rest of the word.
-   There is nothing to game: by then the question counts for neither the round
-   nor promotion, and it cost real wrong taps to get there. */
+   A SPELLING WORD accumulates its misses across the whole word rather than
+   resetting per letter. Counting per letter looked consistent and was wrong in
+   practice: a seven-blank word took two misses on the SAME letter before anything
+   lit, so a child scattering one wrong tap across five different blanks was five
+   mistakes deep, had already lost the credit, and had been offered no help at all
+   — which is exactly the flailing this mechanism exists to catch.
+
+   But the light is SPENT WHEN IT PAYS OUT. Leaving it on walked a child through
+   the entire rest of the word: two wrong taps on "soft mat" lit its six blanks
+   one after another, and he tapped six letters without spelling any of them. So
+   the moment a lit tile is taken the counter re-arms, and the next blank costs
+   its own wrong taps. Struggling still gets help on every letter that needs it;
+   coasting has to pay for each one. */
 const REVEAL_AFTER_DEFAULT = 2;
+function revealFloor(){ return clampInt($("#revealAfter")?.value, 1, 6, REVEAL_AFTER_DEFAULT); }
 function revealAfter(){
-  const n = clampInt($("#revealAfter")?.value, 1, 6, REVEAL_AFTER_DEFAULT);
-  return Math.max(n, mistakeAllowance() + 1);
+  /* The `mistakeAllowance + 1` floor exists to guarantee a lit answer can never
+     still count toward the round. Spelling does not score on wrong taps at all,
+     so that floor would only make its light arrive later for no benefit; its own
+     budget carries the guarantee instead. */
+  if(isSpellQuestion(queue[idx])) return revealFloor();
+  return Math.max(revealFloor(), mistakeAllowance() + 1);
 }
 let stepMisses = 0;
 function resetStepMisses(){ stepMisses = 0; }
 function noteStepMiss(){ stepMisses++; }
 function revealDue(){ return stepMisses >= revealAfter(); }
+
+/* ---------------- §spelling credit ----------------
+   Every other mode asks "how many times did you get it wrong". Spelling asks
+   "how many letters did you have to be TOLD", and forgives wrong taps entirely.
+
+   A letter bank invites tapping — with six tiles on screen, trying one is how a
+   five-year-old explores, and punishing that punishes the wrong thing. Being
+   shown a letter is the honest signal, so that is what gets counted.
+
+   The budget scales with the word, because two letters told out of twelve is not
+   the same event as two out of two:
+
+       1-2 blanks   0 free     one letter told and it no longer counts
+       3-5 blanks   1 free
+       6-8 blanks   2 free
+       ...          blanks / 3, rounded down
+
+   Spam is still caught, just indirectly: spam earns lights, lights spend the
+   budget. At the default of two wrong taps per light that works out at roughly
+   ONE free wrong tap per blank — two on a two-blank word, twelve on a twelve.
+   The cost of busting it is only ever that the round runs one question longer.
+
+   PROMOTION is untouched and still demands a spotless question: zero wrong taps,
+   nothing told. Letting a told letter promote would inflate the ladder and strand
+   him on a rung he cannot actually spell, which is the cliff all of this exists
+   to avoid. The budget governs the progress bar, never the trail. */
+function isSpellQuestion(p){ return !!p && p.kind === "spell"; }
+function freeHints(blanks){ return Math.floor((blanks || 0) / 3); }
+function toldCount(p){ return (p && p._told) || 0; }
+/* The light just paid out: bank the letter and re-arm so the next blank is not
+   free. Being told always costs at least one wrong tap to reach, so the question
+   is never spotless by the time this runs — promotion is already gone. */
+function noteTold(p){
+  if(p) p._told = (p._told || 0) + 1;
+  resetStepMisses();
+}
 /* For the option modes the answer is a fixed element, so it can just be lit.
    The spelling banks need `syncSpellLight` / `syncMissingLight` instead: which
    tile is "next" moves as chunks go down and come back off, so a class left on
@@ -2812,7 +2959,10 @@ function syncMissingLight(){
   if(tile) tile.classList.add("answer-lit");
 }
 function spotless(p){ return !p || !p._mistakes; }
-function countsForRound(p){ return (p && p._mistakes || 0) <= mistakeAllowance(); }
+function countsForRound(p){
+  if(isSpellQuestion(p)) return toldCount(p) <= freeHints(p._blankCount);
+  return (p && p._mistakes || 0) <= mistakeAllowance();
+}
 
 function advanceQueue(){
   if(countsForRound(queue[idx])) roundCredits++;
@@ -2946,9 +3096,21 @@ function grassRoll(pct){
 }
 
 function maybeStartGrassEncounter(){
-  grassEncounter = null;
   hideCatchModal();
   const strip = $("#grassStrip");
+
+  /* An encounter the last question failed to earn CARRIES OVER rather than
+     vanishing. `sinceEncounter` resets when an encounter is rolled, not when it
+     is caught, so dropping an unclaimed one would silently push the real catch
+     rate below the rate the pity timer guarantees — the drought cap would be
+     counting encounters offered rather than Pokémon caught. Keeping it also
+     reads better: he hasn't lost the Pokémon, he has to earn it on the next
+     question. The grass keeps rustling to say so. */
+  if(grassEncounter && !grassEncounter.caught){
+    if(strip) strip.classList.add("shaking");
+    return;
+  }
+  grassEncounter = null;
   if(strip) strip.classList.remove("shaking");
 
   const pct = clampInt($("#grassRate").value, 0, 100, 10);
@@ -3340,6 +3502,7 @@ function renderPokedex(){
 const WORD_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
   {id:"reading",  label:"Reading",  color:"#9a6bd6"},
+  {id:"alphabet", label:"Alphabet", color:"#e08a4f"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
@@ -3535,7 +3698,6 @@ function trackDetailHTML(id, color){
 function renderSpell(p){
   const name = p.poke.n.toLowerCase();
   const img = p.poke.img || artwork(p.poke.id);
-  const hintLimit = p.hintLimit || 3;
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-spell">Spelling</div>
@@ -3547,7 +3709,6 @@ function renderSpell(p){
     <div class="tiles" id="tiles"></div>
     <div class="feedback" id="feedback"></div>
     <div class="actions">
-      <button class="btn" id="hint">💡 Hint (${hintLimit} left)</button>
       <button class="btn ghost" id="backspace">⌫ Backspace</button>
       <button class="btn ghost" id="clear">Clear</button>
     </div>
@@ -3594,44 +3755,17 @@ function renderSpell(p){
     tilesEl.appendChild(t);
   });
 
+  // What the round bar is scored against: how many of these the word had to give
+  // away. Fixed at render, so it cannot shrink as the blanks are filled in.
+  p._blankCount = target.length;
+
   spellState = { name, chunks, target, chunkAt, slotEls, filled:[],
-                 tileEls:[...tilesEl.children], typed:"", hintsUsed:0, hintLimit, p };
+                 tileEls:[...tilesEl.children], typed:"", p };
   refreshSlots();
 
   $("#backspace").addEventListener("click", backspaceChunk);
   $("#clear").addEventListener("click", clearSpell);
-  $("#hint").addEventListener("click", hintChunk);
   $("#say").addEventListener("click", ()=> speakName(name));
-}
-
-function hintChunk(){
-  if(!spellState) return;
-  // Every hint in the allowance is usable. This guard used to fire on SPENDING
-  // the last one, which revealed the final chunk and then immediately locked the
-  // board and swapped the word — so a 3-hint word really gave 2.
-  if(spellState.hintsUsed >= spellState.hintLimit) return;
-  const target = spellState.target;
-  while(spellState.filled.some((f,i)=> f.chunk !== target[i])) backspaceChunk();
-  const pos = spellState.filled.length;
-  if(pos >= target.length) return;
-  const chunk = target[pos];
-  const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.dataset.chunk === chunk);
-  if(!tile) return;
-  const wasLast = pos === target.length - 1;
-  bumpMistake(spellState.p);
-  spellState.typed = "";
-  placeChunk(chunk, tile);
-  if(wasLast) return;                    // that hint finished the word
-  spellState.hintsUsed++;
-  updateHintButton();
-}
-
-function updateHintButton(){
-  const btn = $("#hint");
-  if(!btn || !spellState) return;
-  const left = Math.max(0, spellState.hintLimit - spellState.hintsUsed);
-  btn.textContent = `💡 Hint (${left} left)`;
-  btn.disabled = left === 0;
 }
 
 let spellState=null;
@@ -3658,10 +3792,13 @@ function placeChunk(chunk, tileEl){
   spellState.filled.push({chunk, tile:tileEl});
   refreshSlots();
   if(chunk !== spellState.target[pos]){ markWrong(); return; }
+  // A lit tile just went down, so the light is spent: bank the letter as told and
+  // re-arm. Without this one threshold lit every remaining blank in turn.
+  if(revealDue()) noteTold(spellState.p);
   // Right chunk: say it. Wrong taps stay silent — a child who taps for the noise
   // would otherwise be rewarded for guessing.
   speakChunk(spellState.chunks, spellState.chunkAt[pos]);
-  syncSpellLight();           // counter deliberately NOT cleared — see stepMisses
+  syncSpellLight();
   if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
@@ -3995,7 +4132,6 @@ function renderMissingLetter(p){
     <div class="missing-word" id="missingWord"></div>
     <div class="tiles" id="missingTiles"></div>
     <div class="feedback" id="feedback"></div>
-    <div class="actions" id="missingActions"></div>
   `;
   const wordEl = $("#missingWord");
   const slots = [];
@@ -4034,20 +4170,12 @@ function renderMissingLetter(p){
     bankEl.appendChild(t);
   });
 
-  const hintLimit = p.hintLimit || 0;
-  missingState = { name, p, chunks, slots, filledCount:0, hintsUsed:0, hintLimit };
-  if(slots[0]) slots[0].classList.add("current");
+  // What the round bar is scored against — fixed here, so it cannot shrink as the
+  // blanks are filled in.
+  p._blankCount = slots.length;
 
-  // Missing Letters used to refuse hints on the grounds that most of the word is
-  // already showing. That held when it blanked one chunk; at 25% shown it can be
-  // most of the word, so the level's own allowance applies here too.
-  if(hintLimit > 0){
-    const btn = document.createElement("button");
-    btn.className = "btn"; btn.id = "missHint";
-    btn.textContent = `💡 Hint (${hintLimit} left)`;
-    btn.addEventListener("click", missingHint);
-    $("#missingActions").appendChild(btn);
-  }
+  missingState = { name, p, chunks, slots, filledCount:0 };
+  if(slots[0]) slots[0].classList.add("current");
   $("#say").addEventListener("click", ()=> speakName(name));
 }
 
@@ -4082,6 +4210,8 @@ function placeMissingChunk(chunk, tileEl){
 
 function fillMissingSlot(slot, tileEl){
   const st = missingState;
+  // Same bargain as Full Spelling: taking the lit tile spends the light.
+  if(revealDue()) noteTold(st.p);
   slot.textContent = slot.dataset.answer;
   slot.classList.add("mw-correct");
   slot.classList.remove("current");
@@ -4090,28 +4220,8 @@ function fillMissingSlot(slot, tileEl){
   speakChunk(st.chunks, Number(slot.dataset.chunk));
   const next = nextMissingSlot();
   if(next) next.classList.add("current");
-  syncMissingLight();         // counter deliberately NOT cleared — see stepMisses
+  syncMissingLight();
   if(st.filledCount === st.slots.length) finishMissingLetter();
-}
-
-// Fills the next slot outright, same bargain as the spelling hint: it costs an
-// allowance and the answer stops counting as clean.
-function missingHint(){
-  const st = missingState;
-  if(!st || st.hintsUsed >= st.hintLimit) return;
-  const slot = nextMissingSlot();
-  if(!slot) return;
-  st.hintsUsed++;
-  bumpMistake(st.p);
-  const tile = [...$("#missingTiles").children]
-    .find(t => t.dataset.chunk === slot.dataset.answer && !t.classList.contains("used"));
-  fillMissingSlot(slot, tile);
-  const btn = $("#missHint");
-  if(btn){
-    const left = st.hintLimit - st.hintsUsed;
-    btn.textContent = `💡 Hint (${left} left)`;
-    btn.disabled = left === 0;
-  }
 }
 
 function finishMissingLetter(){
@@ -5022,6 +5132,7 @@ function renderTrailSettings(){
   renderMathTrailSettings();
   renderTrailSelect("spelling", "#spellingFrontier", "#spellingLevelHint", "Level");
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
+  renderTrailSelect("alphabet", "#alphabetFrontier", "#alphabetLevelHint", "Level");
 }
 
 /* ---------------- wire up ----------------
@@ -5059,6 +5170,7 @@ function migrateFrontiers(){
   catch(err){ console.error(err); showDataError(err); return; }
   SPELLING_LEVELS = buildSpellingLevels();
   READING_LEVELS = buildReadingLevels();
+  ALPHABET_LEVELS = buildAlphabetLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
   loadSettings();

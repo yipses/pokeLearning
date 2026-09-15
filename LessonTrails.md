@@ -100,7 +100,7 @@ Note that a word's level and an *item's* level pull apart: 58 words are level 1,
 
 ### Spelling — 25 levels
 
-Nine tiers of three. Within a tier only **`hinted_letters`** moves, the number of letters given away, falling as the tier climbs. A count rather than a share: as a percentage the help scaled with the word, so the longest names stayed the most supported, where two letters is two letters and a long word is genuinely harder. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles, which no level currently asks for. **`max_hints`** is flat at 1 — rationing the chosen help, while the uncapped bounded-failure light stops anyone being stranded.
+Nine tiers of three. Within a tier only **`hinted_letters`** moves, the number of letters given away, falling as the tier climbs. A count rather than a share: as a percentage the help scaled with the word, so the longest names stayed the most supported, where two letters is two letters and a long word is genuinely harder. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles, which no level currently asks for. Spelling has no hint button: the bounded-failure light is the only help, and round credit is spent by **letters told** — `blanks ÷ 3` free per word — rather than by wrong taps.
 
 Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
 
@@ -123,9 +123,13 @@ Same three selection columns, two of its own:
 - **`wrong_answers`** — decoy count. Choices run 3, 4, then 5 from level 3 on.
 - **`distractor_level`** — *another reading level*, whose pool supplies the wrong answers. Always at or above the level's own row, so decoys come from a superset of the target pool. A child meets harder words as options before being asked to read them, and it fixes the thinness at the bottom: level 1 targets from 6 words but draws decoys from 12.
 
-This replaced a "tricky distractor" flag that hand-picked same-length or same-first-letter decoys. Difficulty now comes from pool breadth instead, and the three formats (Read & Choose, Reverse Read & Choose, Alphabet) are chosen at random per question rather than being rungs of their own.
+This replaced a "tricky distractor" flag that hand-picked same-length or same-first-letter decoys. Difficulty now comes from pool breadth instead, and the two formats (Read & Choose, Reverse Read & Choose) are chosen at random per question rather than being rungs of their own.
 
-**Alphabet** shares the trail but none of its word pools, and ramps on three columns of its own: `alpha_length`, `alpha_blanks` and `alpha_blank_position`. It is here rather than in a trail of its own because it is the same skill one rung earlier — a child who cannot yet decode a word can still know that D follows C, and the mode gives the Reading frontier something to do at every level rather than only at the bottom.
+### Alphabet — 7 levels
+
+**Alphabet is its own trail**, sharing none of Reading's word pools and ramping on three columns of its own: `alpha_length`, `alpha_blanks` and `alpha_blank_position`.
+
+It began inside Reading, on the argument that it is the same skill one rung earlier — a child who cannot yet decode a word can still know that D follows C. That argument still holds for *why the mode exists*; it did not survive as a reason to share a ladder. The alphabet ladder is **seven** rungs against Reading's **ten**, and a track indexes its levels by its own frontier, so the top three reading levels had no alphabet row at all. It also carries its own promotion percentages, which a borrowed ladder never consults. Separate frontiers are the same answer Spelling and Reading already get, for the same reason: these are different skills and they move at different speeds.
 
 Its difficulty runs on an axis the rest of the file does not have. `alpha_length` is **shorter is harder**: a run of four gives three letters to count along from, a run of two gives one. And the gaps walk backwards through the run as the levels climb — `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on. The top rung gives only the final letter of five and asks for the four before it, which is the hardest thing the mode can pose. `mixed` remains a legal value but no level asks for it.
 
