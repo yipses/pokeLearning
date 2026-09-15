@@ -100,7 +100,7 @@ Note that a word's level and an *item's* level pull apart: 58 words are level 1,
 
 ### Spelling — 25 levels
 
-Nine tiers of three. Within a tier only **`hinted_letters`** moves, the number of letters given away, falling as the tier climbs. A count rather than a share: as a percentage the help scaled with the word, so the longest names stayed the most supported, where two letters is two letters and a long word is genuinely harder. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles, which no level currently asks for. **`max_hints`** is flat at 1 — rationing the chosen help, while the uncapped bounded-failure light stops anyone being stranded.
+Nine tiers of three. Within a tier only **`hinted_letters`** moves, the number of letters given away, falling as the tier climbs. A count rather than a share: as a percentage the help scaled with the word, so the longest names stayed the most supported, where two letters is two letters and a long word is genuinely harder. Above zero the task is Missing Letters; at zero it is Full Spelling from empty tiles, which no level currently asks for. Spelling has no hint button: the bounded-failure light is the only help, and round credit is spent by **letters told** — `blanks ÷ 3` free per word — rather than by wrong taps.
 
 Blanking is chunk-aware. The word is tokenized first (`sh`, `ck`, blends and vowel teams count as one unit), then whole chunks are hidden until the level's letter target is reached, always leaving one chunk showing. So the percentage is a target to reach, not a quota to hit exactly: a blank never splits a sound.
 

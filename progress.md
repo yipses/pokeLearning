@@ -12,7 +12,7 @@ Everything speced is built and published on GitHub Pages: ten Lesson Trails prom
 
 The Spelling and Reading trails share one graded vocabulary — all **807 distinct item words** and **819 item names** — climbed by **25 spelling levels** and **10 reading levels**, all authored in a spreadsheet and read at boot. **No ladder, word list or promotion gate remains in code**, maths included.
 
-**A round ends after ten questions answered well enough, not ten shown** — at most `Mistakes allowed` slips each, default 1 — and the progress bar measures those credits, so guessing does not move it. Promotion is a stricter bar and unchanged: still spotless only.
+**A round ends after ten questions answered well enough, not ten shown** — and the progress bar measures those credits, so guessing does not move it. Maths, reading and alphabet spend that credit on wrong taps (`Mistakes allowed`, default 1); **spelling spends it on letters told**, `blanks ÷ 3` free per word. Promotion is a stricter bar and unchanged in every mode: still spotless only.
 
 ## Open threads
 
@@ -411,6 +411,40 @@ one wrong on blank 2  ->  LIT
 Nothing to game: by the time the light appears the question counts for neither the round nor promotion, and it cost real wrong taps to get there. Verified 36/36 settings combinations still safe, both ends of the spelling ladder still lighting the correct tile, and Pattern and Alphabet unchanged.
 
 One stale test found on the way, worth noting because it hung rather than failed: it searched for an alphabet level with two or more gaps at row index 3, which the Phase 71 regroup changed to `middle`/1 — an unsatisfiable loop inside `page.evaluate`.
+
+## Phase 73 — the light stopped walking him through the word
+
+Reported from real play, three times: `_I__` for `sink`, `_O__` for `moss`, then `soft mat`. Each time the answer lit up and the word "passed". Two wrong diagnoses came first, and both are worth recording because each was a real finding that was not the reported bug.
+
+**First wrong diagnosis: the Pokémon is ungated.** True, and still true. `maybeStartGrassEncounter()` rolls in `renderProblem()` — *before* the question is answered — and `next()` awards the catch unconditionally. So a revealed answer withholds round credit and promotion credit, and hands over a Pikachu anyway. The only consequence a child can perceive is a bar that does not move. **Still open.**
+
+**Second wrong diagnosis: the cursor and the reveal are the same colour.** Also true. `.mw-slot.current` and `.slot.active` paint `--sun-deep` with an `rgba(255,214,107,.5)` glow; `.answer-lit` paints `--sun-deep` with `rgba(255,171,107,.55)`, pulsing. Forty-three points apart on one channel. So every spelling question shows an amber ring on the blank being filled, from the moment it loads, with nothing wrong — which is exactly what was being reported as "I got the hint". **Still open.**
+
+**The actual bug.** `revealDue()` stayed true for the remainder of the word once the threshold was crossed. Measured by taking only the lit tile and never guessing again:
+
+```
+soft mat, 6 blanks, 2 wrong taps
+  -> o lights -> tap o -> f lights -> tap f -> t lights -> ... -> done
+  six letters, none of them spelled
+```
+
+The Phase 72 comment defended this on scoring grounds — the question counts for neither the round nor promotion. That was the wrong test. Scoring was never the point; the damage was to the teaching, and it was worst on the longest words.
+
+**The fix, and a rule change that came with it.** The light is now **spent when it pays out**: taking a lit tile re-arms the counter. And spelling stopped being scored on wrong taps at all. It is scored on **letters told**, with a budget of `blanks ÷ 3`:
+
+| Blanks | Free | Share of spelling questions |
+| --- | --- | --- |
+| 1–2 | 0 | 30% |
+| 3–5 | 1 | 47% |
+| 6+ | 2, up to 6 at 18 blanks | 23% |
+
+Measured across all 25 levels, 600 generated questions each. The mix shifts on its own — levels 1–2 are 100% short words, level 25 is 70% long — so the rule gets more generous exactly where words get harder, with nothing to tune per level. The flip side, and it was flagged before building: levels 1 and 2 have **zero** tolerance, so at the bottom of the ladder two wrong taps cost the round credit. The cost is only ever that the round runs one question longer.
+
+Wrong taps had to stop spending round credit for any of this to work. Earning two lights costs about four misses, and credit would have died at one — the budget would never have bound. Spam is still caught indirectly: spam earns lights, lights spend the budget, which lands at roughly **one free wrong tap per blank**.
+
+**The 💡 Hint button went with it.** Two helps were doing one job, and the button was the stronger and the more gameable: *chosen* rather than earned, and it **placed** the chunk rather than showing it — the give-up affordance an "I don't know" button had already been rejected for being. `max_hints` left the CSV and the sheet with it. The accepted cost is that tapping wrong is now the only route to help.
+
+Verified: 2,160 driven questions across all 36 settings combinations, zero violations — credit always equal to `told <= free`, never more than one tile lit, **zero consecutive lit taps**, never told without paying a wrong tap first, and never told while still spotless. Maths, reading and alphabet unchanged, including the `mistakeAllowance + 1` interlock, which spelling is now deliberately exempt from.
 
 ## Doc roles
 

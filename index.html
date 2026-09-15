@@ -1293,13 +1293,13 @@
       </div>
       <div class="field">
         <label>Mistakes allowed
-          <span class="hint">Wrong taps or hints a question may take and still count toward finishing the round. 0 means it must be right first time</span>
+          <span class="hint">Wrong taps a maths, reading or alphabet question may take and still count toward finishing the round. 0 means it must be right first time. Spelling is scored differently — on how many letters it had to show, which scales with the length of the word</span>
         </label>
         <input type="number" id="mistakeAllowance" min="0" max="5" value="1">
       </div>
       <div class="field">
         <label>Show the answer after
-          <span class="hint">Wrong taps on one question before the right answer lights up. They still have to tap it themselves. Always kept at least one above Mistakes allowed, so a shown answer never counts toward finishing the round</span>
+          <span class="hint">Wrong taps before the right answer lights up. They still have to tap it themselves, and the light goes out once taken — the next one has to be earned again. Outside spelling it is always kept at least one above Mistakes allowed, so a shown answer never counts toward finishing the round</span>
         </label>
         <input type="number" id="revealAfter" min="1" max="6" value="2">
       </div>
@@ -1466,8 +1466,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 89;
-const APP_BUILD_DATE = "10 Sep 2026";
+const APP_BUILD = 90;
+const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -1645,7 +1645,7 @@ async function loadData(){
 
   SPELLING_ROWS = spellRows.map(r => ({
     level: n(r.level), wordLevel: n(r.word_level), compoundLevel: n(r.compound_level),
-    pokemonLetters: n(r.pokemon_letters), hintedLetters: n(r.hinted_letters), maxHints: n(r.max_hints),
+    pokemonLetters: n(r.pokemon_letters), hintedLetters: n(r.hinted_letters),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
   READING_ROWS = readRows.map(r => ({
@@ -2073,7 +2073,7 @@ function mathGroupProgress(groupId){
    What differs is the third axis. Spelling ramps `hinted_letters`, how many
    letters are given away before the child starts — a COUNT, not a share, so a
    long word is genuinely harder than a short one instead of being handed
-   proportionally more help. `max_hints` sits alongside it. Reading ramps the option count and where the wrong
+   proportionally more help. Reading ramps the option count and where the wrong
    answers come from: `distractor_level` names another *reading* level whose
    pool supplies them, which is always a superset of the target's, so a child
    meets harder words as decoys before ever being asked to read them.
@@ -2153,10 +2153,10 @@ function mkSpelling(row){
      so Full Spelling does not appear in play. Putting a 0 in `hinted_letters`
      brings it back. */
   if(row.hintedLetters <= 0){
-    return {kind:"spell", task:"full", poke, hintLimit: row.maxHints};
+    return {kind:"spell", task:"full", poke};
   }
   return {kind:"spell", task:"missing", poke,
-          blankLetters: blanksFor(poke.n, row.hintedLetters), hintLimit: row.maxHints};
+          blankLetters: blanksFor(poke.n, row.hintedLetters)};
 }
 
 function mkReadingRow(row, mode){
@@ -2726,16 +2726,18 @@ function next(){
 }
 
 /* A question carries a count of everything that went wrong on it — every wrong
-   tap and every hint. Two different rules read that count, and keeping them apart
-   matters:
+   tap. Two different rules read it, and keeping them apart matters:
 
      spotless()  — nothing went wrong at all. This is what the Lesson Trails have
-                   always demanded to promote, and it is deliberately unchanged.
-     countsForRound() — at most `mistakeAllowance` went wrong. This is the softer
-                   bar a question has to clear to move the round along.
+                   always demanded to promote, and it is deliberately unchanged
+                   in every mode, spelling included.
+     countsForRound() — the softer bar a question clears to move the round along.
 
-   Hints count as mistakes for both. A hint is not a wrong tap, but hinting through
-   a word to reach the end of a round is the same loophole in a different costume. */
+   The two modes answer that second question differently, on purpose:
+
+     everything else  at most `mistakeAllowance` wrong taps.
+     SPELLING         at most `freeHints` letters TOLD — wrong taps alone no
+                      longer spend it. See §spelling credit below. */
 function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
 
 /* ---------------- bounded failure ----------------
@@ -2754,9 +2756,10 @@ function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
    yet.
 
    It cannot become a give-up button because it isn't a button: it is triggered
-   by failing, not chosen, so there is nothing to press early. And it can never
-   be worth failing on purpose, because the reveal always lands at least one
-   mistake past the allowance, by which point the credit is already lost.
+   by failing, not chosen, so there is nothing to press early. Outside spelling it
+   also can never be worth failing on purpose, because the light lands at least one
+   mistake past the allowance, by which point the credit is already lost. Spelling
+   buys that guarantee a different way — see §spelling credit.
 
    `stepMisses` counts misses against the current CHALLENGE, and what counts as
    one differs by mode — deliberately, because the modes are different shapes.
@@ -2765,24 +2768,69 @@ function bumpMistake(p){ if(p) p._mistakes = (p._mistakes || 0) + 1; }
    single answer, like a maths question, so two misses spread across two rows
    must not light up the second one.
 
-   A SPELLING WORD is one challenge in its entirety, not one per letter. Counting
-   per letter looked consistent and was wrong in practice: a seven-blank word
-   takes two misses on the SAME letter before anything lights, so a child
-   scattering one wrong tap across five different blanks is five mistakes deep,
-   has already lost the credit, and has been offered no help at all — which is
-   exactly the flailing this mechanism exists to catch. Once the threshold is
-   reached the tile for whatever comes next stays lit for the rest of the word.
-   There is nothing to game: by then the question counts for neither the round
-   nor promotion, and it cost real wrong taps to get there. */
+   A SPELLING WORD accumulates its misses across the whole word rather than
+   resetting per letter. Counting per letter looked consistent and was wrong in
+   practice: a seven-blank word took two misses on the SAME letter before anything
+   lit, so a child scattering one wrong tap across five different blanks was five
+   mistakes deep, had already lost the credit, and had been offered no help at all
+   — which is exactly the flailing this mechanism exists to catch.
+
+   But the light is SPENT WHEN IT PAYS OUT. Leaving it on walked a child through
+   the entire rest of the word: two wrong taps on "soft mat" lit its six blanks
+   one after another, and he tapped six letters without spelling any of them. So
+   the moment a lit tile is taken the counter re-arms, and the next blank costs
+   its own wrong taps. Struggling still gets help on every letter that needs it;
+   coasting has to pay for each one. */
 const REVEAL_AFTER_DEFAULT = 2;
+function revealFloor(){ return clampInt($("#revealAfter")?.value, 1, 6, REVEAL_AFTER_DEFAULT); }
 function revealAfter(){
-  const n = clampInt($("#revealAfter")?.value, 1, 6, REVEAL_AFTER_DEFAULT);
-  return Math.max(n, mistakeAllowance() + 1);
+  /* The `mistakeAllowance + 1` floor exists to guarantee a lit answer can never
+     still count toward the round. Spelling does not score on wrong taps at all,
+     so that floor would only make its light arrive later for no benefit; its own
+     budget carries the guarantee instead. */
+  if(isSpellQuestion(queue[idx])) return revealFloor();
+  return Math.max(revealFloor(), mistakeAllowance() + 1);
 }
 let stepMisses = 0;
 function resetStepMisses(){ stepMisses = 0; }
 function noteStepMiss(){ stepMisses++; }
 function revealDue(){ return stepMisses >= revealAfter(); }
+
+/* ---------------- §spelling credit ----------------
+   Every other mode asks "how many times did you get it wrong". Spelling asks
+   "how many letters did you have to be TOLD", and forgives wrong taps entirely.
+
+   A letter bank invites tapping — with six tiles on screen, trying one is how a
+   five-year-old explores, and punishing that punishes the wrong thing. Being
+   shown a letter is the honest signal, so that is what gets counted.
+
+   The budget scales with the word, because two letters told out of twelve is not
+   the same event as two out of two:
+
+       1-2 blanks   0 free     one letter told and it no longer counts
+       3-5 blanks   1 free
+       6-8 blanks   2 free
+       ...          blanks / 3, rounded down
+
+   Spam is still caught, just indirectly: spam earns lights, lights spend the
+   budget. At the default of two wrong taps per light that works out at roughly
+   ONE free wrong tap per blank — two on a two-blank word, twelve on a twelve.
+   The cost of busting it is only ever that the round runs one question longer.
+
+   PROMOTION is untouched and still demands a spotless question: zero wrong taps,
+   nothing told. Letting a told letter promote would inflate the ladder and strand
+   him on a rung he cannot actually spell, which is the cliff all of this exists
+   to avoid. The budget governs the progress bar, never the trail. */
+function isSpellQuestion(p){ return !!p && p.kind === "spell"; }
+function freeHints(blanks){ return Math.floor((blanks || 0) / 3); }
+function toldCount(p){ return (p && p._told) || 0; }
+/* The light just paid out: bank the letter and re-arm so the next blank is not
+   free. Being told always costs at least one wrong tap to reach, so the question
+   is never spotless by the time this runs — promotion is already gone. */
+function noteTold(p){
+  if(p) p._told = (p._told || 0) + 1;
+  resetStepMisses();
+}
 /* For the option modes the answer is a fixed element, so it can just be lit.
    The spelling banks need `syncSpellLight` / `syncMissingLight` instead: which
    tile is "next" moves as chunks go down and come back off, so a class left on
@@ -2812,7 +2860,10 @@ function syncMissingLight(){
   if(tile) tile.classList.add("answer-lit");
 }
 function spotless(p){ return !p || !p._mistakes; }
-function countsForRound(p){ return (p && p._mistakes || 0) <= mistakeAllowance(); }
+function countsForRound(p){
+  if(isSpellQuestion(p)) return toldCount(p) <= freeHints(p._blankCount);
+  return (p && p._mistakes || 0) <= mistakeAllowance();
+}
 
 function advanceQueue(){
   if(countsForRound(queue[idx])) roundCredits++;
@@ -3535,7 +3586,6 @@ function trackDetailHTML(id, color){
 function renderSpell(p){
   const name = p.poke.n.toLowerCase();
   const img = p.poke.img || artwork(p.poke.id);
-  const hintLimit = p.hintLimit || 3;
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-spell">Spelling</div>
@@ -3547,7 +3597,6 @@ function renderSpell(p){
     <div class="tiles" id="tiles"></div>
     <div class="feedback" id="feedback"></div>
     <div class="actions">
-      <button class="btn" id="hint">💡 Hint (${hintLimit} left)</button>
       <button class="btn ghost" id="backspace">⌫ Backspace</button>
       <button class="btn ghost" id="clear">Clear</button>
     </div>
@@ -3594,44 +3643,17 @@ function renderSpell(p){
     tilesEl.appendChild(t);
   });
 
+  // What the round bar is scored against: how many of these the word had to give
+  // away. Fixed at render, so it cannot shrink as the blanks are filled in.
+  p._blankCount = target.length;
+
   spellState = { name, chunks, target, chunkAt, slotEls, filled:[],
-                 tileEls:[...tilesEl.children], typed:"", hintsUsed:0, hintLimit, p };
+                 tileEls:[...tilesEl.children], typed:"", p };
   refreshSlots();
 
   $("#backspace").addEventListener("click", backspaceChunk);
   $("#clear").addEventListener("click", clearSpell);
-  $("#hint").addEventListener("click", hintChunk);
   $("#say").addEventListener("click", ()=> speakName(name));
-}
-
-function hintChunk(){
-  if(!spellState) return;
-  // Every hint in the allowance is usable. This guard used to fire on SPENDING
-  // the last one, which revealed the final chunk and then immediately locked the
-  // board and swapped the word — so a 3-hint word really gave 2.
-  if(spellState.hintsUsed >= spellState.hintLimit) return;
-  const target = spellState.target;
-  while(spellState.filled.some((f,i)=> f.chunk !== target[i])) backspaceChunk();
-  const pos = spellState.filled.length;
-  if(pos >= target.length) return;
-  const chunk = target[pos];
-  const tile = spellState.tileEls.find(t => !t.classList.contains("used") && t.dataset.chunk === chunk);
-  if(!tile) return;
-  const wasLast = pos === target.length - 1;
-  bumpMistake(spellState.p);
-  spellState.typed = "";
-  placeChunk(chunk, tile);
-  if(wasLast) return;                    // that hint finished the word
-  spellState.hintsUsed++;
-  updateHintButton();
-}
-
-function updateHintButton(){
-  const btn = $("#hint");
-  if(!btn || !spellState) return;
-  const left = Math.max(0, spellState.hintLimit - spellState.hintsUsed);
-  btn.textContent = `💡 Hint (${left} left)`;
-  btn.disabled = left === 0;
 }
 
 let spellState=null;
@@ -3658,10 +3680,13 @@ function placeChunk(chunk, tileEl){
   spellState.filled.push({chunk, tile:tileEl});
   refreshSlots();
   if(chunk !== spellState.target[pos]){ markWrong(); return; }
+  // A lit tile just went down, so the light is spent: bank the letter as told and
+  // re-arm. Without this one threshold lit every remaining blank in turn.
+  if(revealDue()) noteTold(spellState.p);
   // Right chunk: say it. Wrong taps stay silent — a child who taps for the noise
   // would otherwise be rewarded for guessing.
   speakChunk(spellState.chunks, spellState.chunkAt[pos]);
-  syncSpellLight();           // counter deliberately NOT cleared — see stepMisses
+  syncSpellLight();
   if(spellState.filled.length === spellState.target.length) checkSpell();
 }
 
@@ -3995,7 +4020,6 @@ function renderMissingLetter(p){
     <div class="missing-word" id="missingWord"></div>
     <div class="tiles" id="missingTiles"></div>
     <div class="feedback" id="feedback"></div>
-    <div class="actions" id="missingActions"></div>
   `;
   const wordEl = $("#missingWord");
   const slots = [];
@@ -4034,20 +4058,12 @@ function renderMissingLetter(p){
     bankEl.appendChild(t);
   });
 
-  const hintLimit = p.hintLimit || 0;
-  missingState = { name, p, chunks, slots, filledCount:0, hintsUsed:0, hintLimit };
-  if(slots[0]) slots[0].classList.add("current");
+  // What the round bar is scored against — fixed here, so it cannot shrink as the
+  // blanks are filled in.
+  p._blankCount = slots.length;
 
-  // Missing Letters used to refuse hints on the grounds that most of the word is
-  // already showing. That held when it blanked one chunk; at 25% shown it can be
-  // most of the word, so the level's own allowance applies here too.
-  if(hintLimit > 0){
-    const btn = document.createElement("button");
-    btn.className = "btn"; btn.id = "missHint";
-    btn.textContent = `💡 Hint (${hintLimit} left)`;
-    btn.addEventListener("click", missingHint);
-    $("#missingActions").appendChild(btn);
-  }
+  missingState = { name, p, chunks, slots, filledCount:0 };
+  if(slots[0]) slots[0].classList.add("current");
   $("#say").addEventListener("click", ()=> speakName(name));
 }
 
@@ -4082,6 +4098,8 @@ function placeMissingChunk(chunk, tileEl){
 
 function fillMissingSlot(slot, tileEl){
   const st = missingState;
+  // Same bargain as Full Spelling: taking the lit tile spends the light.
+  if(revealDue()) noteTold(st.p);
   slot.textContent = slot.dataset.answer;
   slot.classList.add("mw-correct");
   slot.classList.remove("current");
@@ -4090,28 +4108,8 @@ function fillMissingSlot(slot, tileEl){
   speakChunk(st.chunks, Number(slot.dataset.chunk));
   const next = nextMissingSlot();
   if(next) next.classList.add("current");
-  syncMissingLight();         // counter deliberately NOT cleared — see stepMisses
+  syncMissingLight();
   if(st.filledCount === st.slots.length) finishMissingLetter();
-}
-
-// Fills the next slot outright, same bargain as the spelling hint: it costs an
-// allowance and the answer stops counting as clean.
-function missingHint(){
-  const st = missingState;
-  if(!st || st.hintsUsed >= st.hintLimit) return;
-  const slot = nextMissingSlot();
-  if(!slot) return;
-  st.hintsUsed++;
-  bumpMistake(st.p);
-  const tile = [...$("#missingTiles").children]
-    .find(t => t.dataset.chunk === slot.dataset.answer && !t.classList.contains("used"));
-  fillMissingSlot(slot, tile);
-  const btn = $("#missHint");
-  if(btn){
-    const left = st.hintLimit - st.hintsUsed;
-    btn.textContent = `💡 Hint (${left} left)`;
-    btn.disabled = left === 0;
-  }
 }
 
 function finishMissingLetter(){
