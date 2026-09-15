@@ -112,7 +112,7 @@ Every row selects words three ways at once:
 |---|---|
 | `word_level` | single-word items graded at or below this phonics level (1–9) |
 | `compound_level` | multi-word items whose hardest component word is at or below this; `0` switches compounds off |
-| `pokemon_letters` | Pokémon names up to this many letters, generation-gated as ever |
+| `name_letters` | **the longest name the level may serve — items and Pokémon alike.** Pokémon stay generation-gated on top of it |
 
 Pokémon are gated by length rather than by phonics level because invented names have no decoding pattern to grade — length is the only honest measure for them. Item words do have one: the grading lives in `data/word_levels.csv` and is rolled up per item in `data/item_levels.csv` (§13).
 
@@ -454,8 +454,8 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/pronunciations.csv` | 184 | `name`, `say_as`, `source` |
 | `data/word_levels.csv` | 807 | `word`, `level`, `pattern`, `letters`, `syllables`, `compound_parts`, `also_matches`, `proper_noun`, `used_in_items`, `previous_level`, `review` |
 | `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `shared_art`, `letters`, `longest_word`, `spellable` |
-| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
-| `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
+| `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `name_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
+| `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `name_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
 | `data/alphabet_levels.csv` | 11 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |

@@ -72,7 +72,7 @@ The four things are now four columns, and one ladder runs end to end.
 |---|---|
 | `word_level` | single-word items graded at or below this phonics level (1–9) |
 | `compound_level` | multi-word items whose hardest component is at or below this; `0` switches compounds off |
-| `pokemon_letters` | Pokémon names up to this many letters, generation-gated as before |
+| `name_letters` | the longest name the level may serve, items and Pokémon alike. Pokémon stay generation-gated on top of it |
 
 Pokémon keep a length gate rather than a phonics level because invented names have no decoding pattern to grade. Item words do: **`data/word_levels.csv`** grades all 807 distinct words in the catalogue against the nine patterns, and **`data/item_levels.csv`** rolls that up per item — a single-word item takes its own level, a multi-word item takes its hardest component's. `Copper ore` is level 7 because `copper` is; `Log bed` is level 1 because both halves are.
 
