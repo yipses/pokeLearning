@@ -383,7 +383,7 @@ Order is HUD, levels, Pokémon, buttons — the wordmark rides in the HUD rather
 
 Everything on the screen is a fixed cost except one thing. The HUD, the wordmark, four levels and two buttons all have to be legible at their size. **The Pokémon is the only element that can be smaller without losing what it says**, so it is the part that gives way: `.showcase-frame` takes whichever axis is scarcer — `22vh` keeps it clear of the fold on a short screen, `34vw` keeps it from crowding the text column on a narrow one — and runs from 225px down to 122px. One rule covers both, so the `max-width: 480px` override this used to need is gone; a `max-height: 700px` query still tightens the generation block. Measured at 360×640, 390×844, 414×736, 768×1024 and 360×780: no vertical scroll on any of them, and no horizontal scroll either.
 
-**The panel is rebuilt on the way into home, not by whoever changed something.** `show("setup")` re-renders it, so setting a level in Settings, quitting a round after a promotion, or finishing one all show the current figure. Hanging it off each caller instead is what left the panel showing a stale level after a Settings change.
+**Screens that display a frontier are rebuilt on the way in, not by whoever changed something.** `show()` re-renders the home levels panel entering home and the trail dropdowns entering Settings, so setting a level, quitting a round after a promotion, or finishing one all show the current figure on both screens. Hanging it off each caller instead is what left the home panel stale after a Settings change — and, for longer, left every Settings dropdown frozen at whatever it read when the page loaded, so a child promoted mid-round appeared still to be on level 1 until a reload.
 
 ## 9. My progress
 

@@ -525,6 +525,38 @@ level 11  (run 5, 3 blanks, random) 10 of 10 shapes   279-333 each   (expect 300
 
 One consequence not migrated: a stored `progress.alphabet.frontier` now points at a different question than it did, since the ladder was rebuilt rather than extended. Alphabet had shipped roughly an hour earlier, so any real frontier is 0 or 1 and a migration would cost more than it saves.
 
+## Phase 77 — the Settings dropdowns were frozen at page load
+
+Reported from play: "I just got to level 2 of alphabet, but my settings still say level 1." The screenshot said *Level 1 — A run of 4, 1 blank at the end* while a second screenshot showed him answering `A B _ _`, which is the **level 4** shape and reachable from no frontier below 3.
+
+`renderTrailSettings()` ran **once, at boot**. `show()` rebuilt the home tiles and the chrome on the way into a screen but never the Settings panel, so every trail dropdown and hint kept whatever it read when the page loaded. Promote mid-round, open Settings, and it still showed the old level until a reload.
+
+**Not an alphabet bug — every trail did it.** Verified after a promotion on all four kinds:
+
+```
+              Settings said   actually on
+spelling      Level 1         Level 2
+reading       Level 1         Level 2
+alphabet      Level 1         Level 2
+add           Level 1         Level 2
+```
+
+The comment inside `show()` had already predicted this and only guarded two of the three cases:
+
+> *Home is rebuilt on the way in rather than by whoever changed something... Both are the same bug, and patching each caller invites a third.*
+
+This was the third. One line, in the same place and the same style:
+
+```js
+if(which === "settings" && window.__dataReady) renderTrailSettings();
+```
+
+Driven to the reported state and back: Settings now tracks the frontier through promotions (1 → 2 → 4, matching the home tile), a manual set still takes and survives leaving and returning, twenty rebuilds leave no duplicated handlers (one change still moves exactly one step), the maths panel still renders 8 rows with 7 locked, and the other Settings fields — round length, the mode switches, the reveal threshold — are untouched by the rebuild.
+
+Worth noting beyond the display: changing a level in Settings calls `setFrontier`, which **wipes that trail's promotion history**. A stale reading made a corrective edit more likely, so this was not purely cosmetic.
+
+**Found while verifying, not fixed:** the three word-trail dropdowns overflow their card and scroll the whole Settings page sideways — reading by 115px at 390px wide, spelling by 97, alphabet by 71. Only the maths selects fit, because their labels are short. Measured against the deployed build 93 as well, so it predates all of this; the level labels have simply always been longer than the card. Still open.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
