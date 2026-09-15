@@ -261,10 +261,20 @@ Not a separate question source — a **rendering** of Math Trails questions as p
 
 **Icons scale to how many there are.** Above twelve icons they shrink, above twenty-four they shrink again — a picture that has to be scrolled is not a picture. The tallest the sheet asks for is `div` level 5: `25 ÷ 5`, twenty-five icons over five groups, 919px on a 390×844 phone. Grouped layouts (× and ÷) get their own narrower boxes, sized so a group of five still sits on one line and two groups fit side by side: without that, four groups of five became four stacked rows.
 
-- **Addition** — two boxes of Pokémon icons side by side, joined by "+".
-- **Subtraction** — one box showing all the icons, with the subtracted amount crossed out by a bold drawn X.
+- **Addition** — two standard boxes joined by "+".
+- **Subtraction** — one standard box showing all the icons, with the subtracted amount crossed out by a bold drawn X.
 - **Multiplication** — several equally-sized boxes joined by "+" signs, always at least 2 groups, since a single group doesn't demonstrate repeated addition.
 - **Division** — separate bordered boxes, one per equal group.
+
+**The standard box.** Single-digit addition and subtraction draw into a box of a fixed shape: **always five columns wide, one row up to five and two rows from six.** Exactly two sizes exist per screen width — 177×53 and 177×84 on a phone, 196×56 and 196×91 above it — and every box in every question is one of them.
+
+Boxes used to shrink-wrap their contents, which made the same kind of sum a different shape every time: addition ranged 76px to 220px wide, and the two operands of one question rarely matched each other. With a fixed box, `4 + 5` is two identical frames, one with a single space left and one with none, and how far each is from five is something to see rather than count.
+
+**Contents sit flush left, never centred.** Four icons centred in a five-wide box float with a half gap either side, which reads as a different arrangement rather than as *one short*. Filling from the left puts the shortfall in one place, always the same place.
+
+**Below 560px the two operands stack, with the operator between them.** Two five-wide boxes need more width than a phone card has — 177px each against 280px of card — so they used to *wrap*, which left the "+" stranded beside the first box with the second underneath. That is the same marooned-operator problem the ten-box layout stacks to avoid, reached by accident rather than on purpose. Stacking is now deliberate and the operator sits between the two, the way a column sum does. Above 560px they sit side by side.
+
+Multiplication and division are untouched: they already draw one fixed-width box per group, sized so five icons sit on one line.
 
 The equation (e.g. "5 × 5 = ?") is shown **before** the picture. There is no instructional caption text.
 
