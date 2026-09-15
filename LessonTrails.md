@@ -125,13 +125,15 @@ Same three selection columns, two of its own:
 
 This replaced a "tricky distractor" flag that hand-picked same-length or same-first-letter decoys. Difficulty now comes from pool breadth instead, and the two formats (Read & Choose, Reverse Read & Choose) are chosen at random per question rather than being rungs of their own.
 
-### Alphabet — 7 levels
+### Alphabet — 11 levels
 
 **Alphabet is its own trail**, sharing none of Reading's word pools and ramping on three columns of its own: `alpha_length`, `alpha_blanks` and `alpha_blank_position`.
 
-It began inside Reading, on the argument that it is the same skill one rung earlier — a child who cannot yet decode a word can still know that D follows C. That argument still holds for *why the mode exists*; it did not survive as a reason to share a ladder. The alphabet ladder is **seven** rungs against Reading's **ten**, and a track indexes its levels by its own frontier, so the top three reading levels had no alphabet row at all. It also carries its own promotion percentages, which a borrowed ladder never consults. Separate frontiers are the same answer Spelling and Reading already get, for the same reason: these are different skills and they move at different speeds.
+It began inside Reading, on the argument that it is the same skill one rung earlier — a child who cannot yet decode a word can still know that D follows C. That argument still holds for *why the mode exists*; it did not survive as a reason to share a ladder. The alphabet ladder is **eleven** rungs against Reading's **ten**, and a track indexes its levels by its own frontier, so neither ladder can stand in for the other. It also carries its own promotion percentages, which a borrowed ladder never consults. Separate frontiers are the same answer Spelling and Reading already get, for the same reason: these are different skills and they move at different speeds.
 
-Its difficulty runs on an axis the rest of the file does not have. `alpha_length` is **shorter is harder**: a run of four gives three letters to count along from, a run of two gives one. And the gaps walk backwards through the run as the levels climb — `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on. The top rung gives only the final letter of five and asks for the four before it, which is the hardest thing the mode can pose. `mixed` remains a legal value but no level asks for it.
+Its difficulty runs on an axis the rest of the file does not have. `alpha_length` is **shorter is harder**: a run of four gives three letters to count along from, a run of two gives one.
+
+The ladder is two tiers — a run of 4, then a run of 5 — and within each tier the gaps walk through four positions. `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on; then **`random`**, which closes the tier by withholding the one thing the other three hand over for free — knowing in advance which way the question will run. `random` is every shape with nothing filtered out, so it is also the only setting that splits the gaps (`_x_x_`) rather than keeping them in a block. `mixed` remains a legal value but no level asks for it.
 
 ### Why the frontiers are separate
 
