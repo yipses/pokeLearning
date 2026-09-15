@@ -1363,7 +1363,7 @@
 
     <div class="card">
       <h2><span class="chip">📖</span> Reading Trail</h2>
-      <p class="sub">Fixed 5-choice formats — Read &amp; Choose (see a picture, pick the word) and Reverse Read &amp; Choose (see a word, pick the picture) — so difficulty stays constant round to round.</p>
+      <p class="sub">Fixed 5-choice formats — Read &amp; Choose (see a picture, pick the word) and Reverse Read &amp; Choose (see a word, pick the picture) — so difficulty stays constant round to round. The alphabet run has its own trail below.</p>
 
       <div class="field">
         <label>Turn on reading
@@ -1377,6 +1377,25 @@
           <span class="hint" id="readingLevelHint">—</span>
         </label>
         <select id="readingFrontier"></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="chip">🔤</span> Alphabet Trail</h2>
+      <p class="sub">A run of the alphabet with gaps in it, filled by picking the Pok&eacute;mon whose name starts with the missing letter. Its own ladder in <code>data/alphabet_levels.csv</code> — the run grows, the gaps multiply, and they move between the start, middle and end.</p>
+
+      <div class="field">
+        <label>Turn on alphabet
+          <span class="hint">Include alphabet-run rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="alphaOn" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="field">
+        <label>Alphabet level
+          <span class="hint" id="alphabetLevelHint">—</span>
+        </label>
+        <select id="alphabetFrontier"></select>
       </div>
     </div>
 
@@ -1491,7 +1510,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 91;
+const APP_BUILD = 92;
 const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
@@ -1530,6 +1549,7 @@ let PHONEMES = {};
 let SPELLING_ROWS = [];
 let ALPHABET_POOL = {};   // "A" -> Pokémon whose names start with it; see loadData
 let READING_ROWS = [];
+let ALPHABET_ROWS = [];
 let MATH_TRACK_ROWS = [], MATH_LEVEL_ROWS = [], MATH_PROMO_ROWS = [];
 
 // Minimal RFC-4180-ish parser: handles quoted fields and doubled quotes inside
@@ -1593,7 +1613,7 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
    the CSV by hand, so don't "normalise" them back. */
 
 async function loadData(){
-  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, phonemeRows,
+  const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
@@ -1601,6 +1621,7 @@ async function loadData(){
     fetchCsv("data/item_levels.csv"),
     fetchCsv("data/spelling_levels.csv"),
     fetchCsv("data/reading_levels.csv"),
+    fetchCsv("data/alphabet_levels.csv"),
     fetchCsv("data/phonemes.csv"),
     fetchCsv("data/math_tracks.csv"),
     fetchCsv("data/math_levels.csv"),
@@ -1678,10 +1699,15 @@ async function loadData(){
     pokemonLetters: n(r.pokemon_letters), wrongAnswers: n(r.wrong_answers),
     distractorLevel: n(r.distractor_level),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
-    // Alphabet mode: how long the run of letters is, how many of them are blank,
-    // and where the blanks may fall. See ALPHA_POSITIONS.
+  }));
+  /* Alphabet is its own trail with its own ladder — see §alphabet track. How long
+     the run of letters is, how many of them are blank, and where the blanks may
+     fall. See ALPHA_POSITIONS. */
+  ALPHABET_ROWS = alphaRows.map(r => ({
+    level: n(r.level),
     alphaLength: n(r.alpha_length), alphaBlanks: n(r.alpha_blanks),
     alphaBlankPos: String(r.alpha_blank_position || "").trim().toLowerCase(),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
 
   // Keyed chunk|context. A blank say_as is meaningful — the silent e says nothing.
@@ -1693,6 +1719,7 @@ async function loadData(){
   if(!GRADED_ITEMS.length) throw new Error("data/item_levels.csv graded no items");
   if(!SPELLING_ROWS.length) throw new Error("data/spelling_levels.csv is empty");
   if(!READING_ROWS.length) throw new Error("data/reading_levels.csv is empty");
+  if(!ALPHABET_ROWS.length) throw new Error("data/alphabet_levels.csv is empty");
 
   /* Every Pokémon filed under the letter its name starts with. The alphabet mode
      draws from the whole roster rather than the caught generations: a single
@@ -1705,7 +1732,7 @@ async function loadData(){
     const L = p.n[0].toUpperCase();
     if(L >= "A" && L <= "Z") (ALPHABET_POOL[L] ||= []).push(p);
   }
-  for(const row of READING_ROWS) checkAlphaRow(row);
+  for(const row of ALPHABET_ROWS) checkAlphaRow(row);
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
@@ -1741,11 +1768,11 @@ function alphaWindows(len){
   }
   return out;
 }
-/* A reading row that can't produce an alphabet question is a data error, not a
-   thing to paper over at play time: three blanks in a run of two has no answer,
-   and neither does "middle" with more blanks than there are interior slots. */
+/* An alphabet row that can't produce a question is a data error, not a thing to
+   paper over at play time: three blanks in a run of two has no answer, and
+   neither does "middle" with more blanks than there are interior slots. */
 function checkAlphaRow(row){
-  const at = `data/reading_levels.csv level ${row.level}`;
+  const at = `data/alphabet_levels.csv level ${row.level}`;
   if(!(row.alphaLength >= 2)) throw new Error(`${at}: alpha_length must be 2 or more`);
   if(!(row.alphaBlanks >= 1)) throw new Error(`${at}: alpha_blanks must be 1 or more`);
   if(row.alphaBlanks >= row.alphaLength) throw new Error(`${at}: alpha_blanks (${row.alphaBlanks}) must be fewer than alpha_length (${row.alphaLength})`);
@@ -1782,7 +1809,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
-const TRACK_IDS = ["spelling","reading", ...MATH_TRACK_IDS];
+const TRACK_IDS = ["spelling","reading","alphabet", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -1814,6 +1841,7 @@ let progress = loadProgress();
 function trackLevels(track){
   if(track==="spelling") return SPELLING_LEVELS;
   if(track==="reading") return READING_LEVELS;
+  if(track==="alphabet") return ALPHABET_LEVELS;
   return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
 function frontierIndex(track){
@@ -1828,7 +1856,8 @@ function currentLevel(track){ return trackLevels(track)[frontierIndex(track)]; }
    prove it twenty times, and one they haven't got comes back around through the
    review band anyway.
 
-   Spelling and Reading carry their two percentages per level in their own CSVs.
+   Spelling, Reading and Alphabet carry their two percentages per level in their
+   own CSVs.
    Maths has one table for every track, in `data/math_promotion.csv`, and it is
    a different shape — three gates rather than two, and stricter at ten. */
 const PROMOTE = { fastN: 5, windowN: 10 };
@@ -2290,12 +2319,21 @@ function mkAlphabet(row){
   return { kind:"alpha", letters, slots, blanks };
 }
 
-// Reading serves three modes in equal share: picture-to-word, word-to-picture,
-// and the alphabet run.
+/* ---------------- §alphabet track ----------------
+   Alphabet used to be one of three modes inside Reading, reading its shape off
+   the reading row. It could not stay there. The sheet gives it SEVEN levels to
+   Reading's TEN, and every track indexes its levels by its own frontier — so at
+   Reading 8, 9 and 10 there is simply no alphabet row to read. It also carries
+   its own promotion percentages, which a borrowed ladder would never consult.
+   Two independent reasons, both arithmetic rather than taste.
+
+   Knowing the alphabet and being able to read words are different skills that
+   move at different speeds anyway, which is the same argument that already gives
+   Spelling and Reading separate frontiers. */
+
+// Reading serves two modes in equal share: picture-to-word and word-to-picture.
 function mkReading(row){
-  const pick = rand(3);
-  if(pick === 0) return mkAlphabet(row);
-  return mkReadingRow(row, pick === 1 ? "choose" : "reverse");
+  return mkReadingRow(row, rand(2) === 0 ? "choose" : "reverse");
 }
 
 // Both ladders are built from their CSV rows. The label is what Settings and the
@@ -2318,17 +2356,33 @@ function buildReadingLevels(){
     gen: ()=> mkReading(row),
   }));
 }
-let SPELLING_LEVELS = [], READING_LEVELS = [];
+/* The label names the shape of the run, because that IS the difficulty here —
+   there are no word pools to describe. "A run of 3, 2 blanks at the end". */
+function buildAlphabetLevels(){
+  return ALPHABET_ROWS.map(row => ({
+    id: String(row.level), row,
+    label: `A run of ${row.alphaLength}, ` +
+           `${row.alphaBlanks} ${row.alphaBlanks === 1 ? "blank" : "blanks"} ` +
+           ({first:"at the start", last:"at the end", middle:"in the middle", mixed:"anywhere inside"}[row.alphaBlankPos] || row.alphaBlankPos),
+    gen: ()=> mkAlphabet(row),
+  }));
+}
+let SPELLING_LEVELS = [], READING_LEVELS = [], ALPHABET_LEVELS = [];
 
 
 /* ---------------- build a session queue ---------------- */
 // Each active mode contributes a generator; every challenge slot picks a random active mode.
-/* A round is split in thirds — spelling, reading, maths — rather than evenly
-   across every track. Maths has eight tracks to Spelling's and Reading's one
-   each, so an even split would hand a fully-unlocked child eight questions in
-   ten as maths and reduce spelling to one. The maths third is then shared among
-   whichever tracks are live, so newly opened ones start appearing immediately.
-   Turning a mode off gives its share to the others. */
+/* A round is split evenly between the modes that are ON — spelling, reading,
+   alphabet, maths — rather than evenly across every TRACK. Maths has eight tracks
+   to the others' one each, so a per-track split would hand a fully-unlocked child
+   eight questions in ten as maths and reduce spelling to one. The maths share is
+   then divided among whichever tracks are live, so newly opened ones start
+   appearing immediately. Turning a mode off gives its share to the others.
+
+   Alphabet became its own share when it became its own trail (§alphabet track).
+   It used to be one third of Reading's third — about 11% of a round; as a mode in
+   its own right it is a quarter. That is a real change in what a round feels
+   like, and the switch above is how to undo it. */
 function buildQueue(){
   const wordPick = track => () => {
     const {level, isFrontier} = pickBand(track);
@@ -2353,6 +2407,7 @@ function buildQueue(){
   const groups = [];
   if($("#spellOn").checked)   groups.push(wordPick("spelling"));
   if($("#readingOn").checked) groups.push(wordPick("reading"));
+  if($("#alphaOn").checked)   groups.push(wordPick("alphabet"));
   if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
   if(groups.length === 0) return [];
 
@@ -2405,6 +2460,7 @@ function saveSettings(){
     revealAfter: $("#revealAfter").value,
     spellOn: $("#spellOn").checked,
     readingOn: $("#readingOn").checked,
+    alphaOn: $("#alphaOn").checked,
     mathOn: $("#mathOn").checked,
     visualOn: $("#visualOn").checked
   };
@@ -2421,6 +2477,7 @@ function loadSettings(){
   if(saved.grassRate!=null) $("#grassRate").value = saved.grassRate;
   if(saved.spellOn!=null) $("#spellOn").checked = saved.spellOn;
   if(saved.readingOn!=null) $("#readingOn").checked = saved.readingOn;
+  if(saved.alphaOn!=null) $("#alphaOn").checked = saved.alphaOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
 }
@@ -2650,6 +2707,13 @@ const LEVEL_ICONS = {
   reading: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">
       <path d="M3 5.1C5.3 3.7 8 3.2 11.1 3.9v15.9c-3.1-.7-5.8-.2-8.1 1.1z"/>
       <path d="M21 5.1C18.7 3.7 16 3.2 12.9 3.9v15.9c3.1-.7 5.8-.2 8.1 1.1z" opacity=".58"/></svg>`,
+  // Alphabet is letters in sequence, which is exactly what the trail is about,
+  // and "ABC" reads differently enough from Spelling's "Aa" to tell the two
+  // tiles apart at a glance.
+  alphabet: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18.5"
+      text-anchor="middle" textLength="22" lengthAdjust="spacingAndGlyphs"
+      font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
+      style="text-transform:none" fill="currentColor">ABC</text></svg>`,
   // Both maths tracks carry the same numerals: the icon's job is to say "this
   // is maths", and the label beside it says which operation. Two different
   // symbols there made them look like two unrelated subjects.
@@ -2664,6 +2728,7 @@ LEVEL_ICONS.muldiv = LEVEL_ICONS.addsub;
 const LEVEL_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
   {id:"reading",  label:"Reading",  color:"#9a6bd6"},
+  {id:"alphabet", label:"Alphabet", color:"#e08a4f"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
@@ -3437,6 +3502,7 @@ function renderPokedex(){
 const WORD_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
   {id:"reading",  label:"Reading",  color:"#9a6bd6"},
+  {id:"alphabet", label:"Alphabet", color:"#e08a4f"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
@@ -5066,6 +5132,7 @@ function renderTrailSettings(){
   renderMathTrailSettings();
   renderTrailSelect("spelling", "#spellingFrontier", "#spellingLevelHint", "Level");
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
+  renderTrailSelect("alphabet", "#alphabetFrontier", "#alphabetLevelHint", "Level");
 }
 
 /* ---------------- wire up ----------------
@@ -5103,6 +5170,7 @@ function migrateFrontiers(){
   catch(err){ console.error(err); showDataError(err); return; }
   SPELLING_LEVELS = buildSpellingLevels();
   READING_LEVELS = buildReadingLevels();
+  ALPHABET_LEVELS = buildAlphabetLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
   loadSettings();

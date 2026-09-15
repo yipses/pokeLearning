@@ -12,7 +12,7 @@
 
 Poké Learning is a no-build, no-dependency HTML/CSS/JS app — one page plus a folder of CSV data and local artwork — that turns spelling, reading, and math practice into short, randomized, Pokémon-themed mini-games. A session mixes challenges from whichever modes are turned on, tracks a score, and ends with a results screen.
 
-Difficulty is not a setting a parent picks and re-picks. Ten **Lesson Trails** — Spelling, Reading, and eight maths tracks — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
+Difficulty is not a setting a parent picks and re-picks. Eleven **Lesson Trails** — Spelling, Reading, Alphabet, and eight maths tracks — each hold their own level and advance on their own based on real performance. Alongside the practice modes: a Pokédex-style collection game (catch Pokémon hiding in the grass as you answer correctly, generation by generation), a daily play streak, a progress screen, and a separate, unscored Battle mode where the player picks a Pokémon and watches a stat/type-based "who would win" prediction play out.
 
 ## 2. Goals
 
@@ -158,11 +158,12 @@ The earliest levels have single-figure pools, so the generator never repeats the
 
 **10 levels, defined entirely in `data/reading_levels.csv`,** selecting words by exactly the same three columns as Spelling — one vocabulary grading feeds both trails, so a word met in Reading at level 4 is a word Spelling asks for at level 4. The two frontiers move independently, which lets Reading run ahead: recognising a word is easier than producing it.
 
-Three formats, picked at random per question in equal share:
+Two formats, picked at random per question in equal share:
 
 - **Read & Choose** — one picture, N word options.
 - **Reverse Read & Choose** — one written word, N picture options.
-- **Alphabet** — a run of consecutive letters with gaps in it (see below).
+
+Alphabet used to be a third format here. It is now **its own trail** (§6.3), with its own ladder, frontier, promotion and Settings switch.
 
 Difficulty ramps on two columns of its own:
 
@@ -175,13 +176,15 @@ Difficulty ramps on two columns of its own:
 
 A Reading answer is **clean** when the first tap was the correct one. Using a picture's speaker does not affect cleanliness.
 
-#### Alphabet
+### 6.3 Alphabet — its own trail
 
 A run of consecutive letters is laid out left to right, each shown as a Pokémon whose name starts with it, and some of them are gaps. The child works out which letter a gap is and picks the Pokémon whose name starts with it. Gaps open one at a time, left to right, and the run stays on screen while it fills — the sequence *is* the question, so hiding the letters already found would turn "what comes after C" into a guess.
 
 **The run prints its letters; the options do not.** That split is the whole exercise: the run says what is being asked for, and the only way to answer is to read an option's name and see what it starts with. Printing the letter on the options too would leave nothing to read.
 
-Three columns of `data/reading_levels.csv` control it:
+**It has its own ladder, not Reading's.** It used to sit inside Reading and read its shape off the reading row, and that could not survive the sheet: the alphabet ladder has **seven** levels to Reading's **ten**, and a track indexes its levels by its own frontier — so at Reading 8, 9 and 10 there was no alphabet row to read at all. It carries its own promotion percentages too, which a borrowed ladder would never consult. Two arithmetic reasons, not a matter of taste. Knowing the alphabet and reading words are different skills moving at different speeds, which is the same argument that already gives Spelling and Reading separate frontiers.
+
+Seven levels in `data/alphabet_levels.csv`, three columns controlling them:
 
 - **`alpha_length`** — how much of the alphabet is on screen. **Shorter is harder**, not easier: a run of 4 gives three letters to count along, a run of 2 gives one.
 - **`alpha_blanks`** — how many of those are gaps.
@@ -190,6 +193,8 @@ Three columns of `data/reading_levels.csv` control it:
 Two things are fixed in code rather than in the sheet: there are always **four options**, and they are **spread at least four letters apart** — from each other and from the answer.
 
 **The options are spread because the distractors are not where the difficulty lives.** A child answers by reciting from the song, deriving "M", and then going looking for it — the options play no part in deriving it. Crowding them around the answer would only add a second, unrelated task afterwards, telling M from N, O and P in a lineup, which is letter-shape recognition: work out M, tap Noivern, and the failure says nothing about which step broke. M N O P is the slurred stretch of the alphabet song besides, so a gap after L would draw its options from exactly the letters least likely to have been pulled apart yet. Spread out, a correctly derived answer is unambiguously findable and a guess is unlikely to land, so the derivation is what decides right or wrong. Difficulty rides on the three sheet columns instead.
+
+**A round is split evenly between the modes that are on.** With spelling, reading, alphabet and maths all switched on that is a quarter each — the maths quarter then shared among whichever maths tracks are live. As one third of Reading's third, alphabet was about **11%** of a round; as a mode of its own it is **25%**. The Settings switch is how to turn it back down.
 
 Letters already on screen are excluded as well, worked out per gap rather than once per question because the run fills in as it is answered: given or filled a moment ago, a visible letter can be ruled out by looking, so it is a free elimination.
 
@@ -435,6 +440,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `shared_art`, `letters`, `longest_word`, `spellable` |
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
+| `data/alphabet_levels.csv` | 7 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |

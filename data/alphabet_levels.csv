@@ -1,0 +1,8 @@
+level,alpha_length,alpha_blanks,alpha_blank_position,promote_5_pct,promote_10_pct
+1,2,1,last,100,80
+2,2,1,first,100,80
+3,3,1,middle,100,80
+4,3,2,last,100,80
+5,3,2,first,100,80
+6,4,3,first,100,80
+7,4,3,last,100,80

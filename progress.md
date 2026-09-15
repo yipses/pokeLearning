@@ -6,7 +6,7 @@ How the project got from a basic spelling/math quiz to where it is now, and the 
 
 ## Where things stand
 
-Everything speced is built and published on GitHub Pages: ten Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and every ladder in editable CSVs.
+Everything speced is built and published on GitHub Pages: eleven Lesson Trails promoting, My progress, the Pokédex with detail, tabs and legendary call-outs, Battle, and every piece of content and every ladder in editable CSVs.
 
 **Maths is eight tracks over 68 levels** — add, subtract, multiply, divide and a skip-counting pattern track for each — with prerequisites and promotion gates authored in the spreadsheet. Tracks open on each other's progress rather than in sequence, so the ladder widens as it is climbed. Home and My progress collapse the eight into two families, `+ / −` and `× / ÷`.
 
@@ -468,6 +468,35 @@ drop  fail    rolled  caught  rate    worst drought
 Spelling now lights **green** (`#4e9d63` border, filled face, pulsing halo), scoped to `#tiles` and `#missingTiles` only. Maths, Reading and Alphabet keep amber, because green already means "you got it" in Reading and this must not. Green is free in the spelling bank for the mirror-image reason: a correct chunk turns the **slot** green and fades its tile out, so no tile ever wears green to mean "right". A resting tile is already leaf-bordered, so the lit state has to out-shout it — hence the deeper border and filled face rather than a ring alone, which vanished against the tile's own border in the first attempt.
 
 Verified end to end: failed question pays nothing, encounter stays pending with the grass still rustling, and the *same* Pokémon is claimed by the next clean answer. Lit tile measures `rgb(78,157,99)` against a cursor at `rgb(242,176,61)`.
+
+## Phase 75 — Alphabet becomes its own trail
+
+Alphabet was one of three modes inside Reading, reading its shape off the reading row. The sheet's new **Alpha Level** table made that impossible rather than merely untidy:
+
+- **Seven levels against Reading's ten.** A track indexes its levels by its own frontier, so at Reading 8, 9 and 10 there was no alphabet row to read.
+- **Its own promotion percentages.** A borrowed ladder would never have consulted them.
+
+Two arithmetic reasons. The original argument for sharing — that alphabet is the same skill one rung earlier, so it gives the Reading frontier something to do at the bottom of the ladder — still explains why the mode exists, but it never justified sharing a ladder once the two ladders had different lengths. Separate frontiers are what Spelling and Reading already get, for the same reason.
+
+`data/alphabet_levels.csv` is new; the three `alpha_*` columns left `reading_levels.csv`.
+
+| Level | Run | Blanks | Where |
+| --- | --- | --- | --- |
+| 1 | 2 | 1 | last |
+| 2 | 2 | 1 | first |
+| 3 | 3 | 1 | middle |
+| 4 | 3 | 2 | last |
+| 5 | 3 | 2 | first |
+| 6 | 4 | 3 | first |
+| 7 | 4 | 3 | last |
+
+The ladder mostly holds "one anchor letter given" steady while the blanks grow 1 → 2 → 3, alternating first/last so direction is drilled both ways. That is a cleaner ramp than the one buried in `reading_levels.csv`, which grew run length and blanks together. One small non-monotonicity worth knowing rather than fixing: **level 3 (`x_x`) is arguably easier than 1 and 2**, since it brackets the answer on both sides where they give one anchor.
+
+**The round share changed, and this is the part to watch.** Alphabet was one third of Reading's third — about **11%** of a round. As a mode of its own it is a **quarter**. Measured on a 40-question queue with all four modes on: 13 spelling, 13 reading, 13 alphabet, 10 maths. That is more than double the alphabet a round used to carry, and `#alphaOn` is how to turn it back down.
+
+Verified: 1,400 generated alphabet questions across all 7 levels, zero bad — run length, blank count, option count, answer present, at least one letter always shown. Reading now generates `reading` kind only (3,000 samples, no `alpha`). Frontier independence checked both ways — Reading at 10 with Alphabet at 1, and Alphabet at its own top 7. Promotion gates read from the new CSV. A full 12-question round with all four modes finished at 12 credits with every track appearing, no console errors.
+
+Two test artifacts cost time and are worth recording: the home screen's section id is `setup`, not `home`, so `show("home")` silently hid the panel being screenshotted; and a play-loop that never awaits will spin out its whole guard budget during `lockAndAdvance`'s ~1s hold, which reads exactly like a stall.
 
 ## Doc roles
 
