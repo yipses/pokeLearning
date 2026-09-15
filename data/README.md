@@ -113,9 +113,13 @@ Derived from `word_levels.csv`; regenerate rather than edit. A single-word item 
 
 The Spelling (25) and Reading (10) trails, one row per level. **These are the ladders** — `index.html` holds no copy, so editing a row changes the game.
 
-Shared columns: `word_level` (single-word items at or below this level), `compound_level` (multi-word items at or below this; `0` = none), `pokemon_letters` (name length cap, still generation-gated), `promote_5_pct` and `promote_10_pct` (the two promotion gates, per level).
+Shared columns: `word_level` (single-word items at or below this level), `compound_level` (multi-word items at or below this; `0` = none), `name_letters` (**the longest name the level may serve, items and Pokémon alike** — Pokémon stay generation-gated on top of it), `promote_5_pct` and `promote_10_pct` (the two promotion gates, per level).
 
 Spelling adds `hinted_letters` — **a count of letters shown, not a share**.
+
+**Why `name_letters` covers items too.** It used to cap only Pokémon, and items were admitted on phonics alone. That let `Pink hut kit` — three level-1 CVC words — into spelling level 5, because **a compound is graded by its hardest component word and never by how many of them there are**. Ten letters and nine blanks, in a pool whose median item was five. `word_level` answers *has he been taught this pattern*; nothing in it can answer *how much is there to hold in your head*. The two are independent axes, and level 5 of the phonics ladder is typically **shorter** than level 4, so one cannot stand in for the other.
+
+Watch the interaction with `compound_level`: the shortest multi-word item is `Log bed` at six letters, so a row with `compound_level` above 0 and `name_letters` below 6 switches compounds on and gets none. The load check does not catch that — it is legal data, just inert.
 
 `hinted_letters` is the one difficulty column in these files that is an absolute number rather than something scaled to the item. Two letters is two letters, so the same value is much harsher on a twelve-letter name than a four-letter one; that is the point, and it is why the counts rise again at the top of the ladder where the words get long. A count larger than the word is safe — at least one blank always remains — and `0` means the empty-tile Full Spelling task, which no level currently asks for.
 

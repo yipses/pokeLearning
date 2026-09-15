@@ -1562,7 +1562,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 95;
+const APP_BUILD = 96;
 const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
@@ -1743,12 +1743,12 @@ async function loadData(){
 
   SPELLING_ROWS = spellRows.map(r => ({
     level: n(r.level), wordLevel: n(r.word_level), compoundLevel: n(r.compound_level),
-    pokemonLetters: n(r.pokemon_letters), hintedLetters: n(r.hinted_letters),
+    nameLetters: n(r.name_letters), hintedLetters: n(r.hinted_letters),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
   READING_ROWS = readRows.map(r => ({
     level: n(r.level), wordLevel: n(r.word_level), compoundLevel: n(r.compound_level),
-    pokemonLetters: n(r.pokemon_letters), wrongAnswers: n(r.wrong_answers),
+    nameLetters: n(r.name_letters), wrongAnswers: n(r.wrong_answers),
     distractorLevel: n(r.distractor_level),
     fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
   }));
@@ -2178,7 +2178,8 @@ function mathGroupProgress(groupId){
      word_level       single-word items graded at or below this phonics level
      compound_level   multi-word items whose hardest word is at or below this
                       (0 switches compounds off entirely)
-     pokemon_letters  Pokémon names up to this many letters, generation-gated
+     name_letters     any name up to this many letters — items and Pokémon alike.
+                      Pokémon stay generation-gated on top of it
                       as ever — invented names have no phonics level, so length
                       is the only honest measure for them
 
@@ -2208,9 +2209,17 @@ function mathGroupProgress(groupId){
    — Spelling sets it, because asking a child to *produce* "Hoppip" is memory,
    not phonics, and those names are already reachable through the Pokémon pool
    under the generation gate. Reading leaves them in. */
+/* `name_letters` caps EVERY name a row can serve — items as well as Pokémon.
+   It used to cap only Pokémon, and items were graded by phonics alone. That let
+   "Pink hut kit" — three level-1 CVC words — into spelling level 5, because a
+   compound is graded by its hardest component word and never by how many of them
+   there are. Ten letters and nine blanks, in a pool whose median item was five.
+   Word level answers "has he been taught this pattern"; it cannot answer "how
+   much is there to hold in your head", and only a length cap can. */
 function itemsForRow(row, skipProper){
   return GRADED_ITEMS.filter(it => {
     if(skipProper && it.proper) return false;
+    if(letterCount(it.n) > row.nameLetters) return false;
     return it.multi
       ? (row.compoundLevel > 0 && it.lvl <= row.compoundLevel)
       : it.lvl <= row.wordLevel;
@@ -2223,7 +2232,7 @@ function genGatedSpellablePokemon(){
   return pool;
 }
 function pokemonForRow(row){
-  return genGatedSpellablePokemon().filter(p => letterCount(p.n) <= row.pokemonLetters);
+  return genGatedSpellablePokemon().filter(p => letterCount(p.n) <= row.nameLetters);
 }
 /* The whole pool for a row. Items and Pokémon are pooled rather than picked from
    in fixed proportion: the mix shifts naturally as the ladder climbs, since the

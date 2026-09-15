@@ -580,6 +580,36 @@ Verified over 1,020 questions per width at 360px and 900px: exactly two box size
 
 **Found while verifying, not fixed:** nine loose ones in the ten-box layout wrap as **8+1** at phone width, which the code comment beside them explicitly forbids — "wrapped as eight-then-one they read as eight and one, and nine-versus-ten is the comparison this whole layout exists to make visible". Nine icons need 275px against 276px available, so it loses on rounding. Confirmed identical on the deployed build, so it predates this. Still open.
 
+## Phase 79 — one length cap for every name
+
+Reported from play: spelling level 7 served `Pink hut kit`. Ten letters, eight blanks, in a pool whose median item was five.
+
+**The cause was a grading rule, not a data error.** A compound item takes the level of its *hardest component word* and never counts how many words there are. `pink`, `hut` and `kit` are all level-1 short-vowel CVC, so the phrase grades as level 1 — the same level as `Mug`. Measured: it was 2.2% of level-7 questions, about one in forty-five, and the level-7 pool had a cliff at the top, 24 of 34 items at 3–5 letters and then three at ten.
+
+`word_level` answers *has he been taught this pattern*. It cannot answer *how much is there to hold in your head*, and measuring the word list showed why the two can never substitute:
+
+```
+level 3  Consonant blends  3-10 letters  median 6
+level 4  Digraphs          3-11 letters  median 6
+level 5  Silent-e          3-6  letters  median 4   <- shorter than level 4
+```
+
+Four-letter words appear at eight of the nine phonics levels. The ladder is a decoding sequence, not a length sequence.
+
+So `pokemon_letters` became **`name_letters`** and now caps items as well as Pokémon, in both Spelling and Reading. Verified: **`longest item == cap` at every level of both ladders** — the cliff is closed end to end, no name exceeds its cap anywhere, no pool is empty, and every reading level still clears its option count. `Pink hut kit` moves from level 5 to **level 14**.
+
+**What the review of the sheet turned up**, measured as expected blanks per question against each level's real pool:
+
+- **Spelling 6 and 7 were identical rows** — same word level, compound level, cap and hint. Promoting between them changed nothing. Fixed by moving level 7 to a cap of 7.
+- **Nine of 24 promotions did not increase difficulty.** Most are tier boundaries where `hinted_letters` resets upward, which is defensible scaffolding — new phonics pattern, more support. But the tier *floors* ran 3.27, 4.01, 3.37, 4.21, 3.49, 3.83, 5.43, so **level 17 asked for less work than level 8**, nine levels earlier. That is harder to defend, and the cause was the tier-start hint *rising* as tiers climbed.
+- **Spelling levels 5 and reading level 3 switched `compound_level` on with a cap of 5**, while the shortest compound is `Log bed` at six. The column was on and inert.
+
+A strictly monotonic 25-level ladder was searched for and is **not worth having**: it needs 13 cap bumps, flattens `hinted_letters` to 1 almost everywhere, still fails at level 10, and leaves middle steps of +0.05 that no child could feel. The tier sawtooth is the better design; it only needed its floors ordered.
+
+After the sheet pass the floors run 3.29, 4.03, 3.44, 4.28, 4.48, 4.74, 6.35 — one dip left, at level 11.
+
+One rejected suggestion worth recording: to remove the level-1-to-2 inversion I proposed raising level 2's cap to 5, which would have made the `name_letters` column read 3, 5, 4, 5 — up then down. Caught immediately, and rightly: a column that goes backwards reads as a typo and invites being "corrected" later.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
