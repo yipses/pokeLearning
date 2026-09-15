@@ -446,6 +446,29 @@ Wrong taps had to stop spending round credit for any of this to work. Earning tw
 
 Verified: 2,160 driven questions across all 36 settings combinations, zero violations — credit always equal to `told <= free`, never more than one tile lit, **zero consecutive lit taps**, never told without paying a wrong tap first, and never told while still spotless. Maths, reading and alphabet unchanged, including the `mistakeAllowance + 1` interlock, which spelling is now deliberately exempt from.
 
+## Phase 74 — the two things Phase 73 left open
+
+Both were found while chasing the Phase 73 bug and both were real, so they were written down rather than fixed in the same breath. Closed now.
+
+**The Pokémon was ungated.** `maybeStartGrassEncounter()` rolls in `renderProblem()` — before the question is attempted — and `next()` paid out unconditionally. Every rule above it was decorative: a child shown the answer lost the round credit and the promotion credit, and caught a Pikachu anyway. The only consequence he could perceive was a bar that did not move.
+
+A question that doesn't count for the round now doesn't pay one out. The encounter is **kept rather than spent**, which is the part that matters beyond kindness: `sinceEncounter` resets when an encounter is *rolled*, not when one is caught, so discarding an unclaimed one would have quietly pushed the real catch rate below the rate the pity timer guarantees — the drought cap would have been counting encounters offered rather than Pokémon caught. Simulated at 20,000 questions per setting:
+
+```
+drop  fail    rolled  caught  rate    worst drought
+10%    0%       2008    2008   10.0%   11  (= pity cap, unchanged)
+10%   30%       1901    1901    9.5%   17
+10%   60%       1734    1734    8.7%   25
+```
+
+`rolled == caught` in every run: nothing is lost, only delayed. What a struggling child gives up is timing, not Pokémon. One honest caveat at high settings: a pending encounter blocks the next roll, so 50% drop against 50% failure lands at 33% rather than 50% — the field becomes a ceiling rather than a rate once failures outpace the roll. At the default 10% the cost is small.
+
+**The cursor and the reveal were the same amber.** `.mw-slot.current` / `.slot.active` paint `--sun-deep` with an `rgba(255,214,107,.5)` glow; `.answer-lit` paints `--sun-deep` with `rgba(255,171,107,.55)`. Forty-three points apart on one channel — indistinguishable in play, and the reason "I got the hint, still got progress" was reported on a question where nothing had gone wrong at all.
+
+Spelling now lights **green** (`#4e9d63` border, filled face, pulsing halo), scoped to `#tiles` and `#missingTiles` only. Maths, Reading and Alphabet keep amber, because green already means "you got it" in Reading and this must not. Green is free in the spelling bank for the mirror-image reason: a correct chunk turns the **slot** green and fades its tile out, so no tile ever wears green to mean "right". A resting tile is already leaf-bordered, so the lit state has to out-shout it — hence the deeper border and filled face rather than a ring alone, which vanished against the tile's own border in the first attempt.
+
+Verified end to end: failed question pays nothing, encounter stays pending with the grass still rustling, and the *same* Pokémon is claimed by the next clean answer. Lit tile measures `rgb(78,157,99)` against a cursor at `rgb(242,176,61)`.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

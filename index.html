@@ -433,9 +433,10 @@
   .alpha-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
   .alpha-opt.shake{ animation: shake .42s; }
 
-  /* Bounded failure: the answer lit up after enough wrong taps. Deliberately NOT
-     the green of a correct answer — this says "here it is", not "you got it" —
-     and it pulses so it reads as an invitation to tap rather than a result. */
+  /* Bounded failure: the answer lit up after enough wrong taps. It pulses, so it
+     reads as an invitation to tap rather than a result — a correct answer never
+     moves. In Maths, Reading and Alphabet it is amber, deliberately not the green
+     those modes already use to mean "you got it". */
   @keyframes answer-lit-pulse{
     0%,100%{ box-shadow:0 0 0 3px rgba(255,171,107,.55), var(--shadow-sm); }
     50%    { box-shadow:0 0 0 8px rgba(255,171,107,.28), var(--shadow-sm); }
@@ -446,6 +447,30 @@
   }
   @media (prefers-reduced-motion: reduce){
     .answer-lit{ animation:none; box-shadow:0 0 0 5px rgba(255,171,107,.5), var(--shadow-sm); }
+  }
+
+  /* SPELLING lights green instead, because amber is already taken there: the blank
+     being filled wears an amber ring as a cursor (.slot.active / .mw-slot.current),
+     on every question, from the moment it loads and with nothing wrong. Two
+     near-identical ambers meant a parent watching could not tell "you are here"
+     from "here is the answer" — the help was invisible, which is the one thing it
+     must not be. Green is free here: a correct chunk turns the SLOT green and
+     fades its tile out, so no tile in the bank ever wears green to mean "right".
+     A resting tile is already leaf-bordered, so this has to out-shout it —
+     hence the deeper border, the filled face and the wider halo. */
+  @keyframes answer-lit-green-pulse{
+    0%,100%{ box-shadow:0 0 0 4px rgba(78,157,99,.55), 0 5px 0 var(--leaf-deep); }
+    50%    { box-shadow:0 0 0 10px rgba(78,157,99,.22), 0 5px 0 var(--leaf-deep); }
+  }
+  #tiles .tile.answer-lit, #missingTiles .tile.answer-lit{
+    border-color:var(--leaf-deep) !important;
+    background:linear-gradient(180deg,#e2f6e6,#c2e9ca);
+    animation: answer-lit-green-pulse 1.25s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #tiles .tile.answer-lit, #missingTiles .tile.answer-lit{
+      animation:none; box-shadow:0 0 0 6px rgba(78,157,99,.5), 0 5px 0 var(--leaf-deep);
+    }
   }
 
   /* math question + answer choices */
@@ -1466,7 +1491,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 90;
+const APP_BUILD = 91;
 const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
@@ -2715,8 +2740,17 @@ function renderProblem(){
   else renderMath(p);
 }
 
+/* A Pokémon is a reward for ANSWERING, not for arriving. The encounter is rolled
+   in renderProblem — before the question is even attempted — and used to pay out
+   however the question went, so a child who was shown the answer caught one
+   exactly as if he had spelled it himself. The round bar not moving was the only
+   consequence he could perceive, against a Pikachu he got anyway, which made
+   every rule above it decorative.
+
+   A question that doesn't count for the round doesn't pay one out. The encounter
+   is KEPT rather than spent — see maybeStartGrassEncounter. */
 function next(){
-  if(grassEncounter && !grassEncounter.caught){
+  if(grassEncounter && !grassEncounter.caught && countsForRound(queue[idx])){
     grassEncounter.caught = true;
     document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
     revealGrassCatch(grassEncounter.poke, advanceQueue);
@@ -2997,9 +3031,21 @@ function grassRoll(pct){
 }
 
 function maybeStartGrassEncounter(){
-  grassEncounter = null;
   hideCatchModal();
   const strip = $("#grassStrip");
+
+  /* An encounter the last question failed to earn CARRIES OVER rather than
+     vanishing. `sinceEncounter` resets when an encounter is rolled, not when it
+     is caught, so dropping an unclaimed one would silently push the real catch
+     rate below the rate the pity timer guarantees — the drought cap would be
+     counting encounters offered rather than Pokémon caught. Keeping it also
+     reads better: he hasn't lost the Pokémon, he has to earn it on the next
+     question. The grass keeps rustling to say so. */
+  if(grassEncounter && !grassEncounter.caught){
+    if(strip) strip.classList.add("shaking");
+    return;
+  }
+  grassEncounter = null;
   if(strip) strip.classList.remove("shaking");
 
   const pct = clampInt($("#grassRate").value, 0, 100, 10);
