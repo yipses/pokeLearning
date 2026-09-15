@@ -498,6 +498,33 @@ Verified: 1,400 generated alphabet questions across all 7 levels, zero bad — r
 
 Two test artifacts cost time and are worth recording: the home screen's section id is `setup`, not `home`, so `show("home")` silently hid the panel being screenshotted; and a play-loop that never awaits will spin out its whole guard budget during `lockAndAdvance`'s ~1s hold, which reads exactly like a stall.
 
+## Phase 76 — `random` gaps, and a rebuilt alphabet ladder
+
+The sheet's Alpha Level table changed shape as well as gaining a value. It is now **11 levels on runs of 4 and 5**, where it was 7 on runs of 2, 3 and 4:
+
+| | run 4 | run 5 |
+| --- | --- | --- |
+| 1 blank | last, middle, first | — |
+| 2 blanks | last, middle, first, **random** | — |
+| 3 blanks | — | last, middle, first, **random** |
+
+Two tiers, each walking `last` → `middle` → `first` → `random`. That closing rung is the point of the new value: the first three all tell the child in advance which way the question runs, and `random` withholds it.
+
+**`random` is every shape with nothing filtered out.** It is deliberately wider than the existing `mixed`, which excludes the two solid end blocks — measured at a run of 4 with 2 blanks, `random` allows **6** shapes against `mixed`'s 4. It is also the only position that produces **non-contiguous gaps**: `_x_x_` had never been reachable before, because every other setting keeps the blanks in one block.
+
+Measured over 3,000 generated questions per level, every allowed shape appears and the distribution is flat:
+
+```
+level  7  (run 4, 2 blanks, random)  6 of 6 shapes    478-537 each   (expect 500)
+level 11  (run 5, 3 blanks, random) 10 of 10 shapes   279-333 each   (expect 300)
+```
+
+33,000 generated questions across all 11 levels, zero bad — run length, blank count, option count, answer present, at least one letter always shown. Split-blank rendering checked on screen at 360px and 420px: five slots stay on one line, and the per-gap distractor exclusion still holds with the gaps apart.
+
+**The ladder got gentler, not harder**, which is worth knowing because the row numbers stayed small. `alpha_length` is *shorter is harder*, so the old level 1 (run of 2, 1 blank — one letter to count from) was harder than the new level 1 (run of 4, 1 blank — three letters). The old top rung gave 1 letter of 4; the new top gives 2 of 5. More rungs, lower at both ends.
+
+One consequence not migrated: a stored `progress.alphabet.frontier` now points at a different question than it did, since the ladder was rebuilt rather than extended. Alphabet had shipped roughly an hour earlier, so any real frontier is 0 or 1 and a migration would cost more than it saves.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

@@ -1510,7 +1510,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 92;
+const APP_BUILD = 93;
 const APP_BUILD_DATE = "15 Sep 2026";
 
 function renderAbout(){
@@ -1736,11 +1736,22 @@ async function loadData(){
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
-   the run. "first"/"last" are the solid block at either end; "middle" is every
-   blank strictly inside; "mixed" is anything that is neither the first block nor
-   the last one — which includes the middle shapes, and is the only setting that
-   can put three blanks in a run of four without them being one solid end. */
-const ALPHA_POSITIONS = ["first", "last", "middle", "mixed"];
+   the run.
+
+     first / last   the solid block at that end.
+     middle         every blank strictly inside — never touching either end.
+     random         EVERY shape, with nothing filtered out. The blanks land where
+                    they land, so they can be split (`_x_x`), sit at an end, or
+                    fall anywhere between; a child cannot learn "the gap is always
+                    at the back" and coast on it. Always answerable: `alpha_blanks`
+                    is checked to be fewer than `alpha_length`, so at least one
+                    letter is given whatever shape comes up.
+     mixed          anything that is neither the first block nor the last one.
+                    Narrower than `random` — it is `random` minus the two solid
+                    end blocks. Kept because it is the only way to ask for three
+                    blanks in a run of four without them being one solid end;
+                    no level currently uses it. */
+const ALPHA_POSITIONS = ["first", "last", "middle", "mixed", "random"];
 function alphaBlankShapes(len, blanks, pos){
   const all = [];
   (function pick(from, got){
@@ -1750,6 +1761,7 @@ function alphaBlankShapes(len, blanks, pos){
   const head = [...Array(blanks).keys()];
   const tail = head.map(i => i + len - blanks);
   const is = (c, want) => c.join() === want.join();
+  if(pos === "random") return all;
   if(pos === "first")  return all.filter(c => is(c, head));
   if(pos === "last")   return all.filter(c => is(c, tail));
   if(pos === "middle") return all.filter(c => c.every(i => i > 0 && i < len - 1));
@@ -2363,7 +2375,8 @@ function buildAlphabetLevels(){
     id: String(row.level), row,
     label: `A run of ${row.alphaLength}, ` +
            `${row.alphaBlanks} ${row.alphaBlanks === 1 ? "blank" : "blanks"} ` +
-           ({first:"at the start", last:"at the end", middle:"in the middle", mixed:"anywhere inside"}[row.alphaBlankPos] || row.alphaBlankPos),
+           ({first:"at the start", last:"at the end", middle:"in the middle",
+             mixed:"anywhere inside", random:"anywhere at all"}[row.alphaBlankPos] || row.alphaBlankPos),
     gen: ()=> mkAlphabet(row),
   }));
 }

@@ -182,13 +182,19 @@ A run of consecutive letters is laid out left to right, each shown as a Pokémon
 
 **The run prints its letters; the options do not.** That split is the whole exercise: the run says what is being asked for, and the only way to answer is to read an option's name and see what it starts with. Printing the letter on the options too would leave nothing to read.
 
-**It has its own ladder, not Reading's.** It used to sit inside Reading and read its shape off the reading row, and that could not survive the sheet: the alphabet ladder has **seven** levels to Reading's **ten**, and a track indexes its levels by its own frontier — so at Reading 8, 9 and 10 there was no alphabet row to read at all. It carries its own promotion percentages too, which a borrowed ladder would never consult. Two arithmetic reasons, not a matter of taste. Knowing the alphabet and reading words are different skills moving at different speeds, which is the same argument that already gives Spelling and Reading separate frontiers.
+**It has its own ladder, not Reading's.** It used to sit inside Reading and read its shape off the reading row, and that could not survive the sheet: the alphabet ladder has **eleven** levels to Reading's **ten**, and a track indexes its levels by its own frontier — so at Reading 8, 9 and 10 there was no alphabet row to read at all. It carries its own promotion percentages too, which a borrowed ladder would never consult. Two arithmetic reasons, not a matter of taste. Knowing the alphabet and reading words are different skills moving at different speeds, which is the same argument that already gives Spelling and Reading separate frontiers.
 
-Seven levels in `data/alphabet_levels.csv`, three columns controlling them:
+Eleven levels in `data/alphabet_levels.csv` — two tiers, a run of 4 then a run of 5 — with three columns controlling them:
 
 - **`alpha_length`** — how much of the alphabet is on screen. **Shorter is harder**, not easier: a run of 4 gives three letters to count along, a run of 2 gives one.
 - **`alpha_blanks`** — how many of those are gaps.
-- **`alpha_blank_position`** — where the gaps may fall: `first` and `last` are the solid block at either end, `middle` is every gap strictly inside the run, and `mixed` is any shape that is neither the first block nor the last one. The ladder walks `last` → `middle` → `first`, which is the order of difficulty: continuing a sequence forward is what the alphabet song practises, while `first` asks what comes *before* and has no song to lean on. **No level currently uses `mixed`** — the value is still accepted, nothing asks for it.
+- **`alpha_blank_position`** — where the gaps may fall:
+  - `last` / `first` — the solid block at that end.
+  - `middle` — every gap strictly inside the run, never touching an end.
+  - `random` — **every shape, nothing filtered out.** Gaps can split (`_x_x_`), sit at an end, or land anywhere between, each shape equally likely. This is the only setting that produces *non-contiguous* gaps, and the only one a child cannot pre-empt: there is no "the gap is always at the back" to lean on.
+  - `mixed` — anything that is neither the first block nor the last one. Narrower than `random` — it is `random` minus the two end blocks. **No level uses it**; it is kept as the only way to ask for three gaps in a run of four without them forming a solid end.
+
+  Each tier walks `last` → `middle` → `first` → `random`, which is the order of difficulty: continuing a sequence forward is what the alphabet song practises, `first` asks what comes *before* and has no song to lean on, and `random` withholds even the knowledge of which way the next question will run.
 
 Two things are fixed in code rather than in the sheet: there are always **four options**, and they are **spread at least four letters apart** — from each other and from the answer.
 
@@ -440,7 +446,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/item_levels.csv` | 922 | `item`, `level`, `kind`, `words`, `components`, `component_levels`, `proper_noun`, `shared_art`, `letters`, `longest_word`, `spellable` |
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `pokemon_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
-| `data/alphabet_levels.csv` | 7 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
+| `data/alphabet_levels.csv` | 11 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |

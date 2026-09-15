@@ -123,15 +123,15 @@ Reading adds `wrong_answers` (decoy count) and `distractor_level`, which names *
 
 ### `data/alphabet_levels.csv`
 
-The **Alphabet** trail — seven levels, its own ladder. It shares none of the word pools above: a run of consecutive letters is shown as Pokémon whose names start with them, some of them blank, and the child picks the Pokémon for the missing letter.
+The **Alphabet** trail — eleven levels, its own ladder. It shares none of the word pools above: a run of consecutive letters is shown as Pokémon whose names start with them, some of them blank, and the child picks the Pokémon for the missing letter.
 
-It was carved out of `reading_levels.csv`, where it could not stay: seven levels against Reading's ten means the top three reading levels had no alphabet row to index, and its own `promote_5_pct` / `promote_10_pct` would never have been read.
+It was carved out of `reading_levels.csv`, where it could not stay: the two ladders are different lengths — eleven against Reading's ten — so neither can index the other, and its own `promote_5_pct` / `promote_10_pct` would never have been read.
 
 | column | meaning |
 | --- | --- |
 | `alpha_length` | how many consecutive letters are on screen. **Shorter is harder** — fewer letters to count along — so this column runs the opposite way to every other difficulty column in these files |
 | `alpha_blanks` | how many of those are gaps. Must be fewer than `alpha_length` |
-| `alpha_blank_position` | `first`, `last`, `middle` or `mixed`. `first`/`last` are the solid block at that end; `middle` is every gap strictly inside the run; `mixed` is any shape that is neither end block — the only setting that fits three gaps into a run of four |
+| `alpha_blank_position` | `first`, `last`, `middle`, `random` or `mixed`. `first`/`last` are the solid block at that end; `middle` is every gap strictly inside the run; **`random` is every shape with nothing filtered out** — gaps may split (`_x_x_`), sit at an end, or fall anywhere, each equally likely, and it is the only setting producing non-contiguous gaps; `mixed` is any shape that is neither end block, i.e. `random` minus the two end blocks, and is the only setting that fits three gaps into a run of four without them forming a solid end |
 | `promote_5_pct`, `promote_10_pct` | the two promotion gates, as everywhere else |
 
 Every row is checked at load, and one that cannot produce a question **stops the app with a message naming the level** rather than failing quietly: no row may have `alpha_blanks` at or above `alpha_length`, and `middle` needs a run of 5 before it can hold 3 blanks — in a run of 4 there are only two interior slots, so a third blank would have to touch an end, at which point it is `first` or `last`.
