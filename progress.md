@@ -610,6 +610,31 @@ After the sheet pass the floors run 3.29, 4.03, 3.44, 4.28, 4.48, 4.74, 6.35 —
 
 One rejected suggestion worth recording: to remove the level-1-to-2 inversion I proposed raising level 2's cap to 5, which would have made the `name_letters` column read 3, 5, 4, 5 — up then down. Caught immediately, and rightly: a column that goes backwards reads as a typo and invites being "corrected" later.
 
+## Phase 80 — the redesign: "crafted storybook"
+
+The whole app was restyled and several screens re-laid out, from a design system and a set of mockups of every screen agreed beforehand (the design system artifact holds the tokens, components and the mockups).
+
+**How it was decided.** A first pass only re-skinned the existing layout — flat colours, accessible contrast, no gradients — and read as the same app. Two directions were then mocked as phone screens: *bold and app-like* (full-screen trail colour, answers in a thumb tray) and *crafted storybook* (a drawn meadow as the stage). Storybook was chosen. Its first home screen confused — trails drawn as a path with "Next up" implied an order the round does not have, Battle and the maths trails were missing, the name floated in the sky — and was redrawn. All 30 screens were then mocked and checked twice by an independent review against this file and the code; the first pass found missing states (four visual-maths layouts, the uncaught Pokédex card, the catch's family strip), demo numbers that contradicted each other, layouts that broke on long names and runs of five, a progress bar at 1.1:1 contrast and 30px speakers. All were fixed in the mockups before any code changed.
+
+**What changed in the app.**
+
+- A **meadow** (sky, hills; the grass strip as its own grass) behind home, every question, results, the catch and the battle arena; cream paper everywhere else. Flat fills, one token set, every text colour at 4.5:1 or better.
+- **Home**: counters with words (`1 of 2 today`, `4 days`), today neutral until met; the Pokédex counter moved off the home HUD onto the name card as a full-width button; the Pokémon stands on the hill; five trail tiles including Alphabet; maths families named *Add & take away* and *Times & share*.
+- **Questions**: continuous progress bar on a white track; "!" over the grass when a Pokémon hides; **Alphabet and Pattern now light their answer green**, like Spelling, because all three already wear an amber cursor; Reverse Read & Choose speakers moved below each picture, out of its tap area.
+- **Catch** is a full-screen moment with its evolution family; gold ribbon for legendary and mythical. **Results** show catches three to a row with NEW badges. **Battle** speakers sit on the pictures.
+- Every emoji in the UI replaced by drawn icons. Type badges carry dark text on the light type colours (white was 2.0–3.4:1); grass and flying lifted a shade.
+- The "every mode off" `alert()` is an in-app notice with a button to Settings. The load-failure screen keeps its words in the new look.
+
+**Measured.** Home fits without scrolling at 360×640, 390×844, 414×736, 768×1024 and 360×780 — no vertical or horizontal scroll at any of them. The fix that made 360×640 work was giving the meadow a zero flex basis: with an `auto` basis the home column grew to the Pokémon's full height and pushed Start to 663 of 640. Now the meadow takes only what is left, the Pokémon is 169px there (inside the old 122–225 range) and Start ends at 622. Every question type a new profile reaches — Missing Letters, both reading formats, Alphabet, visual maths — has zero scroll at 360×640 and 390×844. The catch screen fits 360×640 even for Eevee's eight-member family (Okay at 625 of 640), after its sky and artwork were made to shrink first on short screens.
+
+**Checked after building.** An independent review drove every interaction at seven sizes and found no broken behaviour; it did find the full-width grass letting the page scroll 3px sideways while it shook, the "!" hidden under the progress bar on short screens, Okay pushed off 780–812px-tall phones by Eevee's eight-member family, Reverse Read & Choose dropping to two columns at 360px, and the level dropdowns too wide for a phone. All fixed and re-measured: no sideways scroll, Okay on screen at 360×640 through 375×812 and 1280×800, zero vertical scroll on both reading formats and on spelling at 360×640, home still fitting at all five sizes and at 320×568. Below 520px the level dropdowns now sit full-width under their label, which also closes the Settings overflow left open in Phase 77.
+
+**Still open.**
+
+- The design system artifact's tokens and README describe this design, but its component previews still show the first, flat pass rather than the storybook screens.
+- The new styles sit as one labelled layer at the end of the stylesheet, over the rules they replace. Folding them into the rules underneath and deleting what is now dead is a cleanup still to do — grep each name before deleting, as ever.
+- Plain maths, Pattern and visual add/subtract/divide were driven in the real app with the maths tracks unlocked: zero scroll at 390×844, and at 360×640 once the card's top spacing tightened on short screens — except grouped division, where a sampled `15 ÷ 5` still overshoots by 8px. Big divisions scrolled before this change too (`25 ÷ 5` was 919px tall); the tallest one was not re-measured in the new layout.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

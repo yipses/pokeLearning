@@ -49,23 +49,45 @@
     unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   :root{
-    /* Pokopia-inspired cozy pastel palette */
-    --leaf:      #7cc47f;
-    --leaf-deep: #4e9d63;
-    --sky:       #bfe6f0;
-    --sky-deep:  #7ec9dd;
-    --cream:     #fbf7ea;
-    --cream-2:   #f2ecd6;
-    --sun:       #ffd66b;
-    --sun-deep:  #f2b03d;
-    --berry:     #ef7d8e;
-    --berry-deep:#d85a6d;
-    --ink:       #46433a;
-    --ink-soft:  #7c7768;
+    /* The PokeLearning design system's tokens. Neutrals are warm; each hue is a
+       short scale where 100-500 are tints and illustration and 600-800 carry
+       text and edges. Every text pair here holds 4.5:1 on the ground it is used
+       on — the old white-on-sun buttons were 1.4:1. */
+    --canvas:        #f6f3ea;
+    --surface:       #ffffff;
+    --surface-sunken:#efe9d8;
+    --line:          #e4dccb;
+    --line-strong:   #958a70;
+    --leaf-100:#e3f3e4; --leaf-300:#a8d9aa; --leaf-500:#7cc47f; --leaf-600:#2f8049; --leaf-700:#23663a;
+    --sky-100:#e2f3f8;  --sky-300:#bfe6f0;  --sky-500:#7ec9dd;  --sky-600:#2f93b0;  --sky-700:#1f6f88;
+    --sun-100:#fff3cc;  --sun-300:#ffe49e;  --sun-500:#ffd66b;  --sun-700:#a86e00;  --sun-800:#6b4700;
+    --berry-100:#fde6ea; --berry-500:#ef7d8e; --berry-600:#c8435a; --berry-700:#a3304a;
+    --violet-600:#7a4fc4; --teal-600:#2a8a75; --flame-600:#d9701f;
+    --primary:      var(--leaf-600);
+    --primary-edge: var(--leaf-700);
+    --accent:       var(--berry-600);
+    --accent-edge:  var(--berry-700);
+    --focus:        var(--sky-700);
+    --press-edge:   4px;
+
+    /* The names the rest of this sheet was written against, pointed at the
+       system's values so every rule follows without being retyped. */
+    --leaf:      var(--leaf-500);
+    --leaf-deep: var(--leaf-600);
+    --sky:       var(--sky-300);
+    --sky-deep:  var(--sky-600);
+    --cream:     var(--canvas);
+    --cream-2:   var(--surface-sunken);
+    --sun:       var(--sun-500);
+    --sun-deep:  var(--sun-700);
+    --berry:     var(--berry-500);
+    --berry-deep:var(--berry-600);
+    --ink:       #2e2b24;
+    --ink-soft:  #6b6556;
     --white:     #ffffff;
-    --shadow:    0 10px 30px rgba(78,157,99,.18);
-    --shadow-sm: 0 4px 12px rgba(70,67,58,.12);
-    --radius:    26px;
+    --shadow:    0 1px 2px rgba(46,43,36,.06), 0 8px 24px rgba(46,43,36,.08);
+    --shadow-sm: 0 1px 2px rgba(46,43,36,.08), 0 2px 8px rgba(46,43,36,.06);
+    --radius:    24px;
     --radius-sm: 16px;
     --font-ui:   "M PLUS Rounded 1c", "Baloo 2", "Varela Round", "Trebuchet MS", system-ui, sans-serif;
     font-size: 16px;
@@ -80,24 +102,13 @@
     font-family: var(--font-ui);
     color:var(--ink);
     min-height:100vh;
-    background:
-      radial-gradient(1200px 500px at 15% -10%, rgba(255,214,107,.45), transparent 60%),
-      radial-gradient(1000px 480px at 100% 0%, rgba(126,201,221,.5), transparent 55%),
-      linear-gradient(180deg, var(--sky) 0%, #d8f0dd 45%, var(--leaf) 140%);
-    background-attachment: fixed;
+    /* Flat. The sky gradient and the rolling hills behind every screen were
+       scenery competing with the question; colour is kept for what it means. */
+    background:var(--canvas);
     -webkit-font-smoothing:antialiased;
   }
-
-  /* soft rolling hills at the bottom for the cozy vibe */
-  body::after{
-    content:"";
-    position:fixed; left:0; right:0; bottom:0; height:34vh; z-index:0; pointer-events:none;
-    background:
-      radial-gradient(60% 120% at 20% 100%, var(--leaf) 60%, transparent 61%),
-      radial-gradient(60% 120% at 70% 100%, var(--leaf-deep) 60%, transparent 61%),
-      radial-gradient(60% 120% at 100% 100%, var(--leaf) 60%, transparent 61%);
-    opacity:.55;
-  }
+  /* One focus ring for every control, solid and 5:1 on the canvas. */
+  :focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
 
   .wrap{
     position:relative; z-index:1;
@@ -118,12 +129,10 @@
   .brand h1{ text-transform:uppercase;
     display:flex; align-items:center; gap:6px; white-space:nowrap;
     margin:0; font-size:clamp(15px, 2.1vw, 20px); line-height:1;
-    color:var(--white); letter-spacing:.5px; font-weight:800;
-    text-shadow: 0 2px 0 var(--leaf-deep), 0 3px 8px rgba(0,0,0,.18);
+    color:var(--ink); letter-spacing:.04em; font-weight:900;
   }
   .brand .pokeball{
     display:block; flex:0 0 auto; width:26px; height:26px;
-    filter: drop-shadow(0 2px 2px rgba(0,0,0,.2));
   }
   /* Below 480px the words go and the ball stands alone. Measured: the row has
      60px free at 360 and 130 at 430, and ball-plus-words needs 150px even at an
@@ -137,21 +146,20 @@
 
   /* ---------- Cards ---------- */
   .card{
-    background: linear-gradient(180deg, var(--white), var(--cream));
+    background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    border: 3px solid rgba(255,255,255,.9);
-    padding: 22px 22px;
+    padding: 24px;
     margin: 0 0 20px;
   }
   .card h2{
-    margin:0 0 4px; font-size:1.4rem; display:flex; align-items:center; gap:10px;
-    color:var(--leaf-deep);
+    margin:0 0 4px; font-size:1.4rem; font-weight:800; display:flex; align-items:center; gap:10px;
+    color:var(--ink);
   }
   .card h2 .chip{ font-size:1.7rem; }
   .card .sub{ margin:0 0 16px; color:var(--ink-soft); font-size:.95rem; }
 
-  .field{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 4px; border-top:2px dashed var(--cream-2); }
+  .field{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 4px; border-top:1px solid var(--line); }
   .field:first-of-type{ border-top:none; }
   .field label{ font-weight:700; }
   .field .hint{ display:block; font-weight:400; font-size:.82rem; color:var(--ink-soft); margin-top:2px; }
@@ -162,27 +170,29 @@
   .field input[type="number"]{
     width:92px; font: inherit; font-weight:700; text-align:center;
     padding:10px 8px; border-radius: var(--radius-sm);
-    border:3px solid var(--sky-deep); background:var(--white); color:var(--ink);
+    border:2px solid var(--line-strong); background:var(--surface); color:var(--ink);
     outline:none;
   }
   .locked-chip{
     padding:5px 12px; border-radius:999px; background:var(--cream-2);
     font-size:.78rem; font-weight:800; color:var(--ink-soft); white-space:nowrap;
   }
-  .field input[type="number"]:focus{ border-color: var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
+  .field input[type="number"]:focus{ border-color: var(--focus); box-shadow:0 0 0 3px var(--sky-100); }
 
   /* toggle switch */
   .switch{ display:inline-block; position:relative; width:58px; height:32px; flex:0 0 auto; cursor:pointer; }
   .switch input{ opacity:0; width:0; height:0; position:absolute; }
   .slider{
-    position:absolute; inset:0; border-radius:999px; background:#d9d3c2; transition:.18s;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,.15);
+    position:absolute; inset:0; border-radius:999px; background:var(--surface-sunken); transition:.18s;
+    box-shadow: inset 0 0 0 2px var(--line-strong);
   }
   .slider::before{
     content:""; position:absolute; height:24px; width:24px; left:4px; top:4px;
-    background:var(--white); border-radius:50%; transition:.18s; box-shadow:0 2px 4px rgba(0,0,0,.25);
+    background:var(--white); border-radius:50%; transition:.18s; box-shadow:inset 0 0 0 2px var(--line-strong);
   }
-  .switch input:checked + .slider{ background:var(--leaf); }
+  .switch input:checked + .slider{ background:var(--primary); box-shadow:none; }
+  .switch input:checked + .slider::before{ box-shadow:none; }
+  .switch input:focus-visible + .slider{ outline:3px solid var(--focus); outline-offset:2px; }
   .switch input:checked + .slider::before{ transform:translateX(26px); }
 
   .op-max{ display:flex; align-items:center; gap:8px; font-size:.9rem; color:var(--ink-soft); }
@@ -195,31 +205,32 @@
   /* ---------- Buttons ---------- */
   .btn{
     font: inherit; font-weight:800; cursor:pointer; border:none;
-    border-radius: 999px; padding: 16px 28px; font-size:1.15rem; color:var(--white);
-    background:linear-gradient(160deg, var(--sun), var(--sun-deep));
-    box-shadow: 0 6px 0 var(--sun-deep), var(--shadow-sm);
+    border-radius: 999px; padding: 14px 26px; font-size:1.125rem; color:var(--white);
+    background:var(--primary);
+    box-shadow: 0 var(--press-edge) 0 var(--primary-edge);
     transition: transform .06s ease, box-shadow .06s ease;
     -webkit-tap-highlight-color:transparent;
   }
-  .btn:active{ transform: translateY(4px); box-shadow: 0 2px 0 var(--sun-deep); }
-  .btn.green{ background:linear-gradient(160deg,#8fd08f,var(--leaf-deep)); box-shadow:0 6px 0 var(--leaf-deep), var(--shadow-sm); }
-  .btn.green:active{ box-shadow:0 2px 0 var(--leaf-deep); }
-  .btn.berry{ background:linear-gradient(160deg,#ff9fac,var(--berry-deep)); box-shadow:0 6px 0 var(--berry-deep), var(--shadow-sm); }
-  .btn.berry:active{ box-shadow:0 2px 0 var(--berry-deep); }
-  .btn.ghost{ background:var(--white); color:var(--leaf-deep); box-shadow:0 4px 0 var(--cream-2); }
-  .btn.ghost:active{ box-shadow:0 1px 0 var(--cream-2); }
+  /* Flat fills on a solid press edge that collapses when tapped. White text
+     holds 4.9:1 on primary and 4.8:1 on accent. */
+  .btn:active{ transform: translateY(3px); box-shadow: 0 1px 0 var(--primary-edge); }
+  .btn.green{ background:var(--primary); box-shadow:0 var(--press-edge) 0 var(--primary-edge); }
+  .btn.green:active{ box-shadow:0 1px 0 var(--primary-edge); }
+  .btn.berry{ background:var(--accent); box-shadow:0 var(--press-edge) 0 var(--accent-edge); }
+  .btn.berry:active{ box-shadow:0 1px 0 var(--accent-edge); }
+  .btn.ghost{ background:var(--surface); color:var(--leaf-700); box-shadow:inset 0 0 0 2px var(--line), 0 var(--press-edge) 0 var(--line); }
+  .btn.ghost:active{ box-shadow:inset 0 0 0 2px var(--line), 0 1px 0 var(--line); }
   .btn.big{ display:block; width:100%; font-size:1.3rem; padding:20px; margin-top:6px; }
   .btn:disabled{ opacity:.5; cursor:not-allowed; }
 
   /* ---------- Progress ---------- */
   .topbar{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
   .progress{
-    flex:1; height:22px; background:var(--white); border-radius:999px; overflow:hidden;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,.12); border:3px solid var(--white);
+    flex:1; height:16px; background:var(--surface-sunken); border-radius:999px; overflow:hidden;
   }
   .progress > i{
     display:block; height:100%; width:0%;
-    background:linear-gradient(90deg, var(--leaf), var(--sun));
+    background:var(--primary);
     border-radius:999px; transition: width .35s ease;
   }
   /* Still in use: the Battle screen's win/loss record. The play screen's round
@@ -233,9 +244,9 @@
      how far along the round is, so the count that used to sit here was the same
      fact written twice — and neither number meant anything to a pre-reader. */
   .quit-x{
-    width:34px; height:34px; flex:0 0 auto; padding:0; display:grid; place-items:center;
+    width:44px; height:44px; flex:0 0 auto; padding:0; display:grid; place-items:center;
     border-radius:50%; text-decoration:none; font-size:1rem; font-weight:800; line-height:1;
-    color:var(--ink-soft); background:var(--white); box-shadow:var(--shadow-sm);
+    color:var(--ink-soft); background:var(--surface); box-shadow:inset 0 0 0 2px var(--line);
     -webkit-tap-highlight-color:transparent; transition:transform .06s, color .15s;
   }
   .quit-x:hover{ color:var(--ink); }
@@ -244,16 +255,18 @@
   /* ---------- Problem area ---------- */
   .stage{ text-align:center; }
   .kind-tag{
-    display:inline-block; padding:6px 16px; border-radius:999px; font-weight:800; font-size:.9rem;
-    color:var(--white); margin-bottom:14px; letter-spacing:.5px;
+    display:inline-block; padding:6px 14px; border-radius:999px; font-weight:800; font-size:.8125rem;
+    color:var(--white); margin-bottom:14px; letter-spacing:.02em;
   }
-  .kind-spell{ background:linear-gradient(160deg,#8fd4e6,var(--sky-deep)); }
-  .kind-math{ background:linear-gradient(160deg,#ff9fac,var(--berry-deep)); }
-  .kind-pattern{ background:linear-gradient(160deg,#ffdd88,var(--sun-deep)); }
-  .kind-visual{ background:linear-gradient(160deg,#8fd08f,var(--leaf-deep)); }
-  .kind-reading{ background:linear-gradient(160deg,#c9a6f0,#9a6bd6); }
-  .kind-alpha{ background:linear-gradient(160deg,#9fd8c8,#2e9e86); }
-  .kind-battle{ background:linear-gradient(160deg,#ffab6b,#d84315); }
+  /* Each takes its trail's colour, flat. Pattern and Battle can't carry white
+     text at this size, so they swap to dark text. */
+  .kind-spell{ background:var(--sky-700); }
+  .kind-math{ background:var(--berry-600); }
+  .kind-pattern{ background:var(--sun-500); color:var(--sun-800); }
+  .kind-visual{ background:var(--leaf-600); }
+  .kind-reading{ background:var(--violet-600); }
+  .kind-alpha{ background:var(--teal-600); }
+  .kind-battle{ background:var(--ink); color:var(--sun-500); }
 
   /* The number pad is tall, and on a phone the maths screens ran past the fold
      with it. The Pokémon is decoration on a sum — it shrinks rather than the
@@ -261,8 +274,8 @@
   .poke-frame.compact{ width:96px; height:96px; margin-bottom:4px; }
   .poke-frame{
     width: 220px; height:220px; margin: 0 auto 8px; border-radius: 50%;
-    background: radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
-    box-shadow: var(--shadow), inset 0 0 0 6px rgba(255,255,255,.7);
+    background: var(--surface-sunken);
+    box-shadow: inset 0 0 0 6px var(--surface), 0 0 0 2px var(--line);
     display:grid; place-items:center; overflow:hidden;
   }
   /* max 65% keeps even a zero-padding square image's corners inside the circular
@@ -283,10 +296,10 @@
     width:52px; height:52px; padding:0;
     display:flex; align-items:center; justify-content:center;
     font:inherit; font-size:22px; line-height:1; cursor:pointer;
-    border-radius:50%; border:3px solid var(--white); background:var(--sun);
-    box-shadow:var(--shadow-sm); transition: transform .06s, background .15s;
+    border-radius:50%; border:0; background:var(--sun-500); color:var(--sun-800);
+    box-shadow:0 3px 0 var(--sun-700); transition: transform .06s, background .15s;
   }
-  .frame-say:hover{ background:var(--sun-deep); }
+  .frame-say:hover{ background:var(--sun-300); }
   .frame-say:active{ transform:translateY(2px); }
   .frame-say:disabled{ opacity:.45; cursor:default; }
   .catch-card .frame-say{ width:42px; height:42px; font-size:18px; right:0; bottom:10px; }
@@ -294,16 +307,15 @@
   /* spelling slots */
   .slots{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:14px 0 6px; }
   .slot{
-    width:52px; height:60px; border-radius:14px; background:var(--white);
-    border:3px solid var(--sky-deep); display:grid; place-items:center;
+    width:52px; height:60px; border-radius:var(--radius-sm); background:var(--surface);
+    border:2px solid var(--line-strong); display:grid; place-items:center;
     font-size:1.9rem; font-weight:800; text-transform:uppercase; color:var(--ink);
-    box-shadow:var(--shadow-sm);
   }
   /* A chunk is one sound and gets one slot, so a slot has to fit up to three
      letters — "str", "igh" — without the one-letter case looking stretched. */
   .slot.chunk{ width:auto; min-width:52px; padding:0 8px; }
-  .slot.active{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
-  .slot.filled{ background:var(--cream); }
+  .slot.active{ border:3px solid var(--sun-700); box-shadow:0 0 0 5px var(--sun-300); }
+  .slot.filled{ background:var(--leaf-100); border-color:var(--leaf-700); color:var(--leaf-700); }
 
   /* A separator is DEFINED, not spelled — it is already in place, has no slot and
      no tile. It must not look like an empty slot, or it reads as work still to do:
@@ -317,7 +329,7 @@
   }
   .slot-sep:empty::before{
     content:""; width:18px; height:5px; border-radius:3px;
-    background:var(--sky-deep); align-self:flex-end; margin-bottom:12px;
+    background:var(--line-strong); align-self:flex-end; margin-bottom:12px;
   }
 
   @keyframes shake{ 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-9px)} 40%,80%{transform:translateX(9px)} }
@@ -325,19 +337,19 @@
 
   .tiles{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:16px 0 6px; }
   .tile{
-    width:54px; height:60px; border-radius:14px; font:inherit; font-size:1.7rem; font-weight:800;
-    text-transform:uppercase; cursor:pointer; color:var(--leaf-deep);
-    background:linear-gradient(180deg,var(--white),var(--cream));
-    border:3px solid var(--leaf); box-shadow:0 5px 0 var(--leaf-deep);
+    width:54px; height:60px; border-radius:var(--radius-sm); font:inherit; font-size:1.7rem; font-weight:800;
+    text-transform:uppercase; cursor:pointer; color:var(--leaf-700);
+    background:var(--surface);
+    border:2px solid var(--leaf-600); box-shadow:0 var(--press-edge) 0 var(--leaf-600);
     transition: transform .05s, opacity .15s;
   }
-  .tile:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--leaf-deep); }
+  .tile:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--leaf-600); }
   .tile.used{ opacity:.28; pointer-events:none; }
 
   /* missing-letter (Spelling Phase B) */
   .missing-word{ display:flex; flex-wrap:wrap; gap:3px; justify-content:center; align-items:center; margin:16px 0 6px; }
   .mw-letter{
-    width:34px; height:52px; border-radius:12px; background:var(--cream);
+    width:34px; height:52px; border-radius:12px; background:var(--surface-sunken);
     display:grid; place-items:center; font-size:1.6rem; font-weight:800;
     text-transform:uppercase; color:var(--ink);
   }
@@ -347,18 +359,18 @@
   }
   .mw-sep:empty::before{
     content:""; width:16px; height:5px; border-radius:3px;
-    background:var(--sky-deep); align-self:flex-end; margin-bottom:10px;
+    background:var(--line-strong); align-self:flex-end; margin-bottom:10px;
   }
   /* A slot waiting for its chunk tile. Uppercase to match the given letters
      beside it, and the tiles everywhere else. */
   .mw-slot{
     height:52px; display:inline-flex; align-items:center; justify-content:center;
     font-weight:800; font-size:1.6rem; text-transform:uppercase;
-    border-radius:12px; border:3px solid var(--berry); background:var(--white);
+    border-radius:12px; border:2px solid var(--line-strong); background:var(--surface);
     color:var(--ink); padding:0 2px;
   }
-  .mw-slot.current{ border-color:var(--sun-deep); box-shadow:0 0 0 4px rgba(255,214,107,.5); }
-  .mw-slot.mw-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
+  .mw-slot.current{ border:3px solid var(--sun-700); box-shadow:0 0 0 5px var(--sun-300); }
+  .mw-slot.mw-correct{ border-color:var(--leaf-700); background:var(--leaf-100); color:var(--leaf-700); }
   /* A chunk tile holds a whole sound, so it has to grow past the letter tiles. */
   .tile.chunk{ width:auto; min-width:54px; padding:0 12px; text-transform:uppercase; }
   .tile.shake{ animation: shake .42s; }
@@ -369,17 +381,17 @@
   .reading-options-img{ grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); }
   .reading-opt{
     font:inherit; cursor:pointer; border-radius:var(--radius-sm); padding:14px 10px;
-    border:3px solid var(--sky-deep); background:linear-gradient(180deg,var(--white),var(--cream));
-    box-shadow:0 4px 0 var(--sky-deep), var(--shadow-sm);
+    border:2px solid var(--sky-600); background:var(--surface);
+    box-shadow:0 var(--press-edge) 0 var(--sky-600);
     display:flex; align-items:center; justify-content:center;
     transition: transform .05s, opacity .15s, border-color .15s, box-shadow .15s, background .15s;
   }
-  .reading-opt:hover:not(:disabled){ border-color:var(--sun-deep); background:linear-gradient(180deg,var(--white),var(--cream-2)); }
+  .reading-opt:hover:not(:disabled){ background:var(--sky-100); }
   .reading-opt:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--sky-deep); }
   .reading-opt-word{ font-weight:800; font-size:1.1rem; color:var(--ink); text-transform:capitalize; }
   .reading-opt-img img{ width:64px; height:64px; object-fit:contain; }
-  .reading-opt.correct{ border-color:var(--leaf); box-shadow:0 0 0 4px rgba(124,196,127,.5); }
-  .reading-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
+  .reading-opt.correct{ border-color:var(--leaf-700); background:var(--leaf-100); box-shadow:0 0 0 4px var(--leaf-300); }
+  .reading-opt.wrong{ opacity:.4; border-color:var(--berry-700); box-shadow:none; cursor:default; }
   .reading-opt.shake{ animation: shake .42s; }
   /* Reverse Read & Choose gives every picture option its own speaker, since the
      written prompt deliberately has none. The speaker is a sibling of the option
@@ -390,8 +402,8 @@
     position:absolute; top:-6px; right:-6px; width:30px; height:30px; padding:0;
     display:flex; align-items:center; justify-content:center;
     font:inherit; font-size:14px; line-height:1; cursor:pointer;
-    border-radius:50%; border:2px solid var(--sky-deep); background:var(--sun);
-    box-shadow:var(--shadow-sm);
+    border-radius:50%; border:0; background:var(--sun-500); color:var(--sun-800);
+    box-shadow:0 2px 0 var(--sun-700);
   }
   .reading-say-mini:active{ transform:translateY(1px); }
 
@@ -404,7 +416,7 @@
   .alpha-card{
     flex:1 1 0; min-width:0; max-width:110px; padding:8px 6px 10px;
     display:flex; flex-direction:column; align-items:center; gap:2px;
-    border-radius:var(--radius-sm); border:3px solid var(--cream-2); background:var(--white);
+    border-radius:var(--radius-sm); border:2px solid var(--line); background:var(--surface);
   }
   .alpha-letter{ font-size:1.5rem; font-weight:800; line-height:1.1; color:var(--ink); }
   .alpha-pic{ width:100%; max-width:56px; height:56px; object-fit:contain; }
@@ -414,23 +426,23 @@
   }
   /* An unanswered gap is the same box with a dashed edge, so the run keeps its
      rhythm — a narrower or shorter gap would read as a smaller step. */
-  .alpha-gap{ border-style:dashed; border-color:var(--sky-deep); justify-content:center; }
-  .alpha-gap .alpha-letter{ color:var(--sky-deep); }
-  .alpha-card.current{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
-  .alpha-card.alpha-correct{ border-style:solid; border-color:var(--leaf); background:var(--cream); }
+  .alpha-gap{ border-style:dashed; border-color:var(--line-strong); justify-content:center; }
+  .alpha-gap .alpha-letter{ color:var(--ink-soft); }
+  .alpha-card.current{ border:3px solid var(--sun-700); box-shadow:0 0 0 5px var(--sun-300); }
+  .alpha-card.alpha-correct{ border-style:solid; border-color:var(--leaf-700); background:var(--leaf-100); }
   .alpha-opts{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:14px 0 6px; }
   .alpha-opt{
     font:inherit; cursor:pointer; border-radius:var(--radius-sm); padding:10px 6px;
-    border:3px solid var(--sky-deep); background:linear-gradient(180deg,var(--white),var(--cream));
-    box-shadow:0 4px 0 var(--sky-deep), var(--shadow-sm);
+    border:2px solid var(--sky-600); background:var(--surface);
+    box-shadow:0 var(--press-edge) 0 var(--sky-600);
     display:flex; flex-direction:column; align-items:center; gap:4px;
     transition: transform .05s, opacity .15s, border-color .15s, box-shadow .15s, background .15s;
   }
-  .alpha-opt:hover:not(:disabled){ border-color:var(--sun-deep); background:linear-gradient(180deg,var(--white),var(--cream-2)); }
+  .alpha-opt:hover:not(:disabled){ background:var(--sky-100); }
   .alpha-opt:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--sky-deep); }
   .alpha-opt img{ width:60px; height:60px; object-fit:contain; }
   .alpha-opt-name{ font-size:.9rem; font-weight:800; line-height:1.15; color:var(--ink); word-break:break-word; }
-  .alpha-opt.wrong{ opacity:.35; border-color:var(--berry-deep); box-shadow:none; cursor:default; }
+  .alpha-opt.wrong{ opacity:.4; border-color:var(--berry-700); box-shadow:none; cursor:default; }
   .alpha-opt.shake{ animation: shake .42s; }
 
   /* Bounded failure: the answer lit up after enough wrong taps. It pulses, so it
@@ -438,15 +450,15 @@
      moves. In Maths, Reading and Alphabet it is amber, deliberately not the green
      those modes already use to mean "you got it". */
   @keyframes answer-lit-pulse{
-    0%,100%{ box-shadow:0 0 0 3px rgba(255,171,107,.55), var(--shadow-sm); }
-    50%    { box-shadow:0 0 0 8px rgba(255,171,107,.28), var(--shadow-sm); }
+    0%,100%{ box-shadow:0 0 0 3px var(--flame-600); }
+    50%    { box-shadow:0 0 0 8px rgba(217,112,31,.25); }
   }
   .answer-lit{
-    border-color:var(--sun-deep) !important;
+    border-color:var(--flame-600) !important;
     animation: answer-lit-pulse 1.25s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce){
-    .answer-lit{ animation:none; box-shadow:0 0 0 5px rgba(255,171,107,.5), var(--shadow-sm); }
+    .answer-lit{ animation:none; box-shadow:0 0 0 4px var(--flame-600); }
   }
 
   /* SPELLING lights green instead, because amber is already taken there: the blank
@@ -459,17 +471,17 @@
      A resting tile is already leaf-bordered, so this has to out-shout it —
      hence the deeper border, the filled face and the wider halo. */
   @keyframes answer-lit-green-pulse{
-    0%,100%{ box-shadow:0 0 0 4px rgba(78,157,99,.55), 0 5px 0 var(--leaf-deep); }
-    50%    { box-shadow:0 0 0 10px rgba(78,157,99,.22), 0 5px 0 var(--leaf-deep); }
+    0%,100%{ box-shadow:0 0 0 4px var(--leaf-300), 0 4px 0 var(--leaf-700); }
+    50%    { box-shadow:0 0 0 10px rgba(168,217,170,.4), 0 4px 0 var(--leaf-700); }
   }
   #tiles .tile.answer-lit, #missingTiles .tile.answer-lit{
-    border-color:var(--leaf-deep) !important;
-    background:linear-gradient(180deg,#e2f6e6,#c2e9ca);
+    border-color:var(--leaf-700) !important;
+    background:var(--leaf-100);
     animation: answer-lit-green-pulse 1.25s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce){
     #tiles .tile.answer-lit, #missingTiles .tile.answer-lit{
-      animation:none; box-shadow:0 0 0 6px rgba(78,157,99,.5), 0 5px 0 var(--leaf-deep);
+      animation:none; box-shadow:0 0 0 6px var(--leaf-300), 0 4px 0 var(--leaf-700);
     }
   }
 
@@ -483,18 +495,18 @@
     max-width:330px; margin:14px auto 4px;
   }
   .choice{
-    min-height:58px; padding:6px 4px; border-radius:16px;
+    min-height:58px; padding:6px 4px; border-radius:var(--radius-sm);
     font:inherit; font-size:1.7rem; font-weight:900; line-height:1;
-    font-variant-numeric:tabular-nums; cursor:pointer; color:var(--leaf-deep);
-    background:linear-gradient(180deg,var(--white),var(--cream));
-    border:3px solid var(--leaf); box-shadow:0 5px 0 var(--leaf-deep);
+    font-variant-numeric:tabular-nums; cursor:pointer; color:var(--leaf-700);
+    background:var(--surface);
+    border:2px solid var(--leaf-600); box-shadow:0 var(--press-edge) 0 var(--leaf-600);
     transition: transform .05s, opacity .15s;
   }
-  .choice:active{ transform:translateY(3px); box-shadow:0 2px 0 var(--leaf-deep); }
+  .choice:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--leaf-600); }
   /* A wrong one is spent: dimmed and dead, so the same mistake cannot be made
      twice and the field narrows as the child reasons. */
   .choice:disabled{ opacity:.3; pointer-events:none; }
-  .choice.picked{ background:linear-gradient(180deg,#f0fbf1,#dcf2e0); }
+  .choice.picked{ background:var(--leaf-100); }
   /* Answered: the bank has nothing left to do, and hiding it rather than greying
      it out is what lifts ✅ and Next above the fold on a phone. */
   .choices.done{ display:none; }
@@ -506,26 +518,26 @@
   .pattern-slot{
     width:90px; min-height:48px; display:grid; place-items:center;
     font-size:1.4rem; font-weight:800; text-align:center;
-    border-radius:16px; border:4px solid var(--cream-2); background:var(--white); color:var(--ink);
+    border-radius:var(--radius-sm); border:2px solid var(--line-strong); background:var(--surface); color:var(--ink);
   }
   /* The open row is the one the six numbers below belong to. */
-  .pattern-slot.current{ border-color:var(--sun-deep); box-shadow:0 0 0 5px rgba(255,214,107,.5); }
-  .pattern-slot.pattern-correct{ border-color:var(--leaf); background:var(--cream); color:var(--leaf-deep); }
+  .pattern-slot.current{ border:3px solid var(--sun-700); box-shadow:0 0 0 5px var(--sun-300); }
+  .pattern-slot.pattern-correct{ border-color:var(--leaf-700); background:var(--leaf-100); color:var(--leaf-700); }
 
   /* battle mode */
   .battle-arena{ display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; margin:14px 0 10px; }
   .battle-fighter{ display:flex; flex-direction:column; align-items:center; gap:8px; }
   .battle-frame{
     width:130px; height:130px; border-radius:50%;
-    background:radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
-    box-shadow:var(--shadow), inset 0 0 0 5px rgba(255,255,255,.7);
+    background:var(--surface-sunken);
+    box-shadow:inset 0 0 0 5px var(--surface), 0 0 0 2px var(--line);
     display:grid; place-items:center; overflow:hidden;
   }
   .battle-frame img{ width:82%; height:82%; object-fit:contain; filter:drop-shadow(0 5px 7px rgba(0,0,0,.15)); }
   .battle-vs{
     width:52px; height:52px; border-radius:50%; flex:0 0 auto;
-    background:linear-gradient(160deg,var(--sun),var(--sun-deep)); color:var(--white);
-    display:grid; place-items:center; font-weight:900; font-size:1.05rem; box-shadow:var(--shadow-sm);
+    background:var(--sun-500); color:var(--sun-800);
+    display:grid; place-items:center; font-weight:900; font-size:1.05rem;
   }
   .battle-name{ font-weight:800; font-size:1.05rem; color:var(--ink); text-transform:capitalize; display:flex; align-items:center; gap:6px; }
   .battle-types{ display:flex; gap:5px; justify-content:center; flex-wrap:wrap; }
@@ -541,10 +553,10 @@
   .type-dark{background:#5d4a3d} .type-steel{background:#8f8fae} .type-fairy{background:#e28fa3}
   .battle-sound{
     width:26px; height:26px; border-radius:50%; border:none; cursor:pointer;
-    background:var(--sky-deep); color:var(--white); font-size:.8rem; display:grid; place-items:center;
-    box-shadow:var(--shadow-sm); transition:background .15s, transform .05s;
+    background:var(--sun-500); color:var(--sun-800); font-size:.8rem; display:grid; place-items:center;
+    transition:background .15s, transform .05s;
   }
-  .battle-sound:hover{ background:var(--sun-deep); }
+  .battle-sound:hover{ background:var(--sun-300); }
   .battle-sound:active{ transform:scale(.9); }
 
   .battle-log{ min-height:56px; margin:8px 0 4px; font-weight:700; color:var(--ink); }
@@ -563,13 +575,13 @@
   @keyframes battleWin{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
   .battle-fighter.winner .battle-frame{
     animation: battleWin .6s ease .1s 2;
-    box-shadow:0 0 0 6px rgba(255,214,107,.65), var(--shadow), inset 0 0 0 5px rgba(255,255,255,.7);
+    box-shadow:0 0 0 6px var(--sun-500), inset 0 0 0 5px var(--surface);
   }
   .battle-fighter.loser .battle-frame{ filter:grayscale(75%); opacity:.5; transform:translateY(10px) rotate(-6deg); transition:all .5s ease; }
 
   .battle-result{ font-size:1.25rem; font-weight:800; margin:12px 0 4px; line-height:1.5; }
-  .battle-result.correct{ color:var(--leaf-deep); }
-  .battle-result.wrong{ color:var(--berry-deep); }
+  .battle-result.correct{ color:var(--leaf-700); }
+  .battle-result.wrong{ color:var(--berry-700); }
   .battle-announce{
     display:inline-block; font-size:1.6rem; font-weight:900; letter-spacing:.03em;
     text-shadow:0 2px 0 rgba(0,0,0,.08);
@@ -596,8 +608,7 @@
     display:flex; flex-wrap:wrap; align-content:flex-start; justify-content:center; gap:8px;
     max-width:280px; min-width:76px; min-height:76px;
     padding:12px; border-radius:var(--radius-sm);
-    border:3px solid var(--sky-deep); background:linear-gradient(180deg,var(--white),var(--cream));
-    box-shadow:var(--shadow-sm);
+    border:3px solid var(--sky-600); background:var(--surface);
   }
   .visual-op{ font-size:1.8rem; font-weight:800; color:var(--ink); }
   .visual-icon{ width:56px; height:56px; object-fit:contain; }
@@ -756,7 +767,7 @@
   .visual-icon-wrap .cross::before,
   .visual-icon-wrap .cross::after{
     content:""; position:absolute; left:50%; top:50%; width:78%; height:8px;
-    background:var(--berry-deep); border-radius:4px; box-shadow:0 0 0 3px var(--white);
+    background:var(--berry-700); border-radius:4px; box-shadow:0 0 0 3px var(--white);
   }
   .visual-icon-wrap .cross::before{ transform:translate(-50%,-50%) rotate(45deg); }
   .visual-icon-wrap .cross::after{ transform:translate(-50%,-50%) rotate(-45deg); }
@@ -765,8 +776,8 @@
   .actions{ display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
 
   .feedback{ min-height:34px; margin-top:14px; font-weight:800; font-size:1.25rem; }
-  .feedback.good{ color:var(--leaf-deep); }
-  .feedback.bad{ color:var(--berry-deep); }
+  .feedback.good{ color:var(--leaf-700); }
+  .feedback.bad{ color:var(--berry-700); }
   @keyframes checkPop{ 0%{ transform:scale(0); opacity:0; } 60%{ transform:scale(1.25); opacity:1; } 100%{ transform:scale(1); } }
   .feedback.big-check{ font-size:2.6rem; line-height:1; animation: checkPop .35s cubic-bezier(.34,1.56,.64,1); }
 
@@ -796,9 +807,9 @@
   @keyframes modalFadeIn{ from{opacity:0} to{opacity:1} }
   .catch-card{
     position:relative;                       /* the confetti layer pins to this */
-    background:linear-gradient(180deg,var(--white),var(--cream));
-    border-radius:var(--radius); box-shadow:var(--shadow); border:4px solid var(--white);
-    padding:26px 30px; text-align:center; width:100%; max-width:360px;
+    background:var(--surface);
+    border-radius:var(--radius); box-shadow:0 16px 48px rgba(46,43,36,.22);
+    padding:24px; text-align:center; width:100%; max-width:360px;
   }
   /* Celebration, catch reveals only — browsing the Pokédex opens this same card
      dozens of times and confetti every time would be noise. Purely decorative:
@@ -838,7 +849,7 @@
   /* Everything above the shine, so the burst reads as behind the Pokémon. */
   .catch-card > *:not(.confetti-layer):not(.catch-shine){ position:relative; z-index:1; }
 
-  .catch-caption{ margin:0 0 8px; font-weight:900; font-size:1.4rem; letter-spacing:.02em; color:var(--leaf-deep); text-transform:uppercase; }
+  .catch-caption{ margin:0 0 12px; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--leaf-700); text-transform:uppercase; }
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
   .catch-name{ font-weight:800; font-size:1.4rem; color:var(--ink); text-transform:capitalize; margin:2px 0 8px; }
@@ -847,7 +858,7 @@
   .poke-frame img.silhouette{ filter:brightness(0) opacity(.28); }
   #catchSay{ margin-top:6px; }
 
-  .caught-title{ font-weight:800; color:var(--leaf-deep); margin:4px 0 8px; }
+  .caught-title{ font-weight:800; color:var(--ink); margin:4px 0 8px; }
   .caught-none{ color:var(--ink-soft); font-size:.9rem; margin:4px 0 14px; }
   .caught-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:16px; }
   /* Sized to be the reward on this screen, not a footnote to it. Three across
@@ -856,8 +867,7 @@
   .caught-chip{
     display:flex; flex-direction:column; align-items:center; gap:2px;
     width:112px; padding:10px 4px; font:inherit; cursor:pointer;
-    background:var(--white); border:3px solid var(--sun); border-radius:18px;
-    box-shadow:var(--shadow-sm);
+    background:var(--surface); border:2px solid var(--sun-700); border-radius:var(--radius-sm);
   }
   .caught-chip:active{ transform:translateY(2px); }
   .caught-chip img{ width:84px; height:84px; object-fit:contain;
@@ -888,7 +898,7 @@
     font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent;
     transition: transform .06s, background-color .15s;
   }
-  .hud-item:hover{ background:rgba(255,255,255,.55); }
+  .hud-item:hover{ background:var(--surface); }
   .hud-item:active{ transform:translateY(1px); }
   /* One box, one optical size, whatever the icon is. */
   .hud-icon{ display:inline-grid; place-items:center; width:1.3rem; height:1.3rem; }
@@ -898,9 +908,9 @@
      the counter it belongs to rather than from an emoji font's own palette.
      Today goes green on the day it is met, the one state worth noticing. */
   .hud-item{ color:var(--ink-soft); }
-  .hud-item.streak{ color:#e0812f; }
+  .hud-item.streak{ color:var(--flame-600); }
   .hud-item.dex{ color:var(--berry-deep); }
-  .hud-item.met{ color:var(--leaf-deep); }
+  .hud-item.met{ color:var(--leaf-700); }
 
   /* ---------- home levels ---------- */
   /* Four trails, four tiles, two by two. A list of four rows would have been
@@ -916,25 +926,25 @@
      same reason the wordmark does it. */
   .card-heading{
     display:block; text-transform:uppercase; letter-spacing:.07em;
-    font-size:.66rem; font-weight:800; color:var(--ink-soft);
-    line-height:1.3; margin:0 0 9px;
+    font-size:.75rem; font-weight:800; color:var(--ink-soft);
+    line-height:1.3; margin:0 0 12px;
   }
   .levels-card{
-    margin:0 0 14px; padding:12px 16px 14px; border-radius:var(--radius);
-    background:rgba(255,255,255,.72); box-shadow:var(--shadow-sm);
+    margin:0 0 16px; padding:16px 20px 18px; border-radius:var(--radius);
+    background:var(--surface); box-shadow:var(--shadow);
   }
   .levels-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:15px 18px; }
   .level-tile{ display:flex; flex-direction:column; gap:5px; min-width:0; }
   .level-icon{ display:inline-grid; place-items:center; width:17px; height:17px; flex:0 0 auto; }
   .level-icon svg{ display:block; width:100%; height:100%; }
   .level-name{
-    display:flex; align-items:center; gap:5px; font-size:.68rem; font-weight:800;
+    display:flex; align-items:center; gap:6px; font-size:.75rem; font-weight:800;
     text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  .level-num{ font-size:1rem; font-weight:900; color:var(--ink); line-height:1.1; }
-  .level-num .of{ font-size:.72rem; font-weight:700; color:var(--ink-soft); margin-left:3px; }
-  .level-bar{ height:6px; border-radius:999px; background:var(--cream-2); overflow:hidden; }
+  .level-num{ font-size:1.125rem; font-weight:900; color:var(--ink); line-height:1.2; }
+  .level-num .of{ font-size:.8125rem; font-weight:700; color:var(--ink-soft); margin-left:4px; }
+  .level-bar{ height:8px; border-radius:999px; background:var(--surface-sunken); overflow:hidden; }
   .level-fill{ display:block; height:100%; border-radius:999px; }
 
   /* ---------- home showcase ---------- */
@@ -953,10 +963,9 @@
      row opens the Pokédex — so it cannot itself be a button: a button inside a
      button is invalid and browsers disagree about what to do with it. */
   .showcase{
-    width:100%; margin:0 0 14px; padding:clamp(10px,1.8vh,16px) clamp(16px,3vw,26px) clamp(12px,2vh,18px);
-    background:linear-gradient(180deg,var(--white),var(--cream));
-    border:3px solid rgba(255,255,255,.9); border-radius:var(--radius);
-    box-shadow:var(--shadow-sm); text-align:left;
+    width:100%; margin:0 0 16px; padding:clamp(12px,2vh,20px) clamp(16px,3vw,24px);
+    background:var(--surface); border-radius:var(--radius);
+    box-shadow:var(--shadow); text-align:left;
   }
   .showcase-row{ display:flex; align-items:center; gap:clamp(14px,3vw,26px); }
   /* Tapping the Pokémon re-rolls it. It used to be the whole card, which cannot
@@ -982,8 +991,8 @@
   .showcase-frame{
     flex:0 0 auto;
     width:clamp(96px, min(22vh,34vw), 240px); height:clamp(96px, min(22vh,34vw), 240px); border-radius:50%;
-    background:radial-gradient(circle at 50% 40%, var(--white), var(--cream) 70%, var(--cream-2));
-    box-shadow:var(--shadow-sm), inset 0 0 0 5px rgba(255,255,255,.7);
+    background:var(--surface-sunken);
+    box-shadow:inset 0 0 0 5px var(--surface), 0 0 0 2px var(--line);
     display:grid; place-items:center; overflow:hidden;
   }
   /* Same 65%-ish cap as .poke-frame, for the same reason: the circle clips corners. */
@@ -1001,11 +1010,11 @@
   .showcase-dex{
     display:flex; align-items:center; gap:9px; width:100%;
     margin-top:10px; padding:6px 8px 7px; border:0; border-radius:12px;
-    background:rgba(255,255,255,.55); font:inherit; color:inherit; text-align:left;
+    background:var(--surface-sunken); font:inherit; color:inherit; text-align:left;
     cursor:pointer; -webkit-tap-highlight-color:transparent;
     transition: background .15s, transform .06s;
   }
-  .showcase-dex:hover{ background:rgba(255,255,255,.9); }
+  .showcase-dex:hover{ background:var(--line); }
   .showcase-dex:active{ transform:translateY(1px); }
   .showcase-dex .hud-icon{ flex:0 0 auto; width:20px; height:20px; color:var(--berry-deep); }
   .showcase-dex-text{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:1px; }
@@ -1042,14 +1051,14 @@
     transition: transform .06s, background-color .15s;
   }
   .gear-btn svg{ display:block; width:1.3rem; height:1.3rem; }
-  .gear-btn:hover{ background:rgba(255,255,255,.55); color:var(--ink); }
+  .gear-btn:hover{ background:var(--surface); color:var(--ink); }
   .gear-btn:active{ transform:translateY(1px); }
 
   /* ---------- About / build identity ---------- */
   .about-rows{ margin-top:4px; }
   .about-row{
     display:flex; align-items:baseline; justify-content:space-between; gap:12px;
-    padding:8px 2px; border-bottom:1px dashed var(--cream-2);
+    padding:8px 2px; border-bottom:1px solid var(--line);
   }
   .about-row:last-child{ border-bottom:0; }
   .about-row span{ color:var(--ink-soft); font-weight:700; font-size:.9rem; }
@@ -1084,9 +1093,9 @@
   .dex-tabs::-webkit-scrollbar{ display:none; }
   .dex-arrow{
     flex:0 0 auto; font:inherit; font-size:1.3rem; font-weight:900; line-height:1;
-    width:38px; height:40px; cursor:pointer; color:var(--leaf-deep);
-    background:rgba(255,255,255,.85); border:3px solid rgba(255,255,255,.9);
-    border-radius:999px; box-shadow:var(--shadow-sm);
+    width:40px; height:40px; cursor:pointer; color:var(--ink-soft);
+    background:var(--surface); border:0;
+    border-radius:999px; box-shadow:inset 0 0 0 2px var(--line);
     display:flex; align-items:center; justify-content:center;
     transition: opacity .15s, transform .06s;
   }
@@ -1097,20 +1106,20 @@
      they do, which is exactly when the arrows are wanted. */
   .dex-tab{
     flex:0 0 auto; font:inherit; font-weight:800; font-size:.86rem; cursor:pointer;
-    padding:9px 11px; border-radius:999px; color:var(--leaf-deep);
-    background:rgba(255,255,255,.85); border:3px solid rgba(255,255,255,.9);
-    box-shadow:var(--shadow-sm); transition: transform .06s, border-color .15s;
+    padding:9px 12px; border-radius:999px; color:var(--ink-soft);
+    background:var(--surface); border:2px solid var(--line);
+    transition: transform .06s, border-color .15s;
   }
   .dex-tab:active{ transform:translateY(2px); }
-  .dex-tab.done{ border-color:var(--leaf); }
+  .dex-tab.done{ border-color:var(--leaf-600); color:var(--leaf-700); }
   .dex-tab.on{
-    color:var(--white); border-color:var(--leaf-deep);
-    background:linear-gradient(160deg, var(--leaf), var(--leaf-deep));
+    color:var(--white); border-color:var(--primary);
+    background:var(--primary);
   }
   .dex-gen-section{ margin:0 0 26px; }
   .dex-gen-title{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    margin:0 4px 6px; font-size:1.1rem; color:var(--leaf-deep);
+    margin:0 4px 6px; font-size:1.1rem; color:var(--ink);
     padding-bottom:0;
   }
   /* Replaces the dashed rule the header used to carry: it separates the header
@@ -1121,16 +1130,16 @@
   .dex-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(94px,1fr)); gap:12px; margin-top:14px; }
   .dex-cell{
     position:relative; font:inherit; width:100%; display:block; cursor:pointer;
-    background:linear-gradient(180deg,var(--white),var(--cream)); border-radius:var(--radius-sm);
-    box-shadow:var(--shadow-sm); border:3px solid rgba(255,255,255,.9); padding:10px 6px; text-align:center;
+    background:var(--surface); border-radius:var(--radius-sm);
+    border:2px solid var(--line); padding:10px 6px; text-align:center;
     transition: transform .06s, border-color .15s, box-shadow .15s;
   }
-  .dex-cell:hover{ border-color:var(--sun-deep); }
-  .dex-cell:active{ transform:translateY(2px); box-shadow:0 1px 4px rgba(70,67,58,.18); }
+  .dex-cell:hover{ border-color:var(--sky-600); }
+  .dex-cell:active{ transform:translateY(2px); }
   /* Legendaries and mythicals get a gold treatment on the cell and a chip in the
      detail popup, so the same signal reads the same way in both places. */
-  .dex-cell.legendary{ border-color:var(--sun); background:linear-gradient(180deg,#fffdf5,#fff4d9); }
-  .dex-cell.legendary:hover{ border-color:var(--sun-deep); }
+  .dex-cell.legendary{ border-color:var(--sun-700); background:var(--sun-100); }
+  .dex-cell.legendary:hover{ border-color:var(--sun-800); }
   .dex-rare{
     position:absolute; top:-7px; left:-5px; z-index:1;
     width:22px; height:22px; display:flex; align-items:center; justify-content:center;
@@ -1157,7 +1166,7 @@
     background:var(--white); border:2px solid var(--cream-2); border-radius:12px;
   }
   .evo:hover:not(:disabled){ border-color:var(--sun-deep); }
-  .evo.current{ border-color:var(--leaf); background:var(--cream); cursor:default; }
+  .evo.current{ border-color:var(--leaf-700); background:var(--leaf-100); cursor:default; }
   .evo img{ width:42px; height:42px; object-fit:contain; }
   .evo img.silhouette{ filter:brightness(0) opacity(.28); }
   .evo span{ font-size:.62rem; font-weight:800; color:var(--ink-soft); text-transform:capitalize;
@@ -1166,7 +1175,7 @@
   .evo-arrow{ color:var(--ink-soft); font-size:.66rem; }
   .rarity-chip{
     display:inline-block; margin:0 0 6px; padding:3px 12px; border-radius:999px;
-    background:var(--sun); color:#7a5a12; font-weight:900; font-size:.78rem;
+    background:var(--sun-500); color:var(--sun-800); font-weight:900; font-size:.78rem;
     letter-spacing:.06em; text-transform:uppercase;
   }
   .rarity-chip.mythical{ background:#e3c9f5; color:#5f3a7a; }
@@ -1203,7 +1212,7 @@
      phone, and it also lost the thing the grouping is meant to show — which
      family a track belongs to. */
   .group-top{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-              padding-bottom:10px; border-bottom:2px solid var(--cream-2); margin-bottom:4px; }
+              padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:4px; }
   .group-name{ font-weight:800; font-size:1.1rem; }
   .group-level{ color:var(--ink-soft); font-size:.9rem; font-weight:700; white-space:nowrap; }
   /* Separators sit on the TOP of each row but the first, never the bottom. A live
@@ -1211,7 +1220,7 @@
      type and stripped the border from the last button rather than the last row —
      and a bottom border would trail off the end of the card besides. */
   .track-row{ display:flex; align-items:center; gap:10px; width:100%; padding:10px 2px;
-              background:none; border:0; border-top:1px solid var(--cream-2);
+              background:none; border:0; border-top:1px solid var(--line);
               font:inherit; color:inherit; text-align:left; cursor:pointer; }
   .track-row.first{ border-top:0; }
   .track-row.locked{ cursor:default; opacity:.55; }
@@ -1240,10 +1249,10 @@
   /* ---------- Results ---------- */
   .result{ text-align:center; }
   .result .big-emoji{ font-size:5rem; margin:4px 0; }
-  .result h2{ font-size:2rem; color:var(--leaf-deep); margin:0 0 6px; justify-content:center; }
+  .result h2{ font-size:2rem; font-weight:900; color:var(--ink); margin:0 0 6px; justify-content:center; }
   .score-pill{
-    display:inline-block; background:var(--white); border-radius:999px; padding:12px 26px;
-    font-size:1.4rem; font-weight:800; color:var(--ink); box-shadow:var(--shadow-sm); margin:10px 0 22px;
+    display:inline-block; background:var(--surface-sunken); border-radius:999px; padding:12px 26px;
+    font-size:1.4rem; font-weight:800; color:var(--ink); margin:10px 0 22px;
   }
 
   @keyframes pokeballPop{
@@ -1320,11 +1329,375 @@
     .caught-chip span{ font-size:.76rem; max-width:84px; }
     .caught-row{ gap:6px; }
   }
+  /* =====================================================================
+     DIRECTION B — "crafted storybook". One layer over everything above it:
+     a meadow scene behind the screens that have a stage (home, a question,
+     results, a catch, the battle arena), cream paper for everything else.
+     Values come from the tokens in :root; the mockups this was built from
+     live in the design system (Overview.md §14).
+     ===================================================================== */
+  :root{
+    --canvas:#fbf6e8;
+    --teal-700:#23735f;
+    --paper-line:#efe6cf;
+    --hills:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'%3E%3Cpath d='M0 62 Q 100 4 210 48 T 400 38 V120 H0z' fill='%23a8d9aa'/%3E%3Cpath d='M0 98 Q 120 52 250 84 T 400 76 V120 H0z' fill='%237cc47f'/%3E%3C/svg%3E");
+    /* The scene is full-bleed but its contents line up with the 760px column. */
+    --scene-pad:max(18px, calc(50vw - 362px));
+  }
+  body{ background:var(--canvas); overflow-x:clip; }
+  body[data-screen="setup"] .wrap,
+  body[data-screen="play"] .wrap,
+  body[data-screen="results"] .wrap{ padding-top:0; }
+  body[data-screen="setup"] .wrap,
+  body[data-screen="results"] .wrap{ padding-bottom:0; }
+  body[data-screen="play"] .wrap{ padding-bottom:16px; }
+
+  .scene{
+    position:relative;
+    margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw);
+    padding-left:var(--scene-pad); padding-right:var(--scene-pad);
+    background:var(--hills) center bottom / 100% 120px no-repeat, var(--sky-300);
+  }
+
+  /* ---------- HUD ---------- */
+  .home-top{ position:relative; z-index:3; margin:0; padding-top:clamp(12px, 3vh, 28px); gap:6px; }
+  .home-tiles{ gap:6px; flex-wrap:nowrap; }
+  .hud-item{
+    min-height:44px; padding:8px 12px; gap:5px; border-radius:999px;
+    background:var(--surface); box-shadow:0 2px 0 rgba(46,43,36,.08);
+    color:var(--ink-soft); white-space:nowrap;
+  }
+  .hud-item:hover{ background:var(--surface); }
+  .hud-icon{ width:16px; height:16px; }
+  .hud-val{ font-size:.8125rem; font-weight:900; color:var(--ink); }
+  .hud-lbl{ font-size:.8125rem; font-weight:700; color:var(--ink-soft); }
+  .hud-item.met, .hud-item.met .hud-val{ color:var(--leaf-700); }
+  .hud-item.streak{ color:var(--flame-600); }
+  .hud-item.streak .hud-val{ color:#9a4a0c; }
+  .hud-item.dex, .hud-item.dex .hud-val{ color:var(--berry-600); }
+  /* Below this the words go and the numbers stay: the row has no room for both. */
+  @media (max-width:380px){ .hud-lbl{ display:none; } }
+  .brand{ margin-left:auto; }
+  .brand h1{ text-shadow:none; }
+  .brand .pokeball{ width:28px; height:28px; filter:none; }
+  /* The wordmark is still the page's heading, for anything reading it; the ball
+     is all a child sees. */
+  .brand-word{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  .gear-btn{
+    margin-left:6px; width:44px; height:44px; padding:0; border-radius:50%;
+    background:var(--surface); box-shadow:0 2px 0 rgba(46,43,36,.08);
+  }
+  .gear-btn svg{ width:20px; height:20px; }
+  .gear-btn:hover{ background:var(--surface); }
+  #resultTiles{ justify-content:center; margin:0 0 14px; }
+
+  /* ---------- Home ---------- */
+  /* All of it on one screen down to 360×640: the meadow is the one part that
+     gives way, so the name card, the trails and Start keep their size. */
+  #setup:not(.hidden){ display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
+  /* A zero basis: the meadow takes only the height left over once everything
+     below it has its size, which is what keeps Start on screen at 360×640. */
+  .home-scene{ flex:1 1 0; min-height:150px; max-height:min(56vh, 520px); display:flex; flex-direction:column; }
+  .home-scene::before{
+    content:""; position:absolute; right:calc(var(--scene-pad) + 14px); top:clamp(64px, 12vh, 104px);
+    width:clamp(40px, 7vh, 62px); aspect-ratio:1; border-radius:50%; background:var(--sun-500);
+  }
+  .home-scene::after{
+    content:""; position:absolute; left:calc(var(--scene-pad) + 10px); top:clamp(72px, 13vh, 116px);
+    width:92px; height:24px; border-radius:12px; background:#fff; box-shadow:26px -14px 0 -4px #fff;
+  }
+  .home-stage{
+    position:relative; z-index:2; flex:1 1 auto; min-height:0;
+    display:flex; align-items:flex-end; justify-content:center; padding:6px 0 34px;
+  }
+  .showcase-pick{ height:100%; max-height:240px; display:flex; align-items:flex-end; border-radius:24px; }
+  .showcase-pick img{
+    height:100%; max-height:240px; width:auto; max-width:min(70vw, 280px); object-fit:contain;
+    filter:drop-shadow(0 8px 6px rgba(35,102,58,.35));
+  }
+  .showcase-pick img.silhouette{ filter:brightness(0) opacity(.22); }
+
+  .showcase{
+    position:relative; z-index:3; margin:-30px 0 0; padding:12px 14px;
+    display:flex; flex-direction:column; gap:8px;
+    background:var(--surface); border:0; border-radius:22px;
+    box-shadow:0 0 0 3px var(--paper-line), 0 8px 20px rgba(46,43,36,.08);
+  }
+  .showcase-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .showcase-name{ font-size:1.375rem; font-weight:900; line-height:1.1; color:var(--ink); margin:0; }
+  .showcase-num{ font-size:.8125rem; font-weight:800; color:var(--ink-soft); line-height:1.1; }
+  .showcase-num.showcase-num-only{ font-size:1.375rem; font-weight:900; }
+  .showcase-types{ margin:0; }
+  .showcase .showcase-dex{
+    display:flex; align-items:center; gap:8px; width:100%; min-height:46px; margin:0; padding:0 12px;
+    border-radius:14px; background:#f6f0e0; box-shadow:inset 0 0 0 2px var(--paper-line);
+    font-size:.8125rem; font-weight:800; color:var(--ink-soft);
+  }
+  .showcase .showcase-dex:hover{ background:#f1e9d4; }
+  .showcase-dex .hud-icon{ width:18px; height:18px; color:var(--berry-600); }
+  .showcase-dex-text{ display:block; white-space:nowrap; }
+  .showcase-dex-text b{ color:var(--ink); font-weight:900; }
+  .showcase .showcase-dex .level-bar{ display:block; flex:0 0 60px; width:60px; height:6px; margin:0; }
+  .showcase-dex-go{ margin-left:auto; color:var(--berry-700); font-weight:900; white-space:nowrap; }
+  @media (max-width:400px){ .showcase .showcase-dex .level-bar{ display:none; } }
+
+  .levels-card{ margin:0; padding:16px 2px 0; background:transparent; box-shadow:none; border-radius:0; }
+  .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px 16px; }
+  .level-name{ text-transform:none; letter-spacing:0; font-size:.75rem; gap:6px; }
+  .level-icon{ width:20px; height:20px; padding:2px; border-radius:6px; color:#fff; }
+  .level-num{ font-size:.9375rem; }
+  .level-num .of{ font-size:.75rem; }
+  .level-tile.locked .level-num{ color:var(--ink-soft); }
+
+  .home-actions{
+    grid-template-columns:1.6fr 1fr; gap:12px; margin-top:auto;
+    padding:18px 0 max(18px, env(safe-area-inset-bottom));
+  }
+  .home-actions .btn{ flex-direction:row; gap:9px; min-height:60px; padding:0 14px; font-size:1.1875rem; }
+  .home-actions .btn.green, .result-actions .btn.green, #catchOkBtn{ box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--primary-edge); }
+  .home-actions .btn.berry{ box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--accent-edge); }
+  .action-icon{ display:inline-grid; place-items:center; width:20px; height:20px; font-size:0; }
+  .action-icon svg{ width:100%; height:100%; }
+  @media (max-height:700px){
+    .home-actions{ padding-top:12px; }
+    .home-actions .btn{ min-height:54px; font-size:1.0625rem; }
+    .levels-card{ padding-top:10px; }
+    .levels-grid{ gap:8px 14px; }
+  }
+
+  /* ---------- A question ---------- */
+  /* overflow:hidden because the grass shakes ±3px sideways when a Pokémon hides,
+     and full-width it would otherwise let the page scroll sideways. */
+  .play-scene{ height:190px; overflow:hidden; }
+  .play-scene .topbar{ position:relative; z-index:2; margin:0; padding-top:clamp(12px, 4vh, 34px); }
+  .progress{ height:14px; border:0; background:var(--surface); box-shadow:inset 0 0 0 2px rgba(46,43,36,.14); }
+  .progress > i{ background:var(--leaf-600); }
+  .quit-x{ background:var(--surface); box-shadow:0 2px 0 rgba(46,43,36,.08); }
+  /* The grass strip is the meadow's own grass now. It still shakes when something
+     is hiding in it, and a "!" says so. */
+  .play-scene .grass-strip{
+    position:absolute; left:0; right:0; bottom:0; height:54px; margin:0;
+    background-color:transparent; box-shadow:none; z-index:1;
+  }
+  .grass-strip.shaking::after{
+    content:"!"; position:absolute; right:calc(var(--scene-pad) + 40px); top:-26px;
+    width:30px; height:30px; border-radius:50%; display:grid; place-items:center;
+    background:#fff; color:var(--leaf-700); font-weight:900; font-size:18px;
+    box-shadow:0 3px 0 rgba(35,102,58,.25);
+  }
+  #stage.card{
+    position:relative; z-index:2; margin:-22px 0 0; border-radius:30px; padding:20px 18px;
+    box-shadow:0 0 0 3px var(--paper-line), 0 10px 30px rgba(46,43,36,.1);
+    /* Down to the bottom of the screen: the scene, less the 22px the card
+       tucks under the grass, plus the page's 16px foot. */
+    min-height:calc(100vh - 184px); min-height:calc(100dvh - 184px);
+  }
+  @media (max-height:700px){
+    .play-scene{ height:118px; }
+    .grass-strip.shaking::after{ top:-6px; }
+    #stage.card{ min-height:calc(100dvh - 112px); padding-top:12px; }
+    #stage .kind-tag{ margin-bottom:8px; }
+    #stage .poke-frame:not(.compact){ width:160px; height:160px; }
+  }
+  .kind-alpha{ background:var(--teal-700); }
+
+  /* Speakers: one look everywhere, sun with a dark mark, never under 44px. */
+  .frame-say, .reading-img-cell .reading-say-mini, .battle-frame-wrap .battle-sound{
+    border:0; background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
+  }
+  .frame-say:hover, .reading-img-cell .reading-say-mini:hover, .battle-frame-wrap .battle-sound:hover{ background:var(--sun-300); }
+  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:55%; height:55%; display:block; }
+  /* Reverse Read & Choose: each picture's speaker sits below it, outside the
+     picture's own tap area — a near-miss on the speaker must not count as an answer. */
+  .reading-img-cell{ flex-direction:column; align-items:center; gap:6px; }
+  /* Three across at every phone width: two across pushed the fifth option's
+     speaker below the fold at 360×640. */
+  .reading-options-img{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+  .reading-img-cell .reading-opt{ width:100%; flex:0 0 auto; }
+  .reading-img-cell .reading-say-mini{ position:static; width:44px; height:44px; }
+
+  /* The help light. Alphabet and Pattern light GREEN, like Spelling: all three
+     already wear an amber ring as the "you are here" cursor, and a second amber
+     meaning "this is the answer" made the help invisible. Plain maths and
+     reading have no cursor, so they keep the amber light. */
+  #stage[data-kind="alpha"] .answer-lit,
+  #stage[data-kind="pattern"] .answer-lit{
+    border-color:var(--leaf-700) !important; background:var(--leaf-100);
+    animation:answer-lit-green-pulse 1.25s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #stage[data-kind="alpha"] .answer-lit,
+    #stage[data-kind="pattern"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
+  }
+  @media (max-width:480px){ .alpha-name{ font-size:11px; } }
+
+  .fb-icon{ display:inline-grid; place-items:center; width:1em; height:1em; margin-right:6px; vertical-align:-.12em; }
+  .fb-icon svg{ width:100%; height:100%; }
+  .feedback.bad{ color:var(--berry-700); }
+  .feedback.big-check{
+    display:grid; place-items:center; width:96px; height:96px; min-height:0; margin:18px auto 0;
+    border-radius:50%; background:var(--leaf-600); color:#fff; font-size:0;
+    box-shadow:0 0 0 10px var(--leaf-100);
+  }
+  .feedback.big-check svg{ width:52px; height:52px; }
+
+  /* ---------- Catch: its own moment; browsing the Pokédex: a sheet ---------- */
+  .catch-sky{ display:contents; }
+  .catch-card{ border-radius:30px; }
+  .modal-overlay.is-catch{ background:var(--canvas); padding:0; align-items:stretch; overflow-y:auto; }
+  .is-catch .catch-card{
+    max-width:440px; min-height:100%; margin:0 auto; padding:0 22px max(26px, env(safe-area-inset-bottom));
+    display:flex; flex-direction:column; align-items:center;
+    background:transparent; border:0; border-radius:0; box-shadow:none;
+  }
+  .is-catch .catch-sky{
+    flex:1 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:12px;
+    align-self:stretch; margin:0 calc(198px - 50vw) 14px; padding:clamp(20px, 6vh, 64px) 22px 30px; overflow:hidden;
+    background:var(--hills) center bottom / 100% 120px no-repeat, var(--sky-300);
+  }
+  @media (max-width:440px){ .is-catch .catch-sky{ margin-left:-22px; margin-right:-22px; } }
+  .is-catch .catch-caption{
+    margin:0; padding:11px 28px; border-radius:14px; text-transform:none; letter-spacing:0;
+    font-size:1.375rem; font-weight:900; color:#fff; background:var(--leaf-600); box-shadow:0 5px 0 var(--leaf-700);
+  }
+  .is-catch .catch-caption.rare{ background:var(--sun-500); color:var(--sun-800); box-shadow:0 5px 0 var(--sun-700); }
+  .is-catch .catch-frame{
+    width:min(230px, 32vh); height:min(230px, 32vh); margin:0 auto;
+    background:radial-gradient(circle, #fff6c9 0, #ffe49e 42%, rgba(255,228,158,0) 70%); box-shadow:none;
+  }
+  .is-catch .catch-frame img{ max-width:86%; max-height:86%; }
+  .is-catch .catch-shine{ top:42%; }
+  .is-catch .catch-name{ font-size:1.875rem; font-weight:900; margin:0 0 6px; }
+  .is-catch #catchOkBtn{ margin-top:auto !important; }
+  .is-catch .evo-row{ margin:12px 0 18px; }
+  .is-catch .evo{ width:70px; }
+  .is-catch .evo span{ max-width:66px; font-size:.625rem; }
+  /* A short phone still gets the whole family and the Okay button: the sky and
+     the artwork give way first, as the Pokémon does on the home screen. */
+  @media (max-height:820px){
+    .is-catch .catch-sky{ padding-top:14px; padding-bottom:18px; gap:8px; margin-bottom:8px; }
+    .is-catch .catch-caption{ font-size:1.125rem; padding:8px 22px; }
+    .is-catch .catch-frame{ width:min(200px, 24vh); height:min(200px, 24vh); }
+    .is-catch .catch-name{ font-size:1.5rem; margin-bottom:4px; }
+    .is-catch .evo-row{ margin:8px 0 12px; }
+    .is-catch .evo{ width:64px; }
+    .is-catch .evo img{ width:34px; height:34px; }
+  }
+  .rarity-chip{ background:var(--sun-500); color:var(--sun-800); display:inline-flex; align-items:center; gap:4px; }
+  .rarity-chip svg{ width:11px; height:11px; }
+  .rarity-chip.mythical{ background:#e3c9f5; color:#5f3a7a; }
+
+  /* ---------- Results ---------- */
+  .results-scene{ padding-top:clamp(16px, 4vh, 40px); padding-bottom:64px; text-align:center; }
+  .results-scene h2{ position:relative; z-index:1; margin:0; font-size:2rem; font-weight:900; color:var(--ink); }
+  #results .result{
+    display:flex; flex-direction:column; padding:20px 0 0;
+    min-height:calc(100vh - 230px); min-height:calc(100dvh - 230px);
+  }
+  .caught-title{
+    margin:0 0 10px; font-size:.75rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);
+  }
+  .caught-none{ font-size:1.125rem; font-weight:800; margin:24px 0; }
+  #results .caught-row{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; max-width:420px; margin:0 auto 16px; }
+  #results .caught-chip{
+    position:relative; width:auto; padding:12px 4px; border:0; border-radius:18px;
+    background:var(--surface); box-shadow:inset 0 0 0 2px var(--paper-line);
+  }
+  #results .caught-chip img{ width:76px; height:76px; }
+  #results .caught-chip span{ max-width:100%; font-size:.875rem; }
+  #results .caught-chip .dex-new{ position:absolute; top:-7px; right:-4px; font-size:.6rem; color:#fff; }
+  .result-actions{ margin-top:auto; display:flex; flex-direction:column; gap:16px; padding:12px 0 max(26px, env(safe-area-inset-bottom)); }
+  .result-actions .btn{ margin:0; }
+
+  /* ---------- Paper screens: Settings, My progress, Pokédex, Battle ---------- */
+  .card{ border-radius:24px; box-shadow:0 0 0 3px var(--paper-line); }
+  .card h2{ font-size:1.125rem; font-weight:900; }
+  .card .sub{ font-size:.8125rem; line-height:1.45; }
+  .screen-head{ margin:14px 0 14px; }
+  .screen-title{ font-size:.8125rem; font-weight:900; letter-spacing:.08em; }
+  .screen-extra{ gap:6px; }
+  .count-badge{
+    display:inline-flex; align-items:center; gap:4px; padding:6px 10px; border-radius:999px;
+    background:var(--surface); box-shadow:inset 0 0 0 2px #e9dfc6; font-size:.8125rem; font-weight:900;
+  }
+  .count-badge svg{ width:14px; height:14px; }
+  .count-badge.won{ color:var(--leaf-700); }
+  .count-badge.lost{ color:var(--berry-700); }
+
+  .dex-tab{ min-height:44px; }
+  .dex-arrow{ width:44px; height:44px; }
+  .catch-card .frame-say{ width:44px; height:44px; }
+  .dex-cell{ border-radius:18px; box-shadow:none; }
+  .dex-rare{ background:var(--sun-500); color:var(--sun-800); border:2px solid var(--canvas); }
+  .dex-rare svg{ width:12px; height:12px; }
+  .dex-rare.mythical{ background:#d9b6f0; color:#5f3a7a; }
+  .rare-count{ color:var(--sun-800); display:inline-flex; align-items:center; gap:3px; }
+  .rare-count svg{ width:11px; height:11px; }
+  .evo span{ font-size:.6875rem; }
+
+  /* Battle: the arena is a meadow, the speakers ride on the pictures. */
+  .battle-arena{
+    margin:0 calc(50% - 50vw) 0; padding:24px var(--scene-pad) 44px;
+    background:var(--hills) center bottom / 100% 120px no-repeat, var(--sky-300);
+    flex-wrap:nowrap; align-items:flex-start; gap:6px;
+  }
+  .battle-fighter{ flex:0 1 180px; min-width:0; }
+  .battle-frame-wrap{ position:relative; }
+  .battle-frame{ width:124px; height:124px; }
+  .battle-frame-wrap .battle-sound{ position:absolute; right:-6px; bottom:-4px; width:44px; height:44px; font-size:0; }
+  .battle-name{ justify-content:center; text-align:center; font-size:1rem; line-height:1.15; overflow-wrap:anywhere; }
+  .battle-vs{ margin-top:40px; background:var(--sun-500); color:var(--sun-800); }
+  .battle-log{ padding:6px 4px 0; text-align:left; }
+  .battle-result{ text-align:center; }
+  .battle-announce{ font-size:1.75rem; }
+  #battleStage .actions{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
+  #battleStage .actions .btn{ padding:14px 8px; font-size:1rem; overflow-wrap:anywhere; box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--primary-edge); }
+  #battleStage .actions .btn:only-child{ grid-column:1 / -1; display:flex; align-items:center; justify-content:center; gap:9px; }
+  @media (max-width:480px){ .battle-frame{ width:108px; height:108px; } }
+
+  .track-caret{ font-size:1rem; font-weight:900; }
+
+  .field select{
+    max-width:100%; min-height:44px; padding:0 30px 0 12px; border-radius:12px; border:2px solid var(--line-strong);
+    font:inherit; font-size:.8125rem; font-weight:800; color:var(--ink); background-color:var(--surface);
+    -webkit-appearance:none; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232e2b24' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 11px center; background-size:12px 8px;
+  }
+  .field select:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
+  /* A level's full name ("Level 4 — Words to level 1, 1 letter given") is wider
+     than a phone's row, so there the label sits above a full-width dropdown. */
+  @media (max-width:520px){
+    .field:has(select){ flex-wrap:wrap; }
+    .field:has(select) select{ width:100%; }
+  }
+
+  /* Type badges keep the series' colours, but white text failed on most of them
+     (2.0–3.4:1). Dark text passes on every light one; grass and flying are
+     lifted a shade so dark text passes there too. */
+  .type-normal, .type-fire, .type-water, .type-electric, .type-grass, .type-ice, .type-ground,
+  .type-flying, .type-psychic, .type-bug, .type-rock, .type-steel, .type-fairy{ color:var(--ink); }
+  .type-grass{ background:#6bb352; }
+  .type-flying{ background:#a094e8; }
+
+  /* The no-trails notice. */
+  .notice-card{ max-width:380px; text-align:center; }
+  .notice-card h2{ margin:0 0 8px; font-size:1.375rem; font-weight:900; }
+  .notice-card p{ margin:0 0 20px; color:var(--ink-soft); line-height:1.5; }
+  .notice-card .btn + .btn{ margin-top:14px; }
+
 </style>
 </head>
-<body>
+<body data-screen="setup">
 <div class="wrap">
 
+  <!-- ============ SETUP (home) ============ -->
+  <section id="setup">
+
+    <!-- The meadow is the stage: counters and the gear ride on its sky, and one of
+         your own Pokémon stands on its hill. It is the one part of the screen that
+         gives way on a short phone, so Start never leaves the screen. -->
+    <div class="scene home-scene">
   <div class="home-top" id="homeTop">
     <div class="home-tiles" id="homeTiles"></div>
     <div class="brand">
@@ -1340,17 +1713,16 @@
     </div>
     <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings"></button>
   </div>
-
-  <!-- ============ SETUP ============ -->
-  <section id="setup">
-
-    <div class="levels-card" id="homeLevels"></div>
+      <div class="home-stage" id="homeStage"></div>
+    </div>
 
     <div class="showcase" id="homeShowcase"></div>
 
+    <div class="levels-card" id="homeLevels"></div>
+
     <div class="home-actions">
-      <button class="btn green" id="startBtn"><span class="action-icon">▶</span>Start Playing!</button>
-      <button class="btn berry" id="battleBtn"><span class="action-icon">⚔️</span>Pokémon Battle!</button>
+      <button class="btn green" id="startBtn"><span class="action-icon" data-icon="play"></span>Start playing</button>
+      <button class="btn berry" id="battleBtn"><span class="action-icon" data-icon="bolt"></span>Battle</button>
     </div>
 
   </section>
@@ -1360,7 +1732,7 @@
     <div class="chrome"></div>
 
     <div class="card">
-      <h2><span class="chip">🎯</span> General Settings</h2>
+      <h2>General Settings</h2>
       <p class="sub">Each challenge is randomly picked from whichever modes are turned on below.</p>
       <div class="field">
         <label>Questions per round
@@ -1395,7 +1767,7 @@
     </div>
 
     <div class="card">
-      <h2><span class="chip">🔤</span> Spelling Trail</h2>
+      <h2>Spelling Trail</h2>
       <p class="sub">One graduated trail: a Phonics Ladder using real Pok&eacute;mon Pokopia items (Phase A), then Pok&eacute;mon-name fluency practice (Phase B). Each round mixes review, current-level, and stretch questions around the frontier.</p>
 
       <div class="field">
@@ -1414,7 +1786,7 @@
     </div>
 
     <div class="card">
-      <h2><span class="chip">📖</span> Reading Trail</h2>
+      <h2>Reading Trail</h2>
       <p class="sub">Fixed 5-choice formats — Read &amp; Choose (see a picture, pick the word) and Reverse Read &amp; Choose (see a word, pick the picture) — so difficulty stays constant round to round. The alphabet run has its own trail below.</p>
 
       <div class="field">
@@ -1433,7 +1805,7 @@
     </div>
 
     <div class="card">
-      <h2><span class="chip">🔤</span> Alphabet Trail</h2>
+      <h2>Alphabet Trail</h2>
       <p class="sub">A run of the alphabet with gaps in it, filled by picking the Pok&eacute;mon whose name starts with the missing letter. Its own ladder in <code>data/alphabet_levels.csv</code> — the run grows, the gaps multiply, and they move between the start, middle and end.</p>
 
       <div class="field">
@@ -1452,7 +1824,7 @@
     </div>
 
     <div class="card">
-      <h2><span class="chip">🔢</span> Math Trails</h2>
+      <h2>Math Trails</h2>
       <p class="sub">Eight tracks — add, subtract, multiply, divide and a skip-counting pattern track for each. A track opens once its prerequisite reaches the level named in <code>data/math_tracks.csv</code>, and everything open has a chance to come up.</p>
 
       <div class="field">
@@ -1466,7 +1838,7 @@
     </div>
 
     <div class="card">
-      <h2><span class="chip">🖼️</span> Pokémon Visual Math</h2>
+      <h2>Pokémon Visual Math</h2>
       <p class="sub">Not a separate mode — the same maths questions above, shown as Pok&eacute;mon icons instead of bare numbers. Which rungs can be drawn is set per level in <code>data/math_levels.csv</code>, so it leads the early levels and stops where the numbers outgrow a picture.</p>
 
       <div class="field">
@@ -1478,7 +1850,7 @@
     </div>
 
     <div class="card">
-      <h2><span class="chip">ℹ️</span> About</h2>
+      <h2>About</h2>
       <p class="sub">Which version of the app this device is running. If the build here is older than the one you just published, this device is showing a cached copy — reload the page.</p>
       <div class="about-rows">
         <div class="about-row"><span>Build</span><b id="aboutBuild">—</b></div>
@@ -1491,26 +1863,28 @@
 
   <!-- ============ PLAY ============ -->
   <section id="play" class="hidden">
-    <div class="topbar">
-      <button class="quit quit-x" id="quitBtn" aria-label="Quit" title="Quit">&#10005;</button>
-      <div class="progress"><i id="progFill"></i></div>
+    <div class="scene play-scene">
+      <div class="topbar">
+        <button class="quit quit-x" id="quitBtn" aria-label="Quit" title="Quit">&#10005;</button>
+        <div class="progress"><i id="progFill"></i></div>
+      </div>
+      <div class="grass-strip" id="grassStrip"></div>
     </div>
-
-    <div class="grass-strip" id="grassStrip"></div>
 
     <div class="card stage" id="stage"><!-- problem injected here --></div>
   </section>
 
   <!-- ============ RESULTS ============ -->
   <section id="results" class="hidden">
-    <div class="card result">
-      <div class="big-emoji">🎉</div>
-      <h2 id="resultTitle">Round finished!</h2>
+    <div class="scene results-scene">
       <div class="home-tiles" id="resultTiles"></div>
+      <h2 id="resultTitle">Round finished!</h2>
+    </div>
+    <div class="result">
       <div id="caughtBlock"></div>
-      <div>
-        <button class="btn green big" id="againBtn">Play Again</button>
-        <button class="btn ghost big" id="backSetupBtn" style="margin-top:12px">Go Back</button>
+      <div class="result-actions">
+        <button class="btn green big" id="againBtn">Play again</button>
+        <button class="btn ghost big" id="backSetupBtn">Go back</button>
       </div>
     </div>
   </section>
@@ -1518,7 +1892,7 @@
   <!-- ============ BATTLE ============ -->
   <section id="battle" class="hidden">
     <div class="chrome"></div>
-    <div class="card" id="battleStage"><!-- battle UI injected here --></div>
+    <div class="battle-stage" id="battleStage"><!-- battle UI injected here --></div>
   </section>
 
   <!-- ============ POKÉDEX ============ -->
@@ -1540,10 +1914,12 @@
 
   <div class="modal-overlay hidden" id="catchModal">
     <div class="catch-card" id="catchCard">
-      <p class="catch-caption" id="catchCaption">🎉 Caught!</p>
+      <div class="catch-sky">
+      <p class="catch-caption" id="catchCaption">Caught!</p>
       <div class="frame-wrap">
         <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
-        <button class="frame-say" type="button" id="catchSay" aria-label="Say it">🔊</button>
+        <button class="frame-say" type="button" id="catchSay" aria-label="Say it"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+      </div>
       </div>
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
@@ -1551,6 +1927,18 @@
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
+    </div>
+  </div>
+
+  <!-- Every trail switched off. This is for whoever set it up, so it can say so in
+       a sentence; it used to be a browser alert(), which a child can't read and
+       which looks like the page broke. -->
+  <div class="modal-overlay hidden" id="noModesModal" role="dialog" aria-modal="true" aria-labelledby="noModesTitle">
+    <div class="catch-card notice-card">
+      <h2 id="noModesTitle">Nothing to play yet</h2>
+      <p>Every trail is switched off. Turn at least one on in Settings.</p>
+      <button class="btn green big" id="noModesSettingsBtn" type="button">Open Settings</button>
+      <button class="btn ghost big" id="noModesCloseBtn" type="button">Close</button>
     </div>
   </div>
 
@@ -1847,12 +2235,24 @@ function checkAlphaRow(row){
 }
 
 function showDataError(err){
-  document.body.innerHTML = '<div style="max-width:34rem;margin:12vh auto;padding:0 1.5rem;'
-    + 'font:16px/1.6 system-ui,sans-serif;color:#3f3d36;text-align:center">'
-    + '<h1 style="font-size:1.3rem">Couldn\'t load the Pok&eacute;mon data</h1>'
-    + '<p>The app reads its data from <code>data/*.csv</code>, '
+  // Same words as ever, in the app's own look: a strip of meadow, the mark, and
+  // the error itself in a box that wraps, since a CSV row check can run long.
+  // Inline styles because the page's own layout is being thrown away here.
+  const msg = String(err && err.message || err).replace(/[&<>]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]));
+  document.body.dataset.screen = "error";
+  document.body.innerHTML = '<div class="scene" style="height:220px;margin:0"></div>'
+    + '<div style="max-width:34rem;margin:0 auto;padding:24px 1.5rem 48px;text-align:center;color:var(--ink)">'
+    + '<svg viewBox="0 0 100 100" width="52" height="52" aria-hidden="true" style="display:block;margin:0 auto 12px">'
+    + '<circle cx="50" cy="50" r="46" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>'
+    + '<path d="M4 50a46 46 0 0 1 92 0z" fill="#ef5350" stroke="#2b2b2b" stroke-width="5"/>'
+    + '<line x1="4" y1="50" x2="96" y2="50" stroke="#2b2b2b" stroke-width="5"/>'
+    + '<circle cx="50" cy="50" r="14" fill="#fff" stroke="#2b2b2b" stroke-width="5"/></svg>'
+    + '<h1 style="font-size:1.45rem;font-weight:900;margin:0 0 10px">Couldn\'t load the Pok&eacute;mon data</h1>'
+    + '<p style="color:var(--ink-soft);line-height:1.55;margin:0 0 18px">The app reads its data from <code>data/*.csv</code>, '
     + 'which needs this page served over http rather than opened as a file.</p>'
-    + '<p style="color:#8a5a12"><code>' + String(err && err.message || err) + '</code></p></div>';
+    + '<pre style="text-align:left;white-space:pre-wrap;word-break:break-word;margin:0;padding:12px 14px;border-radius:16px;'
+    + 'background:#fff;box-shadow:0 0 0 3px var(--paper-line);color:var(--berry-700);font:700 13px/1.5 ui-monospace,monospace">'
+    + msg + '</pre></div>';
 }
 
 const artwork = id => `pokemon/${id}.png`;
@@ -2161,8 +2561,8 @@ function liveMathTracks(){ return MATH_TRACKS.filter(t => t.levels.length && tra
    one's level is the sum of its four tracks', so a single number moves whenever
    any part of it does; a track that has not opened yet contributes nothing. */
 const MATH_GROUPS = [
-  { id:"addsub", label:"+ / −", color:"var(--berry-deep)" },
-  { id:"muldiv", label:"× / ÷", color:"var(--sun-deep)" },
+  { id:"addsub", label:"Add & take away", color:"var(--berry-600)" },
+  { id:"muldiv", label:"Times & share",   color:"var(--sun-700)" },
 ];
 function mathGroupProgress(groupId){
   const ts = MATH_TRACKS.filter(t => t.group === groupId && t.levels.length);
@@ -2597,7 +2997,7 @@ function recordDailyCompletion(){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles")); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles"), { dex:false }); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
 
 /* The home screen's middle band: one of YOUR Pokémon, shown big — number, then
    name. It is a trophy shelf, not a teaser: showing off a catch is what makes a
@@ -2633,50 +3033,50 @@ function renderShowcase(){
   const genCaught = genRoster.filter(x => collected.includes(x.id)).length;
   const genPct = genTotal ? Math.round((genCaught / genTotal) * 100) : 0;
   const genName = shownGen ? shownGen.label.split(" — ")[0] : "";
+  // One row, and the whole row is the button: it is the only way into the
+  // Pokédex from home now that the HUD's counter has moved here, so it gets a
+  // full-width, finger-sized target rather than a link at the end of a line.
   const genBlock = shownGen ? `
       <button class="showcase-dex" type="button"
               aria-label="${genCaught} of ${genTotal} caught in ${shownGen.label}. Open the Pokédex.">
         <span class="hud-icon" aria-hidden="true">${HUD_ICONS.dex}</span>
-        <span class="showcase-dex-text">
-          <span class="showcase-gen-name">${genName}</span>
-          <span class="showcase-gen-count">${genCaught} / ${genTotal}</span>
+        <span class="showcase-dex-text"><b>${genName}</b> · ${genCaught} of ${genTotal}</span>
+        <span class="level-bar" aria-hidden="true">
+          <span class="level-fill" style="width:${genPct}%; background:var(--berry-600)"></span>
         </span>
-      </button>
-      <span class="level-bar" aria-hidden="true">
-        <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
-      </span>` : "";
+        <span class="showcase-dex-go">Pokédex ›</span>
+      </button>` : "";
 
+  // The Pokémon stands on the meadow's hill; everything that labels it is on the
+  // card beneath. The picture re-rolls, the Pokédex row opens the Pokédex — two
+  // targets, so neither the stage nor the card is itself a button.
+  const stage = $("#homeStage");
+  stage.innerHTML = `
+    <button class="showcase-pick" type="button" aria-label="Show a different one">
+      <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
+           class="${showCaught ? "" : "silhouette"}" decoding="async">
+    </button>`;
   el.innerHTML = `
-    <span class="card-heading">Your Pokémon</span>
     <div class="showcase-row">
-      <button class="showcase-pick" type="button" aria-label="Show a different one">
-        <span class="showcase-frame">
-          <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
-               class="${showCaught ? "" : "silhouette"}" decoding="async">
-        </span>
-      </button>
-      <span class="showcase-body">
-        ${showCaught ? `
-          <span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>
-          <span class="showcase-name">${cap(poke.n)}</span>
-        ` : ""}
-        <span class="showcase-types">${(poke.t||[]).map(t=>
-          `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
-        ${genBlock}
-      </span>
-    </div>`;
+      ${showCaught
+        ? `<span class="showcase-name">${cap(poke.n)}</span><span class="showcase-num">#${String(poke.id).padStart(3,"0")}</span>`
+        : `<span class="showcase-num showcase-num-only">#${String(poke.id).padStart(3,"0")}</span>`}
+      <span class="showcase-types">${(poke.t||[]).map(t=>
+        `<span class="type-badge type-${t}">${t}</span>`).join("")}</span>
+    </div>
+    ${genBlock}`;
 
-  el.querySelector(".showcase-pick").addEventListener("click", renderShowcase);
+  stage.querySelector(".showcase-pick").addEventListener("click", renderShowcase);
   const dexBtn = el.querySelector(".showcase-dex");
   if(dexBtn) dexBtn.addEventListener("click", ()=>{ renderPokedex(); show("pokedex"); });
 
-  el.querySelector(".showcase-pick").setAttribute("aria-label", showCaught
+  stage.querySelector(".showcase-pick").setAttribute("aria-label", showCaught
     ? `${cap(poke.n)}, number ${poke.id}. Show a different one.`
     : "Not caught yet. Show a different one.");
 
   // Same single cache-busting retry the Pokédex grid uses — one dropped request
   // would otherwise leave the home screen showing a broken image until reload.
-  const img = el.querySelector("img");
+  const img = stage.querySelector("img");
   img.addEventListener("error", ()=>{
     if(img.dataset.retried) return;
     img.dataset.retried = "1";
@@ -2707,6 +3107,22 @@ const HUD_ICONS = {
     <path fill="currentColor" d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.5 7.5 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7.5 7.5 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.7 8.8a.5.5 0 0 0 .1.6L4.8 11a7.7 7.7 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3a.5.5 0 0 0 .6.2l2.4-1c.5.4 1.1.7 1.7 1l.4 2.5a.5.5 0 0 0 .5.4h3.8a.5.5 0 0 0 .5-.4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1a.5.5 0 0 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6zM12 15.4A3.4 3.4 0 1 1 15.4 12 3.4 3.4 0 0 1 12 15.4z"/></svg>`,
 };
 
+/* Everything else that used to be an emoji. Same reason as HUD_ICONS: an emoji's
+   ink sits differently on every device and takes its colour from the font, not
+   from the thing it belongs to. Drawn, each one takes `currentColor`. */
+const UI_ICONS = {
+  speaker: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>`,
+  play: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>`,
+  bolt: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  tick: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  cross: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>`,
+  spark: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg>`,
+};
+/* A feedback line: one drawn mark and a few words, never the emoji they replace. */
+function feedbackHTML(kind, text){
+  return `<span class="fb-icon">${kind === "good" ? UI_ICONS.tick : UI_ICONS.cross}</span>${text}`;
+}
+
 /* One HUD, identical wherever it appears — home, results, the Pokédex. Rounds
    today and the streak, and nothing else: the collection counter moved into the
    Pokémon card, where the row it sits on names the generation it is counting and
@@ -2717,8 +3133,9 @@ const HUD_ICONS = {
    card. That is deliberate: the HUD's is chrome — always in the same corner, on
    every screen, a fixed route to the Pokédex — and the card's names the generation
    it is counting and belongs to the Pokémon above it. Same numbers, two jobs. */
-function renderTiles(el){
+function renderTiles(el, opts){
   if(!el) return;
+  const withDex = !(opts && opts.dex === false);
   const data = loadStreak();
   const collected = loadCollection();
   const g = currentGenRange(collected);
@@ -2734,20 +3151,21 @@ function renderTiles(el){
     dexBig = `${collected.length}`; dexSmall = "Complete";
   }
 
-  // Icon then number, nothing else. The label each of these used to carry was a
-  // word a five-year-old wasn't reading; the icon and the colour do that work,
-  // and the aria-label keeps the meaning for anything that needs it spelled out.
+  // Icon, number and one short word. The words came back with the redesign
+  // because a bare "1/2" and "4" read as scores to a grown-up glancing over; the
+  // word goes again on a narrow phone (CSS), where the row has no room for it.
+  // Today stays neutral until the goal is met: green means done, nothing else.
   const streak = currentStreak();
-  const hud = (id, icon, value, label, mod) => `
+  const hud = (id, icon, value, word, label, mod) => `
     <button class="hud-item${mod ? " "+mod : ""}" type="button" data-go="${id}"
             aria-label="${label}" title="${label}">
-      <span class="hud-icon">${HUD_ICONS[icon]}</span><span class="hud-val">${value}</span>
+      <span class="hud-icon">${HUD_ICONS[icon]}</span><span class="hud-val">${value}</span>${word ? `<span class="hud-lbl">${word}</span>` : ""}
     </button>`;
 
   el.innerHTML =
-    hud("dashboard", "today",  `${done}/${goal}`, `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
-    hud("dashboard", "streak", streak, `Day streak: ${streak}`, "streak") +
-    hud("pokedex",   "dex",    dexBig, `${dexSmall}: ${dexBig} caught`, "dex");
+    hud("dashboard", "today",  `${done} of ${goal}`, "today", `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
+    hud("dashboard", "streak", streak, streak === 1 ? "day" : "days", `Day streak: ${streak}`, "streak") +
+    (withDex ? hud("pokedex", "dex", dexBig, "", `${dexSmall}: ${dexBig} caught`, "dex") : "");
   el.querySelectorAll("[data-go]").forEach(b=>{
     b.addEventListener("click", ()=>{
       const to = b.dataset.go;
@@ -2791,18 +3209,21 @@ const LEVEL_ICONS = {
   // Both maths tracks carry the same numerals: the icon's job is to say "this
   // is maths", and the label beside it says which operation. Two different
   // symbols there made them look like two unrelated subjects.
-  addsub: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18.5"
-      text-anchor="middle" textLength="22" lengthAdjust="spacingAndGlyphs"
-      font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
-      style="text-transform:none" fill="currentColor">123</text></svg>`,
+  // The two maths families now carry their own operators. With the families
+  // named in words ("Add & take away") the icon no longer has to say "maths" —
+  // the coloured square beside the name does that — so it can say which one.
+  addsub: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18"
+      text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
+      style="text-transform:none" fill="currentColor">+−</text></svg>`,
+  muldiv: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18"
+      text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
+      style="text-transform:none" fill="currentColor">×÷</text></svg>`,
 };
 
-LEVEL_ICONS.muldiv = LEVEL_ICONS.addsub;
-
 const LEVEL_TRACKS = [
-  {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
-  {id:"reading",  label:"Reading",  color:"#9a6bd6"},
-  {id:"alphabet", label:"Alphabet", color:"#e08a4f"},
+  {id:"spelling", label:"Spelling", color:"var(--sky-700)"},
+  {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
+  {id:"alphabet", label:"Alphabet", color:"var(--teal-700)"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
@@ -2812,7 +3233,7 @@ function renderHomeLevels(){
     if(!total) return "";
     const pct = Math.round((at / total) * 100);
     return `<div class="level-tile">
-      <span class="level-name"><span class="level-icon" style="color:${color}">${icon}</span>${label}</span>
+      <span class="level-name"><span class="level-icon" style="background:${color}">${icon}</span>${label}</span>
       <span class="level-num">Level ${at}<span class="of">of ${total}</span></span>
       <span class="level-bar" role="img" aria-label="${label}: level ${at} of ${total}">
         <span class="level-fill" style="width:${pct}%; background:${color}"></span>
@@ -2830,12 +3251,12 @@ function renderHomeLevels(){
   const maths = MATH_GROUPS.map(g => {
     const { at, total } = mathGroupProgress(g.id);
     if(!total) return "";
-    if(at === 0) return `<div class="level-tile">
-      <span class="level-name"><span class="level-icon" style="color:${g.color}">${LEVEL_ICONS.addsub}</span>${g.label}</span>
+    if(at === 0) return `<div class="level-tile locked">
+      <span class="level-name"><span class="level-icon" style="background:${g.color}">${LEVEL_ICONS[g.id]}</span>${g.label}</span>
       <span class="level-num">Locked</span>
       <span class="level-bar"><span class="level-fill" style="width:0%; background:${g.color}"></span></span>
     </div>`;
-    return tile(LEVEL_ICONS.addsub, g.label, g.color, at, total);
+    return tile(LEVEL_ICONS[g.id], g.label, g.color, at, total);
   });
   el.innerHTML = heading + `<div class="levels-grid">` + word.concat(maths).join("") + `</div>`;
 }
@@ -2852,7 +3273,7 @@ function roundTarget(){ return clampInt($("#totalCount")?.value, 1, 50, 10); }
 function startGame(){
   saveSettings();
   queue = buildQueue();
-  if(queue.length===0){ alert("Turn on at least one challenge mode in Settings to play!"); return; }
+  if(queue.length===0){ $("#noModesModal").classList.remove("hidden"); $("#noModesSettingsBtn").focus(); return; }
   idx=0; correct=0; roundCredits=0; roundCatches=[]; sinceEncounter=0;
   show("play");
   renderProblem();
@@ -2871,6 +3292,7 @@ function renderProblem(){
   const p = queue[idx];
   if(!p){ finish(); return; }
   maybeStartGrassEncounter();
+  $("#stage").dataset.kind = p.kind;
   if(p.kind==="spell"){ if(p.task==="missing") renderMissingLetter(p); else renderSpell(p); }
   else if(p.kind==="reading") renderReading(p);
   else if(p.kind==="alpha") renderAlphabet(p);
@@ -3283,7 +3705,7 @@ function clearCelebration(){
 
 function renderPokeModal(poke, opts){
   modalCurrent = { poke, opts };
-  const { caption = "🎉 Caught!", revealed = true, dismissOnBackdrop = false,
+  const { caption = "Caught!", revealed = true, dismissOnBackdrop = false,
           celebrate = false } = opts || {};
   // Walking to a relative re-renders this card; the previous burst goes with it.
   clearCelebration();
@@ -3300,7 +3722,7 @@ function renderPokeModal(poke, opts){
   // Pokémon hiding in it.
   $("#catchTypes").innerHTML = (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("");
   const rarity = revealed ? RARITY_LABEL[poke.rarity] : null;
-  $("#catchRarity").textContent = rarity ? `✨ ${rarity}` : "";
+  $("#catchRarity").innerHTML = rarity ? `${UI_ICONS.spark}${rarity}` : "";
   $("#catchRarity").classList.toggle("hidden", !rarity);
   $("#catchRarity").classList.toggle("mythical", poke.rarity === "mythical");
   // The family shows whether or not this one is caught. It gives away nothing an
@@ -3313,14 +3735,18 @@ function renderPokeModal(poke, opts){
   $("#catchSay").onclick = revealed ? (()=> speakName(poke.n)) : null;
   const modal = $("#catchModal");
   modal.classList.toggle("dismissable", dismissOnBackdrop);
+  // A catch takes the whole screen as its own moment; browsing the Pokédex opens
+  // the same card as a sheet over the grid, which is the place it was opened from.
+  modal.classList.toggle("is-catch", !!celebrate);
+  $("#catchCaption").classList.toggle("rare", !!RARITY_LABEL[poke.rarity] && !!celebrate);
   modal.classList.remove("hidden");
   if(celebrate) celebrateCatch(poke.rarity);
 }
 const RARITY_LABEL = { legendary: "Legendary", mythical: "Mythical" };
 function catchCaption(poke){
-  if(poke.rarity === "mythical")  return "✨ Mythical Catch!";
-  if(poke.rarity === "legendary") return "✨ Legendary Catch!";
-  return "🎉 Caught!";
+  if(poke.rarity === "mythical")  return "Mythical catch!";
+  if(poke.rarity === "legendary") return "Legendary catch!";
+  return "Caught!";
 }
 /* The immediate family only — one step back, every step forward. Deeper chains
    stay reachable because each member here reopens the popup on itself, so a
@@ -3499,7 +3925,7 @@ function renderPokedex(){
   const genPct = genPokes.length ? Math.round((genCaught / genPokes.length) * 100) : 0;
   section.innerHTML = `
     <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
-      genRare.length ? `<b class="rare-count">✨ ${genRareCaught}/${genRare.length}</b> · ` : ""
+      genRare.length ? `<b class="rare-count">${UI_ICONS.spark}${genRareCaught}/${genRare.length}</b> · ` : ""
     }${genCaught} / ${genPokes.length}</span></h3>
     <span class="level-bar dex-gen-bar" aria-hidden="true">
       <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
@@ -3527,7 +3953,7 @@ function renderPokedex(){
     // An uncaught cell carries no name text: "???" is a word a five-year-old has
     // to stop and decode for no payoff. The outline and the number say it.
     cell.innerHTML = `
-      ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">✨</span>` : ""}
+      ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">${UI_ICONS.spark}</span>` : ""}
       ${isNew ? `<span class="dex-new">NEW</span>` : ""}
       <div class="dex-num">#${String(poke.id).padStart(3,"0")}</div>
       <img class="dex-img${got ? "" : " silhouette"}" src="${artwork(poke.id)}" alt="${got ? cap(poke.n) : "Not caught yet"}" loading="lazy" decoding="async">
@@ -3574,9 +4000,9 @@ function renderPokedex(){
    worth seeing, and it keeps the section's shape from shifting under the reader
    every time something unlocks. */
 const WORD_TRACKS = [
-  {id:"spelling", label:"Spelling", color:"var(--sky-deep)"},
-  {id:"reading",  label:"Reading",  color:"#9a6bd6"},
-  {id:"alphabet", label:"Alphabet", color:"#e08a4f"},
+  {id:"spelling", label:"Spelling", color:"var(--sky-700)"},
+  {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
+  {id:"alphabet", label:"Alphabet", color:"var(--teal-600)"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
@@ -3698,7 +4124,7 @@ function renderDashboard(){
         </div>`;
         const at1 = frontierIndex(t.id) + 1, of = t.levels.length;
         return `<button class="track-row${first}" type="button" aria-expanded="false" data-track="${t.id}">
-          <span class="track-caret">▶</span>
+          <span class="track-caret">›</span>
           <span class="track-name">${t.label}</span>
           <span class="track-lvl">${at1}<span class="track-lock"> / ${of}</span></span>
           <span class="track-bar"><span class="track-fill" style="width:${at1/of*100}%; background:${color}"></span></span>
@@ -3777,7 +4203,7 @@ function renderSpell(p){
     <div class="kind-tag kind-spell">Spelling</div>
     <div class="frame-wrap">
       <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
-      <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
+      <button class="frame-say" type="button" id="say" aria-label="Say it">${UI_ICONS.speaker}</button>
     </div>
     <div class="slots" id="slots"></div>
     <div class="tiles" id="tiles"></div>
@@ -3924,7 +4350,7 @@ function checkSpell(){
     correct++;
     if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, spotless(spellState.p));
     fb.className="feedback good";
-    fb.textContent = `✅ Yes! It's ${cap(spellState.name)}!`;
+    fb.innerHTML = feedbackHTML("good", `Yes! It's ${cap(spellState.name)}!`);
     const word = spellState.name;
     lockAndAdvance(done => blendBack(word, done));
   } else {
@@ -3944,7 +4370,7 @@ function markWrong(){
     syncSpellLight();
   }
   fb.className="feedback bad";
-  fb.textContent = "❌ Not that one — try again!";
+  fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
 }
 
 /* ---------------- Pronunciation ----------------
@@ -4201,7 +4627,7 @@ function renderMissingLetter(p){
     <div class="kind-tag kind-spell">Missing Letters</div>
     <div class="frame-wrap">
       <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
-      <button class="frame-say" type="button" id="say" aria-label="Say it">🔊</button>
+      <button class="frame-say" type="button" id="say" aria-label="Say it">${UI_ICONS.speaker}</button>
     </div>
     <div class="missing-word" id="missingWord"></div>
     <div class="tiles" id="missingTiles"></div>
@@ -4274,7 +4700,7 @@ function placeMissingChunk(chunk, tileEl){
     tileEl.classList.add("shake");
     setTimeout(()=> tileEl.classList.remove("shake"), 450);
     fb.className="feedback bad";
-    fb.textContent = "❌ Not that one — try again!";
+    fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
     noteStepMiss();
     syncMissingLight();
     return;                                   // deliberately silent on a miss
@@ -4304,7 +4730,7 @@ function finishMissingLetter(){
   if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
   const fb = $("#feedback");
   fb.className="feedback good";
-  fb.textContent = `✅ Yes! It's ${cap(missingState.name)}!`;
+  fb.innerHTML = feedbackHTML("good", `Yes! It's ${cap(missingState.name)}!`);
   // Decoys outlive the answer, and the blend-back holds the screen for about a
   // second — long enough for a stray tap to be told off about a finished word.
   $("#missingTiles").querySelectorAll(".tile").forEach(t => t.classList.add("used"));
@@ -4427,12 +4853,12 @@ function renderMath(p){
     const fb = $("#feedback");
     if(val !== p.ans){
       bumpMistake(p);
-      fb.className="feedback bad"; fb.textContent="❌ Try again!";
+      fb.className="feedback bad"; fb.innerHTML = feedbackHTML("bad", "Try again!");
       return false;
     }
     btn.classList.add("picked");
     $("#mathChoices").classList.add("done");
-    fb.className="feedback good big-check"; fb.textContent="✅";
+    fb.className="feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
     markMathDone();
     return true;
   });
@@ -4586,12 +5012,12 @@ function renderVisual(p){
     const fb = $("#feedback");
     if(val !== p.ans){
       bumpMistake(p);
-      fb.className="feedback bad"; fb.textContent="❌ Count again!";
+      fb.className="feedback bad"; fb.innerHTML = feedbackHTML("bad", "Count again!");
       return false;
     }
     btn.classList.add("picked");
     $("#visualChoices").classList.add("done");
-    fb.className="feedback good big-check"; fb.textContent="✅";
+    fb.className="feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
     markVisualDone();
     return true;
   });
@@ -4619,7 +5045,7 @@ function renderReading(p){
       <div class="kind-tag kind-reading">Read &amp; Choose</div>
       <div class="frame-wrap">
         <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
-        <button class="frame-say" type="button" id="readingSay" aria-label="Say it">🔊</button>
+        <button class="frame-say" type="button" id="readingSay" aria-label="Say it">${UI_ICONS.speaker}</button>
       </div>
       <div class="reading-options" id="readingOptions"></div>
       <div class="feedback" id="feedback"></div>
@@ -4660,7 +5086,7 @@ function renderReading(p){
       const say = document.createElement("button");
       say.className = "reading-say-mini";
       say.type = "button";
-      say.textContent = "🔊";
+      say.innerHTML = UI_ICONS.speaker;
       say.setAttribute("aria-label", `Say ${cap(opt.n)}`);
       say.addEventListener("click", ()=> speakName(opt.n));
       cell.append(btn, say);
@@ -4763,7 +5189,7 @@ function pickAlphabet(opt, btn){
     btn.disabled = true;
     btn.classList.add("wrong", "shake");
     setTimeout(()=> btn.classList.remove("shake"), 450);
-    fb.className = "feedback bad"; fb.textContent = "❌ Try again!";
+    fb.className = "feedback bad"; fb.innerHTML = feedbackHTML("bad", "Try again!");
     missAndMaybeReveal($("#alphaOpts .alpha-opt[data-answer]"));
     return;
   }
@@ -4777,7 +5203,7 @@ function pickAlphabet(opt, btn){
   if(st.at < st.p.blanks.length){ openAlphaGap(); return; }
   st.done = true;
   $("#alphaChoiceWrap").innerHTML = "";
-  fb.className = "feedback good big-check"; fb.textContent = "✅";
+  fb.className = "feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
   markAlphabetDone();
 }
 
@@ -4833,7 +5259,7 @@ function openPatternRow(){
     const fb = $("#feedback");
     if(val !== item.ans){
       bumpMistake(st.p);
-      fb.className="feedback bad"; fb.textContent="❌ Try again!";
+      fb.className="feedback bad"; fb.innerHTML = feedbackHTML("bad", "Try again!");
       return false;
     }
     if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
@@ -4844,7 +5270,7 @@ function openPatternRow(){
     st.at++;
     if(st.at < slots.length){ openPatternRow(); return true; }
     wrap.innerHTML = "";
-    fb.className="feedback good big-check"; fb.textContent="✅";
+    fb.className="feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
     markPatternDone();
     return true;
   });
@@ -4971,24 +5397,28 @@ function renderBattlePicker(){
   const {a, b} = battleState;
   const stage = $("#battleStage");
   stage.innerHTML = `
-    <div class="kind-tag kind-battle">Battle!</div>
-    <p class="sub" style="margin:0 0 14px">Who do you think will win?</p>
     <div class="battle-arena" id="battleArena">
       <div class="battle-fighter" id="fighterA">
-        <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
-        <div class="battle-name">${cap(a.n)}<button class="battle-sound" id="soundA" aria-label="Say it">🔊</button></div>
+        <div class="battle-frame-wrap">
+          <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
+          <button class="battle-sound" id="soundA" type="button" aria-label="Say ${cap(a.n)}">${UI_ICONS.speaker}</button>
+        </div>
+        <div class="battle-name">${cap(a.n)}</div>
         ${typeBadges(a)}
       </div>
       <div class="battle-vs">VS</div>
       <div class="battle-fighter" id="fighterB">
-        <div class="battle-frame"><img src="${artwork(b.id)}" alt="${cap(b.n)}"></div>
-        <div class="battle-name">${cap(b.n)}<button class="battle-sound" id="soundB" aria-label="Say it">🔊</button></div>
+        <div class="battle-frame-wrap">
+          <div class="battle-frame"><img src="${artwork(b.id)}" alt="${cap(b.n)}"></div>
+          <button class="battle-sound" id="soundB" type="button" aria-label="Say ${cap(b.n)}">${UI_ICONS.speaker}</button>
+        </div>
+        <div class="battle-name">${cap(b.n)}</div>
         ${typeBadges(b)}
       </div>
     </div>
     <div class="actions">
-      <button class="btn green" id="pickA">Pick ${cap(a.n)}!</button>
-      <button class="btn green" id="pickB">Pick ${cap(b.n)}!</button>
+      <button class="btn green" id="pickA">Pick ${cap(a.n)}</button>
+      <button class="btn green" id="pickB">Pick ${cap(b.n)}</button>
     </div>
   `;
   $("#soundA").addEventListener("click", ()=> speakName(a.n));
@@ -5002,7 +5432,6 @@ function startBattle(pick){
   const {a, b} = battleState;
   const stage = $("#battleStage");
   stage.innerHTML = `
-    <div class="kind-tag kind-battle">Battle!</div>
     <div class="battle-arena shaking" id="battleArena">
       <div class="battle-fighter" id="fighterA">
         <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
@@ -5047,7 +5476,6 @@ function finishBattle(){
   const correctGuess = pick === winnerSide;
   const stage = $("#battleStage");
   stage.innerHTML = `
-    <div class="kind-tag kind-battle">Battle!</div>
     <div class="battle-arena" id="battleArena">
       <div class="battle-fighter" id="fighterA">
         <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
@@ -5062,11 +5490,11 @@ function finishBattle(){
       </div>
     </div>
     <p class="battle-result ${correctGuess?"correct":"wrong"}">
-      <span class="battle-announce">🏆 ${winner.n.toUpperCase()} WINS!</span><br>
-      ${correctGuess ? "✅ You called it!" : "❌ Not this time!"}
+      <span class="battle-announce">${cap(winner.n)} wins!</span><br>
+      ${correctGuess ? feedbackHTML("good", "You called it!") : feedbackHTML("bad", "Not this time")}
     </p>
     <div class="actions">
-      <button class="btn green" id="battleAgainBtn">⚔️ Battle Again!</button>
+      <button class="btn green" id="battleAgainBtn"><span class="action-icon">${UI_ICONS.bolt}</span>Battle again</button>
     </div>
   `;
   $(winnerSide==="a" ? "#fighterA" : "#fighterB").classList.add("winner");
@@ -5092,9 +5520,11 @@ function finish(){
   renderHomeTiles();
   const block = $("#caughtBlock");
   if(roundCatches.length){
-    block.innerHTML = `<p class="caught-title">You caught ${roundCatches.length === 1 ? "a Pokémon" : roundCatches.length + " Pokémon"}!</p>
+    const unseen = loadUnseen();
+    block.innerHTML = `<p class="caught-title">Caught this round</p>
       <div class="caught-row">${roundCatches.map(p => `
         <button class="caught-chip" type="button" data-id="${p.id}">
+          ${unseen.includes(p.id) ? `<span class="dex-new">NEW</span>` : ""}
           <img src="${artwork(p.id)}" alt="${cap(p.n)}">
           <span>${cap(p.n)}</span>
         </button>`).join("")}</div>`;
@@ -5106,7 +5536,7 @@ function finish(){
       });
     });
   } else {
-    block.innerHTML = `<p class="caught-none">No catch this time!</p>`;
+    block.innerHTML = `<p class="caught-none">No catch this time</p>`;
   }
   show("results");
 }
@@ -5122,7 +5552,7 @@ function finish(){
    results card, whose HUD sits inside the card rather than above it. */
 const SCREEN_CHROME = {
   settings:  { title: "Settings" },
-  battle:    { title: "Battle", extra: () => `<span class="count-badge">✅ ${battleWins} &nbsp; ❌ ${battleLosses}</span>` },
+  battle:    { title: "Battle", extra: () => `<span class="count-badge won" aria-label="${battleWins} right">${UI_ICONS.tick}${battleWins}</span><span class="count-badge lost" aria-label="${battleLosses} wrong">${UI_ICONS.cross}${battleLosses}</span>` },
   pokedex:   { title: "Pokédex" },
   dashboard: { title: "My progress" },
 };
@@ -5150,6 +5580,7 @@ function renderChrome(which){
 
 function show(which){
   ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
+  document.body.dataset.screen = which;
   // The HUD sits above the logo, which is outside #setup — so it is hidden by
   // hand everywhere but home. A round has its own progress bar and a Quit
   // button; a second row of counters there would be two things to read.
@@ -5269,6 +5700,14 @@ function migrateFrontiers(){
 $("#startBtn").addEventListener("click", startGame);
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
 $("#settingsBtn").innerHTML = HUD_ICONS.gear;
+// Static markup that names a drawn icon rather than carrying an emoji.
+document.querySelectorAll("[data-icon]").forEach(el => { el.innerHTML = UI_ICONS[el.dataset.icon] || ""; });
+$("#noModesCloseBtn").addEventListener("click", ()=> $("#noModesModal").classList.add("hidden"));
+$("#noModesModal").addEventListener("click", e => { if(e.target === e.currentTarget) e.currentTarget.classList.add("hidden"); });
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && !$("#noModesModal").classList.contains("hidden")) $("#noModesModal").classList.add("hidden");
+});
+$("#noModesSettingsBtn").addEventListener("click", ()=>{ $("#noModesModal").classList.add("hidden"); show("settings"); });
 $("#settingsBtn").addEventListener("click", ()=>{ renderAbout(); show("settings"); });
 // The Pokédex and Progress screens are reached through the home tiles now, so
 // the home screen keeps to one job: pick a mode and play.
