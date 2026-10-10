@@ -319,7 +319,7 @@ This shows the borrow as a *fact* — the ten was dipped into — rather than as
 
 ## 8b. Home HUD
 
-The home screen opens on a **meadow**: sky, sun, a cloud and two rolling hills, drawn flat across the full width of the screen. The HUD rides on its sky — two counters on the left, the Pokéball mark and the gear on the right — and one of the child's own Pokémon stands on its hill (§8c).
+The home screen opens on a **meadow**: sky, sun and clouds, three rolling hills with trees on the far one, bushes and flowers on the near one, and a mound in the middle for the Pokémon to stand on — one drawing, cropped from the sides as the screen narrows so the middle is always in view. The HUD rides on its sky — two counters on the left, the Pokéball mark and the gear on the right — and one of the child's own Pokémon stands on its hill (§8c).
 
 **The logo does not get a row of its own.** It is the 28px Pokéball, sitting in the HUD beside the gear. The words "Poké Learning" stay in the page as its heading for anything reading it, but are not drawn: the row holds two counters, the ball and the gear, and has no room for type besides on a phone. Because the mark lives in the HUD, it is **home-only** — the other screens open with the shared chrome instead (a ✕ beside the screen's name), and a round opens with the ✕ and progress bar.
 
@@ -337,7 +337,7 @@ It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds eac
 
 **Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
 
-**The round's top bar is a ✕ and a bar, nothing else**, sitting on a strip of meadow above the question card. The bar's fill says how far along the round is, so a `3 / 10` beside it would be the same fact written twice. It is one continuous green fill on a white track — not a row of segments, because the round length is a setting from 1 to 50. The ✕ keeps an `aria-label`.
+**The round's top bar is a ✕ and a bar, nothing else**, sitting on a strip of meadow above the question card. **The card ends where its question ends**, with paper below it; feedback and the ✓ appear under the answers, so when they arrive only the card's bottom edge moves. Where the screen has room to spare the question's contents scale up rather than leaving the card half empty — 1.15× from 440×820, 1.35× from 700×960. The bar's fill says how far along the round is, so a `3 / 10` beside it would be the same fact written twice. It is one continuous green fill on a white track — not a row of segments, because the round length is a setting from 1 to 50. The ✕ keeps an `aria-label`.
 
 | Counter | Shows | Goes to | Where |
 |---|---|---|---|
@@ -373,7 +373,7 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 ## 8d. Home Levels
 
-Headed **"Your progress"**, five tiles in a two-column grid sitting straight on the paper — Spelling, Reading, Alphabet, **Add & take away** and **Times & share** — each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is. A maths family that has not opened says **Locked**.
+Headed **"Your progress"**, five small white cards — Spelling, Reading, Alphabet, **Add & take away** and **Times & share** — two across on a phone and three from 640px (two again in the right-hand column of the wide layout), each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is. A maths family that has not opened says **Locked**.
 
 The heading is set through `text-transform` rather than typed in capitals, the same reason the wordmark is.
 
@@ -383,9 +383,11 @@ The heading is set through `text-transform` rather than typed in capitals, the s
 
 ### The fold is the constraint the whole screen is laid out against
 
-Order is meadow (HUD and Pokémon), name card, progress, then **Start playing** and **Battle** side by side — and **all of it fits on screen without scrolling**, down to 360×640. The primary action must stay visible.
+Order is meadow (HUD and Pokémon), name card, progress, then **Start playing** and **Battle** side by side, directly under the trails — and **all of it fits on screen without scrolling**, down to 360×640. The primary action must stay visible. On a screen 700px tall or less the trail cards go back to plain tiles, because the cards' padding costs the Pokémon more height than a short phone has.
 
-Everything on the screen is a fixed cost except one thing. The HUD, the name card, five levels and two buttons all have to be legible at their size. **The meadow is the only part that can be smaller without losing what it says**, so it is the part that gives way: it takes only the height left once everything below it is laid out (a zero flex basis, at least 150px, at most 56% of the screen), and the Pokémon is sized to the meadow, up to 240px. Measured at 360×640, 390×844, 414×736, 768×1024 and 360×780: no vertical scroll and no horizontal scroll on any of them. At 360×640 the Pokémon is 169px tall and Start's bottom edge sits at 622 of 640.
+**From 900px wide the screen splits in two**: the meadow fills the left side, full height, with the Pokémon up to 340px tall; the name card, the trails and the buttons sit in a column on the right, centred vertically. A phone layout stretched across a landscape window was mostly empty sky.
+
+Everything on the screen is a fixed cost except one thing. The HUD, the name card, five levels and two buttons all have to be legible at their size. **The meadow is the only part that can be smaller without losing what it says**, so it is the part that gives way: it takes only the height left once everything below it is laid out (a zero flex basis, at least 150px, and no ceiling — on a tall screen the spare height is more meadow, never a gap above the buttons), and the Pokémon is sized to the meadow, up to 260px. Measured at 360×640, 390×844, 414×736, 768×1024, 360×780, 820×1180, 1000×575, 1280×800 and 1440×900: no vertical scroll and no horizontal scroll on any of them. At 360×640 the Pokémon is 165px tall and Start's bottom edge sits at 622 of 640.
 
 ## 9. My progress
 
