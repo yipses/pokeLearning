@@ -711,6 +711,19 @@ Missing Letters was the example: a 12px mode tag, a 20px speaker mark in a 48px 
 
 **Still open:** full Spelling (build the whole word from tiles) scrolls on a 360×640 phone — 73–133px before this change, 12–84px after — because every letter is a tile. No level asks for it today.
 
+## Phase 90 — the speaker redrawn, pictures centred, catches stand in the meadow; DESIGN.md
+
+- **Speaker.** Measured at 4×: the old mark was 12px of ink in a 48px circle, 1.8px left of centre. Redrawn (cone and two waves, centred), drawn 22px in a 40px circle with a 44px tap area. Every speaker in the app.
+- **Tile pictures always centred**; the speaker sits inside the tile's corner, and a picture shrinks only if its drawn pixels would sit under the speaker (a 64px alpha mask). On a 360 phone about two-thirds shrink a little (0.76× at worst); none do on tablets. Rejected on the way: art nudged off-centre (owner), the speaker straddling the tile's corner (owner wanted it inside).
+- **Prompt role 32px** (28/26 on short screens), down from 40 — "Machop" read as shouting.
+- **Results**: catches stand in the meadow sized by count; "Round finished!" on the paper.
+- **Home**: the Pokémon's name at word size, levels raised to it, labels at 14.
+- **Pattern**: answered rows fade (pale equation, 40% pictures, 70% green), pushed further at the owner's ask after a first, softer pass.
+- **Read & Choose** frame 148px under 900px tall: zoomed at 470×830 with two-line word buttons it scrolled 24–58px, on the live site too.
+- **`DESIGN.md`** collects the rules from Phases 80–90 in one short file; Overview §14.0 points to it.
+
+**Measured.** At 360×640, 390×844, 470×830, 820×1180, 1280×800 and 1440×900: reverse tiles with art centred to 0.0px and no ink under a speaker (25 tiles each), every speaker 40px, no scroll on any question screen, results with 0–4 catches (heads clear of the HUD, buttons on screen), home with Start on screen. No console errors.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

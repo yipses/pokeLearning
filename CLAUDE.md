@@ -23,6 +23,8 @@ preference, and it has been broken more than once.
 # Where things live
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
+- `DESIGN.md` — the design rules (colour, type roles, controls, pictures, layout,
+  fit). **Read it before any UI change**; a change that breaks a rule updates it first.
 - `progress.md` — how it got here, and what's still open.
 - `LessonTrails.md` — curriculum design rationale.
 - `data/README.md` — every CSV column, and the editing traps that aren't obvious.
