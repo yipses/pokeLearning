@@ -724,6 +724,14 @@ Missing Letters was the example: a 12px mode tag, a 20px speaker mark in a 48px 
 
 **Measured.** At 360×640, 390×844, 470×830, 820×1180, 1280×800 and 1440×900: reverse tiles with art centred to 0.0px and no ink under a speaker (25 tiles each), every speaker 40px, no scroll on any question screen, results with 0–4 catches (heads clear of the HUD, buttons on screen), home with Start on screen. No console errors.
 
+## Phase 91 — catches seated in the meadow; Pattern rows breathe
+
+- **Results.** On a tall phone (577×985) two catches were capped at 190px and stood under 428px of empty sky. They are now sized to the free height and width (2 catches: 240px there) and seated a little below the middle, the meadow drawing ending at their feet and the front hill's green carrying on to the paper; the sky above their heads is 235px. Sizing alone was tried first and left 300–600px of sky, because the drawing's hill is at its bottom. NEW badges dropped — every catch here is new.
+- **Pattern.** The open slot's amber ring touched the yellow highlight below it (0px). Add rows get ~10px between equation and pictures (13–19px measured); multiply rows, whose array frame already separates them, get less, because the full gap made them scroll 14–21px on phones.
+- A second `fitCatchArt` was nearly added — the name the catch screen already uses — and caught by the duplicate-function check; the new one is `fitResultArt`.
+
+**Measured.** Results with 0–4 catches at 360×640, 390×844, 470×830, 577×985, 820×1180, 1280×800, 1440×900: name tags inside the meadow, buttons on screen, no scroll, tapping a catch opens it. Every marked Pattern level at 360×640, 390×844, 820×1180, answered through: no scroll. No console errors.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

@@ -69,6 +69,11 @@ a two-word name breaks only between words.
   speaker's circle; shrink only the pictures that collide, only as far as needed.
 - **No frame inside a frame.** A tile is the picture's frame; don't add a disc
   or box inside it.
+- **The ground meets the Pokémon.** In a tall scene, seat the subject where it
+  balances and bring the ground up to its feet; don't pin it to the bottom
+  under empty sky.
+- **A badge that is always on says nothing.** Show a marker only where it
+  distinguishes (NEW in the Pokédex, not on a screen of new catches).
 - **Fewer things get more room.** 1–4 catches stand large in the meadow, sized
   by how many there are, not as chips in a grid built for many.
 
@@ -86,6 +91,8 @@ a two-word name breaks only between words.
 - **Scenes above, words on paper.** Pictures stand in the meadow; headings, the
   name card and buttons sit on paper or a white card. Nothing floats on the
   hill line.
+- **Highlights never touch.** Two coloured shapes (a ring and a highlight)
+  keep at least ~10px apart, or they merge into one.
 - **Spacing is a 4px scale** (gaps of 4, 8, 12, 16, 20, 24).
 - **Fit or it isn't done.** No vertical or horizontal scroll at 360×640,
   390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900, with the longest
