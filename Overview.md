@@ -127,6 +127,10 @@ A count, not a share, and the difference matters. As a percentage the help scale
 
 **Both tasks answer the same way, in the same units: tap a tile holding a chunk.** `torch` is three slots and three tiles — `T`, `OR`, `CH` — in both. A chunk is the thing with a sound, so a tile can say what it is, and the same group is the same group on every screen. Typing still works in Full Spelling: keystrokes buffer until they complete the chunk that comes next, so `t-o-r-c-h` fills `T`, then `OR`, then `CH`.
 
+### 7.1-word How the word is drawn
+
+In Spelling and Missing Letters the name is **one row of matching cells**: every letter the same size, blanks as outlined boxes, given letters on soft grey boxes, and a blank the same shape as the tile that fills it (46×54 against the tile's 48×56 on a phone). The letter size starts at the 28px answer size and steps down — never below 16 — only as far as it takes to keep **each word of the name on one line**; a two-word name breaks between its words and its space marker is hidden when it does. Before, Kangaskhan split mid-word on a phone, and given letters were 28px-wide slivers beside 44px slots. Tiles keep the 48px tap minimum and 28px letters; they never shrink.
+
 ### 7.1a Sounding out
 
 **A correct placement plays the sound of what was just completed**, and a wrong one is silent — a child who taps for the noise must not be rewarded for guessing. In Full Spelling a tile is one letter, so a sound plays only when that letter *finishes* a chunk: spelling `shutter` says /sh/ when the h lands, never /s/ then /h/.
@@ -498,7 +502,9 @@ Settled while reworking the reading screens, and meant for any screen that lays 
 4. **The layout gives way, the controls don't.** Columns are chosen per question: every balanced count from two up is tried, and the one with the biggest tiles that still fits the screen's width *and* height wins. A short last row is centred.
 5. **Pictures keep clear of their speaker** and are sized by what is drawn, never enlarged past 2× their pixels.
 6. **Text gives way before tiles** on short screens.
-7. **Green only ever means correct.** An answer tile is neutral until it is chosen.
+7. **Green only ever means correct.** An answer tile is neutral until it is chosen — maths, both reading modes, Alphabet's pictures and Spelling's letter tiles alike.
+8. **Four type sizes, named by role** (phone px; a zoomed screen scales them together): **label** 14/800 — the mode tag, names under small pictures; **word** 20/800 — word answers; **answer** 28/900 — any letter or number the child places or chooses, on a tile, a slot or a choice; **prompt** 40/900 — what is being asked (34 under 860px tall, 30 under 700). There were eight unrelated sizes, 11 to 40: the mode tag was 12px, the maths equation 18, and the letters a child places 21–24 on slots and tiles of different shapes.
+9. **A speaker's mark is half its circle** (24px in 48).
 
 ### 14.1 Copy rules
 

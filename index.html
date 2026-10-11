@@ -1568,7 +1568,7 @@
     background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
   }
   .frame-say:hover, .reading-img-cell .reading-say-mini:hover, .battle-frame-wrap .battle-sound:hover{ background:var(--sun-300); }
-  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:20px; height:20px; display:block; }
+  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:24px; height:24px; display:block; }   /* half the circle */
   .frame-wrap > .frame-say{ right:calc(14.6% - var(--speak) / 2); bottom:calc(14.6% - var(--speak) / 2 + 8px); }
   .is-catch .frame-wrap > .frame-say{ bottom:calc(14.6% - var(--speak) / 2); }
   .battle-frame-wrap > .battle-sound{ right:calc(14.6% - var(--speak) / 2); bottom:calc(14.6% - var(--speak) / 2); }
@@ -1600,8 +1600,9 @@
   @media (prefers-reduced-motion: reduce){ .choice.answer-lit, .reading-opt.answer-lit{ box-shadow:0 0 0 4px var(--flame-600); } }
 
   /* The mode tag names the mode for a grown-up; it should not compete with the
-     question for a child who cannot read it. */
-  .kind-tag{ padding:5px 12px; font-size:12px; letter-spacing:.04em; line-height:16px; }
+     question for a child who cannot read it — but at 12px it read as an
+     afterthought. It takes the label role (see TYPE ROLES). */
+  .kind-tag{ padding:6px 14px; font-size:14px; letter-spacing:.04em; line-height:18px; }
   #stage .kind-tag{ margin-bottom:12px; }
 
   /* ===== Reverse Read & Choose =====
@@ -1634,13 +1635,66 @@
   #stage .frame-wrap .poke-frame.reading-frame{ width:180px; height:180px; }
   .reading-options:not(.reading-options-img){ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:16px; }
   .reading-options:not(.reading-options-img) > .reading-opt{
-    flex:0 0 calc((100% - 12px) / 2); min-height:56px; font-size:22px; font-weight:800; border-radius:16px; position:relative;
+    flex:0 0 calc((100% - 12px) / 2); min-height:56px; font-size:20px; font-weight:800; border-radius:16px; position:relative;
   }
   @media (max-height:700px){
     #stage .frame-wrap .poke-frame.reading-frame{ width:116px; height:116px; }
     .reading-options:not(.reading-options-img){ gap:8px; margin-top:10px; }
     .reading-options:not(.reading-options-img) > .reading-opt{ min-height:48px; font-size:18px; padding:6px 8px; }
   }
+  /* ===== TYPE ROLES =====
+     Every piece of text on a question screen takes one of four sizes (phone px;
+     a zoomed screen scales them all together):
+       label  14/800 — the mode tag, names under small pictures
+       word   20/800 — word answers
+       answer 28/900 — any letter or number the child places or chooses
+       prompt 40/900 — what is being asked (34 under 860px tall, 30 under 700)
+     Before this there were eight unrelated sizes, from 11 to 40, and the letters
+     a child places were 21–24px on slots and tiles of different shapes. */
+  .math-q{ font-size:40px; font-weight:900; }
+  .visual-eq{ font-size:34px; font-weight:900; margin:4px 0 12px; }
+  @media (max-height:860px){ .math-q{ font-size:34px; } .visual-eq{ font-size:30px; } }
+  @media (max-height:700px){ .math-q{ font-size:30px; } .visual-eq{ font-size:26px; margin-bottom:8px; } }
+  .pattern-eq{ font-size:28px; font-weight:900; }
+  .choice{ font-size:28px; font-weight:900; }
+  .alpha-letter{ font-size:28px; font-weight:900; }
+  .alpha-name, .alpha-opt-name{ font-size:14px; }
+  /* Alphabet's picture options are answers too: neutral until chosen. */
+  .alpha-opt{ border:2px solid var(--paper-line); box-shadow:0 var(--press-edge) 0 var(--paper-edge); }
+  .alpha-opt:hover:not(:disabled){ background:var(--surface); border-color:#d9cfb6; }
+  .alpha-opt:active{ box-shadow:0 1px 0 var(--paper-edge); }
+  .alpha-opt.wrong{ border-color:var(--paper-line); box-shadow:0 1px 0 var(--paper-edge); translate:0 3px; }
+  @media (max-width:480px){
+    .choice{ font-size:28px; }
+    .pattern-eq{ font-size:24px; }
+    .alpha-letter{ font-size:24px; }
+    .alpha-name, .alpha-opt-name{ font-size:13px; }
+  }
+
+  /* ===== The word in Spelling and Missing Letters =====
+     One row of matching cells: every letter the same size (--wf, up to the 28px
+     answer size), blanks as outlined boxes, given letters on soft grey boxes,
+     and a blank the same shape as the tile that fills it. fitWordCells() steps
+     the size down — never below 16px — only as far as it takes to keep each word
+     of the name on one line; a two-word name breaks between its words. Tiles are
+     tapped, so they keep the 48px minimum and the 28px answer size. */
+  .missing-word{ gap:3px 8px; row-gap:10px; }
+  .mw-word, .slot-word{ display:flex; flex-wrap:nowrap; gap:3px; }
+  .mw-letter, .mw-slot, .slot, .slot.chunk{
+    box-sizing:border-box; height:calc(var(--wf, 28px) * 1.93);
+    font-size:var(--wf, 28px); font-weight:900; line-height:1; border-radius:calc(var(--wf, 28px) * .4);
+  }
+  .mw-letter{ width:calc(var(--wf, 28px) * 1.18); min-width:0; padding:0; background:var(--surface-sunken); }
+  .mw-slot, .slot, .slot.chunk{ width:auto; min-width:calc(var(--wf, 28px) * (.98 * var(--len, 1) + .66)); padding:0 4px; }
+  .mw-sep, .slot-sep{ width:calc(var(--wf, 28px) * .6); height:calc(var(--wf, 28px) * 1.93); }
+  .tile, .tile.chunk{
+    width:auto; min-width:48px; height:56px; padding:0 10px; box-sizing:border-box;
+    font-size:28px; font-weight:900; color:var(--ink); border-radius:12px;
+    border:2px solid var(--paper-line); box-shadow:0 var(--press-edge) 0 var(--paper-edge);
+  }
+  .tile:active{ box-shadow:0 1px 0 var(--paper-edge); }
+  .tiles{ gap:10px; margin-top:20px; }
+
 
   /* The help light. Alphabet and Pattern light GREEN, like Spelling: all three
      already wear an amber ring as the "you are here" cursor, and a second amber
@@ -2180,7 +2234,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 105;
+const APP_BUILD = 106;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -4603,6 +4657,7 @@ function renderSpell(p){
     }
     const s = document.createElement("div");
     s.className = "slot chunk"; s.dataset.i = slotEls.length;
+    s.style.setProperty("--len", chunk.length);
     group.appendChild(s);
     slotEls.push(s); target.push(chunk); chunkAt.push(ci);
   });
@@ -4613,6 +4668,7 @@ function renderSpell(p){
   while(target.length > 1 && order.join("") === target.join("") && tries < 25){
     order = shuffle(target.slice()); tries++;
   }
+  fitWordCells(slotsEl, ".slot-word");
   const tilesEl = $("#tiles");
   order.forEach((chunk,i)=>{
     const t = document.createElement("button");
@@ -5001,28 +5057,36 @@ function renderMissingLetter(p){
   `;
   const wordEl = $("#missingWord");
   const slots = [];
+  // One group per word of the name, so a line can only break between words.
+  let group = null;
+  const groupEl = () => {
+    if(!group){ group = document.createElement("span"); group.className = "mw-word"; wordEl.appendChild(group); }
+    return group;
+  };
   chunks.forEach((chunk,i)=>{
     if(isSeparator(chunk)){
       const sep = document.createElement("span");
       sep.className = "mw-sep";
       sep.textContent = chunk === "-" ? "-" : "";
-      wordEl.appendChild(sep);
+      // A hyphen stays inside its word's line; a space is where a line may break.
+      if(chunk === "-") groupEl().appendChild(sep); else { wordEl.appendChild(sep); group = null; }
     } else if(blankIdx.has(i)){
       const slot = document.createElement("span");
       slot.className = "mw-slot";
-      slot.style.width = (chunk.length*30+18) + "px";
+      slot.style.setProperty("--len", chunk.length);
       slot.dataset.answer = chunk;
       slot.dataset.chunk = String(i);
-      wordEl.appendChild(slot);
+      groupEl().appendChild(slot);
       slots.push(slot);
     } else {
       chunk.split("").forEach(ch=>{
         const s = document.createElement("span");
         s.className = "mw-letter"; s.textContent = ch;
-        wordEl.appendChild(s);
+        groupEl().appendChild(s);
       });
     }
   });
+  fitWordCells(wordEl, ".mw-word");
 
   // The bank holds the missing chunks plus enough decoys to make a choice of it.
   const bankEl = $("#missingTiles");
@@ -5408,6 +5472,30 @@ function markVisualDone(){
     recordAttempt(visualState.p.track, spotless(visualState.p));
   }
   lockAndAdvance();
+}
+
+/* The word's cells share one letter size, --wf: the 28px answer size, stepped
+   down a pixel at a time — never below 16 — until the widest word of the name
+   fits on one line. Measured on the rendered cells, so chunks, hyphens and
+   given letters all count at their real widths. */
+function fitWordCells(el, wordSel){
+  if(!el) return;
+  const words = [...el.querySelectorAll(wordSel)];
+  if(!words.length) return;
+  const W = el.clientWidth;
+  let f = 28;
+  el.style.setProperty("--wf", f + "px");
+  const widest = () => Math.max(...words.map(w => w.scrollWidth));
+  while(f > 16 && widest() > W){ f -= 1; el.style.setProperty("--wf", f + "px"); }
+  // A space marker between two words that landed on different lines would be
+  // left dangling at the end of the first; it only shows when they share a line.
+  el.querySelectorAll(":scope > .mw-sep, :scope > .slot-sep").forEach(sep => {
+    // Hidden but still taking its room, so hiding it cannot reflow the words
+    // back onto one line without a space between them.
+    sep.style.visibility = "";
+    const a = sep.previousElementSibling, b = sep.nextElementSibling;
+    if(a && b && Math.round(a.getBoundingClientRect().top) !== Math.round(b.getBoundingClientRect().top)) sep.style.visibility = "hidden";
+  });
 }
 
 /* ---------------- READING (Read & Choose / Reverse Read & Choose) ---------------- */
@@ -6213,6 +6301,8 @@ $("#catchImg").addEventListener("load", fitCatchArt);
 window.addEventListener("resize", ()=>{
   fitShowcase();
   if(document.querySelector("#stage .reading-options-img")){ fitReadingWord(); layoutReadingTiles(); }
+  fitWordCells(document.querySelector("#missingWord"), ".mw-word");
+  fitWordCells(document.querySelector("#slots"), ".slot-word");
   if(!$("#catchModal").classList.contains("hidden")) fitCatchArt();
 });
 $("#catchOkBtn").addEventListener("click", ()=>{

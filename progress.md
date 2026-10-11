@@ -701,6 +701,16 @@ Reverse Read & Choose "functionally fine, but rough". A first pass (square green
 
 **Measured.** Reverse with 3, 4 and 5 options and Read & Choose at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900: no scroll, no artwork under a speaker, speakers 48px (zoomed with the question where the screen zooms), the catch speaker centred on its frame's edge, no console errors. Layouts: 2+2+1 on phones, 3+2 from 1024 wide. The help light still shows on the new tiles, animated and under reduced motion.
 
+## Phase 89 — one type scale; the spelled word as one row of cells
+
+Missing Letters was the example: a 12px mode tag, a 20px speaker mark in a 48px circle, 46×52 tiles filling 44px-tall slots beside 28px-wide given letters, green letter tiles. Measured across every question screen at 390 wide there were eight unrelated text sizes, 11 to 40.
+
+**Shipped:** four type roles — label 14, word 20, answer 28, prompt 40 (34/30 on short screens) — applied to the mode tag, maths and visual equations, Pattern rows (28, 24 on phones), choices, reading words and Alphabet; the speaker mark at 24px; Alphabet's picture options and Spelling's letter tiles neutral; the spelled word as matching cells sized to keep each word on one line (Overview 7.1-word, 14.0).
+
+**Measured.** Missing Letters with Mew, Pikachu, Kangaskhan, Crabominable, Garbage Bin, Mr. Mime and Ho-Oh at 360×640, 390×844, 820×1180, 1280×800 and 1440×900: no word split across lines, no scroll; Crabominable is the floor case at 17px on a 360 phone. Plain maths, Visual Maths, every marked Pattern level (all rows answered through), Alphabet and both reading modes: no scroll at the same sizes. No console errors.
+
+**Still open:** full Spelling (build the whole word from tiles) scrolls on a 360×640 phone — 73–133px before this change, 12–84px after — because every letter is a tile. No level asks for it today.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
