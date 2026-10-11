@@ -1562,13 +1562,18 @@
      frame's edge at 45° (14.6% in from the corner of its box); on a tile, in the
      corner. Sizes and offsets used to differ per screen — 42, 44 and 52px, each
      at its own offset — and on the catch screen it floated on the grass. */
-  :root{ --speak:48px; --paper-edge:#958b75; }
+  :root{ --speak:40px; --paper-edge:#958b75; }
   .frame-say, .reading-img-cell .reading-say-mini, .battle-frame-wrap .battle-sound{
     width:var(--speak); height:var(--speak); padding:0; border:0; border-radius:50%;
     background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
   }
   .frame-say:hover, .reading-img-cell .reading-say-mini:hover, .battle-frame-wrap .battle-sound:hover{ background:var(--sun-300); }
-  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:24px; height:24px; display:block; }   /* half the circle */
+  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:22px; height:22px; display:block; }   /* the mark is ~half the circle */
+  /* 40px drawn, 44px to tap: 2px of reach on every side. The one sanctioned
+     exception to "what you see is what you tap" — the redrawn mark reads at 40,
+     and a child's finger still needs the 44px target. */
+  .frame-say::after, .reading-say-mini::after, .battle-sound::after{ content:""; position:absolute; inset:-2px; border-radius:50%; }
+  .reading-say-mini, .battle-sound{ position:relative; }
   .frame-wrap > .frame-say{ right:calc(14.6% - var(--speak) / 2); bottom:calc(14.6% - var(--speak) / 2 + 8px); }
   .is-catch .frame-wrap > .frame-say{ bottom:calc(14.6% - var(--speak) / 2); }
   .battle-frame-wrap > .battle-sound{ right:calc(14.6% - var(--speak) / 2); bottom:calc(14.6% - var(--speak) / 2); }
@@ -1607,14 +1612,14 @@
 
   /* ===== Reverse Read & Choose =====
      The word sits on a plate, the stage the picture frame gives Read & Choose.
-     40px, shrinking to fit one line (fitReadingWord); text gives way before the
+     32px, shrinking to fit one line (fitReadingWord); text gives way before the
      tiles do on a short screen. */
   .reading-word{
-    display:grid; place-items:center; min-height:76px; box-sizing:border-box; margin:0 0 18px; padding:8px 14px;
-    background:var(--surface-sunken); border-radius:20px; font-size:40px; font-weight:900; line-height:1.05; overflow-wrap:anywhere;
+    display:grid; place-items:center; min-height:60px; box-sizing:border-box; margin:0 0 16px; padding:8px 14px;
+    background:var(--surface-sunken); border-radius:20px; font-size:32px; font-weight:900; line-height:1.05; overflow-wrap:anywhere;
   }
-  @media (max-height:860px){ .reading-word{ min-height:60px; font-size:34px; margin-bottom:12px; padding:6px 12px; } #stage .kind-tag{ margin-bottom:8px; } }
-  @media (max-height:700px){ .reading-word{ min-height:52px; font-size:30px; } }
+  @media (max-height:860px){ .reading-word{ min-height:52px; font-size:28px; margin-bottom:12px; padding:6px 12px; } #stage .kind-tag{ margin-bottom:8px; } }
+  @media (max-height:700px){ .reading-word{ min-height:46px; font-size:26px; } }
   /* Tiles are laid out by layoutReadingTiles(): the column count that gives the
      biggest tiles while the grid fits the screen, at least two across, never
      wider than 200px, 5:4 flattening to 3:2 only if that is what fits. The short
@@ -1626,10 +1631,10 @@
     display:grid; place-items:center; overflow:visible;
   }
   /* The tile is the picture's frame — no second shape inside it. fitTileArt()
-     sizes the art by what is drawn, keeps it clear of the speaker's corner and
-     never enlarges it past 2× its pixels. */
+     centres the art in the tile, sizes it by what is drawn, and shrinks it only
+     where its drawn pixels would sit under the speaker. */
   .reading-opt-img img{ position:relative; z-index:1; width:60%; height:60%; object-fit:contain; }
-  .reading-img-cell .reading-say-mini{ position:absolute; top:auto; right:6px; bottom:10px; z-index:3; margin:0; }
+  .reading-img-cell .reading-say-mini{ position:absolute; top:auto; right:6px; bottom:8px; z-index:3; margin:0; }
 
   /* ===== Read & Choose, to match ===== */
   #stage .frame-wrap .poke-frame.reading-frame{ width:180px; height:180px; }
@@ -1637,6 +1642,9 @@
   .reading-options:not(.reading-options-img) > .reading-opt{
     flex:0 0 calc((100% - 12px) / 2); min-height:56px; font-size:20px; font-weight:800; border-radius:16px; position:relative;
   }
+  /* Under 900px tall the question is zoomed 1.15× from 440 wide; two-line
+     word buttons then pushed it 24–58px past the screen (seen at 470×830). */
+  @media (max-height:900px){ #stage .frame-wrap .poke-frame.reading-frame{ width:148px; height:148px; } }
   @media (max-height:700px){
     #stage .frame-wrap .poke-frame.reading-frame{ width:116px; height:116px; }
     .reading-options:not(.reading-options-img){ gap:8px; margin-top:10px; }
@@ -1648,13 +1656,13 @@
        label  14/800 — the mode tag, names under small pictures
        word   20/800 — word answers
        answer 28/900 — any letter or number the child places or chooses
-       prompt 40/900 — what is being asked (34 under 860px tall, 30 under 700)
+       prompt 32/900 — what is being asked (28 under 860px tall, 26 under 700)
      Before this there were eight unrelated sizes, from 11 to 40, and the letters
      a child places were 21–24px on slots and tiles of different shapes. */
-  .math-q{ font-size:40px; font-weight:900; }
-  .visual-eq{ font-size:34px; font-weight:900; margin:4px 0 12px; }
-  @media (max-height:860px){ .math-q{ font-size:34px; } .visual-eq{ font-size:30px; } }
-  @media (max-height:700px){ .math-q{ font-size:30px; } .visual-eq{ font-size:26px; margin-bottom:8px; } }
+  .math-q, .visual-eq{ font-size:32px; font-weight:900; }
+  .visual-eq{ margin:4px 0 12px; }
+  @media (max-height:860px){ .math-q, .visual-eq{ font-size:28px; } }
+  @media (max-height:700px){ .math-q, .visual-eq{ font-size:26px; } .visual-eq{ margin-bottom:8px; } }
   .pattern-eq{ font-size:28px; font-weight:900; }
   .choice{ font-size:28px; font-weight:900; }
   .alpha-letter{ font-size:28px; font-weight:900; }
@@ -1895,6 +1903,12 @@
      overflowed. The "+" already separates it from the growing part. */
   .pattern-list.drawn{ gap:4px; }
   .pattern-row.waiting{ opacity:.45; }
+  /* Answered rows step back so the open one is the only thing at full strength:
+     the equation goes pale, the green answer softens, the pictures fade to 40%
+     — still countable, since comparing rows is the point of the mode. */
+  .pattern-row:has(.pattern-correct) .pattern-eq{ color:#b3aa97; }
+  .pattern-row .pattern-slot.pattern-correct{ opacity:.7; }
+  .pattern-pic.answered{ opacity:.4; }
   .pattern-pic{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; align-items:center; margin:0 0 10px; }
   .pattern-pic:empty{ display:none; }
   .pattern-pic img{ width:22px; height:22px; object-fit:contain; display:block; }
@@ -1954,6 +1968,50 @@
   .dex-cell.dex-found{ box-shadow:0 0 0 3px var(--sun-700), 0 0 0 9px var(--sun-300); animation:dexFound 1.2s ease-in-out 2; }
   @keyframes dexFound{ 50%{ box-shadow:0 0 0 3px var(--sun-700), 0 0 0 14px rgba(255,228,158,.6); } }
   @media (prefers-reduced-motion: reduce){ .dex-cell.dex-found{ animation:none; } }
+
+  /* ===== Home, on the type roles =====
+     The child's own progress was 15px while the shown Pokémon's name was the
+     biggest, boldest text on the screen at 22. Now the levels and the name share
+     the word size and everything that labels is one label size; Start playing
+     leads by being the big green button, not by its type. */
+  .showcase-name{ font-size:20px; font-weight:800; }
+  .level-num{ font-size:20px; }
+  .level-num .of, .level-name, .showcase-num, .showcase-dex-text, .showcase-dex-go,
+  .hud-val, .hud-lbl, .card-heading{ font-size:14px; }
+  #homeShowcase .type-badge{ font-size:12px; }
+  @media (max-height:700px){ .level-num{ font-size:18px; } }
+
+  /* ===== Results: the round's catches stand in the meadow =====
+     One to four Pokémon a round, so each gets real size — 240px alone, 190 for
+     two, 150 for three, 120 for four, less on a short phone — standing on the
+     home meadow with a shadow and a name tag. "Round finished!" is the heading
+     on the paper, above the buttons. It used to float on the hill line over a
+     grid of 76px chips built for many. */
+  #results:not(.hidden){ display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
+  .results-scene{ position:relative; flex:1 1 auto; min-height:300px; display:flex; flex-direction:column;
+    padding-bottom:0; overflow:hidden; background:var(--sky-300); }
+  .results-scene .meadow-art{ position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+  .results-scene > :not(.meadow-art){ position:relative; z-index:1; }
+  #resultTiles{ margin:0 auto; flex:0 0 auto; }
+  .rs-row{ margin-top:auto; display:flex; justify-content:center; align-items:flex-end; gap:clamp(4px, 3vw, 28px); padding:0 12px 18px; }
+  .rs-row[data-n="1"]{ --rs:min(240px, 30vh, 70vw, calc(100dvh - 430px)); }
+  .rs-row[data-n="2"]{ --rs:min(190px, 26vh, 42vw, calc(100dvh - 430px)); }
+  .rs-row[data-n="3"]{ --rs:min(150px, 22vh, 29vw, calc(100dvh - 430px)); }
+  .rs-row[data-n="4"]{ --rs:min(120px, 19vh, 22vw, calc(100dvh - 430px)); }
+  .rs-poke{ position:relative; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0; border:0; background:none; font:inherit; cursor:pointer; }
+  .rs-poke:active{ transform:translateY(2px); }
+  .rs-art{ position:relative; width:var(--rs); height:var(--rs); display:flex; align-items:flex-end; justify-content:center; }
+  .rs-art img{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain; }
+  .rs-art::before{ content:""; position:absolute; left:50%; translate:-50% 0; bottom:calc(var(--sh, 16px) / -2);
+    width:var(--sw, 62%); height:var(--sh, 16px); border-radius:50%;
+    background:radial-gradient(closest-side, rgba(30,70,35,.38), rgba(30,70,35,.18) 60%, transparent); }
+  .rs-name{ padding:4px 12px; border-radius:999px; background:var(--surface); box-shadow:0 2px 0 rgba(46,43,36,.12);
+    font-size:14px; font-weight:800; color:var(--ink); text-transform:capitalize; white-space:nowrap; }
+  .rs-poke .dex-new{ position:absolute; top:0; right:0; z-index:2; font-size:.65rem; color:#fff; }
+  #results .result{ min-height:0; padding-top:20px; }
+  #results .result-title{ margin:0 0 4px; text-align:center; font-size:32px; font-weight:900; color:var(--ink); line-height:1.15; }
+  #results .result-sub{ margin:0 0 12px; text-align:center; font-size:14px; font-weight:800; color:var(--ink-soft); }
+  @media (max-height:700px){ #results .result-title{ font-size:28px; } }
 
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
@@ -2161,10 +2219,11 @@
   <section id="results" class="hidden">
     <div class="scene results-scene">
       <div class="home-tiles" id="resultTiles"></div>
-      <h2 id="resultTitle">Round finished!</h2>
+      <div class="rs-row" id="caughtBlock"></div>
     </div>
     <div class="result">
-      <div id="caughtBlock"></div>
+      <h2 class="result-title" id="resultTitle">Round finished!</h2>
+      <p class="result-sub hidden" id="resultSub">No catch this time</p>
       <div class="result-actions">
         <button class="btn green big" id="againBtn">Play again</button>
         <button class="btn ghost big" id="backSetupBtn">Go back</button>
@@ -2200,7 +2259,7 @@
       <div class="catch-sky">
       <div class="frame-wrap">
         <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
-        <button class="frame-say" type="button" id="catchSay" aria-label="Say it"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+        <button class="frame-say" type="button" id="catchSay" aria-label="Say it"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M3 9.6h3.4L11 5.8v12.4l-4.6-3.8H3z"/><path d="M14.6 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></button>
       </div>
       </div>
       <div class="catch-info">
@@ -2234,7 +2293,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 106;
+const APP_BUILD = 107;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -3461,7 +3520,10 @@ const HUD_ICONS = {
    ink sits differently on every device and takes its colour from the font, not
    from the thing it belongs to. Drawn, each one takes `currentColor`. */
 const UI_ICONS = {
-  speaker: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>`,
+  // Drawn to sit centred in its 24 grid (its ink spans 3–20.8), a cone and two
+  // waves. The old mark filled only the left half — 12px of ink in a 48px
+  // circle, 1.8px left of centre — so no amount of scaling fixed it.
+  speaker: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M3 9.6h3.4L11 5.8v12.4l-4.6-3.8H3z"/><path d="M14.6 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
   play: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>`,
   bolt: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
   tick: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -5509,7 +5571,7 @@ function fitReadingWord(){
   w.style.fontSize = ""; w.style.whiteSpace = "nowrap";
   let fs = parseFloat(getComputedStyle(w).fontSize);
   while(w.scrollWidth > w.clientWidth && fs > 28){ fs -= 2; w.style.fontSize = fs + "px"; }
-  if(w.scrollWidth > w.clientWidth){ w.style.whiteSpace = "normal"; w.style.fontSize = "30px"; }
+  if(w.scrollWidth > w.clientWidth){ w.style.whiteSpace = "normal"; w.style.fontSize = "26px"; }
 }
 /* Lay the picture options out by rule rather than by a fixed grid: try every
    balanced column count from two up (5 → 2+2+1, 3+2, or one row), and keep the
@@ -5539,22 +5601,47 @@ function layoutReadingTiles(){
   g.style.setProperty("--th", best.h + "px");
   g.querySelectorAll(".reading-opt-img img").forEach(im => { if(im.complete) fitTileArt(im); });
 }
-/* A tile's picture, on the tile itself: an area the size of the tile less the
-   speaker's corner, nudged away from it; the art in it sized by what is drawn
-   (fitArtwork's measure) and centred on what is drawn — never enlarged past 2×
-   its own pixels, since small item art goes soft beyond that. */
+/* A tile's picture: always dead centre in its tile, sized by what is drawn
+   (fitArtwork's measure), never enlarged past 2× its pixels. The speaker sits
+   inside the tile's corner, so the drawing is tested against the speaker's
+   circle pixel by pixel (a 64px alpha mask); only a picture whose actual ink
+   would sit under it shrinks, and only as far as it must (to 0.6× at most).
+   A round Pokémon usually leaves that corner empty; a cube does not. */
+const artMaskCache = {};
+function artMask(img){
+  const key = img.currentSrc || img.src;
+  if(artMaskCache[key]) return artMaskCache[key];
+  try{
+    const N = 64, c = document.createElement("canvas");
+    c.width = c.height = N;
+    const ctx = c.getContext("2d", { willReadFrequently:true });
+    ctx.drawImage(img, 0, 0, N, N);
+    const d = ctx.getImageData(0, 0, N, N).data, pts = [];
+    for(let y = 0; y < N; y++) for(let x = 0; x < N; x++) if(d[(y*N + x)*4 + 3] > 40) pts.push([(x + .5)/N, (y + .5)/N]);
+    return artMaskCache[key] = pts;
+  }catch(e){ return []; }
+}
 function fitTileArt(img){
   const tile = img.closest(".reading-opt"), bb = img.naturalWidth ? artBounds(img) : null;
   if(!tile || !bb) return;
-  const say = tile.parentElement.querySelector(".reading-say-mini");
-  const sd = say ? say.offsetWidth : 0, tw = tile.clientWidth, th = tile.clientHeight;
-  const D = Math.min(tw * 0.8, th * 0.82, th - sd * 0.5 - 6, tw - sd * 0.5 - 6);
-  tile.style.setProperty("--off", -(sd * 0.25) + "px");
+  const tw = tile.clientWidth, th = tile.clientHeight, s = Math.min(tw, th);
   const cw = bb.r - bb.l, ch = bb.b - bb.t;
-  let size = D * 0.8 * Math.min(1.5, ART_MEDIAN / Math.sqrt(cw * ch));
-  size = Math.min(size, D * 0.86 / cw, D * 0.86 / ch, img.naturalWidth * 2);
+  let size = s * 0.6 * Math.min(1.5, ART_MEDIAN / Math.sqrt(cw * ch));
+  size = Math.min(size, s * 0.72 / cw, s * 0.72 / ch, img.naturalWidth * 2);
+  const say = tile.parentElement.querySelector(".reading-say-mini");
+  if(say){
+    const tr = tile.getBoundingClientRect(), sr = say.getBoundingClientRect(), z = tr.width / tw || 1;
+    const scx = (sr.left + sr.width / 2 - tr.left) / z, scy = (sr.top + sr.height / 2 - tr.top) / z;
+    const rad = sr.width / 2 / z + 4, pts = artMask(img);
+    let k = 1;
+    for(; k > 0.6; k -= 0.04){
+      const sz = size * k, ox = tw / 2 - (bb.l + bb.r) / 2 * sz, oy = th / 2 - (bb.t + bb.b) / 2 * sz;
+      if(!pts.some(([u, v]) => { const dx = ox + u * sz - scx, dy = oy + v * sz - scy; return dx * dx + dy * dy < rad * rad; })) break;
+    }
+    size *= Math.max(k, 0.6);
+  }
   img.style.cssText = `width:${size}px; height:${size}px; max-width:none; max-height:none;
-    translate:calc(${(0.5 - (bb.l + bb.r) / 2) * size}px + var(--off, 0px)) calc(${(0.5 - (bb.t + bb.b) / 2) * size}px + var(--off, 0px));`;
+    translate:${(0.5 - (bb.l + bb.r) / 2) * size}px ${(0.5 - (bb.t + bb.b) / 2) * size}px;`;
 }
 
 function renderReading(p){
@@ -5800,6 +5887,7 @@ function drawPatternPictures(){
   const pics = [...$("#patternList").querySelectorAll(".pattern-pic")];
   p.items.forEach((it, i)=>{
     rows[i].classList.toggle("waiting", i > at);
+    pics[i].classList.toggle("answered", i < at);
     if(i > at){ pics[i].innerHTML = ""; return; }
     if(p.sym === "+"){
       const before = i ? p.items[i-1].b : 0;
@@ -6092,25 +6180,27 @@ function finish(){
   // still possible on short rounds or once a generation is fully caught.
   renderHomeTiles();
   const block = $("#caughtBlock");
-  if(roundCatches.length){
-    const unseen = loadUnseen();
-    block.innerHTML = `<p class="caught-title">Caught this round</p>
-      <div class="caught-row">${roundCatches.map(p => `
-        <button class="caught-chip" type="button" data-id="${p.id}">
-          ${unseen.includes(p.id) ? `<span class="dex-new">NEW</span>` : ""}
-          <img src="${artwork(p.id)}" alt="${cap(p.n)}">
-          <span>${cap(p.n)}</span>
-        </button>`).join("")}</div>`;
-    block.querySelectorAll("[data-id]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
-        markSeen(poke.id);
-        showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true, celebrate: true });
-      });
+  const n = roundCatches.length;
+  $("#resultSub").classList.toggle("hidden", n > 0);
+  block.dataset.n = Math.min(Math.max(n, 1), 4);
+  const unseen = loadUnseen();
+  block.innerHTML = roundCatches.map(p => `
+    <button class="rs-poke" type="button" data-id="${p.id}" aria-label="${cap(p.n)}">
+      ${unseen.includes(p.id) ? `<span class="dex-new">NEW</span>` : ""}
+      <span class="rs-art"><img src="${artwork(p.id)}" alt=""></span>
+      <span class="rs-name">${cap(p.n)}</span>
+    </button>`).join("");
+  block.querySelectorAll(".rs-poke").forEach(btn=>{
+    const img = btn.querySelector("img"), art = btn.querySelector(".rs-art");
+    const fit = () => setArtShadow(art, fitArtwork(img, art.clientHeight, art.clientWidth * 1.25));
+    img.addEventListener("load", fit);
+    if(img.complete) requestAnimationFrame(fit);
+    btn.addEventListener("click", ()=>{
+      const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
+      markSeen(poke.id);
+      showPokeModal(poke, { caption: catchCaption(poke), revealed: true, dismissOnBackdrop: true, celebrate: true });
     });
-  } else {
-    block.innerHTML = `<p class="caught-none">No catch this time</p>`;
-  }
+  });
   show("results");
 }
 
@@ -6296,6 +6386,7 @@ $("#quitBtn").addEventListener("click", ()=>{
 // The catch screen's meadow is the home screen's, cloned rather than copied
 // into the markup, so the two can never drift apart.
 $(".catch-sky").prepend($(".home-scene .meadow-art").cloneNode(true));
+$(".results-scene").prepend($(".home-scene .meadow-art").cloneNode(true));
 $("#catchImg").addEventListener("load", fitCatchArt);
 // Both fits are in pixels, so they follow the window.
 window.addEventListener("resize", ()=>{
