@@ -661,6 +661,14 @@ The Pattern screen spent its best spot on a decorative Pokémon. It now draws ea
 
 **Measured.** Catch and Pokédex cards for Vaporeon, Eevee, Tyrogue, Mewtwo, Bulbasaur and Wurmple, and visual `2+4`, `4+7`, `7−3`, `0+5`, `13+4`, `15−9`, at 360×640, 390×844, 470×830, 820×1180 and 1280×800: no scroll, the button on screen, no console errors. Tapping a relative from a catch turns the button back to Okay and shows the whole family.
 
+## Phase 84 — the catch stands in the meadow
+
+With "Caught!" moved to the button, a catch on a desktop window was 851px of plain sky with a 250px Pokémon at the bottom — about 570px empty — over a narrow column of loose text. Three changes: the home screen's meadow drawing behind it (cloned from the home markup at start-up, not duplicated); the Pokémon sized to the sky, up to 440px; and the number, name, type and evolutions on one white card raised onto the hill, as on home.
+
+A family that splits stacks its evolutions in a column, and in the mock that pushed Tyrogue's picture to 23px from the top of a 390×844 phone; such a catch now uses a smaller picture (273px there). The card first scaled up from 900px tall, which put Tyrogue's picture at the very top of a 1440×900 window; it now scales from 1000px. The catch burst had been drawn on the card, under the sky's opaque background, so it never showed on the full-screen catch; it now sits behind the picture inside the sky.
+
+**Measured.** Staryu, Eevee, Mewtwo, Tyrogue and Gloom at 360×640, 390×844, 470×830, 820×1180, 1280×800, 1440×900 and 2000×1160: no scroll, the button on screen, the picture below the top edge. The Pokédex sheet is unchanged — the meadow and card are catch-only — and still fits at 360×640.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

@@ -1583,7 +1583,8 @@
   .feedback.big-check svg{ width:52px; height:52px; }
 
   /* ---------- Catch: its own moment; browsing the Pokédex: a sheet ---------- */
-  .catch-sky{ display:contents; }
+  .catch-sky, .catch-info{ display:contents; }
+  .catch-sky .meadow-art{ display:none; }
   .catch-card{ border-radius:30px; }
   .modal-overlay.is-catch{ background:var(--canvas); padding:0; align-items:stretch; overflow-y:auto; }
   .is-catch .catch-card{
@@ -1591,10 +1592,28 @@
     display:flex; flex-direction:column; align-items:center;
     background:transparent; border:0; border-radius:0; box-shadow:none;
   }
+  /* The catch stands in the home screen's meadow — the same drawing, cloned in
+     at start-up — so the Pokémon is somewhere rather than in front of an empty
+     sky, and a catch looks like the place the child plays from. */
   .is-catch .catch-sky{
     flex:1 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:12px;
-    align-self:stretch; margin:0 calc(198px - 50vw) 14px; padding:clamp(20px, 6vh, 64px) 22px 30px; overflow:hidden;
-    background:var(--hills) center bottom / 100% 120px no-repeat, var(--sky-300);
+    align-self:stretch; margin:0 calc(198px - 50vw) 14px; padding:clamp(20px, 6vh, 64px) 22px clamp(24px, 5vh, 56px);
+    overflow:hidden; background:var(--sky-300);
+  }
+  .is-catch .catch-sky .meadow-art{ display:block; position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+  .is-catch .catch-sky > :not(.meadow-art){ position:relative; z-index:1; }
+  /* Everything that labels the Pokémon sits on one white card raised onto the
+     hill, as the home screen's name card does; loose on the paper it read as a
+     thin column of text under a lot of sky. */
+  .is-catch .catch-info{
+    display:block; position:relative; z-index:2; align-self:center; width:min(100%, 420px); box-sizing:border-box;
+    margin:-34px auto 16px; padding:14px 18px 16px;
+    background:var(--surface); border:2px solid var(--paper-line); border-radius:24px;
+    box-shadow:0 10px 24px rgba(60,50,20,.10);
+  }
+  @media (min-width:700px) and (min-height:1000px){
+    .is-catch .catch-info{ zoom:1.25; }
+    .is-catch #catchOkBtn{ zoom:1.15; }
   }
   @media (max-width:440px){ .is-catch .catch-sky{ margin-left:-22px; margin-right:-22px; } }
   /* "Caught!" is the button's word, not a banner in the sky: a banner with a
@@ -1602,24 +1621,34 @@
      well away from everything else. A rare catch turns the button gold. */
   #catchOkBtn .ok-tick svg{ width:1.15em; height:1.15em; vertical-align:-.2em; margin-right:6px; }
   #catchOkBtn.rare{ background:var(--sun-500); color:var(--sun-800); box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--sun-700); }
+  /* The Pokémon is sized to the sky rather than fixed: 250px left a desktop
+     window two-thirds empty. A family that splits stacks a column of
+     evolutions on the card, so its Pokémon gives up some height to keep the
+     picture clear of the top. */
   .is-catch .catch-frame{
-    width:min(250px, 34vh); height:min(250px, 34vh); margin:0 auto;
+    position:relative;
+    width:min(46vh, 82vw, 440px); height:min(46vh, 82vw, 440px); margin:0 auto;
     background:radial-gradient(circle, #fff6c9 0, #ffe49e 42%, rgba(255,228,158,0) 70%); box-shadow:none;
   }
+  .is-catch:has(.evo-row.branched) .catch-frame{ width:min(34vh, 70vw, 360px); height:min(34vh, 70vw, 360px); }
   .is-catch .catch-frame img{ max-width:86%; max-height:86%; }
-  .is-catch .catch-shine{ top:42%; }
+  /* On a catch the burst lives behind the picture inside the sky; on the card
+     it sat under the sky's own background and never showed. */
+  .is-catch .catch-shine{ left:50%; top:50%; width:150%; height:150%; margin:0; translate:-50% -50%; }
   .is-catch .catch-name{ font-size:1.875rem; font-weight:900; margin:0 0 6px; }
   .is-catch #catchOkBtn{ margin-top:auto !important; }
-  .is-catch .evo-row{ margin:12px 0 18px; }
+  .is-catch .evo-row{ margin:12px 0 2px; }
   .is-catch .evo{ width:70px; }
   .is-catch .evo span{ max-width:66px; font-size:.625rem; }
   /* A short phone still gets the whole family and the Okay button: the sky and
      the artwork give way first, as the Pokémon does on the home screen. */
   @media (max-height:820px){
     .is-catch .catch-sky{ padding-top:14px; padding-bottom:18px; gap:8px; margin-bottom:8px; }
-    .is-catch .catch-frame{ width:min(200px, 24vh); height:min(200px, 24vh); }
+    .is-catch .catch-frame{ width:min(200px, 26vh); height:min(200px, 26vh); }
+    .is-catch:has(.evo-row.branched) .catch-frame{ width:min(170px, 22vh); height:min(170px, 22vh); }
+    .is-catch .catch-info{ margin-top:-26px; margin-bottom:10px; padding:10px 14px 12px; }
     .is-catch .catch-name{ font-size:1.5rem; margin-bottom:4px; }
-    .is-catch .evo-row{ margin:8px 0 12px; }
+    .is-catch .evo-row{ margin:8px 0 2px; }
     .is-catch .evo{ width:64px; }
     .is-catch .evo img{ width:34px; height:34px; }
   }
@@ -2021,11 +2050,13 @@
         <button class="frame-say" type="button" id="catchSay" aria-label="Say it"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
       </div>
       </div>
+      <div class="catch-info">
       <div class="catch-num" id="catchNum">#001</div>
       <div class="catch-name" id="catchName">Bulbasaur</div>
       <div class="rarity-chip hidden" id="catchRarity"></div>
       <div class="battle-types catch-types" id="catchTypes"></div>
       <div class="evo-row hidden" id="catchEvo"></div>
+      </div>
       <button class="btn green big" id="catchOkBtn" style="margin-top:10px">Okay</button>
     </div>
   </div>
@@ -2050,7 +2081,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 100;
+const APP_BUILD = 101;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -3795,7 +3826,9 @@ function celebrateCatch(rarity){
   }
   const shine = document.createElement("span");
   shine.className = "catch-shine";
-  card.appendChild(shine);
+  // A full-screen catch draws it behind the picture, inside the sky.
+  if($("#catchModal").classList.contains("is-catch")) $("#catchCard .frame-wrap").prepend(shine);
+  else card.appendChild(shine);
   card.appendChild(layer);
   // Tidy up once the longest piece has finished, so reopening starts clean.
   setTimeout(()=>{ layer.remove(); shine.remove(); }, 2600);
@@ -3934,6 +3967,7 @@ function renderEvoRow(poke){
   // arrow sits between stages rather than between every pair of chips.
   const wide = stages.some(st => st.length > 3);
   row.classList.toggle("wide", wide && !catching);
+  row.classList.toggle("branched", catching && stages.some(st => st.length > 1 && st.length <= 3));
   row.innerHTML = stages
     .map(st => `<span class="evo-stage">` +
       (catching && st.length > 3 ? more(st) : st.map(x => chip(x, x.id === poke.id)).join("")) + `</span>`)
@@ -5914,6 +5948,9 @@ $("#quitBtn").addEventListener("click", ()=>{
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });
+// The catch screen's meadow is the home screen's, cloned rather than copied
+// into the markup, so the two can never drift apart.
+$(".catch-sky").prepend($(".home-scene .meadow-art").cloneNode(true));
 $("#catchOkBtn").addEventListener("click", ()=>{
   hideCatchModal();
   const cb = pendingCatchCallback;
