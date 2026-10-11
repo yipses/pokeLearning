@@ -1901,7 +1901,14 @@
      The fixed number of an add pattern is unframed: in Visual Maths addition a
      blue box is always five wide, so a seven-wide one read as a five that had
      overflowed. The "+" already separates it from the growing part. */
-  .pattern-list.drawn{ gap:4px; }
+  .pattern-list.drawn{ gap:8px; }
+  /* Room between an equation and its pictures: the open slot's amber ring
+     touched the highlighted Pokémon below it, and two yellows merged. */
+  .pattern-list.drawn .pattern-pic{ margin-top:10px; }
+  /* Multiply rows are taller arrays inside their own frame, which already keeps
+     the highlight off the ring; the full gap made them scroll on a phone. */
+  .pattern-list.drawn:has(.pattern-pic-array){ gap:4px; }
+  .pattern-list.drawn .pattern-pic:has(.pattern-pic-array){ margin-top:6px; }
   .pattern-row.waiting{ opacity:.45; }
   /* Answered rows step back so the open one is the only thing at full strength:
      the equation goes pale, the green answer softens, the pictures fade to 40%
@@ -1926,6 +1933,7 @@
   .pattern-pic.dense{ gap:3px; }
   @media (max-height:700px){
     .pattern-pic{ margin-bottom:3px; }
+    .pattern-list.drawn .pattern-pic{ margin-top:7px; }
     .pattern-pic img{ width:17px; height:17px; }
     .pattern-pic.dense img{ width:13px; height:13px; }
     .pattern-pic-array{ padding:3px 5px; }
@@ -1982,22 +1990,24 @@
   @media (max-height:700px){ .level-num{ font-size:18px; } }
 
   /* ===== Results: the round's catches stand in the meadow =====
-     One to four Pokémon a round, so each gets real size — 240px alone, 190 for
-     two, 150 for three, 120 for four, less on a short phone — standing on the
-     home meadow with a shadow and a name tag. "Round finished!" is the heading
-     on the paper, above the buttons. It used to float on the hill line over a
-     grid of 76px chips built for many. */
+     One to four Pokémon a round, so each gets real size, with a shadow and a
+     name tag. "Round finished!" is the heading on the paper, above the buttons;
+     it used to float on the hill line over a grid of 76px chips built for many.
+     layoutCatches() sizes them to the free height (up to 300/240/190/150px for
+     1–4) and places them a little below the middle of the meadow; the ground
+     comes up to meet them — the drawing ends at their feet and the front
+     hill's green runs on to the paper. Pinned to the bottom of a tall meadow
+     they stood under 400px of empty sky. No NEW badge: on this screen every
+     catch is new, so it said nothing. */
   #results:not(.hidden){ display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
   .results-scene{ position:relative; flex:1 1 auto; min-height:300px; display:flex; flex-direction:column;
-    padding-bottom:0; overflow:hidden; background:var(--sky-300); }
-  .results-scene .meadow-art{ position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+    padding-bottom:0; overflow:hidden;
+    background:linear-gradient(var(--sky-300), var(--sky-300)) top / 100% var(--svgh, 100%) no-repeat, #7cc47f; }
+  .results-scene .meadow-art{ position:absolute; left:0; top:0; width:100%; height:var(--svgh, 100%); z-index:0; }
   .results-scene > :not(.meadow-art){ position:relative; z-index:1; }
   #resultTiles{ margin:0 auto; flex:0 0 auto; }
-  .rs-row{ margin-top:auto; display:flex; justify-content:center; align-items:flex-end; gap:clamp(4px, 3vw, 28px); padding:0 12px 18px; }
-  .rs-row[data-n="1"]{ --rs:min(240px, 30vh, 70vw, calc(100dvh - 430px)); }
-  .rs-row[data-n="2"]{ --rs:min(190px, 26vh, 42vw, calc(100dvh - 430px)); }
-  .rs-row[data-n="3"]{ --rs:min(150px, 22vh, 29vw, calc(100dvh - 430px)); }
-  .rs-row[data-n="4"]{ --rs:min(120px, 19vh, 22vw, calc(100dvh - 430px)); }
+  .results-scene > .rs-row{ position:absolute; left:0; right:0; top:var(--rtop, auto); bottom:auto; margin:0;
+    display:flex; justify-content:center; align-items:flex-end; gap:12px; padding:0 12px; }
   .rs-poke{ position:relative; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0; border:0; background:none; font:inherit; cursor:pointer; }
   .rs-poke:active{ transform:translateY(2px); }
   .rs-art{ position:relative; width:var(--rs); height:var(--rs); display:flex; align-items:flex-end; justify-content:center; }
@@ -2007,7 +2017,6 @@
     background:radial-gradient(closest-side, rgba(30,70,35,.38), rgba(30,70,35,.18) 60%, transparent); }
   .rs-name{ padding:4px 12px; border-radius:999px; background:var(--surface); box-shadow:0 2px 0 rgba(46,43,36,.12);
     font-size:14px; font-weight:800; color:var(--ink); text-transform:capitalize; white-space:nowrap; }
-  .rs-poke .dex-new{ position:absolute; top:0; right:0; z-index:2; font-size:.65rem; color:#fff; }
   #results .result{ min-height:0; padding-top:20px; }
   #results .result-title{ margin:0 0 4px; text-align:center; font-size:32px; font-weight:900; color:var(--ink); line-height:1.15; }
   #results .result-sub{ margin:0 0 12px; text-align:center; font-size:14px; font-weight:800; color:var(--ink-soft); }
@@ -2293,7 +2302,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 107;
+const APP_BUILD = 108;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -6183,18 +6192,14 @@ function finish(){
   const n = roundCatches.length;
   $("#resultSub").classList.toggle("hidden", n > 0);
   block.dataset.n = Math.min(Math.max(n, 1), 4);
-  const unseen = loadUnseen();
   block.innerHTML = roundCatches.map(p => `
     <button class="rs-poke" type="button" data-id="${p.id}" aria-label="${cap(p.n)}">
-      ${unseen.includes(p.id) ? `<span class="dex-new">NEW</span>` : ""}
       <span class="rs-art"><img src="${artwork(p.id)}" alt=""></span>
       <span class="rs-name">${cap(p.n)}</span>
     </button>`).join("");
   block.querySelectorAll(".rs-poke").forEach(btn=>{
     const img = btn.querySelector("img"), art = btn.querySelector(".rs-art");
-    const fit = () => setArtShadow(art, fitArtwork(img, art.clientHeight, art.clientWidth * 1.25));
-    img.addEventListener("load", fit);
-    if(img.complete) requestAnimationFrame(fit);
+    img.addEventListener("load", ()=> fitResultArt(btn));
     btn.addEventListener("click", ()=>{
       const poke = POKEMON.find(x => x.id === Number(btn.dataset.id));
       markSeen(poke.id);
@@ -6202,6 +6207,30 @@ function finish(){
     });
   });
   show("results");
+  requestAnimationFrame(layoutCatches);
+}
+function fitResultArt(btn){
+  const img = btn.querySelector("img"), art = btn.querySelector(".rs-art");
+  if(img.complete && img.naturalWidth) setArtShadow(art, fitArtwork(img, art.clientHeight, art.clientWidth * 1.25));
+}
+/* See the Results CSS: size the catches to the meadow's free height and width,
+   seat them a little below its middle, and end the drawing at their feet. */
+function layoutCatches(){
+  const row = $("#caughtBlock"), scene = row.parentElement;
+  if($("#results").classList.contains("hidden")) return;
+  const n = row.children.length;
+  if(!n){ scene.style.removeProperty("--svgh"); return; }
+  const tag = 44, gap = 12;
+  const sr = scene.getBoundingClientRect(), hudB = $("#resultTiles").getBoundingClientRect().bottom - sr.top;
+  const freeH = sr.height - hudB - 24 - tag - 16;
+  const freeW = (row.clientWidth - 24 - gap * (n - 1)) / n;
+  const cap = [0, 300, 240, 190, 150][Math.min(n, 4)];
+  const size = Math.max(70, Math.min(cap, freeH * 0.8, freeW * 1.05));
+  const top = hudB + 24 + Math.max(0, (freeH - size) * 0.55);
+  row.style.setProperty("--rs", size + "px");
+  row.style.setProperty("--rtop", top + "px");
+  scene.style.setProperty("--svgh", Math.min(sr.height, (top + size) / 0.9) + "px");
+  row.querySelectorAll(".rs-poke").forEach(fitResultArt);
 }
 
 /* ---------------- view switching ---------------- */
@@ -6391,6 +6420,7 @@ $("#catchImg").addEventListener("load", fitCatchArt);
 // Both fits are in pixels, so they follow the window.
 window.addEventListener("resize", ()=>{
   fitShowcase();
+  layoutCatches();
   if(document.querySelector("#stage .reading-options-img")){ fitReadingWord(); layoutReadingTiles(); }
   fitWordCells(document.querySelector("#missingWord"), ".mw-word");
   fitWordCells(document.querySelector("#slots"), ".slot-word");
