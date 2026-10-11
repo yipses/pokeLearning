@@ -50,7 +50,9 @@ a two-word name breaks only between words.
   of invisible margin.
 - **One speaker**: 40px `sun-500` circle, `sun-800` mark, `sun-700` edge, on the
   **bottom-right** of the picture it names — centred on a round frame's edge at
-  45°, inside a tile's corner. Same size and place on every screen.
+  45°, inside a tile's corner. Same size and place on every screen. A word tile
+  that needs hearing carries its own, inside its right end, with the tile made
+  wide enough that the word never sits under it.
 - **Icons are judged by their ink, not their box.** A mark is centred to within
   half a pixel and fills about half its button. Check at 4× zoom.
 - **Only tappable things have a press edge.** A label with an edge reads as a

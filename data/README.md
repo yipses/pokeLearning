@@ -159,7 +159,7 @@ A Pokémon's picture and a sentence about it with words missing, filled from a b
 | `frame` | which words are blank. `last1` *Pikachu is ___* · `last2` *Pikachu ___ ___* · `not1` *Pikachu is not ___*, and only "not" sentences · `given` two blanks around a given word, *Onix ___ very ___*, *Onix ___ a ___ type* · `last3` the last three words · `type_given` *Onix ___ ___ rock ___* · `last4` *Onix ___ ___ ___ ___* · `verb_given` *___ can ___*, the name a tile · `all` every word, the name included |
 | `stretch` | how far past the child's **Reading** word level the words may go. Every word in the sentence and the bank, the name aside, must be at or under Reading's `word_level` + this |
 | `spare_tiles` | wrong tiles in the bank, 0–8. When a sentence can't find that many it settles for one, rather than not being asked |
-| `spoken_tiles` | `yes` / `no`. On `yes` the picture's speaker reads the bank aloud after the name, lifting each tile as it is said. Tapping a tile never speaks it |
+| `spoken_tiles` | `yes` / `no`. On `yes` every word tile carries its own speaker for its own word; on `no` the tiles have none. The picture's speaker always says only the name. Tapping a tile never speaks it |
 | `promote_5_pct`, `promote_10_pct` | the two promotion gates, as everywhere else |
 
 ### `pokemon_facts.csv` — 147 rows
