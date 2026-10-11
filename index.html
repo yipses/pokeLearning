@@ -131,9 +131,6 @@
     margin:0; font-size:clamp(15px, 2.1vw, 20px); line-height:1;
     color:var(--ink); letter-spacing:.04em; font-weight:900;
   }
-  .brand .pokeball{
-    display:block; flex:0 0 auto; width:26px; height:26px;
-  }
   /* Below 480px the words go and the ball stands alone. Measured: the row has
      60px free at 360 and 130 at 430, and ball-plus-words needs 150px even at an
      already-too-small 14px — there is no size at which it fits on a phone. The
@@ -1150,7 +1147,6 @@
     font-size:.66rem; box-shadow:var(--shadow-sm);
   }
   .dex-rare.mythical{ background:#d9b6f0; }
-  .rare-count{ color:var(--sun-deep); }
   /* Sized so a three-stage line — the common case — fits one row inside the
      card's ~292px interior with room to spare. Stages sit side by side and a
      stage that splits (Gloom becomes Vileplume or Bellossom) stacks in its own
@@ -1396,9 +1392,9 @@
   @media (max-width:380px){ .hud-lbl{ display:none; } }
   .brand{ margin-left:auto; }
   .brand h1{ text-shadow:none; }
-  .brand .pokeball{ width:28px; height:28px; filter:none; }
-  /* The wordmark is still the page's heading, for anything reading it; the ball
-     is all a child sees. */
+  /* The wordmark is still the page's heading, for anything reading it, and
+     nothing of it is drawn. A Pokéball mark used to sit here, beside the gear in
+     a row of round buttons, where it looked tappable and did nothing. */
   .brand-word{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
   .gear-btn{
     margin-left:6px; width:44px; height:44px; padding:0; border-radius:50%;
@@ -1704,8 +1700,6 @@
   .dex-rare{ background:var(--sun-500); color:var(--sun-800); border:2px solid var(--canvas); }
   .dex-rare svg{ width:12px; height:12px; }
   .dex-rare.mythical{ background:#d9b6f0; color:#5f3a7a; }
-  .rare-count{ color:var(--sun-800); display:inline-flex; align-items:center; gap:3px; }
-  .rare-count svg{ width:11px; height:11px; }
   .evo span{ font-size:.6875rem; }
 
   /* Battle: the arena is a meadow, the speakers ride on the pictures. */
@@ -1801,6 +1795,19 @@
     .evo img{ width:34px; height:34px; }
   }
 
+  /* The round bar as steps (updateProgress): segments in place of one fill. */
+  .progress.steps{ background:none; box-shadow:none; border-radius:0; overflow:visible; }
+  .progress.steps > i{ display:none; }
+  .prog-steps{ display:none; }
+  .progress.steps .prog-steps{ display:flex; gap:4px; height:100%; }
+  .prog-steps i{
+    flex:1 1 0; min-width:0; border-radius:999px;
+    background:var(--surface); box-shadow:inset 0 0 0 2px rgba(46,43,36,.14);
+    transition:background .25s;
+  }
+  .prog-steps i.done{ background:var(--leaf-600); box-shadow:none; }
+  .prog-steps i.now{ background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
+
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
   .notice-card h2{ margin:0 0 8px; font-size:1.375rem; font-weight:900; }
@@ -1837,13 +1844,7 @@
     <div class="home-tiles" id="homeTiles"></div>
     <div class="brand">
       <h1>
-        <svg class="pokeball" viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="46" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-          <path d="M4 50a46 46 0 0 1 92 0z" fill="#ef5350" stroke="#2b2b2b" stroke-width="5"/>
-          <line x1="4" y1="50" x2="96" y2="50" stroke="#2b2b2b" stroke-width="5"/>
-          <circle cx="50" cy="50" r="14" fill="#fff" stroke="#2b2b2b" stroke-width="5"/>
-          <circle cx="50" cy="50" r="6" fill="#fff" stroke="#2b2b2b" stroke-width="4"/>
-        </svg><span class="brand-word">Poké Learning</span>
+        <span class="brand-word">Poké Learning</span>
       </h1>
     </div>
     <button class="gear-btn" id="settingsBtn" type="button" aria-label="Settings" title="Settings"></button>
@@ -2001,7 +2002,7 @@
     <div class="scene play-scene">
       <div class="topbar">
         <button class="quit quit-x" id="quitBtn" aria-label="Quit" title="Quit"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg></button>
-        <div class="progress"><i id="progFill"></i></div>
+        <div class="progress" id="progBar"><i id="progFill"></i><span class="prog-steps" id="progSteps"></span></div>
       </div>
       <div class="grass-strip" id="grassStrip"></div>
     </div>
@@ -2086,7 +2087,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 102;
+const APP_BUILD = 103;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -3423,8 +3424,24 @@ function startGame(){
 /* The bar measures credits, not questions seen. That is the honest number now —
    and it is also the lesson: guessing your way through a question leaves the bar
    exactly where it was. */
-function updateProgress(){
-  $("#progFill").style.width = Math.min(100, roundCredits / roundTarget() * 100) + "%";
+/* Up to STEP_BAR_MAX questions the bar is one segment per question: done ones
+   green, the one being answered amber, the rest empty — so a round reads as a
+   number of steps rather than a distance. A longer round keeps the continuous
+   bar: fifty segments on a phone are 3px each, a stripe rather than steps. */
+const STEP_BAR_MAX = 20;
+function updateProgress(finished){
+  const target = roundTarget();
+  const done = finished ? target : Math.min(target, roundCredits);
+  const stepped = target <= STEP_BAR_MAX;
+  $("#progBar").classList.toggle("steps", stepped);
+  $("#progFill").style.width = (done / target * 100) + "%";
+  const steps = $("#progSteps");
+  if(!stepped){ steps.innerHTML = ""; return; }
+  if(steps.children.length !== target) steps.innerHTML = "<i></i>".repeat(target);
+  [...steps.children].forEach((seg, k)=>{
+    seg.classList.toggle("done", k < done);
+    seg.classList.toggle("now", k === done);
+  });
 }
 
 function renderProblem(){
@@ -4090,8 +4107,6 @@ function renderPokedex(){
 
   const genPokes = inGen(g);
   const genCaught = genPokes.filter(p => collected.includes(p.id)).length;
-  const genRare = genPokes.filter(p => RARITY_LABEL[p.rarity]);
-  const genRareCaught = genRare.filter(p => collected.includes(p.id)).length;
 
   const section = document.createElement("div");
   section.className = "dex-gen-section";
@@ -4101,9 +4116,8 @@ function renderPokedex(){
   // without one.
   const genPct = genPokes.length ? Math.round((genCaught / genPokes.length) * 100) : 0;
   section.innerHTML = `
-    <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
-      genRare.length ? `<b class="rare-count">${UI_ICONS.star}${genRareCaught}/${genRare.length}</b> · ` : ""
-    }${genCaught} / ${genPokes.length}</span></h3>
+    <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">
+${genCaught} / ${genPokes.length}</span></h3>
     <span class="level-bar dex-gen-bar" aria-hidden="true">
       <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
     </span>
@@ -5745,8 +5759,7 @@ function finishBattle(){
 
 function finish(){
   recordDailyCompletion();
-  updateProgress();
-  $("#progFill").style.width = "100%";
+  updateProgress(true);
   // No score here: every mode retries until correct, so a finished round is
   // always 100% and a "perfect run" reward meant nothing. The reward is what
   // was actually caught, and the tiles carry the sense of progress even on a

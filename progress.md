@@ -675,6 +675,12 @@ A family that splits stacks its evolutions in a column, and in the mock that pus
 - **The ✕ is the drawn cross**, 28px, on the round's bar and beside every screen name. The ✕ character was about 9px across in a 44px circle.
 - **Rarity is a five-point star.** The four-point sparkle on legendary and mythical badges, chips and the dex tally read as a "+", a call to action.
 
+## Phase 86 — the bar counts steps; two things that meant nothing go
+
+- **The round bar is segmented**, as the Direction B mockups drew it and the build missed: one segment per question up to 20, green done, amber current, white to come. Above 20 the continuous bar stays — 50 segments are 3px on a phone. Measured at 360, 390 and 1280 wide for 2, 10, 20, 21 and 50: 20 segments are 9.5px at 360, no horizontal scroll, and a finished round fills every segment.
+- **The Pokédex generation header drops its legendary tally** (`★ 3/5`). Its owner could not tell what it meant, and the gold cells in the grid already say it.
+- **The Pokéball mark beside the gear is gone.** It looked like a button in a row of buttons and did nothing; the heading text stays for screen readers.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
