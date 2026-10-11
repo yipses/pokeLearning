@@ -724,6 +724,48 @@ Missing Letters was the example: a 12px mode tag, a 20px speaker mark in a 48px 
 
 **Measured.** At 360×640, 390×844, 470×830, 820×1180, 1280×800 and 1440×900: reverse tiles with art centred to 0.0px and no ink under a speaker (25 tiles each), every speaker 40px, no scroll on any question screen, results with 0–4 catches (heads clear of the HUD, buttons on screen), home with Start on screen. No console errors.
 
+## Phase 91 — the Sentences trail
+
+A new trail, the twelfth: a Pokémon's picture and a sentence about it with words missing — *Pikachu is ___* — built by tapping word tiles into the blanks. Designed with the owner over several rounds before any code (the full brief is in Overview §7.2b, LessonTrails and `data/README.md`).
+
+**How it was decided.**
+
+- The owner's first example — *Pikachu ___* with *are, am, is, blue, yellow* — tests grammar and the picture at once, and every wrong tile is wrong for a nameable reason. That became the rule for every spare.
+- **All four kinds of fact** (colour, size, action, type), knowingly accepting that size, type and action spares need Pokémon knowledge rather than the picture. A design review had flagged that only colour is visible; the owner kept all four.
+- **Longer sentences to pass**, each longer length introduced with a word given — the owner's idea (*Onix ___ very ___* before *Onix ___ ___ ___*). Three-word sentences were thin (only *very big/small*), so *can fly high* and *is not* were added; *not* got a level of its own before it mixes.
+- **Reward, don't punish, edge cases.** A judgement-call or marking colour counts as right when picked and is never offered as wrong; borderline sizes and debatable actions are left out of the facts. Eyes don't count ("he can always say black").
+- **Words held to the Reading level** plus a per-level stretch; words the phonics list doesn't grade got their own small list.
+- **One speaker.** The agreed "hear the words" button met DESIGN.md's one-speaker rule, so the picture's speaker does it: on spoken levels it names the Pokémon, then reads the bank, lifting each tile as it is said. Tapping a tile only places it.
+- The facts for 147 Pokémon were drafted, put in the design sheet as three tabs, and pulled from there unchanged.
+
+**How it works.** Right is decided by truth: one function says whether a whole sentence is true of a Pokémon, and a tap is accepted if the sentence can still be finished true with the tiles left. The generator, every tap and the help light all use it. Scoring is Spelling's (words shown, not wrong taps). A level with nothing to ask at the child's Reading level serves the nearest level that has a question, which does not count toward promotion.
+
+**Measured.**
+
+- **Generator**: 27,000 questions — every level × Reading levels 1–10, 300 each. Zero problems: every target true, every word within the gate, every bank holding at least one true arrangement, every *not* bank exactly one false colour. Multiple true arrangements only where an *also* colour was deliberately added (up to ~16%).
+- **Reach**: at Reading 1, levels 6–7 (type) have no question, because `type` is graded 5, so they fall back. The *not* level reaches 22 Pokémon at Reading 1, 110 at Reading 4, and 121–135 from Reading 5 on. Pikachu first appears at Reading 4.
+- **Answering**: 1,350 questions answered by tapping the intended words — all finished, none counted a mistake. Also driven:
+  - a wrong tap is silent and counts;
+  - the light comes on green after two misses, and taking it costs a told word;
+  - an *also* colour is accepted;
+  - the own colour is wrong in a *not* question;
+  - "is" in the name slot is wrong;
+  - a question over the told budget gives no round credit and no catch;
+  - a full Sentences-only round reaches the results screen and the dashboard.
+- **Speaker**: on a spoken level it says the name and then each tile, lifting each in turn. On a silent level it says only the name. A tap stops it.
+- **Fit**: every level's longest question, with the blanks filled and "try again" showing, has no scroll at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900. Level 9 at 360×640 was checked over its 600 longest banks.
+  - Getting there took a picture of 120px on short phones under 860px tall and 96px under 700, 52/48px cells, and a smaller feedback reserve on short phones.
+  - The first build overflowed 360×640 by 116px on level 9's nine tiles.
+- **Home**: six progress cards with Start on screen at 320×568 through 1440×900. Mixed rounds render every mode with no console errors, and spelling and maths scoring are unchanged.
+
+**Changed on the way.** Blanks were first sized to their answer tile, as Missing Letters does. That gave the answer away — a long blank next to *fire* and *fighting* — so every blank is now one width and grows when filled.
+
+**Still open.**
+
+- Sentences is a fifth of a round with every mode on; each other mode's share drops from a quarter.
+- The type levels wait for Reading 3 unless `type` is regraded.
+- The facts are a first draft for the owner to tune in the sheet.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

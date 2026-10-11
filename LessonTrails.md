@@ -135,6 +135,19 @@ Its difficulty runs on an axis the rest of the file does not have. `alpha_length
 
 The ladder is two tiers — a run of 4, then a run of 5 — and within each tier the gaps walk through four positions. `last` first, because continuing a sequence forward is what a child practises when they sing the alphabet; then `middle`; then `first`, which asks what comes *before* and has no song to lean on; then **`random`**, which closes the tier by withholding the one thing the other three hand over for free — knowing in advance which way the question will run. `random` is every shape with nothing filtered out, so it is also the only setting that splits the gaps (`_x_x_`) rather than keeping them in a block. `mixed` remains a legal value but no level asks for it.
 
+### Sentences — 9 levels
+
+**Its own trail**, built on a Pokémon's picture and a sentence about it with words missing. It sits after Reading in the sense that it uses reading — every word is held to the Reading word level plus a per-level `stretch` — but it ramps on its own axis: **how much of the sentence the child builds**.
+
+The ladder adds blanks — one, two, three, four, then the whole sentence — and introduces each longer length with a word already in place, so the jump from two blanks to three is bridged by *Onix ___ very ___* before *Onix ___ ___ ___*. *not* gets a level to itself (level 3) before it is mixed with everything else, because it flips the question: the Pokémon's own colour becomes the wrong answer.
+
+Two rules carry the design, both from the owner:
+
+- **Reward, don't punish, the edge cases.** A tile is right if the sentence can still be finished true. Judgement-call colours and markings are accepted, never offered as wrong; borderline sizes and debatable actions are left out of the facts so they are never asked. Eyes don't count.
+- **Every wrong tile is wrong for a reason on screen or in the sentence**: grammar (*am* after a name, *a* before *electric*) or the picture (*blue* for Pikachu). Size, type and action rely on knowing the Pokémon too — accepted knowingly, as the price of sentences that are about more than colour.
+
+Scoring follows Spelling's: words *shown* are counted, wrong taps are free, and promotion still needs a spotless sentence.
+
 ### Why the frontiers are separate
 
 Same grading, two frontiers. Reading will naturally run ahead of Spelling, and that is the intended shape: recognise a word, then produce it. The old trails drew from unrelated pools, so nothing one taught reinforced the other.

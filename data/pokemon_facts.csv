@@ -1,0 +1,148 @@
+id,name,colours,also,size,can,cannot
+1,bulbasaur,green,blue,small,,fly
+2,ivysaur,green,blue|pink,,,fly
+3,venusaur,green,blue|pink,big,,fly
+4,charmander,orange,yellow|red,small,,fly|swim
+5,charmeleon,red,yellow|orange,,,fly|swim
+6,charizard,orange,yellow|blue|red,big,fly,swim
+7,squirtle,blue,brown|yellow|white,small,swim,fly
+8,wartortle,blue,brown|yellow|white,,swim,fly
+9,blastoise,blue,brown|yellow|white|gray,big,swim,fly
+10,caterpie,green,yellow|red,very small,,fly
+11,metapod,green,,small,,fly
+12,butterfree,purple,white|black|blue,,fly,
+13,weedle,orange|brown,pink|gray,very small,,fly
+14,kakuna,yellow,,small,,fly
+15,beedrill,yellow,black|white|gray,,fly,
+16,pidgey,brown,white|pink,very small,fly,dig
+17,pidgeotto,brown,white|red|yellow,,fly,dig
+18,pidgeot,brown,white|red|yellow,big,fly,dig
+19,rattata,purple,white,very small,run,fly
+20,raticate,brown,white,small,run,fly
+21,spearow,brown,red|pink,very small,fly,dig
+22,fearow,brown,red|pink,,fly,dig
+23,ekans,purple,yellow,,,fly
+24,arbok,purple,yellow|red|black,big,,fly
+25,pikachu,yellow,black|brown|red,very small,,fly
+26,raichu,orange,yellow|brown|black|white,small,,fly
+27,sandshrew,yellow,white,small,dig,fly|swim
+28,sandslash,yellow,brown|white,,dig,fly|swim
+30,nidorina,blue,white,small,,fly
+31,nidoqueen,blue,yellow,,,fly
+33,nidorino,purple,white,,,fly
+34,nidoking,purple,white,,,fly
+35,clefairy,pink,brown,small,,
+36,clefable,pink,brown|black,,,
+37,vulpix,red|brown,orange,small,,fly|swim
+38,ninetales,yellow|white,orange,,,fly|swim
+39,jigglypuff,pink,,small,,
+40,wigglytuff,pink,white,,,
+41,zubat,blue,purple,small,fly,dig
+42,golbat,blue,purple|red|pink,big,fly,dig
+43,oddish,blue,green,small,,fly
+44,gloom,blue,red|orange|green,small,,fly
+45,vileplume,blue,red|white|green,,,fly
+46,paras,orange,red|yellow,very small,,fly
+47,parasect,orange,red|yellow|white,,,fly
+48,venonat,purple,,,,fly
+49,venomoth,purple,white,big,fly,
+50,diglett,brown,pink,very small,dig,fly|swim
+51,dugtrio,brown,pink,small,dig,fly|swim
+52,meowth,white|yellow,brown|black,very small,,fly
+53,persian,white|yellow,red|black,,run,fly
+54,psyduck,yellow,white,small,swim,fly
+55,golduck,blue,red|white,big,swim,fly
+56,mankey,white,brown|pink,small,,fly
+57,primeape,white,brown|pink,,,fly
+58,growlithe,orange,black|yellow|white,small,run,fly|swim
+59,arcanine,orange,black|yellow|white,big,run,fly|swim
+60,poliwag,blue,white|black|pink,small,swim,fly
+61,poliwhirl,blue,white|black,,swim,fly
+62,poliwrath,blue,white|black,,swim,fly
+63,abra,yellow,brown,,,
+64,kadabra,yellow,brown|red,,,
+65,alakazam,yellow,brown|gray,big,,
+66,machop,gray|blue,,small,,fly
+67,machoke,gray|blue,black|yellow,big,,fly
+68,machamp,gray|blue,black|yellow,big,,fly
+69,bellsprout,yellow|green,pink|brown,small,,fly
+70,weepinbell,yellow,green|pink,,,fly
+71,victreebel,yellow,green|pink|brown,big,,fly
+72,tentacool,blue,red|white,,swim,fly
+73,tentacruel,blue,red|white,big,swim,fly
+74,geodude,gray,brown,very small,,fly|swim
+75,graveler,gray,brown,,,fly|swim
+76,golem,gray|brown,,,,fly|swim
+77,ponyta,white|yellow,orange|red|gray,,run,fly|swim
+78,rapidash,white,orange|red|gray,big,run,fly|swim
+79,slowpoke,pink,white,,,fly
+80,slowbro,pink,gray|white,big,,fly
+81,magnemite,gray,red|blue,very small,,
+82,magneton,gray,red|blue,,,
+84,doduo,brown,gray|yellow,,run,
+85,dodrio,brown,black|gray|yellow,big,run,
+86,seel,white,pink,,swim,fly
+87,dewgong,white,pink,big,swim,fly
+88,grimer,purple,,,,fly
+89,muk,purple,,,,fly
+90,shellder,purple,black|pink|white,very small,swim,fly
+91,cloyster,purple,gray|white|black,big,,fly
+92,gastly,black|purple,white|pink,,,
+93,haunter,purple,white,big,,
+94,gengar,purple,white,big,,
+95,onix,gray,,very big,dig,fly|swim
+96,drowzee,yellow,brown,,,fly
+97,hypno,yellow,white|gray,big,,fly
+98,krabby,red|orange,white,very small,,fly
+99,kingler,red|orange,white|yellow,,,fly
+100,voltorb,red|white,,small,,
+101,electrode,red|white,,,,
+102,exeggcute,pink,yellow,very small,,fly
+103,exeggutor,yellow,brown|green,big,,fly
+104,cubone,brown,white|yellow,very small,,fly|swim
+105,marowak,brown,white|yellow,,,fly|swim
+106,hitmonlee,brown,white,big,jump,fly
+107,hitmonchan,brown,red|purple,,,fly
+108,lickitung,pink,yellow|white,,,fly
+109,koffing,purple,yellow|white,small,,
+110,weezing,purple,yellow|white,,,
+111,rhyhorn,gray,,,,fly|swim
+112,rhydon,gray,white,big,,fly|swim
+113,chansey,pink,white,,,fly
+114,tangela,blue,red|black,,,fly
+115,kangaskhan,brown,yellow,big,,fly
+116,horsea,blue,yellow|white,very small,swim,fly|run|dig
+117,seadra,blue,yellow|white,,swim,fly|run|dig
+118,goldeen,white,orange|red,small,swim,fly|run|dig
+119,seaking,orange,white|black,,swim,fly|run|dig
+120,staryu,brown,red|yellow,small,swim,fly
+121,starmie,purple,red|yellow,,swim,fly
+123,scyther,green,white|yellow,big,fly,
+124,jynx,red,purple|black|yellow|pink,,,fly
+125,electabuzz,yellow,black,,,fly
+126,magmar,red|orange,yellow|pink,,,fly|swim
+127,pinsir,brown,gray|white,big,,fly
+128,tauros,brown,gray|black,,run,fly
+129,magikarp,red|orange,yellow|white,,swim|jump,fly|run|dig
+130,gyarados,blue,white|yellow|red,very big,swim,
+131,lapras,blue,gray|white|yellow,big,swim,fly
+132,ditto,purple|pink,,very small,,
+133,eevee,brown,white,very small,,fly
+134,vaporeon,blue,white|black,,swim,fly
+135,jolteon,yellow,white,small,,fly
+136,flareon,orange|red,yellow,,,fly|swim
+137,porygon,pink|blue,,small,,
+138,omanyte,blue,white|yellow,very small,swim,fly
+139,omastar,blue,yellow|white|brown,,swim,fly
+140,kabuto,brown,black|yellow,small,,fly
+141,kabutops,brown,gray|white|yellow,,swim,fly
+142,aerodactyl,gray|purple,,big,fly,
+143,snorlax,blue|green,white|yellow,very big,,fly
+144,articuno,blue,white,big,fly,dig
+145,zapdos,yellow,black|orange,big,fly,dig
+146,moltres,yellow,orange|red,big,fly,swim|dig
+147,dratini,blue,white,,swim,
+148,dragonair,blue,white,big,swim,
+149,dragonite,orange,yellow|green,big,fly,
+150,mewtwo,gray|purple,white,big,,
+151,mew,pink,,very small,,
