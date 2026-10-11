@@ -139,7 +139,7 @@ The ladder is two tiers — a run of 4, then a run of 5 — and within each tier
 
 **Its own trail**, built on a Pokémon's picture and a sentence about it with words missing. It sits after Reading in the sense that it uses reading — every word is held to the Reading word level plus a per-level `stretch` — but it ramps on its own axis: **how much of the sentence the child builds**.
 
-The ladder adds blanks — one, two, three, four, then the whole sentence — and introduces each longer length with a word already in place, so the jump from two blanks to three is bridged by *Onix ___ very ___* before *Onix ___ ___ ___*. *not* gets a level to itself (level 3) before it is mixed with everything else, because it flips the question: the Pokémon's own colour becomes the wrong answer.
+The ladder adds blanks — one, two, three, four, then the whole sentence — and introduces each longer length with a word already in place, so the jump from two blanks to three is bridged by *Onix ___ very ___* before *Onix ___ ___ ___*. *not* gets a level to itself (level 2, still one blank) before it is mixed with everything else, because it flips the question: the Pokémon's own colour becomes the wrong answer. It comes before the two-blank level so that a level-1 child's stretch questions stay at one blank.
 
 Two rules carry the design, both from the owner:
 

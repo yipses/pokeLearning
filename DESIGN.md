@@ -56,6 +56,13 @@ a two-word name breaks only between words.
 - **Only tappable things have a press edge.** A label with an edge reads as a
   button; if it does nothing, it can't look pressable (that killed the "Caught!"
   ribbon and the logo Pokéball).
+- **Scenery never wears a control's shape.** A white pill is a counter or a
+  button here, so the clouds are puffs, a little see-through, and sit below the
+  HUD row rather than behind it.
+- **The way out stays on screen.** On a screen that scrolls, the ✕ row is
+  pinned to the top (a cream bar that casts a shadow once something scrolls
+  under it); the counters above it scroll away. What you'd navigate with goes in
+  the bar too — the Pokédex's generation tabs.
 
 ## Pictures
 

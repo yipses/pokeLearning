@@ -243,8 +243,8 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 | Level | Frame | Example |
 |---|---|---|
 | 1 | one blank | Pikachu is ___ |
-| 2 | two blanks | Pikachu ___ ___ |
-| 3 | "not", alone | Pikachu is not ___ |
+| 2 | "not", alone | Pikachu is not ___ |
+| 3 | two blanks | Pikachu ___ ___ |
 | 4 | two blanks around a given word | Onix ___ very ___ · Onix ___ a ___ type |
 | 5 | three blanks | Onix ___ ___ ___ |
 | 6 | the type word given | Onix ___ ___ rock ___ |
@@ -252,7 +252,7 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 | 8 | name and a word, the verb given | ___ can ___ |
 | 9 | the whole sentence | ___ ___ ___ |
 
-"not" appears nowhere before level 3, and level 3 asks nothing else, so the flip is learned on its own before it mixes with everything at level 4.
+"not" appears nowhere before level 2, and level 2 asks nothing else, so the flip is learned on its own — still one blank, like level 1 — before it mixes with everything at level 4. It sits before the two-blank level so that level 1's stretch questions (one in five comes from the level above) are still one blank.
 
 **Every word is held to the Reading level.** Each word in the sentence and the bank — the name aside — must be within the child's **Reading** word level plus the row's `stretch`, so the two trails move together. Words the phonics list doesn't grade (`is`, `am`, `very`, `swim`, `type`…) are graded in `data/sentence_words.csv`; where `word_levels.csv` also has a word, it wins. A level with nothing to ask at the current Reading level — the type levels need `type`, graded 5 — serves the **nearest level that has a question** instead, and that question does not count toward promotion, so the trail can't carry the child past a level it never asked.
 
@@ -376,7 +376,7 @@ This shows the borrow as a *fact* — the ten was dipped into — rather than as
 
 ## 8b. Home HUD
 
-The home screen opens on a **meadow**: sky, sun and clouds, three rolling hills with trees on the far one, bushes and flowers on the near one, and a mound in the middle for the Pokémon to stand on — one drawing, cropped from the sides as the screen narrows so the middle is always in view. The HUD rides on its sky — two counters on the left, the Pokéball mark and the gear on the right — and one of the child's own Pokémon stands on its hill (§8c).
+The home screen opens on a **meadow**: sky, sun and puffy, slightly see-through clouds (they were white pills, the shape of the counters, and read as buttons), three rolling hills with trees on the far one, bushes and flowers on the near one, and a mound in the middle for the Pokémon to stand on — one drawing, cropped from the sides as the screen narrows so the middle is always in view. The HUD rides on its sky — two counters on the left, the Pokéball mark and the gear on the right — and one of the child's own Pokémon stands on its hill (§8c).
 
 **No logo is drawn.** The words "Poké Learning" stay in the page as its heading for anything reading it, but nothing of the brand is on screen. A 28px Pokéball mark used to sit beside the gear; in a row of round buttons it looked tappable and did nothing, and the app's name tells a child nothing they need. The other screens open with the shared chrome (a ✕ beside the screen's name), and a round with the ✕ and progress bar.
 
@@ -389,6 +389,8 @@ The home screen opens on a **meadow**: sky, sun and clouds, three rolling hills 
 **Every screen you can back out of wears the same two rows**: the HUD, then a ✕ beside the screen's name in caps — `SETTINGS`, `BATTLE`, `POKÉDEX`, `MY PROGRESS`. The HUD is persistent chrome and reads as belonging to the app; the row under it names the place you are in and gets you out of it. Those are different jobs, which is why they are different rows — on one line the ✕ read as a fourth counter.
 
 It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds each screen's title and, optionally, something to show beside it; `show()` renders it. Only Battle uses the extra slot, for its session record — a ✓ count and a ✗ count, each in its own pill.
+
+**The ✕ row is pinned.** It stays at the top while the screen scrolls — the Pokédex runs to about eight phone screens and Settings five, and the way out used to be only at the very top. The counters above it scroll away; the row is a cream bar that casts a soft shadow once something scrolls under it. **On the Pokédex the generation tabs are pinned with it**, so another generation is one tap from anywhere in the grid (the bar is 112px; Settings' is 60). My progress and Battle wear the same bar but never scroll.
 
 **A screen with chrome does not also carry a heading card.** It sits on cream paper rather than the meadow: the meadow is for the screens that have a stage — home, a question, the results, a catch and the battle arena.
 
