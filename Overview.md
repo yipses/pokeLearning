@@ -376,7 +376,7 @@ This shows the borrow as a *fact* — the ten was dipped into — rather than as
 
 ## 8b. Home HUD
 
-The home screen opens on a **meadow**: sky, sun and clouds, three rolling hills with trees on the far one, bushes and flowers on the near one, and a mound in the middle for the Pokémon to stand on — one drawing, cropped from the sides as the screen narrows so the middle is always in view. The HUD rides on its sky — two counters on the left, the Pokéball mark and the gear on the right — and one of the child's own Pokémon stands on its hill (§8c).
+The home screen opens on a **meadow**: sky, sun and puffy, slightly see-through clouds (they were white pills, the shape of the counters, and read as buttons), three rolling hills with trees on the far one, bushes and flowers on the near one, and a mound in the middle for the Pokémon to stand on — one drawing, cropped from the sides as the screen narrows so the middle is always in view. The HUD rides on its sky — two counters on the left, the Pokéball mark and the gear on the right — and one of the child's own Pokémon stands on its hill (§8c).
 
 **No logo is drawn.** The words "Poké Learning" stay in the page as its heading for anything reading it, but nothing of the brand is on screen. A 28px Pokéball mark used to sit beside the gear; in a row of round buttons it looked tappable and did nothing, and the app's name tells a child nothing they need. The other screens open with the shared chrome (a ✕ beside the screen's name), and a round with the ✕ and progress bar.
 

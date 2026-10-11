@@ -787,6 +787,12 @@ The ✕ row used to live inside `.chrome` with the counters, and sticky only hol
 
 **Measured** at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800, 1440×900, on Pokédex, Settings, My progress and Battle: scrolled to the bottom, the bar sits at 0 and the ✕ is the element under its own centre; ✕ from the bottom of the Pokédex returns home; the Gen 2 tab is on screen from the bottom of Gen 1 and switches generation; Battle's record still shows; no sideways scroll, no console errors. Bars: Pokédex 112px, the others 60px.
 
+## Phase 94 — clouds that don't look like buttons
+
+Reported: the clouds "look too much like a button" beside the gear. They were white rounded bars — the shape and colour of the HUD pills — and on phones several sat right under the counters, reading as a second pill. Mocked in the browser first, then redrawn in the meadow drawing (which home, the catch and the results all share): a flat base with four bumps, at 85% opacity, and moved down the sky and staggered in height.
+
+**Measured** — the gap from each visible cloud to the nearest HUD control: 10–63px at 360×640, 390×844 and 470×830, 160px or more on tablets and desktops (they were 0px — under the counters — at 360, 390 and 470). Still touching at 320×568, a size the fit list doesn't include. Home, results with three catches, no console errors.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
