@@ -779,6 +779,14 @@ A new trail, the twelfth: a Pokémon's picture and a sentence about it with word
 - The type levels wait for Reading 3 unless `type` is regraded.
 - The facts are a first draft for the owner to tune in the sheet.
 
+## Phase 93 — the way out stays on screen
+
+Reported from play: in the Pokédex the ✕ was "all the way at the top". Measured: Gen 1 is 6,487px on a 390 phone (7.7 screens) and 3,484px on a desktop; Settings 4,367 / 3,343. Two bars were mocked in the browser — the ✕ row alone (52px) and the ✕ row with the generation tabs (114px) — and the owner chose the second, and to apply the ✕ row to every screen that has one.
+
+The ✕ row used to live inside `.chrome` with the counters, and sticky only holds inside its parent, so it moved into its own `.screen-bar` beside `.chrome`; the Pokédex tabs move into the same bar. A shadow appears once the page has scrolled under it. DESIGN.md gains the rule.
+
+**Measured** at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800, 1440×900, on Pokédex, Settings, My progress and Battle: scrolled to the bottom, the bar sits at 0 and the ✕ is the element under its own centre; ✕ from the bottom of the Pokédex returns home; the Gen 2 tab is on screen from the bottom of Gen 1 and switches generation; Battle's record still shows; no sideways scroll, no console errors. Bars: Pokédex 112px, the others 60px.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

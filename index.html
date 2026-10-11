@@ -1885,6 +1885,17 @@
   .screen-head{ margin:14px 0 14px; }
   .screen-title{ font-size:.8125rem; font-weight:900; letter-spacing:.08em; }
   .screen-extra{ gap:6px; }
+  /* The ✕ row, pinned (see renderChrome). It spans the column's padding so the
+     page can't show through at its edges, and keeps the gaps the rows had. */
+  .screen-bar{
+    position:sticky; top:0; z-index:30; margin:6px -18px 6px; padding:8px 18px;
+    background:var(--canvas); transition:box-shadow .15s;
+  }
+  .screen-bar.stuck{ box-shadow:0 8px 10px -8px rgba(46,43,36,.22); }
+  .screen-bar .screen-head{ margin:0; }
+  /* The tab strip carries 8px of its own room below (for the tabs' edges), so
+     the bar gives up its bottom padding when the tabs are in it. */
+  .screen-bar .dex-tabs-wrap{ margin:6px 0 -8px; }
   .count-badge{
     display:inline-flex; align-items:center; gap:4px; padding:6px 10px; border-radius:999px;
     background:var(--surface); box-shadow:inset 0 0 0 2px #e9dfc6; font-size:.8125rem; font-weight:900;
@@ -2370,7 +2381,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 109;
+const APP_BUILD = 110;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -6765,7 +6776,15 @@ function layoutCatches(){
 
    The round is deliberately absent: it has its own progress bar and ✕, and a
    second row of counters there would be two things to read at once. So is the
-   results card, whose HUD sits inside the card rather than above it. */
+   results card, whose HUD sits inside the card rather than above it.
+
+   The ✕ row is PINNED: it sits in its own bar beside the chrome, not inside it,
+   so it stays at the top while the screen scrolls — the Pokédex is about eight
+   phone screens long and Settings five, and the way out was only at the very
+   top. The counters above it scroll away. The Pokédex's generation tabs join the
+   pinned bar, so another generation is one tap from anywhere in the grid. The
+   bar has to be a child of the section, not of .chrome: sticky only holds within
+   its parent, and .chrome ends where the ✕ row does. */
 const SCREEN_CHROME = {
   settings:  { title: "Settings" },
   battle:    { title: "Battle", extra: () => `<span class="count-badge won" aria-label="${battleWins} right">${UI_ICONS.tick}${battleWins}</span><span class="count-badge lost" aria-label="${battleLosses} wrong">${UI_ICONS.cross}${battleLosses}</span>` },
@@ -6777,22 +6796,34 @@ function renderChrome(which){
   const host = $("#" + which + " .chrome");
   if(!host || !spec) return;
   if(!host.dataset.built){
-    host.innerHTML = `
-      <div class="topbar"><div class="home-tiles"></div></div>
+    host.innerHTML = `<div class="topbar"><div class="home-tiles"></div></div>`;
+    const bar = document.createElement("div");
+    bar.className = "screen-bar";
+    bar.innerHTML = `
       <div class="screen-head">
         <button class="quit quit-x" type="button" aria-label="Close" title="Close">${UI_ICONS.cross}</button>
         <span class="screen-title">${spec.title}</span>
         <span class="screen-extra"></span>
       </div>`;
-    host.querySelector(".quit-x").addEventListener("click", ()=> show("setup"));
+    host.after(bar);
+    const tabs = which === "pokedex" && $("#pokedex .dex-tabs-wrap");
+    if(tabs) bar.appendChild(tabs);
+    bar.querySelector(".quit-x").addEventListener("click", ()=> show("setup"));
     host.dataset.built = "1";
   }
   renderTiles(host.querySelector(".home-tiles"));
   // Anything a screen wants beside its name. Filled on every render, so a screen
   // that updates it before the chrome exists — Battle sets its record inside
   // newBattle(), which runs before show() — still lands.
-  if(spec.extra) host.querySelector(".screen-extra").innerHTML = spec.extra();
+  if(spec.extra) host.nextElementSibling.querySelector(".screen-extra").innerHTML = spec.extra();
+  syncScreenBars();
 }
+/* The pinned bar casts a shadow only once something is scrolling under it. */
+function syncScreenBars(){
+  document.querySelectorAll(".screen-bar").forEach(bar =>
+    bar.classList.toggle("stuck", window.scrollY > 0 && bar.getBoundingClientRect().top <= 0.5));
+}
+window.addEventListener("scroll", syncScreenBars, { passive:true });
 
 function show(which){
   ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));

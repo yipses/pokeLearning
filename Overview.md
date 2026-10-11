@@ -390,6 +390,8 @@ The home screen opens on a **meadow**: sky, sun and clouds, three rolling hills 
 
 It is **declared once, not written per screen.** A `SCREEN_CHROME` map holds each screen's title and, optionally, something to show beside it; `show()` renders it. Only Battle uses the extra slot, for its session record — a ✓ count and a ✗ count, each in its own pill.
 
+**The ✕ row is pinned.** It stays at the top while the screen scrolls — the Pokédex runs to about eight phone screens and Settings five, and the way out used to be only at the very top. The counters above it scroll away; the row is a cream bar that casts a soft shadow once something scrolls under it. **On the Pokédex the generation tabs are pinned with it**, so another generation is one tap from anywhere in the grid (the bar is 112px; Settings' is 60). My progress and Battle wear the same bar but never scroll.
+
 **A screen with chrome does not also carry a heading card.** It sits on cream paper rather than the meadow: the meadow is for the screens that have a stage — home, a question, the results, a catch and the battle arena.
 
 **Not on a round**: that has its own progress bar and ✕, and a second row of counters there would be two things to read at once.
