@@ -768,6 +768,11 @@ A new trail, the twelfth: a Pokémon's picture and a sentence about it with word
 
 **Changed on the way.** Blanks were first sized to their answer tile, as Missing Letters does. That gave the answer away — a long blank next to *fire* and *fighting* — so every blank is now one width and grows when filled.
 
+**After first play.**
+
+- *Flareon is red* was asked. My draft gave 24 Pokémon two main colours, and any main colour can be the one a question is built around. Now each has **one** main colour, the one a child would name, and the other moved to `also` (still right if picked, never the question). Only Voltorb, Electrode (red/white) and Porygon (pink/blue) keep two.
+- Levels 2 and 3 swapped: *not* (one blank) is now level 2 and two blanks level 3. A level-1 child gets one question in five from the level above, and a two-blank sentence looked like it had arrived too early.
+
 **Still open.**
 
 - Sentences is a fifth of a round with every mode on; each other mode's share drops from a quarter.

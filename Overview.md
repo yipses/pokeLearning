@@ -243,8 +243,8 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 | Level | Frame | Example |
 |---|---|---|
 | 1 | one blank | Pikachu is ___ |
-| 2 | two blanks | Pikachu ___ ___ |
-| 3 | "not", alone | Pikachu is not ___ |
+| 2 | "not", alone | Pikachu is not ___ |
+| 3 | two blanks | Pikachu ___ ___ |
 | 4 | two blanks around a given word | Onix ___ very ___ · Onix ___ a ___ type |
 | 5 | three blanks | Onix ___ ___ ___ |
 | 6 | the type word given | Onix ___ ___ rock ___ |
@@ -252,7 +252,7 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 | 8 | name and a word, the verb given | ___ can ___ |
 | 9 | the whole sentence | ___ ___ ___ |
 
-"not" appears nowhere before level 3, and level 3 asks nothing else, so the flip is learned on its own before it mixes with everything at level 4.
+"not" appears nowhere before level 2, and level 2 asks nothing else, so the flip is learned on its own — still one blank, like level 1 — before it mixes with everything at level 4. It sits before the two-blank level so that level 1's stretch questions (one in five comes from the level above) are still one blank.
 
 **Every word is held to the Reading level.** Each word in the sentence and the bank — the name aside — must be within the child's **Reading** word level plus the row's `stretch`, so the two trails move together. Words the phonics list doesn't grade (`is`, `am`, `very`, `swim`, `type`…) are graded in `data/sentence_words.csv`; where `word_levels.csv` also has a word, it wins. A level with nothing to ask at the current Reading level — the type levels need `type`, graded 5 — serves the **nearest level that has a question** instead, and that question does not count toward promotion, so the trail can't carry the child past a level it never asked.
 
