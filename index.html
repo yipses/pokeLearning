@@ -790,8 +790,12 @@
   .grass-strip{
     position:relative; z-index:0; height:54px; margin:0 0 -10px;
     background-color:#2f8f3f;
-    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMicgaGVpZ2h0PSc1NCcgdmlld0JveD0nMCAwIDIyIDU0Jz4KPHBhdGggZD0nTTIgNTQgUTAgMzAgNSAyIFExMCAzMCA4IDU0IFonIGZpbGw9JyMyZjhmM2YnLz4KPHBhdGggZD0nTTEyIDU0IFE5IDM0IDE2IDggUTIxIDMyIDE4IDU0IFonIGZpbGw9JyM0Y2FmNTAnLz4KPC9zdmc+");
-    background-repeat:repeat-x; background-position:bottom left; background-size:22px 54px;
+    /* Two layers of blades, varied in height, width, lean and shade: taller lighter
+       ones behind, shorter darker ones and an 8px band of ground in front. They
+       repeat at 241px and 173px, which only line up again every 41,693px, so the
+       strip never shows its repeat. One 22px tile of two blades read as a comb. */
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNzMnIGhlaWdodD0nNTQnIHZpZXdCb3g9JzAgMCAxNzMgNTQnPjxyZWN0IHg9JzAnIHk9JzQ2JyB3aWR0aD0nMTczJyBoZWlnaHQ9JzgnIGZpbGw9JyMyZjhmM2YnLz48cGF0aCBkPSdNLTAuNCA1NCBDLTAuNCAzOS4yIDIuOSAyNy44IDQuNCAyMS4yIEM1LjkgMjcuOCA5LjkgMzkuMiA5LjkgNTQgWicgZmlsbD0nIzJiODYzYScvPjxwYXRoIGQ9J00xNzIuNiA1NCBDMTcyLjYgMzkuMiAxNzUuOSAyNy44IDE3Ny40IDIxLjIgQzE3OC45IDI3LjggMTgyLjkgMzkuMiAxODIuOSA1NCBaJyBmaWxsPScjMmI4NjNhJy8+PHBhdGggZD0nTTEzLjQgNTQgQzEzLjQgNDAuMSAxNi4yIDI5LjMgMTcuNiAyMy4xIEMxOC45IDI5LjMgMjIuMiA0MC4xIDIyLjIgNTQgWicgZmlsbD0nIzJiODYzYScvPjxwYXRoIGQ9J00xODYuNCA1NCBDMTg2LjQgNDAuMSAxODkuMiAyOS4zIDE5MC42IDIzLjEgQzE5MS45IDI5LjMgMTk1LjIgNDAuMSAxOTUuMiA1NCBaJyBmaWxsPScjMmI4NjNhJy8+PHBhdGggZD0nTTIzLjMgNTQgQzIzLjMgNDMuNyAyMi4yIDM1LjcgMjMuNCAzMS4xIEMyNC43IDM1LjcgMzEuNyA0My43IDMxLjcgNTQgWicgZmlsbD0nIzJiODYzYScvPjxwYXRoIGQ9J00zMS40IDU0IEMzMS40IDQzLjAgMzQuNSAzNC41IDM2LjEgMjkuNyBDMzcuNyAzNC41IDQxLjggNDMuMCA0MS44IDU0IFonIGZpbGw9JyMyYjg2M2EnLz48cGF0aCBkPSdNNDIuMyA1NCBDNDIuMyA0NS44IDQ1LjYgMzkuNCA0Ni45IDM1LjggQzQ4LjIgMzkuNCA1MC45IDQ1LjggNTAuOSA1NCBaJyBmaWxsPScjMmY4ZjNmJy8+PHBhdGggZD0nTTQ2LjkgNTQgQzQ2LjkgNDEuNiA1My43IDMxLjkgNTUuNCAyNi40IEM1Ny4yIDMxLjkgNTguNCA0MS42IDU4LjQgNTQgWicgZmlsbD0nIzM2OTY0YScvPjxwYXRoIGQ9J002MC4wIDU0IEM2MC4wIDQyLjIgNjUuNCAzMy4wIDY3LjEgMjcuNyBDNjguOCAzMy4wIDcxLjQgNDIuMiA3MS40IDU0IFonIGZpbGw9JyMzNjk2NGEnLz48cGF0aCBkPSdNNjguNiA1NCBDNjguNiA0MS4yIDcwLjYgMzEuMiA3MS45IDI1LjUgQzczLjEgMzEuMiA3Ny4wIDQxLjIgNzcuMCA1NCBaJyBmaWxsPScjMmI4NjNhJy8+PHBhdGggZD0nTTg0LjQgNTQgQzg0LjQgNDAuOCA4Ni41IDMwLjUgODguMiAyNC43IEM4OS45IDMwLjUgOTUuNyA0MC44IDk1LjcgNTQgWicgZmlsbD0nIzJmOGYzZicvPjxwYXRoIGQ9J005Mi43IDU0IEM5Mi43IDQxLjggOTEuNiAzMi40IDkyLjggMjcuMCBDOTQuMSAzMi40IDEwMC44IDQxLjggMTAwLjggNTQgWicgZmlsbD0nIzJmOGYzZicvPjxwYXRoIGQ9J00xMDQuNSA1NCBDMTA0LjUgMzkuMCAxMTEuNCAyNy4zIDExMi44IDIwLjcgQzExNC4yIDI3LjMgMTE0LjEgMzkuMCAxMTQuMSA1NCBaJyBmaWxsPScjMmY4ZjNmJy8+PHBhdGggZD0nTTEwOS4xIDU0IEMxMDkuMSA0NS41IDExMi4wIDM4LjkgMTEzLjcgMzUuMiBDMTE1LjUgMzguOSAxMjAuOCA0NS41IDEyMC44IDU0IFonIGZpbGw9JyMyYjg2M2EnLz48cGF0aCBkPSdNMTIyLjMgNTQgQzEyMi4zIDQxLjQgMTI4LjAgMzEuNSAxMjkuMyAyNS45IEMxMzAuNSAzMS41IDEzMC42IDQxLjQgMTMwLjYgNTQgWicgZmlsbD0nIzM2OTY0YScvPjxwYXRoIGQ9J00xMzEuNiA1NCBDMTMxLjYgNDUuOCAxMzMuOSAzOS40IDEzNS4zIDM1LjggQzEzNi43IDM5LjQgMTQwLjggNDUuOCAxNDAuOCA1NCBaJyBmaWxsPScjMmY4ZjNmJy8+PHBhdGggZD0nTTEzOS41IDU0IEMxMzkuNSA0NS44IDE0My4wIDM5LjUgMTQ0LjYgMzUuOCBDMTQ2LjIgMzkuNSAxNTAuNCA0NS44IDE1MC40IDU0IFonIGZpbGw9JyMzNjk2NGEnLz48cGF0aCBkPSdNMTUwLjMgNTQgQzE1MC4zIDQyLjcgMTUwLjggMzMuOSAxNTIuMyAyOC44IEMxNTMuOSAzMy45IDE2MC42IDQyLjcgMTYwLjYgNTQgWicgZmlsbD0nIzJiODYzYScvPjxwYXRoIGQ9J00tMjIuNyA1NCBDLTIyLjcgNDIuNyAtMjIuMiAzMy45IC0yMC43IDI4LjggQy0xOS4xIDMzLjkgLTEyLjQgNDIuNyAtMTIuNCA1NCBaJyBmaWxsPScjMmI4NjNhJy8+PHBhdGggZD0nTTE2NS4wIDU0IEMxNjUuMCA0My4xIDE2Ny4zIDM0LjcgMTY4LjggMjkuOSBDMTcwLjIgMzQuNyAxNzQuNyA0My4xIDE3NC43IDU0IFonIGZpbGw9JyMyZjhmM2YnLz48cGF0aCBkPSdNLTguMCA1NCBDLTguMCA0My4xIC01LjcgMzQuNyAtNC4yIDI5LjkgQy0yLjggMzQuNyAxLjcgNDMuMSAxLjcgNTQgWicgZmlsbD0nIzJmOGYzZicvPjwvc3ZnPg=="), url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNDEnIGhlaWdodD0nNTQnIHZpZXdCb3g9JzAgMCAyNDEgNTQnPjxwYXRoIGQ9J00tMS4wIDU0IEMtMS4wIDM0LjYgLTEuOSAxOS42IC0wLjUgMTEuMCBDMC45IDE5LjYgOC42IDM0LjYgOC42IDU0IFonIGZpbGw9JyM0NWE4NGEnLz48cGF0aCBkPSdNMjQwLjAgNTQgQzI0MC4wIDM0LjYgMjM5LjEgMTkuNiAyNDAuNSAxMS4wIEMyNDEuOSAxOS42IDI0OS42IDM0LjYgMjQ5LjYgNTQgWicgZmlsbD0nIzQ1YTg0YScvPjxwYXRoIGQ9J002LjUgNTQgQzYuNSAzMi4zIDcuNyAxNS40IDkuNCA1LjggQzExLjEgMTUuNCAxNy45IDMyLjMgMTcuOSA1NCBaJyBmaWxsPScjNGNhZjUwJy8+PHBhdGggZD0nTTI0Ny41IDU0IEMyNDcuNSAzMi4zIDI0OC43IDE1LjQgMjUwLjQgNS44IEMyNTIuMSAxNS40IDI1OC45IDMyLjMgMjU4LjkgNTQgWicgZmlsbD0nIzRjYWY1MCcvPjxwYXRoIGQ9J00yMC4wIDU0IEMyMC4wIDM5LjcgMjIuNSAyOC41IDIzLjkgMjIuMiBDMjUuMyAyOC41IDI5LjMgMzkuNyAyOS4zIDU0IFonIGZpbGw9JyM0NWE4NGEnLz48cGF0aCBkPSdNMjcuNiA1NCBDMjcuNiAzNC45IDM1LjUgMjAuMCAzNy4wIDExLjUgQzM4LjUgMjAuMCAzNy40IDM0LjkgMzcuNCA1NCBaJyBmaWxsPScjNDVhODRhJy8+PHBhdGggZD0nTTQxLjIgNTQgQzQxLjIgMzguNSA0NS4wIDI2LjUgNDYuNCAxOS42IEM0Ny43IDI2LjUgNTAuNCAzOC41IDUwLjQgNTQgWicgZmlsbD0nIzRjYWY1MCcvPjxwYXRoIGQ9J000OS4wIDU0IEM0OS4wIDM5LjQgNTAuNCAyOC4xIDUxLjggMjEuNiBDNTMuMyAyOC4xIDU4LjUgMzkuNCA1OC41IDU0IFonIGZpbGw9JyM0NWE4NGEnLz48cGF0aCBkPSdNNTcuNCA1NCBDNTcuNCAzNC43IDYwLjEgMTkuOCA2MS44IDExLjIgQzYzLjQgMTkuOCA2OC43IDM0LjcgNjguNyA1NCBaJyBmaWxsPScjNDVhODRhJy8+PHBhdGggZD0nTTcxLjIgNTQgQzcxLjIgMzQuOSA3NS4xIDIwLjEgNzYuOCAxMS42IEM3OC41IDIwLjEgODIuNCAzNC45IDgyLjQgNTQgWicgZmlsbD0nIzQ1YTg0YScvPjxwYXRoIGQ9J003OS43IDU0IEM3OS43IDM1LjIgODIuOCAyMC42IDg0LjQgMTIuMyBDODUuOSAyMC42IDkwLjAgMzUuMiA5MC4wIDU0IFonIGZpbGw9JyM1NmI2NWEnLz48cGF0aCBkPSdNODguOCA1NCBDODguOCAzMy41IDg4LjAgMTcuNSA4OS40IDguNCBDOTAuOSAxNy41IDk4LjUgMzMuNSA5OC41IDU0IFonIGZpbGw9JyM1NmI2NWEnLz48cGF0aCBkPSdNOTkuNCA1NCBDOTkuNCAzMy45IDEwMS42IDE4LjMgMTAzLjUgOS40IEMxMDUuNCAxOC4zIDExMS45IDMzLjkgMTExLjkgNTQgWicgZmlsbD0nIzRjYWY1MCcvPjxwYXRoIGQ9J00xMDcuNSA1NCBDMTA3LjUgMzMuNyAxMDcuNyAxNy45IDEwOS4zIDguOSBDMTEwLjkgMTcuOSAxMTguMSAzMy43IDExOC4xIDU0IFonIGZpbGw9JyM1NmI2NWEnLz48cGF0aCBkPSdNMTE4LjUgNTQgQzExOC41IDM5LjggMTIzLjYgMjguOCAxMjUuNiAyMi40IEMxMjcuNSAyOC44IDEzMS40IDM5LjggMTMxLjQgNTQgWicgZmlsbD0nIzU2YjY1YScvPjxwYXRoIGQ9J00xMjkuMiA1NCBDMTI5LjIgMzYuMCAxMzUuOCAyMi4xIDEzNy40IDE0LjEgQzEzOS4wIDIyLjEgMTM5LjYgMzYuMCAxMzkuNiA1NCBaJyBmaWxsPScjNGNhZjUwJy8+PHBhdGggZD0nTTE0MS42IDU0IEMxNDEuNiAzNi4yIDE0Ny43IDIyLjQgMTQ5LjYgMTQuNSBDMTUxLjYgMjIuNCAxNTQuNCAzNi4yIDE1NC40IDU0IFonIGZpbGw9JyM0Y2FmNTAnLz48cGF0aCBkPSdNMTUyLjIgNTQgQzE1Mi4yIDM1LjMgMTU3LjUgMjAuOCAxNTkuMSAxMi40IEMxNjAuNiAyMC44IDE2Mi40IDM1LjMgMTYyLjQgNTQgWicgZmlsbD0nIzU2YjY1YScvPjxwYXRoIGQ9J00xNTguOSA1NCBDMTU4LjkgMzQuNSAxNTcuOCAxOS4zIDE1OS40IDEwLjYgQzE2MS4wIDE5LjMgMTY5LjQgMzQuNSAxNjkuNCA1NCBaJyBmaWxsPScjNTZiNjVhJy8+PHBhdGggZD0nTTE2OS4wIDU0IEMxNjkuMCAzNi4xIDE3MC4yIDIyLjEgMTcxLjkgMTQuMSBDMTczLjYgMjIuMSAxODAuNCAzNi4xIDE4MC40IDU0IFonIGZpbGw9JyM1NmI2NWEnLz48cGF0aCBkPSdNMTc4LjIgNTQgQzE3OC4yIDM3LjAgMTg1LjQgMjMuNyAxODYuOSAxNi4yIEMxODguNCAyMy43IDE4OC4yIDM3LjAgMTg4LjIgNTQgWicgZmlsbD0nIzRjYWY1MCcvPjxwYXRoIGQ9J00xODguMiA1NCBDMTg4LjIgMzguMCAxODguMiAyNS42IDE4OS44IDE4LjQgQzE5MS40IDI1LjYgMTk4LjggMzguMCAxOTguOCA1NCBaJyBmaWxsPScjNTZiNjVhJy8+PHBhdGggZD0nTTIwMy40IDU0IEMyMDMuNCAzNi44IDIwNS41IDIzLjQgMjA3LjAgMTUuNyBDMjA4LjUgMjMuNCAyMTMuNSAzNi44IDIxMy41IDU0IFonIGZpbGw9JyM1NmI2NWEnLz48cGF0aCBkPSdNMjE0LjMgNTQgQzIxNC4zIDM4LjkgMjE1LjAgMjcuMiAyMTYuNCAyMC41IEMyMTcuOSAyNy4yIDIyMy45IDM4LjkgMjIzLjkgNTQgWicgZmlsbD0nIzRjYWY1MCcvPjxwYXRoIGQ9J00yMTYuMyA1NCBDMjE2LjMgMzguOSAyMTguNSAyNy4xIDIyMC4zIDIwLjQgQzIyMi4yIDI3LjEgMjI4LjcgMzguOSAyMjguNyA1NCBaJyBmaWxsPScjNGNhZjUwJy8+PHBhdGggZD0nTS0yNC43IDU0IEMtMjQuNyAzOC45IC0yMi41IDI3LjEgLTIwLjcgMjAuNCBDLTE4LjggMjcuMSAtMTIuMyAzOC45IC0xMi4zIDU0IFonIGZpbGw9JyM0Y2FmNTAnLz48cGF0aCBkPSdNMjMwLjIgNTQgQzIzMC4yIDM1LjQgMjM4LjQgMjAuOSAyMzkuOSAxMi43IEMyNDEuNSAyMC45IDI0MC42IDM1LjQgMjQwLjYgNTQgWicgZmlsbD0nIzQ1YTg0YScvPjxwYXRoIGQ9J00tMTAuOCA1NCBDLTEwLjggMzUuNCAtMi42IDIwLjkgLTEuMSAxMi43IEMwLjUgMjAuOSAtMC40IDM1LjQgLTAuNCA1NCBaJyBmaWxsPScjNDVhODRhJy8+PC9zdmc+");
+    background-repeat:repeat-x; background-position:bottom left; background-size:173px 54px, 241px 54px;
     box-shadow:inset 0 -4px 8px rgba(0,0,0,.2);
   }
   @keyframes grassShake{
@@ -1743,12 +1747,27 @@
     .sent-line, #sentTiles{ --cell:48px; }
     .sent-line{ gap:6px; margin-top:6px; } #sentTiles{ gap:6px 8px; margin-top:8px; }
     .sent-word, .sent-slot, .tile.word{ padding:0 11px; }
+    .tile.word.has-say{ padding-right:54px; }
+    .word-say{ right:6px; }
     .sent-slot{ min-width:60px; }
   }
-  /* The speaker reading the bank lifts each tile as its word is said — position,
-     not colour, because every colour on this screen already means something. */
-  .tile.word.saying{ transform:translateY(-6px); }
-  @media (prefers-reduced-motion: reduce){ .tile.word.saying{ transform:none; outline:3px solid var(--ink); outline-offset:2px; } }
+  /* On a level marked spoken_tiles every word tile carries its own speaker,
+     inside its right end, to hear that one word. It is a sibling of the tile, not
+     a child — a button inside a button is invalid — and the tile makes room so the
+     word never sits under it. Same 40px drawn / 44px tapped speaker as everywhere. */
+  .word-cell{ position:relative; display:inline-flex; }
+  .tile.word.has-say{ padding-right:58px; }
+  .word-say{
+    position:absolute; right:8px; top:calc((var(--cell) - var(--speak)) / 2); z-index:2;
+    width:var(--speak); height:var(--speak); padding:0; border:0; border-radius:50%;
+    display:grid; place-items:center; cursor:pointer;
+    background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
+  }
+  .word-say:hover{ background:var(--sun-300); }
+  .word-say:active{ transform:translateY(1px); }
+  .word-say svg{ width:22px; height:22px; display:block; }
+  .word-say::after{ content:""; position:absolute; inset:-2px; border-radius:50%; }
+  .word-say[hidden]{ display:none; }
 
 
   /* The help light. Alphabet and Pattern light GREEN, like Spelling: all three
@@ -2381,7 +2400,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 111;
+const APP_BUILD = 112;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -5629,45 +5648,37 @@ function renderSentence(p){
     else { el.className = "sent-word"; el.textContent = shown(w); }
     lineEl.appendChild(el);
   });
+  /* The picture's speaker names the Pokémon and nothing else. On a level marked
+     `spoken_tiles` each tile carries its own speaker for its own word, so a child
+     who can't read them yet can hear any one he likes. Tapping a tile only ever
+     places it — hearing a word is free, and a wrong tap is silent. */
   const bankEl = $("#sentTiles"), tiles = [];
   p.bank.forEach(w=>{
     const t = document.createElement("button");
     t.type = "button"; t.className = "tile word"; t.textContent = shown(w); t.dataset.word = w;
     t.addEventListener("click", ()=> placeSentenceWord(t));
-    bankEl.appendChild(t); tiles.push(t);
+    tiles.push(t);
+    if(!p.spoken){ bankEl.appendChild(t); return; }
+    const cell = document.createElement("span");
+    cell.className = "word-cell";
+    t.classList.add("has-say");
+    const say = document.createElement("button");
+    say.type = "button"; say.className = "word-say"; say.innerHTML = UI_ICONS.speaker;
+    say.setAttribute("aria-label", `Say ${shown(w)}`);
+    say.addEventListener("click", ()=> speak(w === name ? sayAs(w) : w));
+    t._say = say;
+    cell.append(t, say);
+    bankEl.appendChild(cell);
   });
   p._blankCount = slots.length;
-  sentState = { p, slots, tiles, filled:{}, done:false, sayToken:0 };
+  sentState = { p, slots, tiles, filled:{}, done:false };
   if(slots[0]) slots[0].classList.add("current");
-  $("#sentSay").addEventListener("click", sayTheSentenceBank);
+  $("#sentSay").addEventListener("click", ()=> speakName(name));
 }
-
-/* The picture's speaker. It names the Pokémon, and on a level marked
-   `spoken_tiles` it then reads the bank, lifting each tile as its word is said,
-   so a child who can't read them yet can still tell which tile is which. Tapping
-   a tile only ever places it — hearing a word is free, and a wrong tap is silent. */
-function sayTheSentenceBank(){
-  const st = sentState;
-  if(!st) return;
-  const token = ++st.sayToken;
-  const name = st.p.words[0];
-  const items = [{ text: sayAs(name) }];
-  if(st.p.spoken) st.tiles.filter(t => !t.classList.contains("used"))
-    .forEach(t => items.push({ text: t.dataset.word === name ? sayAs(name) : t.dataset.word, el: t }));
-  let i = 0;
-  const step = ()=>{
-    if(sentState !== st || st.sayToken !== token) return;
-    st.tiles.forEach(t => t.classList.remove("saying"));
-    if(i >= items.length) return;
-    const it = items[i++];
-    if(it.el) it.el.classList.add("saying");
-    speak(it.text, ()=> setTimeout(step, 150));
-  };
-  step();
-}
-function stopSentenceBank(st){
-  st.sayToken++;
-  st.tiles.forEach(t => t.classList.remove("saying"));
+// A placed tile is spent, so its speaker goes with it.
+function retireSentenceTile(t){
+  t.classList.add("used");
+  if(t._say) t._say.hidden = true;
 }
 
 function nextSentenceSlot(){
@@ -5704,7 +5715,6 @@ function placeSentenceWord(tileEl){
   if(!st || st.done || tileEl.classList.contains("used")) return;
   const slot = nextSentenceSlot();
   if(!slot) return;
-  stopSentenceBank(st);
   const fb = $("#feedback");
   if(fb.classList.contains("bad")){ fb.textContent = ""; fb.className = "feedback"; }
   if(!sentenceTileFits(st, slot, tileEl)){
@@ -5729,7 +5739,7 @@ function fillSentenceSlot(slot, tileEl){
   slot.textContent = tileEl.textContent;
   slot.classList.add("sent-correct");
   slot.classList.remove("current");
-  tileEl.classList.add("used");
+  retireSentenceTile(tileEl);
   tileEl.classList.remove("answer-lit");
   const next = nextSentenceSlot();
   if(next) next.classList.add("current");
@@ -5763,7 +5773,7 @@ function finishSentence(){
   const fb = $("#feedback");
   fb.className = "feedback good";
   fb.innerHTML = feedbackHTML("good", "Yes!");
-  st.tiles.forEach(t => t.classList.add("used"));
+  st.tiles.forEach(retireSentenceTile);
   // The whole sentence, read back as the child built it.
   const said = p.words.map((w, i) => i in st.filled ? st.filled[i] : w)
                       .map((w, i) => i === 0 ? sayAs(w) : w).join(" ");

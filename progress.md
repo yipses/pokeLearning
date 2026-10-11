@@ -793,6 +793,14 @@ Reported: the clouds "look too much like a button" beside the gear. They were wh
 
 **Measured** — the gap from each visible cloud to the nearest HUD control: 10–63px at 360×640, 390×844 and 470×830, 160px or more on tablets and desktops (they were 0px — under the counters — at 360, 390 and 470). Still touching at 320×568, a size the fit list doesn't include. Home, results with three catches, no console errors.
 
+## Phase 95 — a speaker on each word; grass that grows
+
+**Sentences.** Reported: the picture's speaker "will speak not only the Pokémon but also the choices". That was the agreed behaviour on `spoken_tiles` levels — it read the whole bank after the name — and it read the answer out with everything else. The owner chose a speaker on **each tile** instead, hidden on `no` levels. The picture's speaker now says only the name. Each tile's speaker is a sibling of the tile (a button can't hold a button), inside its right end; it speaks that word and nothing else, and goes when the tile is placed. The bank-reading chain and its lifting style were removed.
+
+**Grass.** The strip was one 22px tile of two identical blades, which read as a comb. Mocked twice in the browser (the first was patchy and spiky), then built as two seeded SVG layers: 24 lighter blades behind at 241px, 17 darker ones and an 8px ground band in front at 173px, varied in height, width, lean and shade, spaced evenly with jitter. The widths only realign every 41,693px. Same height, flat colours and shake.
+
+**Measured.** Spoken level: one speaker per tile; tapping one spoke only its word, with `_mistakes` 0, no step miss, the slot still empty and the tile unplaced; the picture's speaker said only the name; a wrong tap said nothing; a placed tile's speaker and, at the finish, every speaker hidden; the help light still lands. Silent level: no tile speakers. Levels 1–5 (the spoken ones, tiles now ~44px wider), worst 40 banks each at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800, 1440×900: no scroll. Grass at 360, 390 and 2000 wide, shaking: no sideways scroll. The 1,350-question answer loop still finishes every question with 0 mistakes; mixed-mode smoke clean; no console errors.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
