@@ -249,6 +249,10 @@
     color:var(--ink-soft); background:var(--surface); box-shadow:inset 0 0 0 2px var(--line);
     -webkit-tap-highlight-color:transparent; transition:transform .06s, color .15s;
   }
+  /* The drawn cross, not a ✕ character: the glyph came out about 9px across in
+     a 44px circle, too small to read as the way out. Drawn, it is 14px with a
+     4px stroke, and identical on every device's fonts. */
+  .quit-x svg{ width:28px; height:28px; display:block; }
   .quit-x:hover{ color:var(--ink); }
   .quit-x:active{ transform:translateY(1px); }
 
@@ -1749,8 +1753,10 @@
   .type-grass{ background:#6bb352; }
   .type-flying{ background:#a094e8; }
 
-  /* Pattern pictures (drawPatternPictures). New Pokémon sit on a sun highlight;
-     the fixed number keeps the blue frame Visual Maths uses. */
+  /* Pattern pictures (drawPatternPictures). New Pokémon sit on a sun highlight.
+     The fixed number of an add pattern is unframed: in Visual Maths addition a
+     blue box is always five wide, so a seven-wide one read as a five that had
+     overflowed. The "+" already separates it from the growing part. */
   .pattern-list.drawn{ gap:4px; }
   .pattern-row.waiting{ opacity:.45; }
   .pattern-pic{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; align-items:center; margin:0 0 10px; }
@@ -1758,7 +1764,6 @@
   .pattern-pic img{ width:22px; height:22px; object-fit:contain; display:block; }
   .pattern-pic-op{ font-weight:900; color:var(--ink-soft); }
   .pattern-pic-group, .pattern-pic-loose, .pattern-pic-new{ display:inline-flex; flex-wrap:wrap; gap:2px; align-items:center; }
-  .pattern-pic-group{ padding:3px 5px; border:2px solid var(--sky-600); border-radius:10px; background:var(--surface); }
   .pattern-pic-new{ padding:2px 5px; border-radius:10px; background:var(--sun-300); box-shadow:inset 0 0 0 2px var(--sun-700); }
   .pattern-pic-loose:empty{ display:none; }
   .pattern-pic-grow{ display:inline-flex; flex-wrap:nowrap; align-items:center; gap:4px; }
@@ -1995,7 +2000,7 @@
   <section id="play" class="hidden">
     <div class="scene play-scene">
       <div class="topbar">
-        <button class="quit quit-x" id="quitBtn" aria-label="Quit" title="Quit">&#10005;</button>
+        <button class="quit quit-x" id="quitBtn" aria-label="Quit" title="Quit"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg></button>
         <div class="progress"><i id="progFill"></i></div>
       </div>
       <div class="grass-strip" id="grassStrip"></div>
@@ -2081,7 +2086,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 101;
+const APP_BUILD = 102;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -3250,7 +3255,9 @@ const UI_ICONS = {
   bolt: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
   tick: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   cross: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>`,
-  spark: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg>`,
+  // Rarity is a five-point star. The four-point sparkle it replaced read as a
+  // "+", and a plus says "add" or "tap me" rather than "rare".
+  star: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.5 1.2 6.4L12 17.1l-5.7 3.1 1.2-6.4-4.7-4.5 6.4-.8z"/></svg>`,
 };
 /* A feedback line: one drawn mark and a few words, never the emoji they replace. */
 function feedbackHTML(kind, text){
@@ -3861,7 +3868,7 @@ function renderPokeModal(poke, opts){
   // Pokémon hiding in it.
   $("#catchTypes").innerHTML = (poke.t||[]).map(t=> `<span class="type-badge type-${t}">${t}</span>`).join("");
   const rarity = revealed ? RARITY_LABEL[poke.rarity] : null;
-  $("#catchRarity").innerHTML = rarity ? `${UI_ICONS.spark}${rarity}` : "";
+  $("#catchRarity").innerHTML = rarity ? `${UI_ICONS.star}${rarity}` : "";
   $("#catchRarity").classList.toggle("hidden", !rarity);
   $("#catchRarity").classList.toggle("mythical", poke.rarity === "mythical");
   // The family shows whether or not this one is caught. It gives away nothing an
@@ -4095,7 +4102,7 @@ function renderPokedex(){
   const genPct = genPokes.length ? Math.round((genCaught / genPokes.length) * 100) : 0;
   section.innerHTML = `
     <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${
-      genRare.length ? `<b class="rare-count">${UI_ICONS.spark}${genRareCaught}/${genRare.length}</b> · ` : ""
+      genRare.length ? `<b class="rare-count">${UI_ICONS.star}${genRareCaught}/${genRare.length}</b> · ` : ""
     }${genCaught} / ${genPokes.length}</span></h3>
     <span class="level-bar dex-gen-bar" aria-hidden="true">
       <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
@@ -4123,7 +4130,7 @@ function renderPokedex(){
     // An uncaught cell carries no name text: "???" is a word a five-year-old has
     // to stop and decode for no payoff. The outline and the number say it.
     cell.innerHTML = `
-      ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">${UI_ICONS.spark}</span>` : ""}
+      ${rare ? `<span class="dex-rare ${poke.rarity}" title="${rare}">${UI_ICONS.star}</span>` : ""}
       ${isNew ? `<span class="dex-new">NEW</span>` : ""}
       <div class="dex-num">#${String(poke.id).padStart(3,"0")}</div>
       <img class="dex-img${got ? "" : " silhouette"}" src="${artwork(poke.id)}" alt="${got ? cap(poke.n) : "Not caught yet"}" loading="lazy" decoding="async">
@@ -5792,7 +5799,7 @@ function renderChrome(which){
     host.innerHTML = `
       <div class="topbar"><div class="home-tiles"></div></div>
       <div class="screen-head">
-        <button class="quit quit-x" type="button" aria-label="Close" title="Close">&#10005;</button>
+        <button class="quit quit-x" type="button" aria-label="Close" title="Close">${UI_ICONS.cross}</button>
         <span class="screen-title">${spec.title}</span>
         <span class="screen-extra"></span>
       </div>`;
