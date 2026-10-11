@@ -293,8 +293,8 @@
      the preceding kind-tag share its line instead of sitting above it. */
   .frame-wrap{ position:relative; width:max-content; margin:0 auto; }
   .frame-say{
-    position:absolute; right:4px; bottom:12px; z-index:1;
-    width:52px; height:52px; padding:0;
+    position:absolute; z-index:1;
+    width:var(--speak); height:var(--speak); padding:0;
     display:flex; align-items:center; justify-content:center;
     font:inherit; font-size:22px; line-height:1; cursor:pointer;
     border-radius:50%; border:0; background:var(--sun-500); color:var(--sun-800);
@@ -303,7 +303,6 @@
   .frame-say:hover{ background:var(--sun-300); }
   .frame-say:active{ transform:translateY(2px); }
   .frame-say:disabled{ opacity:.45; cursor:default; }
-  .catch-card .frame-say{ width:42px; height:42px; font-size:18px; right:0; bottom:10px; }
 
   /* spelling slots */
   .slots{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:14px 0 6px; }
@@ -1302,7 +1301,6 @@
 
   @media (max-width:480px){
     .poke-frame{ width:180px; height:180px; }
-    .frame-say{ width:44px; height:44px; font-size:19px; bottom:10px; right:2px; }
     .slot{ width:44px; height:52px; font-size:1.5rem; }
     .slot-word{ gap:6px; }
     .slot-sep{ width:20px; font-size:1.5rem; }
@@ -1313,9 +1311,6 @@
     .mw-sep:empty::before{ width:12px; margin-bottom:8px; }
     .mw-slot{ height:44px; font-size:1.3rem; }
     .tile.chunk{ min-width:46px; padding:0 9px; }
-    .reading-opt-img img{ width:48px; height:48px; }
-    .reading-say-mini{ width:26px; height:26px; font-size:12px; }
-    .reading-opt-word{ font-size:.95rem; }
     .alpha-strip{ gap:5px; }
     .alpha-card{ padding:6px 3px 8px; }
     .alpha-letter{ font-size:1.25rem; }
@@ -1559,20 +1554,93 @@
   }
   .kind-alpha{ background:var(--teal-700); }
 
-  /* Speakers: one look everywhere, sun with a dark mark, never under 44px. */
+  /* ===== The speaker: one control, one size, one place =====
+     48px (the tap minimum) everywhere; a bigger screen zooms the whole question,
+     so it grows with everything else rather than by its own rule. What you see
+     is what you tap — no small circle with an invisible larger target. It sits on
+     the bottom-right of the picture it names: on a round frame, centred on the
+     frame's edge at 45° (14.6% in from the corner of its box); on a tile, in the
+     corner. Sizes and offsets used to differ per screen — 42, 44 and 52px, each
+     at its own offset — and on the catch screen it floated on the grass. */
+  :root{ --speak:48px; --paper-edge:#958b75; }
   .frame-say, .reading-img-cell .reading-say-mini, .battle-frame-wrap .battle-sound{
-    border:0; background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
+    width:var(--speak); height:var(--speak); padding:0; border:0; border-radius:50%;
+    background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
   }
   .frame-say:hover, .reading-img-cell .reading-say-mini:hover, .battle-frame-wrap .battle-sound:hover{ background:var(--sun-300); }
-  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:55%; height:55%; display:block; }
-  /* Reverse Read & Choose: each picture's speaker sits below it, outside the
-     picture's own tap area — a near-miss on the speaker must not count as an answer. */
-  .reading-img-cell{ flex-direction:column; align-items:center; gap:6px; }
-  /* Three across at every phone width: two across pushed the fifth option's
-     speaker below the fold at 360×640. */
-  .reading-options-img{ grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
-  .reading-img-cell .reading-opt{ width:100%; flex:0 0 auto; }
-  .reading-img-cell .reading-say-mini{ position:static; width:44px; height:44px; }
+  .frame-say svg, .reading-say-mini svg, .battle-sound svg{ width:20px; height:20px; display:block; }
+  .frame-wrap > .frame-say{ right:calc(14.6% - var(--speak) / 2); bottom:calc(14.6% - var(--speak) / 2 + 8px); }
+  .is-catch .frame-wrap > .frame-say{ bottom:calc(14.6% - var(--speak) / 2); }
+  .battle-frame-wrap > .battle-sound{ right:calc(14.6% - var(--speak) / 2); bottom:calc(14.6% - var(--speak) / 2); }
+
+  /* ===== Answer tiles: neutral until answered =====
+     Green means "you got it", so an answer is never green before it is chosen —
+     the maths numbers and both reading modes alike. White on paper with a warm
+     grey edge; correct goes green with a ✓ badge, wrong dims and sinks. */
+  .choice, .reading-opt{
+    background:var(--surface); color:var(--ink);
+    border:2px solid var(--paper-line); box-shadow:0 var(--press-edge) 0 var(--paper-edge);
+  }
+  .choice:active, .reading-opt:active{ box-shadow:0 1px 0 var(--paper-edge); }
+  .reading-opt:hover:not(:disabled){ background:var(--surface); border-color:#d9cfb6; }
+  .reading-opt.correct{
+    position:relative; border:3px solid var(--leaf-700); background:var(--leaf-100);
+    box-shadow:0 var(--press-edge) 0 var(--leaf-700); animation:answerPop .24s ease-out;
+  }
+  .reading-opt.correct::after{
+    content:""; position:absolute; top:-10px; right:-10px; z-index:2; width:28px; height:28px; border-radius:50%;
+    background:var(--leaf-600) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
+    box-shadow:0 0 0 2px var(--surface);
+  }
+  @keyframes answerPop{ 50%{ scale:1.06; } }
+  .reading-options:has(.correct) .reading-opt:not(.correct){ opacity:.4; }
+  .reading-opt.wrong{ opacity:.4; border-color:var(--paper-line); box-shadow:0 1px 0 var(--paper-edge); translate:0 3px; }
+  @media (prefers-reduced-motion: reduce){ .reading-opt.correct{ animation:none; } }
+  /* The help light's still ring (reduced motion) must outrank the tile's edge. */
+  @media (prefers-reduced-motion: reduce){ .choice.answer-lit, .reading-opt.answer-lit{ box-shadow:0 0 0 4px var(--flame-600); } }
+
+  /* The mode tag names the mode for a grown-up; it should not compete with the
+     question for a child who cannot read it. */
+  .kind-tag{ padding:5px 12px; font-size:12px; letter-spacing:.04em; line-height:16px; }
+  #stage .kind-tag{ margin-bottom:12px; }
+
+  /* ===== Reverse Read & Choose =====
+     The word sits on a plate, the stage the picture frame gives Read & Choose.
+     40px, shrinking to fit one line (fitReadingWord); text gives way before the
+     tiles do on a short screen. */
+  .reading-word{
+    display:grid; place-items:center; min-height:76px; box-sizing:border-box; margin:0 0 18px; padding:8px 14px;
+    background:var(--surface-sunken); border-radius:20px; font-size:40px; font-weight:900; line-height:1.05; overflow-wrap:anywhere;
+  }
+  @media (max-height:860px){ .reading-word{ min-height:60px; font-size:34px; margin-bottom:12px; padding:6px 12px; } #stage .kind-tag{ margin-bottom:8px; } }
+  @media (max-height:700px){ .reading-word{ min-height:52px; font-size:30px; } }
+  /* Tiles are laid out by layoutReadingTiles(): the column count that gives the
+     biggest tiles while the grid fits the screen, at least two across, never
+     wider than 200px, 5:4 flattening to 3:2 only if that is what fits. The short
+     last row is centred. Tile size is set on the grid as --tw/--th. */
+  .reading-options-img{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin:0 auto 4px; }
+  .reading-options-img .reading-img-cell{ flex:0 0 var(--tw, 30%); position:relative; display:block; }
+  .reading-img-cell .reading-opt{
+    width:100%; height:var(--th, auto); padding:0; border-radius:16px; position:relative;
+    display:grid; place-items:center; overflow:visible;
+  }
+  /* The tile is the picture's frame — no second shape inside it. fitTileArt()
+     sizes the art by what is drawn, keeps it clear of the speaker's corner and
+     never enlarges it past 2× its pixels. */
+  .reading-opt-img img{ position:relative; z-index:1; width:60%; height:60%; object-fit:contain; }
+  .reading-img-cell .reading-say-mini{ position:absolute; top:auto; right:6px; bottom:10px; z-index:3; margin:0; }
+
+  /* ===== Read & Choose, to match ===== */
+  #stage .frame-wrap .poke-frame.reading-frame{ width:180px; height:180px; }
+  .reading-options:not(.reading-options-img){ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:16px; }
+  .reading-options:not(.reading-options-img) > .reading-opt{
+    flex:0 0 calc((100% - 12px) / 2); min-height:56px; font-size:22px; font-weight:800; border-radius:16px; position:relative;
+  }
+  @media (max-height:700px){
+    #stage .frame-wrap .poke-frame.reading-frame{ width:116px; height:116px; }
+    .reading-options:not(.reading-options-img){ gap:8px; margin-top:10px; }
+    .reading-options:not(.reading-options-img) > .reading-opt{ min-height:48px; font-size:18px; padding:6px 8px; }
+  }
 
   /* The help light. Alphabet and Pattern light GREEN, like Spelling: all three
      already wear an amber ring as the "you are here" cursor, and a second amber
@@ -1716,7 +1784,6 @@
 
   .dex-tab{ min-height:44px; }
   .dex-arrow{ width:44px; height:44px; }
-  .catch-card .frame-say{ width:44px; height:44px; }
   .dex-cell{ border-radius:18px; box-shadow:none; }
   .dex-rare{ background:var(--sun-500); color:var(--sun-800); border:2px solid var(--canvas); }
   .dex-rare svg{ width:12px; height:12px; }
@@ -1732,7 +1799,7 @@
   .battle-fighter{ flex:0 1 180px; min-width:0; }
   .battle-frame-wrap{ position:relative; }
   .battle-frame{ width:124px; height:124px; }
-  .battle-frame-wrap .battle-sound{ position:absolute; right:-6px; bottom:-4px; width:44px; height:44px; font-size:0; }
+  .battle-frame-wrap .battle-sound{ position:absolute; font-size:0; }
   .battle-name{ justify-content:center; text-align:center; font-size:1rem; line-height:1.15; overflow-wrap:anywhere; }
   .battle-vs{ margin-top:40px; background:var(--sun-500); color:var(--sun-800); }
   .battle-log{ padding:6px 4px 0; text-align:left; }
@@ -2113,7 +2180,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 104;
+const APP_BUILD = 105;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -5346,6 +5413,62 @@ function markVisualDone(){
 /* ---------------- READING (Read & Choose / Reverse Read & Choose) ---------------- */
 let readingState = null;
 
+/* The prompt word: 40px (less on a short screen), shrinking until it fits one
+   line down to 28px; a name longer than that wraps at 30px. */
+function fitReadingWord(){
+  const w = document.querySelector("#stage .reading-word");
+  if(!w) return;
+  w.style.fontSize = ""; w.style.whiteSpace = "nowrap";
+  let fs = parseFloat(getComputedStyle(w).fontSize);
+  while(w.scrollWidth > w.clientWidth && fs > 28){ fs -= 2; w.style.fontSize = fs + "px"; }
+  if(w.scrollWidth > w.clientWidth){ w.style.whiteSpace = "normal"; w.style.fontSize = "30px"; }
+}
+/* Lay the picture options out by rule rather than by a fixed grid: try every
+   balanced column count from two up (5 → 2+2+1, 3+2, or one row), and keep the
+   one whose tiles have the biggest short side while the whole grid fits under
+   the word. Tiles are 5:4, flattening to 3:2 only if that is what fits, and
+   never wider than 200px. The controls keep their sizes; the layout gives way. */
+function layoutReadingTiles(){
+  const g = document.querySelector("#stage .reading-options-img");
+  if(!g || !g.children.length) return;
+  const z = parseFloat(getComputedStyle(g.closest("#stage > *") || g).zoom) || 1;
+  const card = g.closest(".card") || g.parentElement;
+  const n = g.children.length, gap = 12, MAXW = 200;
+  g.style.width = "";
+  const W = g.clientWidth, r = g.getBoundingClientRect(), cr = card.getBoundingClientRect();
+  const below = (cr.bottom - r.bottom) / z;              // feedback line and card padding, as rendered
+  const availH = (innerHeight - r.top) / z - below - 16;
+  let best = null;
+  for(let c = 2; c <= n; c++){
+    const rows = Math.ceil(n / c), cols = Math.ceil(n / rows);
+    const w = Math.min(MAXW, (W - (cols - 1) * gap) / cols);
+    const h = Math.min(w * 0.8, Math.max(w / 1.5, (availH - (rows - 1) * gap) / rows));
+    const fits = rows * h + (rows - 1) * gap <= availH + 0.5, s = Math.min(w, h);
+    if(!best || (fits && !best.fits) || (fits === best.fits && s > best.s + 0.5)) best = { cols, w, h, fits, s };
+  }
+  g.style.width = (best.cols * best.w + (best.cols - 1) * gap) + "px";
+  g.style.setProperty("--tw", best.w + "px");
+  g.style.setProperty("--th", best.h + "px");
+  g.querySelectorAll(".reading-opt-img img").forEach(im => { if(im.complete) fitTileArt(im); });
+}
+/* A tile's picture, on the tile itself: an area the size of the tile less the
+   speaker's corner, nudged away from it; the art in it sized by what is drawn
+   (fitArtwork's measure) and centred on what is drawn — never enlarged past 2×
+   its own pixels, since small item art goes soft beyond that. */
+function fitTileArt(img){
+  const tile = img.closest(".reading-opt"), bb = img.naturalWidth ? artBounds(img) : null;
+  if(!tile || !bb) return;
+  const say = tile.parentElement.querySelector(".reading-say-mini");
+  const sd = say ? say.offsetWidth : 0, tw = tile.clientWidth, th = tile.clientHeight;
+  const D = Math.min(tw * 0.8, th * 0.82, th - sd * 0.5 - 6, tw - sd * 0.5 - 6);
+  tile.style.setProperty("--off", -(sd * 0.25) + "px");
+  const cw = bb.r - bb.l, ch = bb.b - bb.t;
+  let size = D * 0.8 * Math.min(1.5, ART_MEDIAN / Math.sqrt(cw * ch));
+  size = Math.min(size, D * 0.86 / cw, D * 0.86 / ch, img.naturalWidth * 2);
+  img.style.cssText = `width:${size}px; height:${size}px; max-width:none; max-height:none;
+    translate:calc(${(0.5 - (bb.l + bb.r) / 2) * size}px + var(--off, 0px)) calc(${(0.5 - (bb.t + bb.b) / 2) * size}px + var(--off, 0px));`;
+}
+
 function renderReading(p){
   const stage = $("#stage");
   if(p.mode === "choose"){
@@ -5354,7 +5477,7 @@ function renderReading(p){
     stage.innerHTML = `
       <div class="kind-tag kind-reading">Read &amp; Choose</div>
       <div class="frame-wrap">
-        <div class="poke-frame"><img alt="Mystery Pokémon" src="${img}"></div>
+        <div class="poke-frame reading-frame"><img alt="Mystery Pokémon" src="${img}"></div>
         <button class="frame-say" type="button" id="readingSay" aria-label="Say it">${UI_ICONS.speaker}</button>
       </div>
       <div class="reading-options" id="readingOptions"></div>
@@ -5401,6 +5524,12 @@ function renderReading(p){
       say.addEventListener("click", ()=> speakName(opt.n));
       cell.append(btn, say);
       wrap.appendChild(cell);
+    });
+    fitReadingWord();
+    layoutReadingTiles();
+    wrap.querySelectorAll("img").forEach(im=>{
+      im.addEventListener("load", ()=> fitTileArt(im));
+      if(im.complete) fitTileArt(im);
     });
   }
   // `wrap` is scoped to each branch above, so query the stage rather than reuse it.
@@ -6083,6 +6212,7 @@ $("#catchImg").addEventListener("load", fitCatchArt);
 // Both fits are in pixels, so they follow the window.
 window.addEventListener("resize", ()=>{
   fitShowcase();
+  if(document.querySelector("#stage .reading-options-img")){ fitReadingWord(); layoutReadingTiles(); }
   if(!$("#catchModal").classList.contains("hidden")) fitCatchArt();
 });
 $("#catchOkBtn").addEventListener("click", ()=>{

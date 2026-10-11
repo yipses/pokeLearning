@@ -691,6 +691,16 @@ A family that splits stacks its evolutions in a column, and in the mock that pus
 
 **Measured.** Home (Geodude, Bulbasaur, Charizard, Starmie) and catch (Geodude, Bulbasaur, Mewtwo) at 2000×1140, 1440×900, 1280×800, 1024×768, 820×1180, 470×830, 390×844 and 360×640: drawn Pokémon centred on the scene to the pixel, below the HUD, no scroll, Start and the catch button on screen, no console errors. The Pokédex sheet keeps the plain square (its inline sizing is cleared). The link was checked from Gen 1 and Gen 2 Pokémon with another generation last viewed.
 
+## Phase 88 — answer tiles and speakers get rules
+
+Reverse Read & Choose "functionally fine, but rough". A first pass (square green tiles, centred last row) was judged still amateur, so an agent briefed as a senior UI designer critiqued it. Its diagnosis, worst first: ten loud speaker buttons that did not group with their pictures (6px to their own tile, 12px to the next row's); small mismatched art in empty boxes; every tile green before answering, though green means correct; an upside-down header (a big mode tag, an unanchored word); a card whose height changed with the option count.
+
+**Shipped:** neutral answer tiles everywhere, maths included, with a ✓ badge and pop when right and dim-and-sink when wrong; a quieter mode tag; the word on a plate, shrinking to fit; Read & Choose matched (180px frame, 56px word buttons, odd last centred). Rejected along the way, by the owner: a cream disc inside each tile (a frame inside a frame), a speaker detached below the tile (awkward), and a speaker sized as 30% of its tile (30px on a phone — too small, and a different size per screen).
+
+**The rules that came out of it** (Overview §14.0): drawn size = tap size; fixed control sizes (48px speaker); fixed tile shapes; layout chosen per question by trying every column count and keeping the biggest tiles that fit both ways; pictures clear of the speaker; text gives way before tiles; green only for correct. **Every speaker in the app** now follows the same rule — 48px on the bottom-right of the picture it names — where it had been 42, 44 or 52px at per-screen offsets, floating on the grass on the catch screen.
+
+**Measured.** Reverse with 3, 4 and 5 options and Read & Choose at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900: no scroll, no artwork under a speaker, speakers 48px (zoomed with the question where the screen zooms), the catch speaker centred on its frame's edge, no console errors. Layouts: 2+2+1 on phones, 3+2 from 1024 wide. The help light still shows on the new tiles, animated and under reduced motion.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
