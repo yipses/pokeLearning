@@ -1396,23 +1396,18 @@
      gives way, so the name card, the trails and Start keep their size. */
   #setup:not(.hidden){ display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
   /* A zero basis: the meadow takes only the height left over once everything
-     below it has its size, which is what keeps Start on screen at 360×640. */
-  .home-scene{ flex:1 1 0; min-height:150px; max-height:min(56vh, 520px); display:flex; flex-direction:column; }
-  .home-scene::before{
-    content:""; position:absolute; right:calc(var(--scene-pad) + 14px); top:clamp(64px, 12vh, 104px);
-    width:clamp(40px, 7vh, 62px); aspect-ratio:1; border-radius:50%; background:var(--sun-500);
-  }
-  .home-scene::after{
-    content:""; position:absolute; left:calc(var(--scene-pad) + 10px); top:clamp(72px, 13vh, 116px);
-    width:92px; height:24px; border-radius:12px; background:#fff; box-shadow:26px -14px 0 -4px #fff;
-  }
+     below it has its size, which is what keeps Start on screen at 360×640. It
+     has no ceiling — on a tall screen the spare height is more meadow, not a gap
+     above the buttons. */
+  .home-scene{ flex:1 1 0; min-height:150px; display:flex; flex-direction:column; overflow:hidden; background:var(--sky-300); }
+  .meadow-art{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
   .home-stage{
     position:relative; z-index:2; flex:1 1 auto; min-height:0;
     display:flex; align-items:flex-end; justify-content:center; padding:6px 0 34px;
   }
-  .showcase-pick{ height:100%; max-height:240px; display:flex; align-items:flex-end; border-radius:24px; }
+  .showcase-pick{ height:100%; max-height:260px; display:flex; align-items:flex-end; border-radius:24px; }
   .showcase-pick img{
-    height:100%; max-height:240px; width:auto; max-width:min(70vw, 280px); object-fit:contain;
+    height:100%; max-height:260px; width:auto; max-width:min(70vw, 280px); object-fit:contain;
     filter:drop-shadow(0 8px 6px rgba(35,102,58,.35));
   }
   .showcase-pick img.silhouette{ filter:brightness(0) opacity(.22); }
@@ -1442,7 +1437,13 @@
   @media (max-width:400px){ .showcase .showcase-dex .level-bar{ display:none; } }
 
   .levels-card{ margin:0; padding:16px 2px 0; background:transparent; box-shadow:none; border-radius:0; }
-  .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px 16px; }
+  /* Each trail is a small card: on a wide screen five lines of text on paper
+     read as a list, not a panel. Three across from 640px. */
+  .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+  .level-tile{ background:var(--surface); border-radius:18px; padding:10px 12px 12px; box-shadow:0 0 0 2px var(--paper-line); gap:6px; }
+  .level-tile .level-bar{ height:8px; }
+  .level-tile.locked{ background:transparent; box-shadow:inset 0 0 0 2px var(--paper-line); }
+  @media (min-width:640px){ .levels-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
   .level-name{ text-transform:none; letter-spacing:0; font-size:.75rem; gap:6px; }
   .level-icon{ width:20px; height:20px; padding:2px; border-radius:6px; color:#fff; }
   .level-num{ font-size:.9375rem; }
@@ -1450,7 +1451,7 @@
   .level-tile.locked .level-num{ color:var(--ink-soft); }
 
   .home-actions{
-    grid-template-columns:1.6fr 1fr; gap:12px; margin-top:auto;
+    grid-template-columns:1.6fr 1fr; gap:12px; margin-top:0;
     padding:18px 0 max(18px, env(safe-area-inset-bottom));
   }
   .home-actions .btn{ flex-direction:row; gap:9px; min-height:60px; padding:0 14px; font-size:1.1875rem; }
@@ -1463,6 +1464,28 @@
     .home-actions .btn{ min-height:54px; font-size:1.0625rem; }
     .levels-card{ padding-top:10px; }
     .levels-grid{ gap:8px 14px; }
+    /* A short phone keeps plain tiles: the cards' padding costs the Pokémon
+       more height than it has to give. */
+    .level-tile, .level-tile.locked{ background:transparent; box-shadow:none; padding:0; }
+    .level-tile .level-bar{ height:6px; }
+  }
+  /* Wide screens: the meadow on the left, everything about the Pokémon on the
+     right — a phone layout stretched across a landscape window was mostly sky. */
+  @media (min-width:900px){
+    body[data-screen="setup"] .wrap{ max-width:none; padding:0; }
+    #setup:not(.hidden){
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(400px, 500px);
+      grid-template-rows:1fr auto auto auto 1fr; column-gap:40px;
+      height:100vh; height:100dvh; min-height:560px; padding-right:40px;
+    }
+    .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 32px; border-radius:0 32px 32px 0; }
+    .home-stage{ padding-bottom:9%; }
+    .showcase-pick, .showcase-pick img{ max-height:min(340px, 100%); }
+    .showcase-pick img{ max-width:none; }
+    #homeShowcase{ grid-column:2; grid-row:2; margin:0; }
+    #homeLevels{ grid-column:2; grid-row:3; }
+    #homeLevels .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .home-actions{ grid-column:2; grid-row:4; padding-bottom:0; }
   }
 
   /* ---------- A question ---------- */
@@ -1485,17 +1508,22 @@
     background:#fff; color:var(--leaf-700); font-weight:900; font-size:18px;
     box-shadow:0 3px 0 rgba(35,102,58,.25);
   }
+  /* The card ends where its question ends; below it is paper. Stretched to the
+     bottom of the screen it was mostly empty card on anything taller than a
+     phone. Feedback and the ✓ appear below the answers, so when they arrive only
+     the card's bottom edge moves — nothing a child is looking at shifts. */
   #stage.card{
-    position:relative; z-index:2; margin:-22px 0 0; border-radius:30px; padding:20px 18px;
+    position:relative; z-index:2; margin:-22px 0 0; border-radius:30px; padding:20px 18px 20px;
     box-shadow:0 0 0 3px var(--paper-line), 0 10px 30px rgba(46,43,36,.1);
-    /* Down to the bottom of the screen: the scene, less the 22px the card
-       tucks under the grass, plus the page's 16px foot. */
-    min-height:calc(100vh - 184px); min-height:calc(100dvh - 184px);
   }
+  /* Room to spare becomes a bigger question, not an emptier one: one uniform
+     scale on the card's contents, stepped by the space the screen really has. */
+  @media (min-width:440px) and (min-height:820px){ #stage > *{ zoom:1.15; } }
+  @media (min-width:700px) and (min-height:960px){ #stage > *{ zoom:1.35; } }
   @media (max-height:700px){
     .play-scene{ height:118px; }
     .grass-strip.shaking::after{ top:-6px; }
-    #stage.card{ min-height:calc(100dvh - 112px); padding-top:12px; }
+    #stage.card{ padding-top:12px; }
     #stage .kind-tag{ margin-bottom:8px; }
     #stage .poke-frame:not(.compact){ width:160px; height:160px; }
   }
@@ -1698,6 +1726,20 @@
          your own Pokémon stands on its hill. It is the one part of the screen that
          gives way on a short phone, so Start never leaves the screen. -->
     <div class="scene home-scene">
+      <!-- The meadow itself. Drawn 1200×600 and cropped from the sides as the
+           screen narrows (xMidYMax slice), so the middle — where the Pokémon
+           stands on its mound — is always in view. -->
+      <svg class="meadow-art" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+        <circle cx="760" cy="215" r="40" fill="#ffd66b"/>
+        <g fill="#fff"><rect x="330" y="96" width="150" height="34" rx="17"/><rect x="372" y="76" width="74" height="34" rx="17"/><rect x="640" y="190" width="110" height="26" rx="13" opacity=".9"/><rect x="960" y="70" width="130" height="30" rx="15"/><rect x="90" y="150" width="120" height="28" rx="14" opacity=".9"/></g>
+        <path d="M0 415 Q 300 330 620 395 T 1200 372 V600 H0z" fill="#c9e8c4"/>
+        <g fill="#8cc98c"><rect x="247" y="370" width="6" height="26" fill="#6b9e6a"/><circle cx="250" cy="370" r="26"/><rect x="287" y="362" width="6" height="32" fill="#6b9e6a"/><circle cx="290" cy="362" r="32"/><rect x="327" y="372" width="6" height="22" fill="#6b9e6a"/><circle cx="330" cy="372" r="22"/><rect x="877" y="358" width="6" height="28" fill="#6b9e6a"/><circle cx="880" cy="358" r="28"/><rect x="915" y="350" width="6" height="34" fill="#6b9e6a"/><circle cx="918" cy="350" r="34"/><rect x="953" y="360" width="6" height="24" fill="#6b9e6a"/><circle cx="956" cy="360" r="24"/><rect x="557" y="384" width="6" height="20" fill="#6b9e6a"/><circle cx="560" cy="384" r="20"/></g>
+        <path d="M0 468 Q 360 390 760 448 T 1200 428 V600 H0z" fill="#a8d9aa"/>
+        <path d="M0 530 Q 420 468 840 518 T 1200 502 V600 H0z" fill="#7cc47f"/>
+        <g fill="#5fae66"><circle cx="300" cy="520" r="30"/><circle cx="338" cy="512" r="38"/><circle cx="378" cy="522" r="26"/><circle cx="862" cy="516" r="32"/><circle cx="900" cy="506" r="40"/><circle cx="940" cy="518" r="28"/></g>
+        <ellipse cx="600" cy="588" rx="220" ry="42" fill="#6cba70"/>
+        <g><circle cx="440" cy="560" r="6" fill="#fff"/><circle cx="440" cy="560" r="2.4" fill="#f2b03d"/><circle cx="470" cy="572" r="6" fill="#ffd66b"/><circle cx="470" cy="572" r="2.4" fill="#f2b03d"/><circle cx="760" cy="566" r="6" fill="#fff"/><circle cx="760" cy="566" r="2.4" fill="#f2b03d"/><circle cx="792" cy="556" r="6" fill="#ef7d8e"/><circle cx="792" cy="556" r="2.4" fill="#f2b03d"/><circle cx="520" cy="548" r="6" fill="#ef7d8e"/><circle cx="520" cy="548" r="2.4" fill="#f2b03d"/><circle cx="690" cy="552" r="6" fill="#ffd66b"/><circle cx="690" cy="552" r="2.4" fill="#f2b03d"/><circle cx="410" cy="546" r="6" fill="#ffd66b"/><circle cx="410" cy="546" r="2.4" fill="#f2b03d"/><circle cx="815" cy="578" r="6" fill="#fff"/><circle cx="815" cy="578" r="2.4" fill="#f2b03d"/></g>
+      </svg>
   <div class="home-top" id="homeTop">
     <div class="home-tiles" id="homeTiles"></div>
     <div class="brand">
@@ -1950,7 +1992,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 97;
+const APP_BUILD = 98;
 const APP_BUILD_DATE = "10 Oct 2026";
 
 function renderAbout(){

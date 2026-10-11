@@ -635,6 +635,14 @@ The whole app was restyled and several screens re-laid out, from a design system
 - The new styles sit as one labelled layer at the end of the stylesheet, over the rules they replace. Folding them into the rules underneath and deleting what is now dead is a cleanup still to do — grep each name before deleting, as ever.
 - Plain maths, Pattern and visual add/subtract/divide were driven in the real app with the maths tracks unlocked: zero scroll at 390×844, and at 360×640 once the card's top spacing tightened on short screens — except grouped division, where a sampled `15 ÷ 5` still overshoots by 8px. Big divisions scrolled before this change too (`25 ÷ 5` was 919px tall); the tallest one was not re-measured in the new layout.
 
+## Phase 81 — home fills its screen; the question card ends with its question
+
+Two things looked sparse on real screens once the redesign shipped: the question card stretched to the bottom of any screen taller than a phone, mostly empty, and the home screen on a desktop window was a phone layout spread across a lot of sky.
+
+**The question card** now ends where its question ends. Centring the question in the space was considered and rejected: questions differ in height, so the picture and answers would have sat at a different height every time, and moved again when "Try again!" or the ✓ appeared. Ending the card keeps the prompt in one place; feedback grows the card downward, so nothing above it moves. A first mock reserved space under the answers for that feedback — unnecessary for the same reason, and it put the empty band back inside the card. Where there is room, the question scales up instead (CSS `zoom`, 1.15× from 440×820, 1.35× from 700×960). Measured: no scroll for any question type at 360×640, 390×844, 470×830, 820×1180 or 1280×800, and real taps land through the zoom. The 1.15× step started at 800px tall at first; that left Pattern 7px over at 1280×800, so it starts at 820.
+
+**Home** got a drawn scene instead of two hills (trees, bushes, flowers, clouds, a mound), trail cards, buttons directly under the trails with any spare height going to the meadow, and a two-column layout from 900px wide. On a short phone the cards made the Pokémon 89px tall, so at 700px tall or less the tiles stay plain (165px at 360×640). The sun first landed behind the HUD's gear on phones and was moved down and inward. Measured at ten sizes from 360×640 to 1440×900: no scroll, Start on screen; at 320×568 the Pokémon is 95px, below the old 122px floor, on a size smaller than any the spec lists.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
