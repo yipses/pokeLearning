@@ -1,0 +1,10 @@
+level,blanks,frame,stretch,spare_tiles,spoken_tiles,promote_5_pct,promote_10_pct
+1,1,last1,2,2,yes,100,80
+2,2,last2,2,3,yes,100,80
+3,1,not1,2,1,yes,100,80
+4,2,given,2,3,yes,100,80
+5,3,last3,2,3,yes,100,80
+6,3,type_given,2,3,no,100,80
+7,4,last4,2,4,no,100,80
+8,2,verb_given,2,3,no,100,80
+9,all,all,2,4,no,100,80

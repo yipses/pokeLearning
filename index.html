@@ -63,6 +63,9 @@
     --sun-100:#fff3cc;  --sun-300:#ffe49e;  --sun-500:#ffd66b;  --sun-700:#a86e00;  --sun-800:#6b4700;
     --berry-100:#fde6ea; --berry-500:#ef7d8e; --berry-600:#c8435a; --berry-700:#a3304a;
     --violet-600:#7a4fc4; --teal-600:#2a8a75; --flame-600:#d9701f;
+    /* Sentences' trail colour: the one hue no other trail or meaning uses.
+       White on it is 7.1:1. */
+    --bark-700:#7a4e24;
     --primary:      var(--leaf-600);
     --primary-edge: var(--leaf-700);
     --accent:       var(--berry-600);
@@ -267,6 +270,7 @@
   .kind-visual{ background:var(--leaf-600); }
   .kind-reading{ background:var(--violet-600); }
   .kind-alpha{ background:var(--teal-600); }
+  .kind-sentence{ background:var(--bark-700); }
   .kind-battle{ background:var(--ink); color:var(--sun-500); }
 
   /* The number pad is tall, and on a phone the maths screens ran past the fold
@@ -1703,19 +1707,64 @@
   .tile:active{ box-shadow:0 1px 0 var(--paper-edge); }
   .tiles{ gap:10px; margin-top:20px; }
 
+  /* ===== Sentences =====
+     The sentence is one line of word-sized cells that wraps only between words:
+     given words on the grey of a given letter, blanks outlined, the open one
+     amber, a filled one green. Words take the WORD role (20/800), like Read &
+     Choose's word buttons, and every cell is the height of the tile that fills
+     it. Every blank is the SAME width and grows to its word once filled: a blank
+     sized to its answer would say which tile goes there — a long blank beside
+     "fire" and "fighting" answers the question. On a short screen the picture
+     shrinks first, then the cells and tiles come down to the 48px floor. */
+  .sent-line{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:16px 0 0; --cell:56px; }
+  .sent-word, .sent-slot, #sentTiles .tile.word{ height:var(--cell); }
+  #sentTiles{ --cell:56px; gap:8px 10px; margin-top:18px; }
+  .sent-word, .sent-slot{
+    box-sizing:border-box; min-width:48px; padding:0 14px; border-radius:12px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:20px; font-weight:800; line-height:1; color:var(--ink);
+  }
+  .sent-word{ background:var(--surface-sunken); }
+  .sent-slot{ min-width:72px; border:2px solid var(--line-strong); background:var(--surface); }
+  .sent-slot.current{ border:3px solid var(--sun-700); box-shadow:0 0 0 5px var(--sun-300); }
+  .sent-slot.sent-correct{ border-color:var(--leaf-700); background:var(--leaf-100); color:var(--leaf-700); }
+  .tile.word{ font-size:20px; font-weight:800; padding:0 14px; text-transform:none; }
+  @media (max-height:860px) and (max-width:600px){
+    #stage .frame-wrap .poke-frame.reading-frame.sent-frame{ width:120px; height:120px; }
+  }
+  @media (max-height:860px){
+    .sent-line, #sentTiles{ --cell:52px; }
+    .sent-line{ margin-top:12px; } #sentTiles{ margin-top:14px; }
+  }
+  @media (max-height:700px){
+    #stage .frame-wrap .poke-frame.reading-frame.sent-frame{ width:96px; height:96px; }
+    #stage[data-kind="sentence"] .kind-tag{ margin-bottom:4px; }
+    #stage[data-kind="sentence"] .feedback{ min-height:28px; margin-top:8px; }
+    .sent-line, #sentTiles{ --cell:48px; }
+    .sent-line{ gap:6px; margin-top:6px; } #sentTiles{ gap:6px 8px; margin-top:8px; }
+    .sent-word, .sent-slot, .tile.word{ padding:0 11px; }
+    .sent-slot{ min-width:60px; }
+  }
+  /* The speaker reading the bank lifts each tile as its word is said — position,
+     not colour, because every colour on this screen already means something. */
+  .tile.word.saying{ transform:translateY(-6px); }
+  @media (prefers-reduced-motion: reduce){ .tile.word.saying{ transform:none; outline:3px solid var(--ink); outline-offset:2px; } }
+
 
   /* The help light. Alphabet and Pattern light GREEN, like Spelling: all three
      already wear an amber ring as the "you are here" cursor, and a second amber
      meaning "this is the answer" made the help invisible. Plain maths and
      reading have no cursor, so they keep the amber light. */
   #stage[data-kind="alpha"] .answer-lit,
-  #stage[data-kind="pattern"] .answer-lit{
+  #stage[data-kind="pattern"] .answer-lit,
+  #stage[data-kind="sentence"] .answer-lit{
     border-color:var(--leaf-700) !important; background:var(--leaf-100);
     animation:answer-lit-green-pulse 1.25s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce){
     #stage[data-kind="alpha"] .answer-lit,
-    #stage[data-kind="pattern"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
+    #stage[data-kind="pattern"] .answer-lit,
+    #stage[data-kind="sentence"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
   }
   @media (max-width:480px){ .alpha-name{ font-size:11px; } }
 
@@ -2174,6 +2223,25 @@
     </div>
 
     <div class="card">
+      <h2>Sentences Trail</h2>
+      <p class="sub">A Pok&eacute;mon's picture and a sentence about it with words missing &mdash; &ldquo;Pikachu is ___&rdquo; &mdash; filled from a bank of word tiles. Its own ladder in <code>data/sentence_levels.csv</code>: the sentences grow longer, a given word bridges each step, and every word stays within reach of the Reading level. Facts per Pok&eacute;mon are in <code>data/pokemon_facts.csv</code>.</p>
+
+      <div class="field">
+        <label>Turn on sentences
+          <span class="hint">Include sentence rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="sentOn" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="field">
+        <label>Sentences level
+          <span class="hint" id="sentencesLevelHint">—</span>
+        </label>
+        <select id="sentencesFrontier"></select>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Math Trails</h2>
       <p class="sub">Eight tracks — add, subtract, multiply, divide and a skip-counting pattern track for each. A track opens once its prerequisite reaches the level named in <code>data/math_tracks.csv</code>, and everything open has a chance to come up.</p>
 
@@ -2302,7 +2370,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 108;
+const APP_BUILD = 109;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -2406,7 +2474,8 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 
 async function loadData(){
   const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
-         mathTrackRows, mathLevelRows, mathPromoRows] = await Promise.all([
+         mathTrackRows, mathLevelRows, mathPromoRows,
+         sentRows, factRows, sentWordRows, wordLevelRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -2418,6 +2487,10 @@ async function loadData(){
     fetchCsv("data/math_tracks.csv"),
     fetchCsv("data/math_levels.csv"),
     fetchCsv("data/math_promotion.csv"),
+    fetchCsv("data/sentence_levels.csv"),
+    fetchCsv("data/pokemon_facts.csv"),
+    fetchCsv("data/sentence_words.csv"),
+    fetchCsv("data/word_levels.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -2525,6 +2598,7 @@ async function loadData(){
     if(L >= "A" && L <= "Z") (ALPHABET_POOL[L] ||= []).push(p);
   }
   for(const row of ALPHABET_ROWS) checkAlphaRow(row);
+  loadSentenceData(sentRows, factRows, sentWordRows, wordLevelRows);
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
@@ -2686,7 +2760,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
-const TRACK_IDS = ["spelling","reading","alphabet", ...MATH_TRACK_IDS];
+const TRACK_IDS = ["spelling","reading","alphabet","sentences", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -2719,6 +2793,7 @@ function trackLevels(track){
   if(track==="spelling") return SPELLING_LEVELS;
   if(track==="reading") return READING_LEVELS;
   if(track==="alphabet") return ALPHABET_LEVELS;
+  if(track==="sentences") return SENTENCE_LEVELS;
   return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
 function frontierIndex(track){
@@ -3254,7 +3329,7 @@ function buildAlphabetLevels(){
     gen: ()=> mkAlphabet(row),
   }));
 }
-let SPELLING_LEVELS = [], READING_LEVELS = [], ALPHABET_LEVELS = [];
+let SPELLING_LEVELS = [], READING_LEVELS = [], ALPHABET_LEVELS = [], SENTENCE_LEVELS = [];
 
 
 /* ---------------- build a session queue ---------------- */
@@ -3274,7 +3349,9 @@ function buildQueue(){
   const wordPick = track => () => {
     const {level, isFrontier} = pickBand(track);
     const p = level.gen();
-    p.track = track; p.isFrontier = isFrontier; p.levelId = level.id;
+    // A fallback question (§sentences) was asked from another level than the one
+    // picked, so it can't count toward that level's promotion.
+    p.track = track; p.isFrontier = isFrontier && !p.fellBack; p.levelId = level.id;
     return p;
   };
   const mathPick = () => {
@@ -3298,6 +3375,7 @@ function buildQueue(){
   if($("#spellOn").checked)   groups.push(wordPick("spelling"));
   if($("#readingOn").checked) groups.push(wordPick("reading"));
   if($("#alphaOn").checked)   groups.push(wordPick("alphabet"));
+  if($("#sentOn").checked)    groups.push(wordPick("sentences"));
   if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
   if(groups.length === 0) return [];
 
@@ -3351,6 +3429,7 @@ function saveSettings(){
     spellOn: $("#spellOn").checked,
     readingOn: $("#readingOn").checked,
     alphaOn: $("#alphaOn").checked,
+    sentOn: $("#sentOn").checked,
     mathOn: $("#mathOn").checked,
     visualOn: $("#visualOn").checked
   };
@@ -3368,6 +3447,7 @@ function loadSettings(){
   if(saved.spellOn!=null) $("#spellOn").checked = saved.spellOn;
   if(saved.readingOn!=null) $("#readingOn").checked = saved.readingOn;
   if(saved.alphaOn!=null) $("#alphaOn").checked = saved.alphaOn;
+  if(saved.sentOn!=null) $("#sentOn").checked = saved.sentOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
 }
@@ -3629,6 +3709,11 @@ const LEVEL_ICONS = {
       text-anchor="middle" textLength="22" lengthAdjust="spacingAndGlyphs"
       font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
       style="text-transform:none" fill="currentColor">ABC</text></svg>`,
+  // A sentence is words in a row with one missing: two word blocks and a gap
+  // drawn as the blank it is, which is also exactly what the screen shows.
+  sentences: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">
+      <rect x="1.5" y="8.5" width="7" height="7" rx="2"/><rect x="10" y="8.5" width="4.5" height="7" rx="2"/>
+      <rect x="16.5" y="9.5" width="6" height="5" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
   // Both maths tracks carry the same numerals: the icon's job is to say "this
   // is maths", and the label beside it says which operation. Two different
   // symbols there made them look like two unrelated subjects.
@@ -3647,6 +3732,7 @@ const LEVEL_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-700)"},
   {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
   {id:"alphabet", label:"Alphabet", color:"var(--teal-700)"},
+  {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
@@ -3735,6 +3821,7 @@ function renderProblem(){
   if(p.kind==="spell"){ if(p.task==="missing") renderMissingLetter(p); else renderSpell(p); }
   else if(p.kind==="reading") renderReading(p);
   else if(p.kind==="alpha") renderAlphabet(p);
+  else if(p.kind==="sentence") renderSentence(p);
   else if(p.kind==="pattern") renderPattern(p);
   else if(p.kind==="visual") renderVisual(p);
   else renderMath(p);
@@ -3822,7 +3909,7 @@ function revealAfter(){
      still count toward the round. Spelling does not score on wrong taps at all,
      so that floor would only make its light arrive later for no benefit; its own
      budget carries the guarantee instead. */
-  if(isSpellQuestion(queue[idx])) return revealFloor();
+  if(usesToldBudget(queue[idx])) return revealFloor();
   return Math.max(revealFloor(), mistakeAllowance() + 1);
 }
 let stepMisses = 0;
@@ -3855,7 +3942,9 @@ function revealDue(){ return stepMisses >= revealAfter(); }
    nothing told. Letting a told letter promote would inflate the ladder and strand
    him on a rung he cannot actually spell, which is the cliff all of this exists
    to avoid. The budget governs the progress bar, never the trail. */
-function isSpellQuestion(p){ return !!p && p.kind === "spell"; }
+/* Sentences score the same way: a word bank invites trying a tile, and being told
+   a word is the honest signal. */
+function usesToldBudget(p){ return !!p && (p.kind === "spell" || p.kind === "sentence"); }
 function freeHints(blanks){ return Math.floor((blanks || 0) / 3); }
 function toldCount(p){ return (p && p._told) || 0; }
 /* The light just paid out: bank the letter and re-arm so the next blank is not
@@ -3895,7 +3984,7 @@ function syncMissingLight(){
 }
 function spotless(p){ return !p || !p._mistakes; }
 function countsForRound(p){
-  if(isSpellQuestion(p)) return toldCount(p) <= freeHints(p._blankCount);
+  if(usesToldBudget(p)) return toldCount(p) <= freeHints(p._blankCount);
   return (p && p._mistakes || 0) <= mistakeAllowance();
 }
 
@@ -4494,6 +4583,7 @@ const WORD_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-700)"},
   {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
   {id:"alphabet", label:"Alphabet", color:"var(--teal-600)"},
+  {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
@@ -5239,6 +5329,440 @@ function finishMissingLetter(){
   lockAndAdvance(done => blendBack(word, done));
 }
 
+/* ---------------- §sentences ----------------
+   A Pokémon's picture and a sentence about it with words missing —
+   "Pikachu is ___" — filled by tapping word tiles into the blanks. It asks two
+   things at once: the grammar of the sentence ("am" can't follow a name) and
+   what the picture shows (Pikachu is not blue). Every wrong tile is wrong for one
+   of those two reasons.
+
+   The facts live in data/pokemon_facts.csv, one row per original-151 Pokémon:
+   its main colours, any other colours worth accepting, its size, and what it can
+   and clearly can't do. Its type comes from pokemon.csv. From those, a handful
+   of sentence patterns:
+
+       colour       Pikachu is yellow          size        Snorlax is big
+       action       Psyduck can swim           very size   Onix is very big
+       fly high     Pidgey can fly high        not colour  Pikachu is not blue
+       type         Onix is a rock type
+
+   RIGHT IS DECIDED BY TRUTH, NOT BY MATCHING. A tile is accepted if the sentence
+   can still be finished TRUE with the tiles left (sentenceCompletes), so a second
+   right answer is rewarded rather than marked wrong. That is what the `also`
+   colours are for: judgement calls (is Bulbasaur green or blue?) and markings
+   (Pikachu's red cheeks) count as right if picked, and are never offered as a
+   wrong tile. Eyes are ignored entirely — every Pokémon has black eyes, and a
+   child can always say "black".
+
+   "not" turns the spares round: the bank holds exactly ONE colour the Pokémon
+   isn't, and the traps are its own main colours. Two colours it isn't would make
+   two right answers to a question that is about spotting the one that's false.
+
+   The ladder (data/sentence_levels.csv) grows the number of blanks, and each
+   longer length is introduced with a word given in the frame first — "Onix ___
+   very ___" before "Onix ___ ___ ___". Every word in the sentence and the bank
+   (the name aside) must be within the child's READING word level plus the row's
+   `stretch`, so the two trails move together. Words the phonics list doesn't
+   grade — is, am, are, very, swim — are graded in data/sentence_words.csv;
+   word_levels.csv wins where both have a word. */
+const SENTENCE_COLOURS = ["red","pink","black","white","blue","green","yellow","brown","gray","orange","purple"];
+const SENTENCE_SIZES = ["very small","small","","big","very big"];
+const SENTENCE_ACTIONS = ["fly","swim","run","jump","dig"];
+/* Which words of the sentence are blank, for each `frame` in the ladder, and how
+   many that is (checked against the row's `blanks`). Index 0 is the name. */
+const SENTENCE_FRAMES = {
+  last1:1, last2:2, not1:1, given:2, last3:3, type_given:3, last4:4, verb_given:2, all:"all",
+};
+const SENTENCE_FRAME_LABELS = {
+  last1:'One word: "Pikachu is ___"', last2:'Two words: "Pikachu ___ ___"',
+  not1:'"not": "Pikachu is not ___"', given:'Two words around a given one',
+  last3:'Three words', type_given:'Type, with the type word given', last4:'Four words',
+  verb_given:'Name and one word, the verb given', all:'The whole sentence',
+};
+let SENTENCE_ROWS = [], SENTENCE_FACTS = [], SENTENCE_WORD_LEVEL = {};
+
+function loadSentenceData(levelRows, factRows, wordRows, wordLevelRows){
+  const n = v => Number(v);
+  const list = v => String(v || "").split("|").map(x => x.trim().toLowerCase()).filter(Boolean);
+  SENTENCE_WORD_LEVEL = {};
+  for(const r of wordLevelRows) if(r.word && r.level) SENTENCE_WORD_LEVEL[r.word.toLowerCase()] = n(r.level);
+  for(const r of wordRows){
+    const w = String(r.word || "").trim().toLowerCase();
+    if(!w) continue;
+    // A clash is a warning, never a stop: regenerating word_levels.csv from a new
+    // item can add "fly" there at any time, and that must not take the app down.
+    if(w in SENTENCE_WORD_LEVEL){
+      console.warn(`data/sentence_words.csv: "${w}" is already graded ${SENTENCE_WORD_LEVEL[w]} in word_levels.csv, which wins`);
+      continue;
+    }
+    SENTENCE_WORD_LEVEL[w] = n(r.level);
+  }
+  SENTENCE_ROWS = levelRows.map(r => ({
+    level: n(r.level),
+    blanks: String(r.blanks || "").trim().toLowerCase(),
+    frame: String(r.frame || "").trim().toLowerCase(),
+    stretch: n(r.stretch), spareTiles: n(r.spare_tiles),
+    spoken: /^(yes|y|true|1)$/i.test(String(r.spoken_tiles || "").trim()),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
+  }));
+  if(!SENTENCE_ROWS.length) throw new Error("data/sentence_levels.csv is empty");
+  SENTENCE_ROWS.forEach(checkSentenceRow);
+
+  const byId = Object.fromEntries(POKEMON.map(p => [p.id, p]));
+  SENTENCE_FACTS = [];
+  for(const r of factRows){
+    const at = `data/pokemon_facts.csv id ${r.id}`;
+    const poke = byId[n(r.id)];
+    if(!poke){ console.warn(`${at}: no such Pokémon in pokemon.csv — skipped`); continue; }
+    const f = {
+      poke, name: poke.n.toLowerCase(),
+      colours: list(r.colours), also: list(r.also),
+      size: String(r.size || "").trim().toLowerCase(),
+      can: list(r.can), cannot: list(r.cannot),
+      types: poke.t.map(t => t.toLowerCase()),
+    };
+    if(!f.colours.length) throw new Error(`${at}: colours is empty`);
+    for(const c of f.colours.concat(f.also))
+      if(!SENTENCE_COLOURS.includes(c)) throw new Error(`${at}: "${c}" is not one of ${SENTENCE_COLOURS.join(", ")}`);
+    if(!SENTENCE_SIZES.includes(f.size)) throw new Error(`${at}: size "${f.size}" is not one of very small, small, big, very big, or blank`);
+    for(const a of f.can.concat(f.cannot))
+      if(!SENTENCE_ACTIONS.includes(a)) throw new Error(`${at}: "${a}" is not one of ${SENTENCE_ACTIONS.join(", ")}`);
+    const both = f.can.filter(a => f.cannot.includes(a));
+    if(both.length) throw new Error(`${at}: ${both.join(", ")} is in both can and cannot`);
+    SENTENCE_FACTS.push(f);
+  }
+  if(!SENTENCE_FACTS.length) throw new Error("data/pokemon_facts.csv has no usable rows");
+  const vocab = new Set(["is","am","are","a","an","can","very","not","high","type","big","small",
+                         ...SENTENCE_COLOURS, ...SENTENCE_ACTIONS]);
+  SENTENCE_FACTS.forEach(f => f.types.forEach(t => vocab.add(t)));
+  const ungraded = [...vocab].filter(w => !(w in SENTENCE_WORD_LEVEL));
+  if(ungraded.length) console.warn(`Sentences: no reading level for ${ungraded.join(", ")} — add them to data/sentence_words.csv; until then they never appear`);
+}
+
+function checkSentenceRow(row){
+  const at = `data/sentence_levels.csv level ${row.level}`;
+  if(!(row.frame in SENTENCE_FRAMES)) throw new Error(`${at}: frame "${row.frame}" is not one of ${Object.keys(SENTENCE_FRAMES).join(", ")}`);
+  if(String(SENTENCE_FRAMES[row.frame]) !== row.blanks)
+    throw new Error(`${at}: frame "${row.frame}" has ${SENTENCE_FRAMES[row.frame]} blanks, but blanks says ${row.blanks || "nothing"}`);
+  if(!(Number.isInteger(row.stretch) && row.stretch >= 0)) throw new Error(`${at}: stretch must be a whole number, 0 or more`);
+  if(!(Number.isInteger(row.spareTiles) && row.spareTiles >= 0 && row.spareTiles <= 8)) throw new Error(`${at}: spare_tiles must be a whole number from 0 to 8`);
+}
+
+const sentenceWordLevel = w => (w in SENTENCE_WORD_LEVEL) ? SENTENCE_WORD_LEVEL[w] : Infinity;
+const sentenceArticle = t => /^[aeiou]/.test(t) ? "an" : "a";
+function sentenceSizeWord(f){
+  if(f.size.endsWith("small")) return "small";
+  if(f.size.endsWith("big")) return "big";
+  return null;
+}
+const sentenceColourTrue = (f, c) => f.colours.includes(c) || f.also.includes(c);
+
+/* Is this sentence true of this Pokémon? `words` is the whole sentence, name
+   first. The one definition of right, used by the generator, by every tap, and
+   by the help light. */
+function sentenceTrue(f, words){
+  if(words[0] !== f.name) return false;
+  const [, a, b, c, d] = words, len = words.length - 1;
+  if(len === 2 && a === "is")  return sentenceColourTrue(f, b) || b === sentenceSizeWord(f);
+  if(len === 2 && a === "can") return f.can.includes(b);
+  if(len === 3 && a === "is" && b === "very") return f.size.startsWith("very") && c === sentenceSizeWord(f);
+  if(len === 3 && a === "can" && b === "fly" && c === "high") return f.can.includes("fly");
+  if(len === 3 && a === "is" && b === "not") return SENTENCE_COLOURS.includes(c) && !sentenceColourTrue(f, c);
+  if(len === 4 && a === "is" && d === "type") return f.types.includes(c) && b === sentenceArticle(c);
+  return false;
+}
+
+/* Every true sentence about one Pokémon, each with the wrong tiles each of its
+   words may be offered beside — wrong for grammar (am, are, a/an) or false of
+   this Pokémon. Spares are chosen so they can't make another true sentence. */
+function sentencePatterns(f){
+  const out = [];
+  const name = f.name, sw = sentenceSizeWord(f), opp = {big:"small", small:"big"}[sw];
+  const falseColours = SENTENCE_COLOURS.filter(c => !sentenceColourTrue(f, c));
+  const isSpares = ["am","are"], canSpares = ["is","am"];
+  for(const C of f.colours)
+    out.push({id:"colour", words:[name,"is",C], spares:{1:isSpares, 2:falseColours.concat(opp ? [opp] : [])}});
+  if(sw) out.push({id:"size", words:[name,"is",sw], spares:{1:isSpares, 2:[opp].concat(falseColours)}});
+  for(const A of f.can)
+    out.push({id:"action", words:[name,"can",A], spares:{1:canSpares, 2:f.cannot}});
+  if(f.size.startsWith("very")) out.push({id:"very", words:[name,"is","very",sw], spares:{1:isSpares, 3:[opp]}});
+  if(f.can.includes("fly")) out.push({id:"flyhigh", words:[name,"can","fly","high"], spares:{1:canSpares, 2:f.cannot}});
+  for(const X of falseColours)
+    out.push({id:"not", words:[name,"is","not",X], spares:{1:isSpares, 3:f.colours}});
+  const otherTypes = [...new Set(SENTENCE_FACTS.flatMap(g => g.types))].filter(t => !f.types.includes(t));
+  for(const T of f.types){
+    const art = sentenceArticle(T);
+    out.push({id:"type", words:[name,"is",art,T,"type"], spares:{1:isSpares, 2:[art === "a" ? "an" : "a"], 3:otherTypes}});
+  }
+  return out;
+}
+
+/* Which word positions a frame leaves blank in a pattern, or null if the frame
+   doesn't take that pattern. */
+function sentenceBlanks(frame, pat){
+  const len = pat.words.length - 1;     // words after the name
+  const all = [...pat.words.keys()];
+  switch(frame){
+    case "last1":      return len === 2 ? [2] : null;
+    case "last2":      return len === 2 ? [1, 2] : null;
+    case "not1":       return pat.id === "not" ? [3] : null;
+    case "given":      return len === 3 || pat.id === "type" ? [1, 3] : null;
+    case "last3":      return len === 3 ? [1, 2, 3] : len === 4 ? [2, 3, 4] : null;
+    case "type_given": return pat.id === "type" ? [1, 2, 4] : null;
+    case "last4":      return pat.id === "type" ? [1, 2, 3, 4] : null;
+    case "verb_given": return len === 2 ? [0, 2] : null;
+    case "all":        return all;
+  }
+  return null;
+}
+
+/* The child's reading word level — the ceiling every sentence word is held to,
+   plus the row's stretch. */
+function sentenceGate(row){
+  const lv = currentLevel("reading");
+  return ((lv && lv.row && lv.row.wordLevel) || 1) + row.stretch;
+}
+
+/* One question for a row at a gate, or null if none can be made. `strict` asks
+   for the row's full count of spare tiles; otherwise one will do. The pattern is
+   chosen first, then the Pokémon, so "not" — which has a variant for every
+   colour a Pokémon isn't — doesn't crowd out "very" and "fly high". */
+function sentenceQuestion(row, gate, strict){
+  const ok = w => sentenceWordLevel(w) <= gate;
+  const byPat = {};
+  for(const f of SENTENCE_FACTS){
+    for(const pat of sentencePatterns(f)){
+      const blanks = sentenceBlanks(row.frame, pat);
+      if(!blanks) continue;
+      if(!pat.words.slice(1).every(ok)) continue;
+      const answers = blanks.map(k => pat.words[k]);
+      const pools = blanks.map(k => shuffle([...new Set(pat.spares[k] || [])].filter(w => ok(w) && !answers.includes(w))));
+      const have = new Set(pools.flat()).size;
+      if(have < (strict ? row.spareTiles : Math.min(1, row.spareTiles))) continue;
+      ((byPat[pat.id] ||= {})[f.name] ||= []).push({f, pat, blanks, answers, pools});
+    }
+  }
+  const ids = Object.keys(byPat);
+  if(!ids.length) return null;
+  const forPat = byPat[ids[rand(ids.length)]];
+  const names = Object.keys(forPat);
+  const variants = forPat[names[rand(names.length)]];
+  const {f, pat, blanks, answers, pools} = variants[rand(variants.length)];
+
+  // Deal the spares round the blanks, so grammar and content traps both show.
+  const spares = [];
+  for(let i = 0; spares.length < row.spareTiles && pools.some(pl => pl.length); i++){
+    const pl = pools[i % pools.length];
+    const w = pl.shift();
+    if(w != null && !spares.includes(w)) spares.push(w);
+  }
+  // Sometimes put an `also` colour beside the main one, so either tap wins.
+  if(pat.id === "colour" && blanks.includes(2) && Math.random() < 0.5){
+    const extra = shuffle(f.also.filter(c => ok(c) && !answers.includes(c)))[0];
+    const at = spares.findIndex(w => SENTENCE_COLOURS.includes(w));
+    if(extra && at >= 0) spares[at] = extra;
+  }
+  return {
+    kind:"sentence", f, poke:f.poke, patId:pat.id,
+    words: pat.words.slice(), blanks, bank: shuffle(answers.concat(spares)), spoken: row.spoken,
+  };
+}
+
+/* A level whose sentences need words past the child's reading level has no
+   question to give yet. Rather than a blank screen, the nearest level that has
+   one is used — below first, then above — and the question is marked so it can't
+   count toward promotion: a fallback question must not carry the child past a
+   level he was never actually asked. */
+function mkSentence(row){
+  const gate = sentenceGate(row);
+  const p = sentenceQuestion(row, gate, true) || sentenceQuestion(row, gate, false);
+  if(p) return p;
+  const i = SENTENCE_ROWS.indexOf(row);
+  const order = SENTENCE_ROWS.slice(0, i).reverse().concat(SENTENCE_ROWS.slice(i + 1));
+  for(const other of order){
+    const q = sentenceQuestion(other, sentenceGate(other), true) || sentenceQuestion(other, sentenceGate(other), false);
+    if(q){ q.fellBack = true; return q; }
+  }
+  const q = sentenceQuestion(row, Infinity, false);
+  q.fellBack = true;
+  return q;
+}
+
+function buildSentenceLevels(){
+  return SENTENCE_ROWS.map(row => ({
+    id: String(row.level), row,
+    label: (SENTENCE_FRAME_LABELS[row.frame] || row.frame) + (row.spoken ? ", words read aloud" : ""),
+    gen: ()=> mkSentence(row),
+  }));
+}
+
+let sentState = null;
+function renderSentence(p){
+  const name = p.words[0];
+  const stage = $("#stage");
+  stage.innerHTML = `
+    <div class="kind-tag kind-sentence">Sentences</div>
+    <div class="frame-wrap">
+      <div class="poke-frame reading-frame sent-frame"><img alt="Mystery Pokémon" src="${p.poke.img || artwork(p.poke.id)}"></div>
+      <button class="frame-say" type="button" id="sentSay" aria-label="Say it">${UI_ICONS.speaker}</button>
+    </div>
+    <div class="sent-line" id="sentLine"></div>
+    <div class="tiles" id="sentTiles"></div>
+    <div class="feedback" id="feedback"></div>
+  `;
+  const shown = w => w === name ? cap(w) : w;
+  const lineEl = $("#sentLine"), slots = [];
+  p.words.forEach((w, i)=>{
+    const el = document.createElement("span");
+    if(p.blanks.includes(i)){ el.className = "sent-slot"; el.dataset.index = String(i); slots.push(el); }
+    else { el.className = "sent-word"; el.textContent = shown(w); }
+    lineEl.appendChild(el);
+  });
+  const bankEl = $("#sentTiles"), tiles = [];
+  p.bank.forEach(w=>{
+    const t = document.createElement("button");
+    t.type = "button"; t.className = "tile word"; t.textContent = shown(w); t.dataset.word = w;
+    t.addEventListener("click", ()=> placeSentenceWord(t));
+    bankEl.appendChild(t); tiles.push(t);
+  });
+  p._blankCount = slots.length;
+  sentState = { p, slots, tiles, filled:{}, done:false, sayToken:0 };
+  if(slots[0]) slots[0].classList.add("current");
+  $("#sentSay").addEventListener("click", sayTheSentenceBank);
+}
+
+/* The picture's speaker. It names the Pokémon, and on a level marked
+   `spoken_tiles` it then reads the bank, lifting each tile as its word is said,
+   so a child who can't read them yet can still tell which tile is which. Tapping
+   a tile only ever places it — hearing a word is free, and a wrong tap is silent. */
+function sayTheSentenceBank(){
+  const st = sentState;
+  if(!st) return;
+  const token = ++st.sayToken;
+  const name = st.p.words[0];
+  const items = [{ text: sayAs(name) }];
+  if(st.p.spoken) st.tiles.filter(t => !t.classList.contains("used"))
+    .forEach(t => items.push({ text: t.dataset.word === name ? sayAs(name) : t.dataset.word, el: t }));
+  let i = 0;
+  const step = ()=>{
+    if(sentState !== st || st.sayToken !== token) return;
+    st.tiles.forEach(t => t.classList.remove("saying"));
+    if(i >= items.length) return;
+    const it = items[i++];
+    if(it.el) it.el.classList.add("saying");
+    speak(it.text, ()=> setTimeout(step, 150));
+  };
+  step();
+}
+function stopSentenceBank(st){
+  st.sayToken++;
+  st.tiles.forEach(t => t.classList.remove("saying"));
+}
+
+function nextSentenceSlot(){
+  return sentState ? sentState.slots.find(sl => !sl.classList.contains("sent-correct")) : null;
+}
+/* Can the sentence still be finished true, with `assign` placed and the rest of
+   the blanks filled from `left`? A handful of tiles and at most five blanks, so
+   trying them all is instant. */
+function sentenceCompletes(p, assign, left, todo){
+  if(!todo.length) return sentenceTrue(p.f, p.words.map((w, i) => i in assign ? assign[i] : w));
+  const [k, ...rest] = todo;
+  const tried = new Set();
+  for(let j = 0; j < left.length; j++){
+    const w = left[j];
+    if(tried.has(w)) continue;
+    tried.add(w);
+    assign[k] = w;
+    const ok = sentenceCompletes(p, assign, left.filter((_, x) => x !== j), rest);
+    delete assign[k];
+    if(ok) return true;
+  }
+  return false;
+}
+function sentenceTileFits(st, slot, tileEl){
+  const k = Number(slot.dataset.index);
+  const assign = { ...st.filled, [k]: tileEl.dataset.word };
+  const left = st.tiles.filter(t => t !== tileEl && !t.classList.contains("used")).map(t => t.dataset.word);
+  const todo = st.slots.filter(sl => sl !== slot && !sl.classList.contains("sent-correct")).map(sl => Number(sl.dataset.index));
+  return sentenceCompletes(st.p, assign, left, todo);
+}
+
+function placeSentenceWord(tileEl){
+  const st = sentState;
+  if(!st || st.done || tileEl.classList.contains("used")) return;
+  const slot = nextSentenceSlot();
+  if(!slot) return;
+  stopSentenceBank(st);
+  const fb = $("#feedback");
+  if(fb.classList.contains("bad")){ fb.textContent = ""; fb.className = "feedback"; }
+  if(!sentenceTileFits(st, slot, tileEl)){
+    bumpMistake(st.p);
+    tileEl.classList.add("shake");
+    setTimeout(()=> tileEl.classList.remove("shake"), 450);
+    fb.className = "feedback bad";
+    fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
+    noteStepMiss();
+    syncSentenceLight();
+    return;                                   // deliberately silent on a miss
+  }
+  fillSentenceSlot(slot, tileEl);
+}
+
+function fillSentenceSlot(slot, tileEl){
+  const st = sentState;
+  // Taking the lit tile spends the light, as in Spelling.
+  if(revealDue()) noteTold(st.p);
+  const word = tileEl.dataset.word;
+  st.filled[Number(slot.dataset.index)] = word;
+  slot.textContent = tileEl.textContent;
+  slot.classList.add("sent-correct");
+  slot.classList.remove("current");
+  tileEl.classList.add("used");
+  tileEl.classList.remove("answer-lit");
+  const next = nextSentenceSlot();
+  if(next) next.classList.add("current");
+  syncSentenceLight();
+  if(!next) finishSentence();
+  else speak(word === st.p.words[0] ? sayAs(word) : word);
+}
+
+/* The light goes on the word the question was built around when it's still in
+   the bank, and otherwise on any tile that keeps the sentence true. */
+function syncSentenceLight(){
+  const st = sentState;
+  if(!st) return;
+  st.tiles.forEach(t => t.classList.remove("answer-lit"));
+  if(!revealDue()) return;
+  const slot = nextSentenceSlot();
+  if(!slot) return;
+  const want = st.p.words[Number(slot.dataset.index)];
+  const free = st.tiles.filter(t => !t.classList.contains("used"));
+  const tile = free.find(t => t.dataset.word === want && sentenceTileFits(st, slot, t))
+            || free.find(t => sentenceTileFits(st, slot, t));
+  if(tile) tile.classList.add("answer-lit");
+}
+
+function finishSentence(){
+  const st = sentState;
+  st.done = true;
+  correct++;
+  const p = st.p;
+  if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
+  const fb = $("#feedback");
+  fb.className = "feedback good";
+  fb.innerHTML = feedbackHTML("good", "Yes!");
+  st.tiles.forEach(t => t.classList.add("used"));
+  // The whole sentence, read back as the child built it.
+  const said = p.words.map((w, i) => i in st.filled ? st.filled[i] : w)
+                      .map((w, i) => i === 0 ? sayAs(w) : w).join(" ");
+  lockAndAdvance(done => {
+    let fired = false;
+    const finish = ()=>{ if(fired) return; fired = true; setTimeout(done, 450); };
+    setTimeout(()=>{ speak(said, finish); setTimeout(finish, 5000); }, 350);
+  });
+}
+
 /* ---------------- ANSWER CHOICES ---------------- */
 /* Every maths mode answers the same way: tap the right number out of six.
 
@@ -5968,7 +6492,7 @@ function markPatternDone(){
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
   const go = ()=>{
-    spellState=null; missingState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
+    spellState=null; missingState=null; sentState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
     next();
   };
   if(typeof waitFor === "function") waitFor(go);
@@ -6343,6 +6867,7 @@ function renderTrailSettings(){
   renderTrailSelect("spelling", "#spellingFrontier", "#spellingLevelHint", "Level");
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
   renderTrailSelect("alphabet", "#alphabetFrontier", "#alphabetLevelHint", "Level");
+  renderTrailSelect("sentences", "#sentencesFrontier", "#sentencesLevelHint", "Level");
 }
 
 /* ---------------- wire up ----------------
@@ -6381,6 +6906,7 @@ function migrateFrontiers(){
   SPELLING_LEVELS = buildSpellingLevels();
   READING_LEVELS = buildReadingLevels();
   ALPHABET_LEVELS = buildAlphabetLevels();
+  SENTENCE_LEVELS = buildSentenceLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
   loadSettings();
@@ -6408,7 +6934,7 @@ $("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
 $("#dexTabs").addEventListener("scroll", updateDexArrows);
 window.addEventListener("resize", updateDexArrows);
 $("#quitBtn").addEventListener("click", ()=>{
-  spellState=null; missingState=null; mathState=null; readingState=null; patternState=null; visualState=null;
+  spellState=null; missingState=null; sentState=null; mathState=null; readingState=null; patternState=null; visualState=null;
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });

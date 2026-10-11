@@ -4,8 +4,10 @@ These CSVs are the source of truth for the app's Pokémon data. `index.html`
 fetches them at startup, so editing a CSV changes the app — no code change and
 no build step.
 
-**The ladders come from the design sheet** — spelling, reading and all eight
-maths tracks, including which track unlocks which:
+**The ladders come from the design sheet** — spelling, reading, alphabet,
+sentences and all eight maths tracks, including which track unlocks which — and
+so do the Sentences trail's facts and word list (tabs *Sentence Level*,
+*Pokémon Facts*, *Sentence Words*):
 
 <https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit>
 
@@ -143,6 +145,45 @@ Every row is checked at load, and one that cannot produce a question **stops the
 The option count (4) and the rule the wrong answers follow — every option at least four letters from every other, the answer included — are **not** in this file; they live in `index.html`.
 
 Traps for `reading_levels.csv`: rows are read in file order but `level` is what the app reports, so keep them consistent. A `distractor_level` pointing at a level that doesn't exist falls back to the row itself. Regenerating `word_levels.csv` does not rewrite these — they are hand-authored from the design spreadsheet.
+
+## The Sentences trail — `sentence_levels.csv`, `pokemon_facts.csv`, `sentence_words.csv`
+
+A Pokémon's picture and a sentence about it with words missing, filled from a bank of word tiles. The three files are the sheet's *Sentence Level*, *Pokémon Facts* and *Sentence Words* tabs.
+
+### `sentence_levels.csv` — 9 rows
+
+| column | meaning |
+| --- | --- |
+| `level` | 1-based |
+| `blanks` | how many words are blank — `1`–`4` or `all`. **Must match `frame`** (it documents it; the frame decides); a mismatch stops the app naming the level |
+| `frame` | which words are blank. `last1` *Pikachu is ___* · `last2` *Pikachu ___ ___* · `not1` *Pikachu is not ___*, and only "not" sentences · `given` two blanks around a given word, *Onix ___ very ___*, *Onix ___ a ___ type* · `last3` the last three words · `type_given` *Onix ___ ___ rock ___* · `last4` *Onix ___ ___ ___ ___* · `verb_given` *___ can ___*, the name a tile · `all` every word, the name included |
+| `stretch` | how far past the child's **Reading** word level the words may go. Every word in the sentence and the bank, the name aside, must be at or under Reading's `word_level` + this |
+| `spare_tiles` | wrong tiles in the bank, 0–8. When a sentence can't find that many it settles for one, rather than not being asked |
+| `spoken_tiles` | `yes` / `no`. On `yes` the picture's speaker reads the bank aloud after the name, lifting each tile as it is said. Tapping a tile never speaks it |
+| `promote_5_pct`, `promote_10_pct` | the two promotion gates, as everywhere else |
+
+### `pokemon_facts.csv` — 147 rows
+
+One row per original-151 Pokémon the roster has (no Nidoran♀/♂, Farfetch'd or Mr. Mime). **These decide what is right**, so they are worth getting right.
+
+| column | meaning |
+| --- | --- |
+| `id`, `name` | `id` must be in `pokemon.csv` (a row that isn't is skipped with a console warning); `name` is for reading the sheet — the app takes the name from `pokemon.csv` |
+| `colours` | main body colours, `\|`-separated. Colour sentences are built around these, and in a *not* sentence they are the trap. Never empty |
+| `also` | other colours that count as **right if picked** — judgement calls (Bulbasaur blue) and markings (Pikachu's red cheeks). Never offered as a wrong tile, and never used in a *not* sentence. Adding a colour here can only make the trail friendlier |
+| `size` | `very small`, `small`, `big`, `very big`, or blank. Blank means no size sentence at all — use it for the borderline ones. `very small` also accepts *small*, `very big` also accepts *big* |
+| `can` | `fly`, `swim`, `run`, `jump`, `dig` it **certainly** does. `fly` also unlocks *can fly high* |
+| `cannot` | actions it clearly can't — these are the only wrong action tiles. Something debatable goes in **neither** list, so it is never asked and never marked wrong |
+
+The type comes from `pokemon.csv`'s `type1`/`type2`; either counts.
+
+**Colours** must be one of `red pink black white blue green yellow brown gray orange purple` (note `gray`). **Eyes never count** — leave them out of both colour columns. A word in both `can` and `cannot` stops the app.
+
+### `sentence_words.csv` — 22 rows
+
+Reading levels (1–9, the same scale as `word_levels.csv`) for the words Sentences uses that the phonics list doesn't grade: `is am are a an not very can high type`, `run dig swim fly`, `purple`, and the type words. **`word_levels.csv` wins** where both have a word — the duplicate is skipped with a console warning, never an error, because regenerating `word_levels.csv` can add a word at any time. A word in neither file has no level and **never appears**; the console names it. `note` is for humans.
+
+Traps: `type` is graded 5, so the type levels (6–7) have nothing to ask below Reading 3 — the trail then serves the nearest level that has a question, and that question doesn't count toward promotion. Lowering `type` opens them earlier.
 
 ## `phonemes.csv` — what each chunk says out loud
 

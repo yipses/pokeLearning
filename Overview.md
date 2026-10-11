@@ -33,25 +33,25 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A meadow carrying two counters and the gear, with one of your Pokémon on its hill; a name card with the generation count; five trail tiles; then "Start playing" and "Battle" |
+| **Start** | A meadow carrying two counters and the gear, with one of your Pokémon on its hill; a name card with the generation count; six trail tiles; then "Start playing" and "Battle" |
 | **Settings** | The chrome, then per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The HUD and "Round finished!" over the meadow, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game; its session record sits beside the screen name |
 | **Pokédex** | The HUD, a ✕ beside **POKÉDEX**, generation tabs, then one generation's grid — caught in colour, uncaught as grey silhouettes |
-| **My progress** | The chrome, a 7-day rounds chart, a card each for Spelling and Reading, then one card per maths family |
+| **My progress** | The chrome, a 7-day rounds chart, a card each for Spelling, Reading, Alphabet and Sentences, then one card per maths family |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
 
 ## 5. Sessions
 
-**A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. How a question earns that credit depends on the mode. In **maths, reading and alphabet** it counts when answered with at most **`Mistakes allowed`** wrong taps — a Settings value, default 1. **Spelling scores differently**: wrong taps are free, and what is counted is how many letters the word had to *show* (§5.1).
+**A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. How a question earns that credit depends on the mode. In **maths, reading and alphabet** it counts when answered with at most **`Mistakes allowed`** wrong taps — a Settings value, default 1. **Spelling scores differently**: wrong taps are free, and what is counted is how many letters the word had to *show* (§5.1). **Sentences scores the same way as Spelling**, counting words shown instead of letters.
 
 **Two different bars, deliberately kept apart.** The Lesson Trails still promote only on a **spotless** question — nothing wrong at all, nothing shown — in every mode, spelling included. The round bar governs only whether a question moves the *round* along. Loosening the round does not loosen the ladder.
 
 **Failure is bounded: after `Show the answer after` wrong taps on one step, the right answer lights up and the child still has to tap it.** Every mode blocks until the answer is right and there is no skip — deliberately, since being told the answer costs the struggle that makes it stick. But that left a dead end: a question resting on something never taught has no exit, and tapping every option in turn is the only move the screen offers. That is not a child giving up, it is the only input the app accepts.
 
-The answer lights in a pulse — never a still highlight, because a correct answer never moves. **Maths and Reading light amber**, deliberately not the green those modes already use for "you got it". **Spelling, Alphabet and Pattern light green** instead, because amber is taken there: the blank being filled — a spelling slot, the alphabet gap, the open pattern row — wears an amber ring as a cursor on every question, from the moment it loads and with nothing wrong. Two near-identical ambers meant a parent watching could not tell *you are here* from *here is the answer* — the help was invisible, which is the one thing it must not be. Green is free on the answers in those modes: a correct answer turns the **slot** green, never the option, so nothing in the bank wears green to mean "right".
+The answer lights in a pulse — never a still highlight, because a correct answer never moves. **Maths and Reading light amber**, deliberately not the green those modes already use for "you got it". **Spelling, Alphabet, Pattern and Sentences light green** instead, because amber is taken there: the blank being filled — a spelling slot, the alphabet gap, the open pattern row, the open blank in a sentence — wears an amber ring as a cursor on every question, from the moment it loads and with nothing wrong. Two near-identical ambers meant a parent watching could not tell *you are here* from *here is the answer* — the help was invisible, which is the one thing it must not be. Green is free on the answers in those modes: a correct answer turns the **slot** green, never the option, so nothing in the bank wears green to mean "right".
 
 Three properties make the light safe:
 
@@ -92,7 +92,7 @@ Each mode toggles on/off in Settings. A session of **N** challenges is **split i
 
 ## 6. Lesson Trails
 
-Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are ten: **Spelling**, **Reading**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
+Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are twelve: **Spelling**, **Reading**, **Alphabet**, **Sentences**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
@@ -206,7 +206,7 @@ Two things are fixed in code rather than in the sheet: there are always **four o
 
 **The options are spread because the distractors are not where the difficulty lives.** A child answers by reciting from the song, deriving "M", and then going looking for it — the options play no part in deriving it. Crowding them around the answer would only add a second, unrelated task afterwards, telling M from N, O and P in a lineup, which is letter-shape recognition: work out M, tap Noivern, and the failure says nothing about which step broke. M N O P is the slurred stretch of the alphabet song besides, so a gap after L would draw its options from exactly the letters least likely to have been pulled apart yet. Spread out, a correctly derived answer is unambiguously findable and a guess is unlikely to land, so the derivation is what decides right or wrong. Difficulty rides on the three sheet columns instead.
 
-**A round is split evenly between the modes that are on.** With spelling, reading, alphabet and maths all switched on that is a quarter each — the maths quarter then shared among whichever maths tracks are live. As one third of Reading's third, alphabet was about **11%** of a round; as a mode of its own it is **25%**. The Settings switch is how to turn it back down.
+**A round is split evenly between the modes that are on.** With spelling, reading, alphabet, sentences and maths all switched on that is a fifth each — the maths fifth then shared among whichever maths tracks are live. As one third of Reading's third, alphabet was about **11%** of a round; as a mode of its own it is **20%**. The Settings switch is how to turn it back down.
 
 Letters already on screen are excluded as well, worked out per gap rather than once per question because the run fills in as it is answered: given or filled a moment ago, a visible letter can be ruled out by looking, so it is a free elimination.
 
@@ -215,6 +215,52 @@ The mode draws from the **whole roster, not the caught generations**. There are 
 **Nothing is read aloud in this mode.** Every name on screen is a first letter, so speaking any of them would hand over the sort the child is doing. This is the read-aloud rule above applied, not an exception to it.
 
 A row that cannot produce a question is rejected at load rather than papered over at play time: more gaps than letters, a run shorter than two, a `middle` asking for more gaps than the run has interior slots, an unknown position, or a run length the roster cannot fill.
+
+### 7.2b Sentences — its own trail
+
+A Pokémon's picture, and a sentence about it with words missing — **Pikachu is ___** — filled by tapping word tiles from a bank into the blanks. It asks two things at once, and every wrong tile is wrong for one of them: the **grammar** of the sentence (`am` and `are` can't follow a name; `a fire type` but `an electric type`) or **what the picture shows** (Pikachu is not blue).
+
+**The sentences.** Seven patterns, built from each Pokémon's facts:
+
+| Pattern | Example |
+|---|---|
+| colour | Pikachu is yellow |
+| size | Snorlax is big |
+| action | Psyduck can swim |
+| very size | Onix is very big |
+| fly high | Pidgey can fly high |
+| not colour | Pikachu is not blue |
+| type | Onix is a rock type |
+
+**The facts** are hand-curated for the original Kanto Pokémon in `data/pokemon_facts.csv` — 147 rows, since the roster has no Nidoran♀/♂, Farfetch'd or Mr. Mime. Each row gives its main colours, any *also* colours, a size (`very small` to `very big`, or blank for none), what it **can** do and what it clearly **can't** (fly, swim, run, jump, dig). Its type comes from `pokemon.csv`.
+
+**Right is decided by truth, not by matching.** A tile is accepted if the sentence can still be finished *true* with the tiles left, so a second right answer is rewarded rather than marked wrong. The **also** colours exist for that: judgement calls (is Bulbasaur green or blue?) and markings (Pikachu's red cheeks) count as right when picked, and are never offered as a wrong tile — sometimes one is put in the bank beside the main colour, so either tap wins. **Eyes don't count** at all: nearly every Pokémon has black eyes, and "black" would always be right. A debatable action is simply left off both lists, so it is never asked and never marked wrong.
+
+**"not" turns the bank round.** In *Pikachu is not ___* the bank holds exactly **one** colour Pikachu isn't, and the traps are its own colours — *yellow* is the wrong tile. Two colours it isn't would make two right answers to a question about spotting the false one.
+
+**The ladder** (`data/sentence_levels.csv`, nine levels) makes the sentence longer, and introduces each longer length with a word already in place:
+
+| Level | Frame | Example |
+|---|---|---|
+| 1 | one blank | Pikachu is ___ |
+| 2 | two blanks | Pikachu ___ ___ |
+| 3 | "not", alone | Pikachu is not ___ |
+| 4 | two blanks around a given word | Onix ___ very ___ · Onix ___ a ___ type |
+| 5 | three blanks | Onix ___ ___ ___ |
+| 6 | the type word given | Onix ___ ___ rock ___ |
+| 7 | four blanks | Onix ___ ___ ___ ___ |
+| 8 | name and a word, the verb given | ___ can ___ |
+| 9 | the whole sentence | ___ ___ ___ |
+
+"not" appears nowhere before level 3, and level 3 asks nothing else, so the flip is learned on its own before it mixes with everything at level 4.
+
+**Every word is held to the Reading level.** Each word in the sentence and the bank — the name aside — must be within the child's **Reading** word level plus the row's `stretch`, so the two trails move together. Words the phonics list doesn't grade (`is`, `am`, `very`, `swim`, `type`…) are graded in `data/sentence_words.csv`; where `word_levels.csv` also has a word, it wins. A level with nothing to ask at the current Reading level — the type levels need `type`, graded 5 — serves the **nearest level that has a question** instead, and that question does not count toward promotion, so the trail can't carry the child past a level it never asked.
+
+**The speaker names the picture; on levels marked `spoken_tiles` it then reads the bank**, lifting each tile as its word is said, so a child who can't read them yet can still tell which tile is which. Tapping a tile only ever places it: hearing the words is free, and a wrong tap is silent. A word is said as it lands in its blank, and the whole sentence is read back once it is finished.
+
+**Scoring is Spelling's** (§5.1): wrong taps are free, and a question stops counting toward the round once more words have been *shown* than one per three blanks; promotion still needs a spotless sentence. The help light lands on the word the question was built around.
+
+**On screen** the sentence is one line of word-sized cells (20/800, 56px, down to 48 on a short phone) that wraps only between words: given words on grey, blanks outlined, the open one amber, a filled one green. **Every blank is the same width** and grows to its word once filled — a blank sized to its answer would say which tile goes there. The picture uses the Read & Choose frame and gives way first on short screens.
 
 ### 7.3 Math Trails
 
@@ -388,11 +434,11 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 ## 8d. Home Levels
 
-Headed **"Your progress"**, five small white cards — Spelling, Reading, Alphabet, **Add & take away** and **Times & share** — two across on a phone and three from 640px (two again in the right-hand column of the wide layout), each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is. A maths family that has not opened says **Locked**.
+Headed **"Your progress"**, six small white cards — Spelling, Reading, Alphabet, Sentences, **Add & take away** and **Times & share** — two across on a phone and three from 640px (two again in the right-hand column of the wide layout), each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is. A maths family that has not opened says **Locked**.
 
 The heading is set through `text-transform` rather than typed in capitals, the same reason the wordmark is.
 
-**Each icon is a small square in the trail's own colour with a white mark** — `Aa` for Spelling, an open book for Reading, `ABC` for Alphabet, `+−` and `×÷` for the two maths families. With the families named in words, the icon no longer has to say *this is maths*; the colour does that, and the operators say which. The trail colours are the same ones the question screens use for their mode tags: Spelling blue, Reading violet, Alphabet teal, Add & take away berry, Times & share amber. `text-transform` is reset on the SVG text, which would otherwise inherit the label's.
+**Each icon is a small square in the trail's own colour with a white mark** — `Aa` for Spelling, an open book for Reading, `ABC` for Alphabet, two word blocks and a blank for Sentences, `+−` and `×÷` for the two maths families. With the families named in words, the icon no longer has to say *this is maths*; the colour does that, and the operators say which. The trail colours are the same ones the question screens use for their mode tags: Spelling blue, Reading violet, Alphabet teal, Sentences brown, Add & take away berry, Times & share amber. `text-transform` is reset on the SVG text, which would otherwise inherit the label's.
 
 **The bar is there because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and the number by itself implies they are.
 
@@ -447,9 +493,9 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 
 ## 12. Settings & Persistence
 
-- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (wrong taps a maths, reading or alphabet question may take and still count, default 1; `0` means it must be right first time — spelling is scored on letters told instead, §5.1), **Show the answer after** (wrong taps before the answer lights up, default 2; the light goes out once taken, so the next one is earned again — outside spelling it is always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
-- **Per mode**: an on/off toggle for Spelling, Reading, Alphabet, Math, and Visual Math. **With every mode off, Start opens a short notice** — "Nothing to play yet", with a button straight to Settings — rather than a browser alert, which a child cannot read and which looks like the page broke.
-- **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All ten trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
+- **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (wrong taps a maths, reading or alphabet question may take and still count, default 1; `0` means it must be right first time — spelling and sentences are scored on what was told instead, §5.1), **Show the answer after** (wrong taps before the answer lights up, default 2; the light goes out once taken, so the next one is earned again — outside spelling it is always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
+- **Per mode**: an on/off toggle for Spelling, Reading, Alphabet, Sentences, Math, and Visual Math. **With every mode off, Start opens a short notice** — "Nothing to play yet", with a button straight to Settings — rather than a browser alert, which a child cannot read and which looks like the page broke.
+- **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All twelve trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
@@ -467,6 +513,9 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `name_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `name_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
 | `data/alphabet_levels.csv` | 11 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
+| `data/sentence_levels.csv` | 9 | `level`, `blanks`, `frame`, `stretch`, `spare_tiles`, `spoken_tiles`, `promote_5_pct`, `promote_10_pct` |
+| `data/pokemon_facts.csv` | 147 | `id`, `name`, `colours`, `also`, `size`, `can`, `cannot` |
+| `data/sentence_words.csv` | 22 | `word`, `level`, `note` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |
@@ -476,7 +525,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 - **Pokopia items**: **922** items across 12 categories, of which **819** reach the word trails. 13 carry an apostrophe, accent, period or digit; **90 share their artwork with another item** and are dropped from both trails, because a picture that names two things names neither — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same picture. A few are plain mislabels: `Acrylic poster` and `Campfire` are one image. The rule is mechanical — `tools/classify_words.py` hashes every PNG and flags any file that appears twice — so it needs no eyeballing. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
 - **Offline, but served**: all artwork is stored locally in `pokemon/` and `items/` and referenced by relative path, the webfont is in `fonts/`, and nothing is fetched from PokéAPI, GitHub, Google or any fan site at runtime — **there are no external requests at all**, verified by loading the page with every non-local host blocked. Because the CSVs are fetched, though, the page must be **served over http(s)** — browsers block `fetch` on `file://` as cross-origin, so opening `index.html` by double-clicking it shows a load error instead. Once loaded, the browser cache covers repeat visits.
 - **The ladders are data, not code.** `index.html` holds no level list, no word list and no promotion constant — it reads every ladder from CSV at boot. There is deliberately no fallback copy compiled in: a ladder that exists in two places drifts, and the spreadsheet is the one that gets edited.
-- **Word grading**: `word_levels.csv` grades every distinct word in the item catalogue against the nine phonics patterns; `item_levels.csv` is the derived per-item view, where a single-word item takes its own level and a multi-word item takes its hardest component's. Both are regenerated by `tools/classify_words.py`. `word_levels.csv` is the file to correct — the item view follows from it.
+- **Word grading**: `word_levels.csv` grades every distinct word in the item catalogue against the nine phonics patterns; `item_levels.csv` is the derived per-item view, where a single-word item takes its own level and a multi-word item takes its hardest component's. Both are regenerated by `tools/classify_words.py`. `word_levels.csv` is the file to correct — the item view follows from it, and so do the Sentences trail's word levels.
 - **Failure is loud**: a missing or empty CSV replaces the page with a legible error rather than booting an app with silently empty pools.
 - **Storage keys**: Lesson Trails progress, the Pokédex collection, the set of caught-but-not-yet-viewed Pokémon, the play streak, and general settings each persist under their own `localStorage` key.
 
@@ -510,7 +559,7 @@ The reader is five and still learning to read. Every word on a child-facing scre
 ## 15. Technical Architecture
 
 - **Stack**: vanilla HTML/CSS/JS, no framework, no build step, no package manager.
-- **Data loading**: `loadData()` fetches **ten** of the eleven CSVs in parallel at startup — `word_levels.csv` is the grading source, not a runtime file; the app reads the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
+- **Data loading**: `loadData()` fetches **all fifteen** CSVs in parallel at startup — `word_levels.csv` only for its `level` column, which grades the words Sentences may use; the word trails read the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
 - **State**: in-memory JS objects for the active session/battle; `localStorage` for everything persisted.
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
 - **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all ten tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.
