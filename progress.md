@@ -651,6 +651,16 @@ The Pattern screen spent its best spot on a decorative Pokémon. It now draws ea
 
 **Measured.** Every marked level at 360×640, 390×844 and 820×1180: no scroll, highlight counts exactly the step per row, all three rows answer through to the ✓; unmarked levels keep the decorative Pokémon. Multiply at 360×640 first overshot by 11px, fixed by smaller array icons on short screens. The widest add row (`9 + 12`, 21 Pokémon) wrapped mid-highlight; the growing part now moves under the fixed number as one piece.
 
+## Phase 83 — the catch says "Caught!" on its button; Visual Maths draws its empty places
+
+**Catch screen.** Two things read as confusing on a real catch. The "Caught!" ribbon floated high in the sky with the raised edge that means "tap me", and did nothing; the word is now on the one button (**✓ Caught!**, gold for a legendary or mythical catch), and the Pokémon stands on the hill. And the evolution strip showed the whole family, which for Vaporeon meant Eevee alone on a line with an arrow pointing at nothing, then eight relatives wrapped into a grid. A catch now shows only its own line — the forms before it and everything after — with a split stacked in one column; a stage too wide to draw, which only Eevee's is, becomes one grey shape with "8" on it.
+
+**Pokédex card.** Still the whole family, but a split stacks in a column after its arrow instead of wrapping, and Eevee's family runs downward with the eight in a 4×2 grid. Counted from `pokemon.csv`: 338 families, 266 of them straight lines unaffected by any of this; 19 Pokémon branch at their next step, all into two or three except Eevee. The taller columns first put the Eevee card 11px over a 360×640 screen (Tyrogue 3px), fixed by 34px strip pictures under 700px tall.
+
+**Visual Maths.** A box holding two of five looked too wide. It is the right width — five icons, gaps and padding — and cropping the artwork wouldn't help, since the Pokémon already fill a median 91% of their canvas. What was small was the icons, 27–30px. The empty places now show the same Pokémon as a faint solid shape, and on phones, where the boxes stack anyway, the icons are 40px (box 250px). Dashed blanks were not tried, for the reason Phase 82 dropped them: they read as missing, not as room.
+
+**Measured.** Catch and Pokédex cards for Vaporeon, Eevee, Tyrogue, Mewtwo, Bulbasaur and Wurmple, and visual `2+4`, `4+7`, `7−3`, `0+5`, `13+4`, `15−9`, at 360×640, 390×844, 470×830, 820×1180 and 1280×800: no scroll, the button on screen, no console errors. Tapping a relative from a catch turns the button back to Okay and shows the whole family.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

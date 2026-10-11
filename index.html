@@ -591,7 +591,7 @@
     .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p{ animation:none; }
     .grass-strip.shaking, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
     .confetti-layer, .catch-shine{ display:none; }
-    .catch-card.celebrating .catch-caption{ animation:none; }
+    .catch-card.celebrating #catchOkBtn{ animation:none; }
   }
 
   /* visual math */
@@ -840,7 +840,7 @@
     35%  { opacity:1; }
     100% { transform:scale(1.35); opacity:0; }
   }
-  .catch-card.celebrating .catch-caption{ animation: captionPop .55s cubic-bezier(.34,1.56,.64,1); }
+  .catch-card.celebrating #catchOkBtn{ animation: captionPop .55s cubic-bezier(.34,1.56,.64,1); }
   @keyframes captionPop{
     0%   { transform:scale(.4); opacity:0; }
     60%  { transform:scale(1.12); opacity:1; }
@@ -849,7 +849,6 @@
   /* Everything above the shine, so the burst reads as behind the Pokémon. */
   .catch-card > *:not(.confetti-layer):not(.catch-shine){ position:relative; z-index:1; }
 
-  .catch-caption{ margin:0 0 12px; font-weight:900; font-size:1rem; letter-spacing:.08em; color:var(--leaf-700); text-transform:uppercase; }
   .catch-frame{ width:150px; height:150px; margin:0 auto 10px; animation: pokeballPop .5s cubic-bezier(.34,1.56,.64,1); }
   .catch-num{ font-weight:800; color:var(--ink-soft); font-size:.9rem; }
   .catch-name{ font-weight:800; font-size:1.4rem; color:var(--ink); text-transform:capitalize; margin:2px 0 8px; }
@@ -1149,16 +1148,30 @@
   .dex-rare.mythical{ background:#d9b6f0; }
   .rare-count{ color:var(--sun-deep); }
   /* Sized so a three-stage line — the common case — fits one row inside the
-     card's ~292px interior with room to spare. A wide stage (Eevee has eight
-     second-stage forms) wraps inside its own group, so the arrow still reads as
-     "this stage becomes that stage" rather than pointing at one sibling. */
+     card's ~292px interior with room to spare. Stages sit side by side and a
+     stage that splits (Gloom becomes Vileplume or Bellossom) stacks in its own
+     column, so the arrow points at the whole choice. Wrapping instead stranded
+     the first stage on a line of its own with an arrow pointing at nothing. */
   .evo-row{
-    display:flex; align-items:center; justify-content:center; gap:3px;
-    flex-wrap:wrap; margin:10px 0 2px;
+    display:flex; align-items:center; justify-content:center; gap:5px;
+    flex-wrap:nowrap; margin:10px 0 2px;
   }
   .evo-stage{
-    display:flex; align-items:center; justify-content:center; gap:3px;
-    flex-wrap:wrap; flex:0 1 auto; min-width:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    flex:0 1 auto; min-width:0;
+  }
+  /* Eevee's eight are too many for a column, so that family alone runs
+     downward: one stage per line, the arrow turned to point down, the eight in
+     a four-wide grid. */
+  .evo-row.wide{ flex-direction:column; gap:3px; }
+  .evo-row.wide .evo-stage{ display:grid; grid-template-columns:repeat(4, auto); }
+  .evo-row.wide .evo-arrow{ transform:rotate(90deg); }
+  /* On a catch, a stage too wide to show is one shape with a count on it. */
+  .evo-more{ position:relative; cursor:default; }
+  .evo-more b{
+    position:absolute; top:-9px; right:-9px; display:grid; place-items:center;
+    min-width:26px; height:26px; padding:0 6px; box-sizing:border-box; border-radius:13px;
+    border:2px solid var(--canvas); background:var(--ink); color:#fff; font-size:.85rem; font-weight:900;
   }
   .evo{
     display:flex; flex-direction:column; align-items:center; gap:1px;
@@ -1579,18 +1592,18 @@
     background:transparent; border:0; border-radius:0; box-shadow:none;
   }
   .is-catch .catch-sky{
-    flex:1 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:12px;
+    flex:1 1 auto; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:12px;
     align-self:stretch; margin:0 calc(198px - 50vw) 14px; padding:clamp(20px, 6vh, 64px) 22px 30px; overflow:hidden;
     background:var(--hills) center bottom / 100% 120px no-repeat, var(--sky-300);
   }
   @media (max-width:440px){ .is-catch .catch-sky{ margin-left:-22px; margin-right:-22px; } }
-  .is-catch .catch-caption{
-    margin:0; padding:11px 28px; border-radius:14px; text-transform:none; letter-spacing:0;
-    font-size:1.375rem; font-weight:900; color:#fff; background:var(--leaf-600); box-shadow:0 5px 0 var(--leaf-700);
-  }
-  .is-catch .catch-caption.rare{ background:var(--sun-500); color:var(--sun-800); box-shadow:0 5px 0 var(--sun-700); }
+  /* "Caught!" is the button's word, not a banner in the sky: a banner with a
+     press edge looked like something to tap and did nothing, and it floated
+     well away from everything else. A rare catch turns the button gold. */
+  #catchOkBtn .ok-tick svg{ width:1.15em; height:1.15em; vertical-align:-.2em; margin-right:6px; }
+  #catchOkBtn.rare{ background:var(--sun-500); color:var(--sun-800); box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--sun-700); }
   .is-catch .catch-frame{
-    width:min(230px, 32vh); height:min(230px, 32vh); margin:0 auto;
+    width:min(250px, 34vh); height:min(250px, 34vh); margin:0 auto;
     background:radial-gradient(circle, #fff6c9 0, #ffe49e 42%, rgba(255,228,158,0) 70%); box-shadow:none;
   }
   .is-catch .catch-frame img{ max-width:86%; max-height:86%; }
@@ -1604,7 +1617,6 @@
      the artwork give way first, as the Pokémon does on the home screen. */
   @media (max-height:820px){
     .is-catch .catch-sky{ padding-top:14px; padding-bottom:18px; gap:8px; margin-bottom:8px; }
-    .is-catch .catch-caption{ font-size:1.125rem; padding:8px 22px; }
     .is-catch .catch-frame{ width:min(200px, 24vh); height:min(200px, 24vh); }
     .is-catch .catch-name{ font-size:1.5rem; margin-bottom:4px; }
     .is-catch .evo-row{ margin:8px 0 12px; }
@@ -1737,6 +1749,22 @@
     .pattern-pic-array, .pattern-pic-line{ gap:1px; }
     .pattern-list.drawn .pattern-slot{ min-height:36px; }
     .pattern-list.drawn ~ #patternChoiceWrap .choices{ margin-top:8px; }
+  }
+
+  /* Visual Maths: a standard box's empty places are the same Pokémon, solid and
+     faint. On a phone the two boxes stack anyway, so each takes more of the
+     width and the Pokémon grow from 27px to 40px. */
+  .visual-box.slot5 .visual-empty{ filter:brightness(0) opacity(.12); }
+  @media (max-width:560px){
+    .visual-groups:has(.slot5){ --one:40px; --onegap:6px; }
+    .visual-groups .slot5 .ones-row .visual-icon,
+    .visual-groups .slot5 .ones-row .visual-icon-wrap{ width:40px; height:40px; }
+  }
+
+  /* A family that splits stacks taller than one row, so on a short phone its
+     pictures come down to the size the catch screen already uses there. */
+  @media (max-height:700px){
+    .evo img{ width:34px; height:34px; }
   }
 
   /* The no-trails notice. */
@@ -1988,7 +2016,6 @@
   <div class="modal-overlay hidden" id="catchModal">
     <div class="catch-card" id="catchCard">
       <div class="catch-sky">
-      <p class="catch-caption" id="catchCaption">Caught!</p>
       <div class="frame-wrap">
         <div class="poke-frame catch-frame"><img id="catchImg" alt=""></div>
         <button class="frame-say" type="button" id="catchSay" aria-label="Say it"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
@@ -2023,7 +2050,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 99;
+const APP_BUILD = 100;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -3785,8 +3812,11 @@ function renderPokeModal(poke, opts){
           celebrate = false } = opts || {};
   // Walking to a relative re-renders this card; the previous burst goes with it.
   clearCelebration();
-  $("#catchCaption").textContent = caption;
-  $("#catchCaption").classList.toggle("hidden", !caption);
+  // A catch says so on its one button; browsing the dex just closes with Okay.
+  const okBtn = $("#catchOkBtn");
+  if(celebrate) okBtn.innerHTML = `<span class="ok-tick">${UI_ICONS.tick}</span>${caption}`;
+  else okBtn.textContent = "Okay";
+  okBtn.classList.toggle("rare", !!RARITY_LABEL[poke.rarity] && !!celebrate);
   $("#catchImg").src = artwork(poke.id);
   $("#catchImg").alt = revealed ? cap(poke.n) : "Not caught yet";
   $("#catchImg").classList.toggle("silhouette", !revealed);
@@ -3814,7 +3844,6 @@ function renderPokeModal(poke, opts){
   // A catch takes the whole screen as its own moment; browsing the Pokédex opens
   // the same card as a sheet over the grid, which is the place it was opened from.
   modal.classList.toggle("is-catch", !!celebrate);
-  $("#catchCaption").classList.toggle("rare", !!RARITY_LABEL[poke.rarity] && !!celebrate);
   modal.classList.remove("hidden");
   if(celebrate) celebrateCatch(poke.rarity);
 }
@@ -3855,10 +3884,33 @@ function evoStages(poke){
   return stages;
 }
 
+/* A catch shows only the line this Pokémon is on: the forms it came from, then
+   everything it can still become. The whole family is the Pokédex's job; on a
+   catch, Eevee's eight cousins buried the one that was just caught. A stage
+   too wide to draw (only Eevee's) becomes one shape with the count on it. */
+function evoLine(poke){
+  const stages = [[poke]];
+  let p = poke;
+  for(let i = 0; i < 5 && p.from; i++){
+    const up = POKEMON.find(x => x.n === p.from);
+    if(!up || up.n === p.n) break;
+    stages.unshift([up]);
+    p = up;
+  }
+  let level = EVOLVES_INTO[poke.n] || [];
+  while(level.length && stages.length < 5){
+    stages.push(level);
+    if(level.length > 3) break;
+    level = level.flatMap(x => EVOLVES_INTO[x.n] || []);
+  }
+  return stages;
+}
+
 function renderEvoRow(poke){
   const row = $("#catchEvo");
   if(!poke){ row.classList.add("hidden"); row.innerHTML = ""; return; }
-  const stages = evoStages(poke);
+  const catching = !!(modalCurrent && modalCurrent.opts && modalCurrent.opts.celebrate);
+  const stages = catching ? evoLine(poke) : evoStages(poke);
   if(stages.reduce((n, st) => n + st.length, 0) < 2){
     row.classList.add("hidden"); row.innerHTML = ""; return;
   }
@@ -3873,12 +3925,20 @@ function renderEvoRow(poke){
       <img src="${artwork(p.id)}" alt="" class="${got ? "" : "silhouette"}">
       <span>${got ? cap(p.n) : "&nbsp;"}</span></button>`;
   };
+  const more = st => {
+    const shape = st.find(x => !collected.includes(x.id)) || st[0];
+    return `<span class="evo evo-more" aria-label="${st.length} more">
+      <img src="${artwork(shape.id)}" alt="" class="silhouette"><span>&nbsp;</span><b>${st.length}</b></span>`;
+  };
   // One group per stage, so a branching family's siblings stay together and the
   // arrow sits between stages rather than between every pair of chips.
+  const wide = stages.some(st => st.length > 3);
+  row.classList.toggle("wide", wide && !catching);
   row.innerHTML = stages
-    .map(st => `<span class="evo-stage">` + st.map(x => chip(x, x.id === poke.id)).join("") + `</span>`)
+    .map(st => `<span class="evo-stage">` +
+      (catching && st.length > 3 ? more(st) : st.map(x => chip(x, x.id === poke.id)).join("")) + `</span>`)
     .join(`<span class="evo-arrow">➜</span>`);
-  row.querySelectorAll(".evo[data-id]").forEach(btn=>{
+  row.querySelectorAll("button.evo[data-id]").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const target = POKEMON.find(x => x.id === Number(btn.dataset.id));
       const got = loadCollection().includes(target.id);
@@ -4978,7 +5038,7 @@ let visualState=null;
    is, subtraction falls back to all-loose whenever the units digit is too small
    to take the subtrahend, since crossing out nine of a box-and-five is exactly
    the move that needs the box to open. */
-function tensAndOnes(n, iconHTML, crossedHTML, crossed){
+function tensAndOnes(n, iconHTML, crossedHTML, crossed, emptyHTML = ""){
   const tens = Math.floor(n / 10), ones = n % 10;
   /* Crossing out spends the LOOSE ONES FIRST and only then reaches into a box.
      A box is not an atom — it is ten visible icons in a frame — so a subtraction
@@ -5013,7 +5073,9 @@ function tensAndOnes(n, iconHTML, crossedHTML, crossed){
   // tens; kept apart, the split IS the place value.
   const rows = [];
   if(tens) rows.push(`<span class="tens-row">${boxes.join("")}</span>`);
-  if(ones) rows.push(`<span class="ones-row">${iconHTML.repeat(ones - oc)}${crossedHTML.repeat(oc)}</span>`);
+  // `emptyHTML` is the standard box's unfilled places, drawn after everything
+  // else so they always sit at the end of the row.
+  if(ones || emptyHTML) rows.push(`<span class="ones-row">${iconHTML.repeat(ones - oc)}${crossedHTML.repeat(oc)}${emptyHTML}</span>`);
   return rows.join("") || `<span class="ones-row"></span>`;
 }
 // How many separate things end up on screen — boxes count as one apiece. This
@@ -5048,20 +5110,29 @@ function renderVisual(p){
      would read as a bigger ten. */
   const slot5 = n => stacked ? "" : ` slot5 ${n > 5 ? "rows2" : "rows1"}`;
   const pair = stacked ? "" : " pair";
+  /* The places a standard box has left over are drawn as the same Pokémon in a
+     faint solid shape. An empty frame beside two Pokémon read as a box that was
+     simply too wide; filled with shapes, it reads as five places with two taken,
+     and how far a number is from five is the thing being shown. A shape and not
+     a dashed blank, because a blank says "nothing here" rather than "room for
+     one more". Taking away crosses out within the drawn ones, so the shapes
+     only ever stand where nothing was. */
+  const empty = n => stacked ? ""
+    : `<img class="visual-icon visual-empty" src="${artwork(p.poke.id)}" alt="">`.repeat((n > 5 ? 10 : 5) - n);
 
   let visualHTML, eqText;
   if(p.op==="add"){
     eqText = `${p.a} + ${p.b} = ?`;
     visualHTML = `<div class="visual-groups${density}${stacked}${pair}">
-      <div class="visual-box${slot5(p.a)}">${tensAndOnes(p.a, icon(), crossedIcon(), 0)}</div>
+      <div class="visual-box${slot5(p.a)}">${tensAndOnes(p.a, icon(), crossedIcon(), 0, empty(p.a))}</div>
       <span class="visual-op">+</span>
-      <div class="visual-box${slot5(p.b)}">${tensAndOnes(p.b, icon(), crossedIcon(), 0)}</div>
+      <div class="visual-box${slot5(p.b)}">${tensAndOnes(p.b, icon(), crossedIcon(), 0, empty(p.b))}</div>
     </div>`;
   } else if(p.op==="sub"){
     eqText = `${p.a} − ${p.b} = ?`;
     // Draw all of `a`, with `b` of them crossed out — boxes first.
     visualHTML = `<div class="visual-groups${density}${stacked}">
-      <div class="visual-box${slot5(p.a)}">${tensAndOnes(p.a, icon(), crossedIcon(), p.b)}</div>
+      <div class="visual-box${slot5(p.a)}">${tensAndOnes(p.a, icon(), crossedIcon(), p.b, empty(p.a))}</div>
     </div>`;
   } else if(p.op==="mul"){
     eqText = `${p.a} × ${p.b} = ?`;
