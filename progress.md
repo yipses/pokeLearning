@@ -669,6 +669,12 @@ A family that splits stacks its evolutions in a column, and in the mock that pus
 
 **Measured.** Staryu, Eevee, Mewtwo, Tyrogue and Gloom at 360×640, 390×844, 470×830, 820×1180, 1280×800, 1440×900 and 2000×1160: no scroll, the button on screen, the picture below the top edge. The Pokédex sheet is unchanged — the meadow and card are catch-only — and still fits at 360×640.
 
+## Phase 85 — three small reads
+
+- **Add-pattern rows lose the blue frame** around the fixed number. In Visual Maths addition a blue box is always five wide, so a seven-wide one beside it read as a five that had overflowed. The "+" already separates the fixed number from the growing part, and the frame's border and padding were 18px a row. Multiply patterns keep the frame around their array. Every marked add and multiply level re-run at 360×640, 390×844 and 820×1180: no scroll, highlight counts unchanged, all rows answer through.
+- **The ✕ is the drawn cross**, 28px, on the round's bar and beside every screen name. The ✕ character was about 9px across in a 44px circle.
+- **Rarity is a five-point star.** The four-point sparkle on legendary and mythical badges, chips and the dex tally read as a "+", a call to action.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
