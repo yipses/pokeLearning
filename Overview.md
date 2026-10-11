@@ -485,7 +485,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 ## 11. Results Screen
 
 - The same HUD as the Start screen, centred at the top of the meadow, so finishing a round shows the progress it just moved.
-- **What was caught this round stands in the meadow**, side by side on the hill, each with a ground shadow, a name tag and the Pokédex's **NEW** badge if not yet opened; tapping one opens the full catch screen. A round catches one to four, so they are sized by how many: on a 390 phone 240px alone, 164 each for two, 113 for three, 86 for four (190/150/120 on a tablet), and smaller on a short phone so no head is cut off. They were 76px chips in a three-column grid built for many.
+- **What was caught this round stands in the meadow**, side by side, each with a ground shadow and a name tag; tapping one opens the full catch screen. A round catches one to four, so they are sized to the meadow's free height and width — up to 300px alone, 240 each for two, 190 for three, 150 for four — and seated a little below the middle of the meadow, with the ground brought up to meet them: the drawing ends at their feet and the front hill's green runs on to the paper. Pinned to the bottom of a tall meadow they stood under 400px of empty sky. There is no NEW badge here: every catch on this screen is new, so it said nothing.
 - **"Round finished!"** is the heading on the paper below, above the buttons — not floating on the hill line. With no catch, the meadow is empty and the heading carries "No catch this time" under it.
 - **Play Again**, which starts another round at the length set in Settings, and **Go Back**.
 
