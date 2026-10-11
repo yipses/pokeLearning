@@ -681,6 +681,16 @@ A family that splits stacks its evolutions in a column, and in the mock that pus
 - **The Pokédex generation header drops its legendary tally** (`★ 3/5`). Its owner could not tell what it meant, and the gold cells in the grid already say it.
 - **The Pokéball mark beside the gear is gone.** It looked like a button in a row of buttons and did nothing; the heading text stays for screen readers.
 
+## Phase 87 — every Pokémon the same size, standing on the ground
+
+**Sized by what is drawn.** In the same square box Geodude (91% × 34% of its canvas) looked half Bulbasaur's size (about 90% × 90%). Measured over all 1,021 artworks, √(w × h) has a median of 0.81 and 13% fall below 0.7. The home and catch Pokémon are now scaled so their drawn area matches the median, capped at 1.5×, the scene's width and 1.1× the box's height; they stand by their lowest drawn pixel and are centred by what is drawn. A soft shadow as wide as the Pokémon sits under it. Measured at 2000×1140: Geodude drawn 710×269 (was about 310×115), Bulbasaur 453×422.
+
+**Home layout.** On wide windows the name card moved from the right column onto the mound under the Pokémon, and the ground and Pokémon scale with the window's height; the first version at a fixed 132px above the bottom left the Pokémon tight against the card on a desktop. On phones the Pokémon was lifted off the card (68px above the bottom of the meadow) so the shadow has ground to sit on, which costs some size on the smallest screens (Bulbasaur about 104px tall at 360×640). The Pokémon is now placed by position rather than a flex row; an off-centre report on a desktop browser could not be reproduced in Chromium, and positioning removes the browser's say in it.
+
+**Pokédex link.** The home card's Pokédex row opens the shown Pokémon's generation, scrolls its cell to the middle and rings it for 2.4s; it used to open on the last tab viewed.
+
+**Measured.** Home (Geodude, Bulbasaur, Charizard, Starmie) and catch (Geodude, Bulbasaur, Mewtwo) at 2000×1140, 1440×900, 1280×800, 1024×768, 820×1180, 470×830, 390×844 and 360×640: drawn Pokémon centred on the scene to the pixel, below the HUD, no scroll, Start and the catch button on screen, no console errors. The Pokédex sheet keeps the plain square (its inline sizing is cleared). The link was checked from Gen 1 and Gen 2 Pokémon with another generation last viewed.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

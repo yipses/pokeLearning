@@ -1414,14 +1414,24 @@
      above the buttons. */
   .home-scene{ flex:1 1 0; min-height:150px; display:flex; flex-direction:column; overflow:hidden; background:var(--sky-300); }
   .meadow-art{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-  .home-stage{
-    position:relative; z-index:2; flex:1 1 auto; min-height:0;
-    display:flex; align-items:flex-end; justify-content:center; padding:6px 0 34px;
+  /* The Pokémon is placed by position — centred on the mound, standing a set
+     distance above the card — rather than by a flex row with a percentage-height
+     picture, which left it to each browser to work out the picture's width.
+     fitShowcase() then sizes it by what is drawn (see fitArtwork). */
+  .home-stage{ position:relative; z-index:2; flex:1 1 auto; min-height:0; }
+  .showcase-pick{
+    position:absolute; left:50%; bottom:68px; translate:-50% 0; height:calc(100% - 74px); max-height:260px;
+    display:flex; align-items:flex-end; justify-content:center; border-radius:24px;
   }
-  .showcase-pick{ height:100%; max-height:260px; display:flex; align-items:flex-end; border-radius:24px; }
   .showcase-pick img{
-    height:100%; max-height:260px; width:auto; max-width:min(70vw, 280px); object-fit:contain;
-    filter:drop-shadow(0 8px 6px rgba(35,102,58,.35));
+    position:relative; height:100%; max-height:260px; width:auto; max-width:min(70vw, 280px); object-fit:contain;
+  }
+  /* A soft ground shadow under every Pokémon, as wide as what is drawn. It
+     plants the picture on the hill; a flying one hovers a little above it. */
+  .showcase-pick::before, .is-catch .catch-frame::after{
+    content:""; position:absolute; left:50%; translate:-50% 0; z-index:0; pointer-events:none;
+    width:var(--sw, 62%); height:var(--sh, 18px); bottom:calc(var(--sh, 18px) / -2); border-radius:50%;
+    background:radial-gradient(closest-side, rgba(30,70,35,.38), rgba(30,70,35,.18) 60%, transparent);
   }
   .showcase-pick img.silhouette{ filter:brightness(0) opacity(.22); }
 
@@ -1488,17 +1498,24 @@
     body[data-screen="setup"] .wrap{ max-width:none; padding:0; }
     #setup:not(.hidden){
       display:grid; grid-template-columns:minmax(0,1fr) minmax(400px, 500px);
-      grid-template-rows:1fr auto auto auto 1fr; column-gap:40px;
+      grid-template-rows:1fr auto auto 1fr; column-gap:40px;
       height:100vh; height:100dvh; min-height:560px; padding-right:40px;
     }
     .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 32px; border-radius:0 32px 32px 0; }
-    .home-stage{ padding-bottom:9%; }
-    .showcase-pick, .showcase-pick img{ max-height:min(340px, 100%); }
+    /* The ground and the Pokémon scale with the window's height, as they do in
+       effect on a phone; fixed, a tall window left it pressed against the card
+       under a lot of sky. */
+    .showcase-pick{ bottom:calc(150px + 8vh); height:calc(100% - 150px - 8vh - 70px); }
+    .showcase-pick, .showcase-pick img{ max-height:min(50vh, 540px); }
     .showcase-pick img{ max-width:none; }
-    #homeShowcase{ grid-column:2; grid-row:2; margin:0; }
-    #homeLevels{ grid-column:2; grid-row:3; }
+    /* The name card stands in the scene, on the mound under the Pokémon, as the
+       catch screen's does; on the right, beside a Pokémon on the left, it read
+       as something separate. The right column is progress and the buttons. */
+    #homeShowcase{ grid-column:1; grid-row:1 / -1; align-self:end; justify-self:center; z-index:3;
+      width:min(460px, calc(100% - 64px)); margin:0 0 28px; }
+    #homeLevels{ grid-column:2; grid-row:2; }
     #homeLevels .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
-    .home-actions{ grid-column:2; grid-row:4; padding-bottom:0; }
+    .home-actions{ grid-column:2; grid-row:3; padding-bottom:0; }
   }
 
   /* ---------- A question ---------- */
@@ -1631,7 +1648,11 @@
     background:radial-gradient(circle, #fff6c9 0, #ffe49e 42%, rgba(255,228,158,0) 70%); box-shadow:none;
   }
   .is-catch:has(.evo-row.branched) .catch-frame{ width:min(34vh, 70vw, 360px); height:min(34vh, 70vw, 360px); }
-  .is-catch .catch-frame img{ max-width:86%; max-height:86%; }
+  .is-catch .catch-frame img{ max-width:86%; max-height:86%; position:relative; z-index:1; }
+  /* fitCatchArt() sizes the picture by what is drawn and stands it on the
+     frame's floor, over the ground shadow; a wide one may spill past the glow. */
+  .is-catch .catch-frame{ display:flex; align-items:flex-end; justify-content:center; overflow:visible; padding-bottom:7%; box-sizing:border-box; }
+  .is-catch .catch-frame::after{ bottom:calc(7% - var(--sh, 18px) / 2); }
   /* On a catch the burst lives behind the picture inside the sky; on the card
      it sat under the sky's own background and never showed. */
   .is-catch .catch-shine{ left:50%; top:50%; width:150%; height:150%; margin:0; translate:-50% -50%; }
@@ -1807,6 +1828,11 @@
   }
   .prog-steps i.done{ background:var(--leaf-600); box-shadow:none; }
   .prog-steps i.now{ background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
+
+  /* The cell the home card's Pokédex row opened on, ringed like the cursor. */
+  .dex-cell.dex-found{ box-shadow:0 0 0 3px var(--sun-700), 0 0 0 9px var(--sun-300); animation:dexFound 1.2s ease-in-out 2; }
+  @keyframes dexFound{ 50%{ box-shadow:0 0 0 3px var(--sun-700), 0 0 0 14px rgba(255,228,158,.6); } }
+  @media (prefers-reduced-motion: reduce){ .dex-cell.dex-found{ animation:none; } }
 
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
@@ -2087,7 +2113,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 103;
+const APP_BUILD = 104;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -2393,6 +2419,67 @@ function showDataError(err){
 }
 
 const artwork = id => `pokemon/${id}.png`;
+
+/* How much of its square canvas a Pokémon actually covers. Official artwork is
+   padded and shaped however the Pokémon is: Geodude spans 91% of the width but
+   34% of the height, Bulbasaur about 90% of both, so in the same square box one
+   looks half the size of the other. Measured once per picture on a 128px canvas
+   and cached. The artwork is served from this origin, so the canvas is readable;
+   if it ever isn't (file://), the picture just keeps its plain square. */
+const ART_MEDIAN = 0.81;   // median of √(width × height) over all 1,021 artworks
+const artBoundsCache = {};
+function artBounds(img){
+  const key = img.currentSrc || img.src;
+  if(artBoundsCache[key]) return artBoundsCache[key];
+  try{
+    const N = 128, c = document.createElement("canvas");
+    c.width = c.height = N;
+    const ctx = c.getContext("2d", { willReadFrequently:true });
+    ctx.drawImage(img, 0, 0, N, N);
+    const d = ctx.getImageData(0, 0, N, N).data;
+    let l = N, t = N, r = -1, b = -1;
+    for(let y = 0; y < N; y++) for(let x = 0; x < N; x++){
+      if(d[(y*N + x)*4 + 3] > 24){ if(x<l) l=x; if(x>r) r=x; if(y<t) t=y; if(y>b) b=y; }
+    }
+    if(r < 0) return null;
+    return artBoundsCache[key] = { l:l/N, t:t/N, r:(r+1)/N, b:(b+1)/N };
+  }catch(e){ return null; }
+}
+/* Size a picture so the Pokémon in it covers the same area as a typical one
+   would in a `box`-sized square, then stand it on the bottom of its box and
+   centre what is drawn rather than the canvas. Growth is capped at 1.5×, at
+   `maxW` wide and at 1.1× the box tall. Returns the drawn width, for the
+   shadow; with no box, or nothing measurable, it puts the plain square back. */
+function fitArtwork(img, box, maxW){
+  const bb = box && img.naturalWidth ? artBounds(img) : null;
+  if(!bb){ img.removeAttribute("style"); return 0; }
+  const cw = bb.r - bb.l, ch = bb.b - bb.t;
+  let size = box * Math.min(1.5, ART_MEDIAN / Math.sqrt(cw * ch));
+  size = Math.min(size, maxW / cw, box * 1.1 / ch);
+  img.style.cssText = `width:${size}px; height:${size}px; max-width:none; max-height:none; flex:0 0 auto;
+    margin-bottom:${-(1 - bb.b) * size}px; translate:${(0.5 - (bb.l + bb.r) / 2) * size}px 0;`;
+  return cw * size;
+}
+/* The ground shadow takes the width of what is drawn. */
+function setArtShadow(el, drawnW){
+  if(!drawnW){ el.style.removeProperty("--sw"); el.style.removeProperty("--sh"); return; }
+  el.style.setProperty("--sw", Math.round(drawnW * 0.8) + "px");
+  el.style.setProperty("--sh", Math.round(Math.max(14, Math.min(34, drawnW * 0.09))) + "px");
+}
+function fitShowcase(){
+  const img = $("#homeStage img");
+  if(!img || !img.complete) return;
+  const pick = img.closest(".showcase-pick");
+  setArtShadow(pick, fitArtwork(img, pick.clientHeight, $("#homeStage").clientWidth - 24));
+}
+function fitCatchArt(){
+  const img = $("#catchImg"), frame = img.closest(".catch-frame");
+  const full = $("#catchModal").classList.contains("is-catch") && !img.classList.contains("silhouette");
+  if(!img.complete) return;
+  const w = full ? fitArtwork(img, frame.clientWidth * 0.86, $("#catchCard .catch-sky").clientWidth - 24)
+                 : fitArtwork(img, 0, 0);
+  setArtShadow(frame, w);
+}
 
 /* ---------------- Pokopia item data (name + direct image URL) ---------------- */
 
@@ -3208,7 +3295,7 @@ function renderShowcase(){
 
   stage.querySelector(".showcase-pick").addEventListener("click", renderShowcase);
   const dexBtn = el.querySelector(".showcase-dex");
-  if(dexBtn) dexBtn.addEventListener("click", ()=>{ renderPokedex(); show("pokedex"); });
+  if(dexBtn) dexBtn.addEventListener("click", ()=> openDexAt(poke.id));
 
   stage.querySelector(".showcase-pick").setAttribute("aria-label", showCaught
     ? `${cap(poke.n)}, number ${poke.id}. Show a different one.`
@@ -3222,6 +3309,8 @@ function renderShowcase(){
     img.dataset.retried = "1";
     img.src = artwork(poke.id) + "?r=1";
   });
+  img.addEventListener("load", fitShowcase);
+  if(img.complete) fitShowcase();
 }
 
 /* HUD icons are drawn, not typed. Emoji were the obvious choice and the wrong
@@ -3902,6 +3991,7 @@ function renderPokeModal(poke, opts){
   // the same card as a sheet over the grid, which is the place it was opened from.
   modal.classList.toggle("is-catch", !!celebrate);
   modal.classList.remove("hidden");
+  fitCatchArt();
   if(celebrate) celebrateCatch(poke.rarity);
 }
 const RARITY_LABEL = { legendary: "Legendary", mythical: "Mythical" };
@@ -4071,6 +4161,24 @@ function scrollDexTabs(dir){
   // below updates the disabled states as it settles.
 }
 
+/* The home card's Pokédex row opens the Pokédex AT that Pokémon: its own
+   generation, scrolled to its cell, which is ringed for a moment. Opening on
+   whatever tab was last viewed left you looking for it. It does not open the
+   card — you were just looking at that Pokémon. */
+function openDexAt(id){
+  const g = genOf(id);
+  if(g) dexGen = g.label;
+  renderPokedex();
+  show("pokedex");
+  const cell = document.querySelector(`#dexGrid .dex-cell[data-id="${id}"]`);
+  if(!cell) return;
+  requestAnimationFrame(()=>{
+    cell.scrollIntoView({ block:"center", behavior:"auto" });
+    cell.classList.add("dex-found");
+    setTimeout(()=> cell.classList.remove("dex-found"), 2400);
+  });
+}
+
 function renderPokedex(){
   const collected = loadCollection();
   const unseen = loadUnseen();
@@ -4116,8 +4224,7 @@ function renderPokedex(){
   // without one.
   const genPct = genPokes.length ? Math.round((genCaught / genPokes.length) * 100) : 0;
   section.innerHTML = `
-    <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">
-${genCaught} / ${genPokes.length}</span></h3>
+    <h3 class="dex-gen-title"><span>${g.label}</span><span class="dex-gen-count">${genCaught} / ${genPokes.length}</span></h3>
     <span class="level-bar dex-gen-bar" aria-hidden="true">
       <span class="level-fill" style="width:${genPct}%; background:var(--berry-deep)"></span>
     </span>
@@ -4130,6 +4237,7 @@ ${genCaught} / ${genPokes.length}</span></h3>
     const cell = document.createElement("button");
     cell.type = "button";
     cell.className = `dex-cell ${got ? "caught" : "uncaught"}`;
+    cell.dataset.id = poke.id;
     // Rarity shows on uncaught entries too. It gives nothing away about which
     // Pokémon it is, and marking the slot is the point — it says "something
     // worth finding lives here" rather than rewarding you only after the fact.
@@ -5971,6 +6079,12 @@ $("#quitBtn").addEventListener("click", ()=>{
 // The catch screen's meadow is the home screen's, cloned rather than copied
 // into the markup, so the two can never drift apart.
 $(".catch-sky").prepend($(".home-scene .meadow-art").cloneNode(true));
+$("#catchImg").addEventListener("load", fitCatchArt);
+// Both fits are in pixels, so they follow the window.
+window.addEventListener("resize", ()=>{
+  fitShowcase();
+  if(!$("#catchModal").classList.contains("hidden")) fitCatchArt();
+});
 $("#catchOkBtn").addEventListener("click", ()=>{
   hideCatchModal();
   const cb = pendingCatchCallback;
