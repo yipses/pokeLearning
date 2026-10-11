@@ -1708,6 +1708,37 @@
   .type-grass{ background:#6bb352; }
   .type-flying{ background:#a094e8; }
 
+  /* Pattern pictures (drawPatternPictures). New Pokémon sit on a sun highlight;
+     the fixed number keeps the blue frame Visual Maths uses. */
+  .pattern-list.drawn{ gap:4px; }
+  .pattern-row.waiting{ opacity:.45; }
+  .pattern-pic{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; align-items:center; margin:0 0 10px; }
+  .pattern-pic:empty{ display:none; }
+  .pattern-pic img{ width:22px; height:22px; object-fit:contain; display:block; }
+  .pattern-pic-op{ font-weight:900; color:var(--ink-soft); }
+  .pattern-pic-group, .pattern-pic-loose, .pattern-pic-new{ display:inline-flex; flex-wrap:wrap; gap:2px; align-items:center; }
+  .pattern-pic-group{ padding:3px 5px; border:2px solid var(--sky-600); border-radius:10px; background:var(--surface); }
+  .pattern-pic-new{ padding:2px 5px; border-radius:10px; background:var(--sun-300); box-shadow:inset 0 0 0 2px var(--sun-700); }
+  .pattern-pic-loose:empty{ display:none; }
+  .pattern-pic-grow{ display:inline-flex; flex-wrap:nowrap; align-items:center; gap:4px; }
+  .pattern-pic-grow .pattern-pic-loose, .pattern-pic-grow .pattern-pic-new{ flex-wrap:nowrap; }
+  .pattern-pic-array{ display:inline-flex; flex-direction:column; gap:2px; padding:4px 6px; border:2px solid var(--sky-600); border-radius:10px; background:var(--surface); }
+  .pattern-pic-line{ display:flex; gap:3px; padding:1px 3px; border-radius:7px; }
+  .pattern-pic-line.new{ background:var(--sun-300); box-shadow:inset 0 0 0 2px var(--sun-700); }
+  .pattern-pic-array img{ width:18px; height:18px; }
+  .pattern-pic.dense img{ width:15px; height:15px; }
+  .pattern-pic.dense{ gap:3px; }
+  @media (max-height:700px){
+    .pattern-pic{ margin-bottom:3px; }
+    .pattern-pic img{ width:17px; height:17px; }
+    .pattern-pic.dense img{ width:13px; height:13px; }
+    .pattern-pic-array{ padding:3px 5px; }
+    .pattern-pic-array img{ width:12px; height:12px; }
+    .pattern-pic-array, .pattern-pic-line{ gap:1px; }
+    .pattern-list.drawn .pattern-slot{ min-height:36px; }
+    .pattern-list.drawn ~ #patternChoiceWrap .choices{ margin-top:8px; }
+  }
+
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
   .notice-card h2{ margin:0 0 8px; font-size:1.375rem; font-weight:900; }
@@ -1992,8 +2023,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 98;
-const APP_BUILD_DATE = "10 Oct 2026";
+const APP_BUILD = 99;
+const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -2916,6 +2947,9 @@ function buildQueue(){
     // whether this rung is one a picture can carry, and the setting says whether
     // to use it. Same challenge either way, so it still counts toward promotion.
     if(p.kind === "math" && level.row.visual && $("#visualOn").checked) p = toVisual(p);
+    // A pattern rung marked visual draws each row as Pokémon, with what the
+    // pattern added on that row highlighted. Only + and × patterns can be drawn.
+    if(p.kind === "pattern" && level.row.visual && $("#visualOn").checked && (p.sym === "+" || p.sym === "×")) p.drawn = true;
     p.track = track.id; p.isFrontier = isFrontier; p.levelId = level.id;
     return p;
   };
@@ -5270,8 +5304,8 @@ function renderPattern(p){
   const stage = $("#stage");
   stage.innerHTML = `
     <div class="kind-tag kind-pattern">Math Pattern</div>
-    <div class="poke-frame compact"><img alt="Mystery Pokémon" src="${artwork(p.poke.id)}"></div>
-    <div class="pattern-list" id="patternList"></div>
+    ${p.drawn ? "" : `<div class="poke-frame compact"><img alt="Mystery Pokémon" src="${artwork(p.poke.id)}"></div>`}
+    <div class="pattern-list${p.drawn ? " drawn" : ""}" id="patternList"></div>
     <div id="patternChoiceWrap"></div>
     <div class="feedback" id="feedback"></div>
   `;
@@ -5283,16 +5317,63 @@ function renderPattern(p){
     row.innerHTML = `<span class="pattern-eq">${it.a} ${p.sym} ${it.b} =</span>
       <span class="pattern-slot" data-i="${i}"></span>`;
     listEl.appendChild(row);
+    if(p.drawn){
+      const pic = document.createElement("div");
+      pic.className = "pattern-pic";
+      pic.setAttribute("aria-hidden", "true");
+      listEl.appendChild(pic);
+    }
   });
 
   patternState = { p, slots:[...listEl.querySelectorAll(".pattern-slot")], at:0 };
   openPatternRow();
 }
 
+/* The pictures under each pattern row, drawn up to the open one. Every row shows
+   its whole sum and highlights exactly what the pattern added on that row — the
+   step's worth of new Pokémon for +, the newest group for × — so the stack reads
+   as "the same as last time, and these". The first row highlights its step too:
+   it is the first time the step appears. Nothing is ever drawn as a blank, which
+   would read as "missing" rather than "new".
+
+   + : the fixed first number in a frame, then the growing one.
+   × : an array, one row per group — groups side by side wrapped and stranded a
+       "+" at the end of a line, the problem the stacked tens layout exists to avoid. */
+function drawPatternPictures(){
+  const st = patternState;
+  if(!st || !st.p.drawn) return;
+  const { p, at } = st;
+  const icon = `<img src="${artwork(p.poke.id)}" alt="" decoding="async">`;
+  const n = (k, html) => html.repeat(Math.max(0, k));
+  const rows = [...$("#patternList").querySelectorAll(".pattern-row")];
+  const pics = [...$("#patternList").querySelectorAll(".pattern-pic")];
+  p.items.forEach((it, i)=>{
+    rows[i].classList.toggle("waiting", i > at);
+    if(i > at){ pics[i].innerHTML = ""; return; }
+    if(p.sym === "+"){
+      const before = i ? p.items[i-1].b : 0;
+      // More than a dozen and the row would wrap, splitting the highlighted step
+      // off on a line of its own; smaller icons keep each row on one line.
+      pics[i].classList.toggle("dense", it.a + it.b > 12);
+      // The growing part — "+", last row's Pokémon and the new ones — never
+      // splits: if the row is too wide, it moves under the fixed number whole.
+      pics[i].innerHTML =
+        (it.a ? `<span class="pattern-pic-group">${n(it.a, icon)}</span>` : "") +
+        `<span class="pattern-pic-grow">${it.a ? `<span class="pattern-pic-op">+</span>` : ""}<span class="pattern-pic-loose">${n(before, icon)}</span><span class="pattern-pic-new">${n(it.b - before, icon)}</span></span>`;
+    } else {
+      const before = i ? p.items[i-1].b : 0;
+      pics[i].innerHTML = `<span class="pattern-pic-array">${
+        Array.from({length: it.b}, (_, g) => `<span class="pattern-pic-line${g >= before ? " new" : ""}">${n(it.a, icon)}</span>`).join("")
+      }</span>`;
+    }
+  });
+}
+
 function openPatternRow(){
   const st = patternState;
   const { p, slots, at } = st;
   slots.forEach((sl,i)=> sl.classList.toggle("current", i === at));
+  drawPatternPictures();
   const item = p.items[at];
   const wrap = $("#patternChoiceWrap");
   wrap.innerHTML = mathChoicesHTML("patternChoices", { a:item.a, b:item.b, sym:p.sym, ans:item.ans });

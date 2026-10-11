@@ -643,6 +643,14 @@ Two things looked sparse on real screens once the redesign shipped: the question
 
 **Home** got a drawn scene instead of two hills (trees, bushes, flowers, clouds, a mound), trail cards, buttons directly under the trails with any spare height going to the meadow, and a two-column layout from 900px wide. On a short phone the cards made the Pokémon 89px tall, so at 700px tall or less the tiles stay plain (165px at 360×640). The sun first landed behind the HUD's gear on phones and was moved down and inward. Measured at ten sizes from 360×640 to 1440×900: no scroll, Start on screen; at 320×568 the Pokémon is 95px, below the old 122px floor, on a size smaller than any the spec lists.
 
+## Phase 82 — Pattern rows draw what the pattern adds
+
+The Pattern screen spent its best spot on a decorative Pokémon. It now draws each row, on the rungs the sheet marks `visual`: add patterns 1–4 and multiply patterns 1–3, set in `data/math_levels.csv` directly at the owner's request (the sheet needs the same change).
+
+**How it was decided.** Drawing only the open sum, as Visual Maths does, was rejected: a child could count to the answer and never see the pattern, which is the point of the mode. Every row is drawn instead. The first mock showed the open row's step as dashed blanks; that read as "missing" rather than "new", and the first row had none — there was no previous row to compare with. The step is now highlighted on every row, the first included. Multiply groups side by side wrapped and stranded a "+" at a line end, so `×` is an array, one line per group.
+
+**Measured.** Every marked level at 360×640, 390×844 and 820×1180: no scroll, highlight counts exactly the step per row, all three rows answer through to the ✓; unmarked levels keep the decorative Pokémon. Multiply at 360×640 first overshot by 11px, fixed by smaller array icons on short screens. The widest add row (`9 + 12`, 21 Pokémon) wrapped mid-highlight; the growing part now moves under the fixed number as one piece.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

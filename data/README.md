@@ -169,7 +169,7 @@ Traps: **every `say_as` must be a pronounceable syllable.** A synthesiser handed
 |---|---|
 | `track` | must match a `track` in `math_tracks.csv` |
 | `level` | 1-based, and the number a prerequisite refers to |
-| `visual` | `yes` if this rung can be drawn as pictures. Set it honestly: it is trusted, and the count is the operands, not the answer — `div` level 5 puts 25 icons on screen for `25 ÷ 5`, which is the tallest the sheet currently asks for |
+| `visual` | `yes` if this rung can be drawn as pictures. Set it honestly: it is trusted, and the count is the operands, not the answer — `div` level 5 puts 25 icons on screen for `25 ÷ 5`, which is the tallest the sheet currently asks for. On a **pattern** row it draws each of the three rows as Pokémon with the step highlighted (add and multiply patterns only; subtract and divide ignore it) — `pattern_add` 1–4 and `pattern_mul` 1–3 are set |
 | `num1_min`, `num1_max` | first operand. On a **pattern** row this is the fixed anchor; on a **division** row it is the dividend |
 | `num2_min`, `num2_max` | second operand. On a division row, the divisor |
 | `num3_min`, `num3_max` | reserved for three-operand questions. Null everywhere, and nothing reads them |
