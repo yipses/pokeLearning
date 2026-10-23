@@ -1,0 +1,9 @@
+level,mode,clues,choices,facts,wrong,stretch,spoken_tiles,promote_5_pct,promote_10_pct
+1,yesno,1,2,colour,,2,yes,100,80
+2,yesno,1,2,colour|size|can|type,,2,yes,100,80
+3,whoami,1,3,colour|size|can|type,,2,yes,100,80
+4,whoami,2,3,colour|size|can|type,,2,no,100,80
+5,fixit,1,3,colour|size|can|type,fact,2,no,100,80
+6,whoami,2,4,colour|size|can|type,,2,no,100,80
+7,fixit,1,3,colour|size|can|type,fact|grammar,2,no,100,80
+8,whoami,3,4,colour|size|can|type|not,,2,no,100,80

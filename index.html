@@ -66,6 +66,8 @@
     /* Sentences' trail colour: the one hue no other trail or meaning uses.
        White on it is 7.1:1. */
     --bark-700:#7a4e24;
+    /* Riddles' trail colour. White on it is 7.7:1. */
+    --indigo-700:#3d4aa6;
     --primary:      var(--leaf-600);
     --primary-edge: var(--leaf-700);
     --accent:       var(--berry-600);
@@ -271,6 +273,7 @@
   .kind-reading{ background:var(--violet-600); }
   .kind-alpha{ background:var(--teal-600); }
   .kind-sentence{ background:var(--bark-700); }
+  .kind-riddle{ background:var(--indigo-700); }
   .kind-battle{ background:var(--ink); color:var(--sun-500); }
 
   /* The number pad is tall, and on a phone the maths screens ran past the fold
@@ -1755,6 +1758,45 @@
      inside its right end, to hear that one word. It is a sibling of the tile, not
      a child — a button inside a button is invalid — and the tile makes room so the
      word never sits under it. Same 40px drawn / 44px tapped speaker as everywhere. */
+  /* ===== Riddles =====
+     The question or clues sit on a plate, the way Reverse Read & Choose shows
+     its word: what is being asked, at the prompt role, wrapping between words.
+     On a spoken level a speaker sits inside the plate's right end and reads it. */
+  .riddle-text{
+    position:relative; display:grid; gap:4px; place-items:center; box-sizing:border-box; margin:14px 0 0;
+    padding:10px 16px; background:var(--surface-sunken); border-radius:20px;
+    font-size:28px; font-weight:900; line-height:1.15; text-align:center;
+  }
+  .riddle-text.has-say{ padding-right:60px; }
+  .riddle-say{
+    position:absolute; right:10px; top:50%; margin-top:calc(var(--speak) / -2); z-index:2;
+    width:var(--speak); height:var(--speak); padding:0; border:0; border-radius:50%;
+    display:grid; place-items:center; cursor:pointer;
+    background:var(--sun-500); color:var(--sun-800); box-shadow:0 3px 0 var(--sun-700);
+  }
+  .riddle-say:hover{ background:var(--sun-300); }
+  .riddle-say:active{ translate:0 1px; }
+  .riddle-say svg{ width:22px; height:22px; display:block; }
+  .riddle-say::after{ content:""; position:absolute; inset:-2px; border-radius:50%; }
+  #riddleTiles .tile.word, #riddleLine .tile.word{ height:56px; }
+  .tile.word.riddle-yn{ min-width:120px; }
+  .tile.word.riddle-right{ border-color:var(--leaf-700); background:var(--leaf-100); color:var(--leaf-700); }
+  .tile.word.riddle-wrong{ opacity:.4; }
+  #stage[data-kind="riddle"] .reading-options-img{ margin-top:16px; }
+  @media (max-height:860px){ .riddle-text{ font-size:24px; } }
+  @media (max-height:700px){
+    .riddle-text{ font-size:22px; margin-top:8px; padding:6px 12px; }
+    .riddle-text.has-say{ padding-right:56px; }
+    #riddleTiles .tile.word, #riddleLine .tile.word{ height:48px; }
+  }
+  /* Two Pokémon in one sentence: two pictures side by side, each with its own
+     speaker, and an arrow between them when one grows into the other. */
+  .sent-pics{ display:flex; justify-content:center; align-items:center; gap:12px; }
+  #stage .frame-wrap .poke-frame.reading-frame.sent-frame.sent-two{ width:140px; height:140px; }
+  .sent-arrow{ width:28px; height:28px; color:var(--ink-soft); flex:0 0 auto; }
+  .sent-arrow svg{ width:100%; height:100%; display:block; }
+  @media (max-height:860px) and (max-width:600px){ #stage .frame-wrap .poke-frame.reading-frame.sent-frame.sent-two{ width:116px; height:116px; } }
+  @media (max-height:700px){ #stage .frame-wrap .poke-frame.reading-frame.sent-frame.sent-two{ width:88px; height:88px; } }
   .word-cell{ position:relative; display:inline-flex; }
   .tile.word.has-say{ padding-right:58px; }
   .word-say{
@@ -1776,14 +1818,16 @@
      reading have no cursor, so they keep the amber light. */
   #stage[data-kind="alpha"] .answer-lit,
   #stage[data-kind="pattern"] .answer-lit,
-  #stage[data-kind="sentence"] .answer-lit{
+  #stage[data-kind="sentence"] .answer-lit,
+  #stage[data-kind="riddle"][data-step="fix"] .answer-lit{
     border-color:var(--leaf-700) !important; background:var(--leaf-100);
     animation:answer-lit-green-pulse 1.25s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce){
     #stage[data-kind="alpha"] .answer-lit,
     #stage[data-kind="pattern"] .answer-lit,
-    #stage[data-kind="sentence"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
+    #stage[data-kind="sentence"] .answer-lit,
+    #stage[data-kind="riddle"][data-step="fix"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
   }
   @media (max-width:480px){ .alpha-name{ font-size:11px; } }
 
@@ -2272,6 +2316,25 @@
     </div>
 
     <div class="card">
+      <h2>Riddles Trail</h2>
+      <p class="sub">Reading for meaning, from the same Pok&eacute;mon facts as Sentences: <em>Yes or No</em> (&ldquo;Is Pikachu blue?&rdquo;), <em>Who am I?</em> (clues, then pick the Pok&eacute;mon) and <em>Fix it</em> (find the wrong word, then fix it). Its own ladder in <code>data/riddle_levels.csv</code>; every word stays within reach of the Reading level.</p>
+
+      <div class="field">
+        <label>Turn on riddles
+          <span class="hint">Include riddle rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="riddleOn" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="field">
+        <label>Riddles level
+          <span class="hint" id="riddlesLevelHint">—</span>
+        </label>
+        <select id="riddlesFrontier"></select>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Math Trails</h2>
       <p class="sub">Eight tracks — add, subtract, multiply, divide and a skip-counting pattern track for each. A track opens once its prerequisite reaches the level named in <code>data/math_tracks.csv</code>, and everything open has a chance to come up.</p>
 
@@ -2400,7 +2463,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 112;
+const APP_BUILD = 113;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -2505,7 +2568,7 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 async function loadData(){
   const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows,
-         sentRows, factRows, sentWordRows, wordLevelRows] = await Promise.all([
+         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -2521,6 +2584,7 @@ async function loadData(){
     fetchCsv("data/pokemon_facts.csv"),
     fetchCsv("data/sentence_words.csv"),
     fetchCsv("data/word_levels.csv"),
+    fetchCsv("data/riddle_levels.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -2629,6 +2693,7 @@ async function loadData(){
   }
   for(const row of ALPHABET_ROWS) checkAlphaRow(row);
   loadSentenceData(sentRows, factRows, sentWordRows, wordLevelRows);
+  loadRiddleData(riddleRows);
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
@@ -2790,7 +2855,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
-const TRACK_IDS = ["spelling","reading","alphabet","sentences", ...MATH_TRACK_IDS];
+const TRACK_IDS = ["spelling","reading","alphabet","sentences","riddles", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -2824,6 +2889,7 @@ function trackLevels(track){
   if(track==="reading") return READING_LEVELS;
   if(track==="alphabet") return ALPHABET_LEVELS;
   if(track==="sentences") return SENTENCE_LEVELS;
+  if(track==="riddles") return RIDDLE_LEVELS;
   return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
 function frontierIndex(track){
@@ -3406,6 +3472,7 @@ function buildQueue(){
   if($("#readingOn").checked) groups.push(wordPick("reading"));
   if($("#alphaOn").checked)   groups.push(wordPick("alphabet"));
   if($("#sentOn").checked)    groups.push(wordPick("sentences"));
+  if($("#riddleOn").checked)  groups.push(wordPick("riddles"));
   if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
   if(groups.length === 0) return [];
 
@@ -3460,6 +3527,7 @@ function saveSettings(){
     readingOn: $("#readingOn").checked,
     alphaOn: $("#alphaOn").checked,
     sentOn: $("#sentOn").checked,
+    riddleOn: $("#riddleOn").checked,
     mathOn: $("#mathOn").checked,
     visualOn: $("#visualOn").checked
   };
@@ -3478,6 +3546,7 @@ function loadSettings(){
   if(saved.readingOn!=null) $("#readingOn").checked = saved.readingOn;
   if(saved.alphaOn!=null) $("#alphaOn").checked = saved.alphaOn;
   if(saved.sentOn!=null) $("#sentOn").checked = saved.sentOn;
+  if(saved.riddleOn!=null) $("#riddleOn").checked = saved.riddleOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
 }
@@ -3744,6 +3813,10 @@ const LEVEL_ICONS = {
   sentences: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">
       <rect x="1.5" y="8.5" width="7" height="7" rx="2"/><rect x="10" y="8.5" width="4.5" height="7" rx="2"/>
       <rect x="16.5" y="9.5" width="6" height="5" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  // A riddle asks: the question mark, in the app's own face like Aa and ABC.
+  riddles: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="19"
+      text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-size="20" font-weight="900"
+      style="text-transform:none" fill="currentColor">?</text></svg>`,
   // Both maths tracks carry the same numerals: the icon's job is to say "this
   // is maths", and the label beside it says which operation. Two different
   // symbols there made them look like two unrelated subjects.
@@ -3763,6 +3836,7 @@ const LEVEL_TRACKS = [
   {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
   {id:"alphabet", label:"Alphabet", color:"var(--teal-700)"},
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
+  {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
 ];
 function renderHomeLevels(){
   const el = $("#homeLevels");
@@ -3852,6 +3926,7 @@ function renderProblem(){
   else if(p.kind==="reading") renderReading(p);
   else if(p.kind==="alpha") renderAlphabet(p);
   else if(p.kind==="sentence") renderSentence(p);
+  else if(p.kind==="riddle") renderRiddle(p);
   else if(p.kind==="pattern") renderPattern(p);
   else if(p.kind==="visual") renderVisual(p);
   else renderMath(p);
@@ -4614,6 +4689,7 @@ const WORD_TRACKS = [
   {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
   {id:"alphabet", label:"Alphabet", color:"var(--teal-600)"},
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
+  {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
@@ -5402,14 +5478,22 @@ const SENTENCE_ACTIONS = ["fly","swim","run","jump","dig"];
    many that is (checked against the row's `blanks`). Index 0 is the name. */
 const SENTENCE_FRAMES = {
   last1:1, last2:2, not1:1, given:2, last3:3, type_given:3, last4:4, verb_given:2, all:"all",
+  // Two Pokémon in one sentence — see sentencePairPatterns.
+  and_are:1, compare:1, grows_into:1,
 };
+const SENTENCE_PAIR_FRAMES = new Set(["and_are", "compare", "grows_into"]);
 const SENTENCE_FRAME_LABELS = {
   last1:'One word: "Pikachu is ___"', last2:'Two words: "Pikachu ___ ___"',
   not1:'"not": "Pikachu is not ___"', given:'Two words around a given one',
   last3:'Three words', type_given:'Type, with the type word given', last4:'Four words',
   verb_given:'Name and one word, the verb given', all:'The whole sentence',
+  and_are:'Two Pokémon: "Pikachu and Psyduck ___ yellow"', compare:'Bigger: "Onix is ___ than Pikachu"',
+  grows_into:'Grows into: "Charmander grows into ___"',
 };
 let SENTENCE_ROWS = [], SENTENCE_FACTS = [], SENTENCE_WORD_LEVEL = {};
+/* Facts by name, and what each Pokémon grows into next (only Pokémon that have
+   facts). Filled in loadSentenceData. */
+let SENTENCE_BY_NAME = {}, SENTENCE_NEXT = {}, SENTENCE_FAMILY = {};
 
 function loadSentenceData(levelRows, factRows, wordRows, wordLevelRows){
   const n = v => Number(v);
@@ -5462,7 +5546,19 @@ function loadSentenceData(levelRows, factRows, wordRows, wordLevelRows){
     SENTENCE_FACTS.push(f);
   }
   if(!SENTENCE_FACTS.length) throw new Error("data/pokemon_facts.csv has no usable rows");
+  SENTENCE_BY_NAME = Object.fromEntries(SENTENCE_FACTS.map(f => [f.name, f]));
+  // A family is named by its first stage, walked back through the whole roster
+  // (Pikachu's family starts at Pichu, which has no facts).
+  const byName = Object.fromEntries(POKEMON.map(p => [p.n.toLowerCase(), p]));
+  const root = n => { let k = n, guard = 0; while(byName[k] && byName[k].from && guard++ < 5) k = byName[k].from.toLowerCase(); return k; };
+  SENTENCE_NEXT = {}; SENTENCE_FAMILY = {};
+  for(const f of SENTENCE_FACTS){
+    SENTENCE_FAMILY[f.name] = root(f.name);
+    const from = f.poke.from && f.poke.from.toLowerCase();
+    if(from && SENTENCE_BY_NAME[from]) (SENTENCE_NEXT[from] ||= []).push(f.name);
+  }
   const vocab = new Set(["is","am","are","a","an","can","very","not","high","type","big","small",
+                         "and","than","bigger","smaller","grows","into","i","yes","no",
                          ...SENTENCE_COLOURS, ...SENTENCE_ACTIONS]);
   SENTENCE_FACTS.forEach(f => f.types.forEach(t => vocab.add(t)));
   const ungraded = [...vocab].filter(w => !(w in SENTENCE_WORD_LEVEL));
@@ -5546,6 +5642,60 @@ function sentenceBlanks(frame, pat){
   return null;
 }
 
+/* Sentences about TWO Pokémon, each shown in its own picture:
+
+     and_are     Pikachu and Psyduck are yellow   a main colour they share
+     compare     Onix is bigger than Pikachu      sizes two or more steps apart
+                                                  (a blank size is unknown, so never)
+     grows_into  Charmander grows into Charmeleon only the very next stage counts
+
+   Each carries its own truth test, like sentenceTrue for one Pokémon. In a
+   "grows into" bank the wrong names come from other families, never a later
+   stage of this one — "Charmander grows into Charizard" is true enough to argue. */
+const SENTENCE_SIZE_STEP = { "very small":0, "small":1, "big":3, "very big":4 };
+function sentencePairPatterns(frame){
+  const out = [], F = SENTENCE_FACTS;
+  if(frame === "and_are"){
+    for(let i = 0; i < F.length; i++) for(let j = i + 1; j < F.length; j++){
+      const [a, b] = Math.random() < 0.5 ? [F[i], F[j]] : [F[j], F[i]];
+      for(const C of a.colours.filter(c => b.colours.includes(c)))
+        out.push({ id:"and", key:a.name + "+" + b.name, names:[a.name, b.name], pokes:[a.poke, b.poke],
+          words:[a.name, "and", b.name, "are", C], spares:{3:["is","am"]},
+          truth: w => w.length === 5 && w[0] === a.name && w[1] === "and" && w[2] === b.name && w[3] === "are"
+                      && sentenceColourTrue(a, w[4]) && sentenceColourTrue(b, w[4]) });
+    }
+  }
+  if(frame === "compare"){
+    const sized = F.filter(f => f.size in SENTENCE_SIZE_STEP);
+    for(const a of sized) for(const b of sized){
+      const d = SENTENCE_SIZE_STEP[a.size] - SENTENCE_SIZE_STEP[b.size];
+      if(Math.abs(d) < 2) continue;
+      const X = d > 0 ? "bigger" : "smaller";
+      out.push({ id:"compare", key:a.name + ">" + b.name, names:[a.name, b.name], pokes:[a.poke, b.poke],
+        words:[a.name, "is", X, "than", b.name], spares:{2:[X === "bigger" ? "smaller" : "bigger"]},
+        truth: w => w.length === 5 && w[0] === a.name && w[1] === "is" && w[3] === "than" && w[4] === b.name
+                    && (w[2] === "bigger" ? d >= 2 : w[2] === "smaller" ? -d >= 2 : false) });
+    }
+  }
+  if(frame === "grows_into"){
+    for(const a of F) for(const bn of SENTENCE_NEXT[a.name] || []){
+      const b = SENTENCE_BY_NAME[bn], fam = SENTENCE_FAMILY[a.name];
+      // Other families' evolved forms read most like an answer, so they make the
+      // best wrong tiles.
+      const others = F.filter(g => SENTENCE_FAMILY[g.name] !== fam && g.poke.from).map(g => g.name);
+      out.push({ id:"grows", key:a.name, names:[a.name, b.name], pokes:[a.poke, b.poke],
+        words:[a.name, "grows", "into", b.name], spares:{3:shuffle(others).slice(0, 8)},
+        truth: w => w.length === 4 && w[0] === a.name && w[1] === "grows" && w[2] === "into"
+                    && (SENTENCE_NEXT[a.name] || []).includes(w[3]) });
+    }
+  }
+  return out;
+}
+function sentencePairBlanks(frame){
+  return { and_are:[3], compare:[2], grows_into:[3] }[frame];
+}
+const isPokemonName = w => w in SENTENCE_BY_NAME;
+
 /* The child's reading word level — the ceiling every sentence word is held to,
    plus the row's stretch. */
 function sentenceGate(row){
@@ -5558,26 +5708,31 @@ function sentenceGate(row){
    chosen first, then the Pokémon, so "not" — which has a variant for every
    colour a Pokémon isn't — doesn't crowd out "very" and "fly high". */
 function sentenceQuestion(row, gate, strict){
-  const ok = w => sentenceWordLevel(w) <= gate;
+  // Names are never graded: they are what the picture is of, not words to decode.
+  const ok = w => isPokemonName(w) || sentenceWordLevel(w) <= gate;
+  const pair = SENTENCE_PAIR_FRAMES.has(row.frame);
+  const insts = pair
+    ? sentencePairPatterns(row.frame)
+    : SENTENCE_FACTS.flatMap(f => sentencePatterns(f).map(pat => ({ ...pat, f, key:f.name, names:[f.name], pokes:[f.poke],
+        truth: w => sentenceTrue(f, w) })));
   const byPat = {};
-  for(const f of SENTENCE_FACTS){
-    for(const pat of sentencePatterns(f)){
-      const blanks = sentenceBlanks(row.frame, pat);
-      if(!blanks) continue;
-      if(!pat.words.slice(1).every(ok)) continue;
-      const answers = blanks.map(k => pat.words[k]);
-      const pools = blanks.map(k => shuffle([...new Set(pat.spares[k] || [])].filter(w => ok(w) && !answers.includes(w))));
-      const have = new Set(pools.flat()).size;
-      if(have < (strict ? row.spareTiles : Math.min(1, row.spareTiles))) continue;
-      ((byPat[pat.id] ||= {})[f.name] ||= []).push({f, pat, blanks, answers, pools});
-    }
+  for(const pat of insts){
+    const blanks = pair ? sentencePairBlanks(row.frame) : sentenceBlanks(row.frame, pat);
+    if(!blanks) continue;
+    if(!pat.words.every(ok)) continue;
+    const answers = blanks.map(k => pat.words[k]);
+    const pools = blanks.map(k => shuffle([...new Set(pat.spares[k] || [])].filter(w => ok(w) && !answers.includes(w))));
+    const have = new Set(pools.flat()).size;
+    if(have < (strict ? row.spareTiles : Math.min(1, row.spareTiles))) continue;
+    ((byPat[pat.id] ||= {})[pat.key] ||= []).push({pat, blanks, answers, pools});
   }
   const ids = Object.keys(byPat);
   if(!ids.length) return null;
   const forPat = byPat[ids[rand(ids.length)]];
-  const names = Object.keys(forPat);
-  const variants = forPat[names[rand(names.length)]];
-  const {f, pat, blanks, answers, pools} = variants[rand(variants.length)];
+  const keys = Object.keys(forPat);
+  const variants = forPat[keys[rand(keys.length)]];
+  const {pat, blanks, answers, pools} = variants[rand(variants.length)];
+  const f = pat.f || SENTENCE_BY_NAME[pat.names[0]];
 
   // Deal the spares round the blanks, so grammar and content traps both show.
   const spares = [];
@@ -5593,8 +5748,8 @@ function sentenceQuestion(row, gate, strict){
     if(extra && at >= 0) spares[at] = extra;
   }
   return {
-    kind:"sentence", f, poke:f.poke, patId:pat.id,
-    words: pat.words.slice(), blanks, bank: shuffle(answers.concat(spares)), spoken: row.spoken,
+    kind:"sentence", f, poke:f.poke, pokes:pat.pokes, names:pat.names, truth:pat.truth, patId:pat.id,
+    frame: row.frame, words: pat.words.slice(), blanks, bank: shuffle(answers.concat(spares)), spoken: row.spoken,
   };
 }
 
@@ -5628,19 +5783,24 @@ function buildSentenceLevels(){
 
 let sentState = null;
 function renderSentence(p){
-  const name = p.words[0];
   const stage = $("#stage");
+  // One picture, or two side by side (with an arrow when one grows into the other),
+  // each with its own speaker that names it.
+  const pokes = p.pokes || [p.poke];
+  const two = pokes.length > 1 ? " sent-two" : "";
+  const pics = pokes.map((pk, i) => `
+    <div class="frame-wrap">
+      <div class="poke-frame reading-frame sent-frame${two}"><img alt="Mystery Pokémon" src="${pk.img || artwork(pk.id)}"></div>
+      <button class="frame-say sent-say" type="button" data-i="${i}" aria-label="Say it">${UI_ICONS.speaker}</button>
+    </div>`).join(p.frame === "grows_into" ? `<span class="sent-arrow" aria-hidden="true">${SENT_ARROW}</span>` : "");
   stage.innerHTML = `
     <div class="kind-tag kind-sentence">Sentences</div>
-    <div class="frame-wrap">
-      <div class="poke-frame reading-frame sent-frame"><img alt="Mystery Pokémon" src="${p.poke.img || artwork(p.poke.id)}"></div>
-      <button class="frame-say" type="button" id="sentSay" aria-label="Say it">${UI_ICONS.speaker}</button>
-    </div>
+    <div class="sent-pics">${pics}</div>
     <div class="sent-line" id="sentLine"></div>
     <div class="tiles" id="sentTiles"></div>
     <div class="feedback" id="feedback"></div>
   `;
-  const shown = w => w === name ? cap(w) : w;
+  const shown = w => isPokemonName(w) ? cap(w) : w;
   const lineEl = $("#sentLine"), slots = [];
   p.words.forEach((w, i)=>{
     const el = document.createElement("span");
@@ -5665,7 +5825,7 @@ function renderSentence(p){
     const say = document.createElement("button");
     say.type = "button"; say.className = "word-say"; say.innerHTML = UI_ICONS.speaker;
     say.setAttribute("aria-label", `Say ${shown(w)}`);
-    say.addEventListener("click", ()=> speak(w === name ? sayAs(w) : w));
+    say.addEventListener("click", ()=> speak(isPokemonName(w) ? sayAs(w) : w));
     t._say = say;
     cell.append(t, say);
     bankEl.appendChild(cell);
@@ -5673,8 +5833,9 @@ function renderSentence(p){
   p._blankCount = slots.length;
   sentState = { p, slots, tiles, filled:{}, done:false };
   if(slots[0]) slots[0].classList.add("current");
-  $("#sentSay").addEventListener("click", ()=> speakName(name));
+  stage.querySelectorAll(".sent-say").forEach(b => b.addEventListener("click", ()=> speakName(pokes[Number(b.dataset.i)].n)));
 }
+const SENT_ARROW = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 // A placed tile is spent, so its speaker goes with it.
 function retireSentenceTile(t){
   t.classList.add("used");
@@ -5688,7 +5849,7 @@ function nextSentenceSlot(){
    the blanks filled from `left`? A handful of tiles and at most five blanks, so
    trying them all is instant. */
 function sentenceCompletes(p, assign, left, todo){
-  if(!todo.length) return sentenceTrue(p.f, p.words.map((w, i) => i in assign ? assign[i] : w));
+  if(!todo.length) return (p.truth || (w => sentenceTrue(p.f, w)))(p.words.map((w, i) => i in assign ? assign[i] : w));
   const [k, ...rest] = todo;
   const tried = new Set();
   for(let j = 0; j < left.length; j++){
@@ -5745,7 +5906,7 @@ function fillSentenceSlot(slot, tileEl){
   if(next) next.classList.add("current");
   syncSentenceLight();
   if(!next) finishSentence();
-  else speak(word === st.p.words[0] ? sayAs(word) : word);
+  else speak(isPokemonName(word) ? sayAs(word) : word);
 }
 
 /* The light goes on the word the question was built around when it's still in
@@ -5776,12 +5937,364 @@ function finishSentence(){
   st.tiles.forEach(retireSentenceTile);
   // The whole sentence, read back as the child built it.
   const said = p.words.map((w, i) => i in st.filled ? st.filled[i] : w)
-                      .map((w, i) => i === 0 ? sayAs(w) : w).join(" ");
+                      .map(w => isPokemonName(w) ? sayAs(w) : w).join(" ");
   lockAndAdvance(done => {
     let fired = false;
     const finish = ()=>{ if(fired) return; fired = true; setTimeout(done, 450); };
     setTimeout(()=>{ speak(said, finish); setTimeout(finish, 5000); }, 350);
   });
+}
+
+/* ---------------- §riddles ----------------
+   Reading for meaning, built on the same facts as Sentences (pokemon_facts.csv)
+   and held to the same reading gate. Three modes, chosen per level by
+   data/riddle_levels.csv:
+
+     yesno   a picture and a question about it — "Is Pikachu blue?" — Yes or No
+     whoami  1–3 clues in the Pokémon's own voice — "I am yellow. I can swim." —
+             and 3–4 pictures; only one fits every clue
+     fixit   a sentence with one wrong word — "Pikachu is blue." — tap the wrong
+             word, then pick the right one
+
+   Every fact used must be DEFINITE. An `also` colour is neither a yes nor a no
+   ("Is Pikachu red?" is never asked), an action on neither list is unknown
+   ("Can Pikachu swim?" is never asked), and a blank size says nothing. A wrong
+   picture in "Who am I?" must fail at least one clue outright, and the ones that
+   fail only one are preferred, so every clue has to be read. */
+const RIDDLE_MODES = ["yesno", "whoami", "fixit"];
+const RIDDLE_FACT_KINDS = ["colour", "size", "can", "type", "not"];
+let RIDDLE_ROWS = [], RIDDLE_LEVELS = [];
+
+function loadRiddleData(rows){
+  const n = v => Number(v);
+  const list = v => String(v || "").split("|").map(x => x.trim().toLowerCase()).filter(Boolean);
+  RIDDLE_ROWS = rows.map(r => ({
+    level: n(r.level), mode: String(r.mode || "").trim().toLowerCase(),
+    clues: n(r.clues), choices: n(r.choices), facts: list(r.facts), wrong: list(r.wrong),
+    stretch: n(r.stretch), spoken: /^(yes|y|true|1)$/i.test(String(r.spoken_tiles || "").trim()),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
+  }));
+  if(!RIDDLE_ROWS.length) throw new Error("data/riddle_levels.csv is empty");
+  RIDDLE_ROWS.forEach(checkRiddleRow);
+}
+function checkRiddleRow(row){
+  const at = `data/riddle_levels.csv level ${row.level}`;
+  if(!RIDDLE_MODES.includes(row.mode)) throw new Error(`${at}: mode "${row.mode}" is not one of ${RIDDLE_MODES.join(", ")}`);
+  if(!row.facts.length) throw new Error(`${at}: facts is empty`);
+  for(const k of row.facts) if(!RIDDLE_FACT_KINDS.includes(k)) throw new Error(`${at}: "${k}" is not one of ${RIDDLE_FACT_KINDS.join(", ")}`);
+  if(row.mode === "whoami" && !(row.clues >= 1 && row.clues <= 3)) throw new Error(`${at}: clues must be 1, 2 or 3`);
+  if(row.mode === "whoami" && !(row.choices >= 2 && row.choices <= 6)) throw new Error(`${at}: choices must be 2 to 6 pictures`);
+  if(row.mode === "fixit" && !(row.choices >= 2 && row.choices <= 5)) throw new Error(`${at}: choices must be 2 to 5 tiles`);
+  if(row.mode === "fixit" && !row.wrong.length) throw new Error(`${at}: wrong must be fact, grammar or fact|grammar`);
+  for(const k of row.wrong) if(!["fact", "grammar"].includes(k)) throw new Error(`${at}: wrong "${k}" is not fact or grammar`);
+  if(!(Number.isInteger(row.stretch) && row.stretch >= 0)) throw new Error(`${at}: stretch must be a whole number, 0 or more`);
+}
+
+const RIDDLE_TYPES = () => [...new Set(SENTENCE_FACTS.flatMap(f => f.types))];
+/* Is this fact true of this Pokémon — true, false, or null when the sheet doesn't
+   say for certain. The one definition the three modes share. */
+function riddleTruth(f, kind, w){
+  if(kind === "colour") return f.colours.includes(w) ? true : f.also.includes(w) ? null : false;
+  if(kind === "not")    return f.colours.includes(w) ? false : f.also.includes(w) ? null : true;
+  if(kind === "size"){ const sw = sentenceSizeWord(f); return sw ? sw === w : null; }
+  if(kind === "can")    return f.can.includes(w) ? true : f.cannot.includes(w) ? false : null;
+  if(kind === "type")   return f.types.includes(w);
+  return null;
+}
+/* Every definite fact about one Pokémon, with the words of its yes/no question
+   and of its first-person clue. "NAME" stands for the Pokémon's name. */
+function riddleAtoms(f, kinds){
+  const out = [];
+  const add = (kind, w, q, clue) => { const t = riddleTruth(f, kind, w); if(t !== null) out.push({kind, w, t, q, clue}); };
+  for(const k of kinds){
+    if(k === "colour") SENTENCE_COLOURS.forEach(c => add(k, c, ["is","NAME",c], ["i","am",c]));
+    if(k === "not")    SENTENCE_COLOURS.forEach(c => add(k, c, null, ["i","am","not",c]));
+    if(k === "size")   ["big","small"].forEach(s => add(k, s, ["is","NAME",s], ["i","am",s]));
+    if(k === "can")    SENTENCE_ACTIONS.forEach(a => add(k, a, ["can","NAME",a], ["i","can",a]));
+    if(k === "type")   RIDDLE_TYPES().forEach(t => add(k, t, ["is","NAME",sentenceArticle(t),t,"type"], ["i","am",sentenceArticle(t),t,"type"]));
+  }
+  return out;
+}
+const riddleWordsOk = (ws, gate) => ws.every(w => w === "NAME" || isPokemonName(w) || sentenceWordLevel(w) <= gate);
+/* Tokens to text: capital first letter, "I", names capitalised, a full stop or
+   question mark. */
+function riddleText(tokens, f, end){
+  const t = tokens.map(w => w === "NAME" ? cap(f.name) : w === "i" ? "I" : isPokemonName(w) ? cap(w) : w);
+  t[0] = t[0].charAt(0).toUpperCase() + t[0].slice(1);
+  return t.join(" ") + end;
+}
+const riddleSpoken = (tokens, f) => tokens.map(w => w === "NAME" ? sayAs(f.name) : isPokemonName(w) ? sayAs(w) : w).join(" ");
+
+function riddleYesNo(row, gate){
+  const kinds = row.facts.filter(k => k !== "not");
+  if(!riddleWordsOk(["yes","no"], gate)) return null;
+  for(let tries = 0; tries < 40; tries++){
+    const f = SENTENCE_FACTS[rand(SENTENCE_FACTS.length)];
+    const kind = kinds[rand(kinds.length)];
+    const want = Math.random() < 0.5;
+    const atoms = riddleAtoms(f, [kind]).filter(a => a.q && a.t === want && riddleWordsOk(a.q, gate));
+    if(!atoms.length) continue;
+    const a = atoms[rand(atoms.length)];
+    return { kind:"riddle", mode:"yesno", f, poke:f.poke, tokens:a.q, answer: want ? "yes" : "no", spoken:row.spoken };
+  }
+  return null;
+}
+function riddleWhoAmI(row, gate){
+  for(let tries = 0; tries < 40; tries++){
+    const f = SENTENCE_FACTS[rand(SENTENCE_FACTS.length)];
+    const atoms = shuffle(riddleAtoms(f, row.facts).filter(a => a.t && riddleWordsOk(a.clue, gate)));
+    // One clue per kind of fact ("not" counts as colour), and a "not" clue
+    // whenever the level allows one.
+    const clues = [], used = new Set();
+    const family = k => k === "not" ? "colour" : k;
+    const pick = a => { if(clues.length < row.clues && !used.has(family(a.kind))){ clues.push(a); used.add(family(a.kind)); } };
+    if(row.facts.includes("not")){ const nt = atoms.find(a => a.kind === "not"); if(nt) pick(nt); }
+    atoms.forEach(pick);
+    if(clues.length < row.clues) continue;
+    const scored = SENTENCE_FACTS.filter(g => g !== f).map(g => ({ g, fails: clues.filter(c => riddleTruth(g, c.kind, c.w) === false).length }))
+      .filter(x => x.fails >= 1);
+    if(scored.length < row.choices - 1) continue;
+    const wrong = shuffle(scored).sort((a, b) => a.fails - b.fails).slice(0, row.choices - 1).map(x => x.g);
+    return { kind:"riddle", mode:"whoami", f, poke:f.poke, clues:clues.map(c => c.clue), options:shuffle([f, ...wrong]), spoken:row.spoken };
+  }
+  return null;
+}
+function riddleFixIt(row, gate){
+  const idOf = { colour:"colour", size:"size", action:"can", type:"type" };
+  for(let tries = 0; tries < 60; tries++){
+    const f = SENTENCE_FACTS[rand(SENTENCE_FACTS.length)];
+    const pats = sentencePatterns(f).filter(p => row.facts.includes(idOf[p.id]) && riddleWordsOk(p.words.slice(1), gate));
+    if(!pats.length) continue;
+    const pat = pats[rand(pats.length)];
+    const words = pat.words.slice();
+    const how = row.wrong[rand(row.wrong.length)];
+    let at, pool;
+    if(how === "fact"){
+      at = pat.id === "type" ? 3 : 2;
+      const kind = idOf[pat.id];
+      const art = pat.id === "type" ? words[2] : null;
+      const same = kind === "colour" ? SENTENCE_COLOURS : kind === "size" ? ["big","small"]
+                 : kind === "can" ? SENTENCE_ACTIONS : RIDDLE_TYPES().filter(t => sentenceArticle(t) === art);
+      pool = same.filter(w => riddleTruth(f, kind, w) === false);
+    } else {
+      if(pat.id === "type" && Math.random() < 0.5){ at = 2; pool = [words[2] === "a" ? "an" : "a"]; }
+      else if(words[1] === "is"){ at = 1; pool = ["am","are"]; }
+      else continue;
+    }
+    pool = shuffle(pool.filter(w => riddleWordsOk([w], gate)));
+    if(!pool.length) continue;
+    const right = words[at], shownWrong = pool[0];
+    words[at] = shownWrong;
+    // The tiles: the right word and wrong ones that are not the one on show.
+    const spares = shuffle(pool.slice(1).concat(how === "grammar" && at === 1 ? ["can"] : [])).slice(0, row.choices - 1);
+    if(!spares.length) continue;
+    return { kind:"riddle", mode:"fixit", f, poke:f.poke, words, at, right, bank:shuffle([right, ...spares]), spoken:row.spoken };
+  }
+  return null;
+}
+function riddleQuestion(row, gate){
+  return row.mode === "yesno" ? riddleYesNo(row, gate) : row.mode === "whoami" ? riddleWhoAmI(row, gate) : riddleFixIt(row, gate);
+}
+// The same fallback as Sentences: the nearest level with a question, which
+// then can't count toward promotion.
+function mkRiddle(row){
+  const p = riddleQuestion(row, sentenceGate(row));
+  if(p) return p;
+  const i = RIDDLE_ROWS.indexOf(row);
+  for(const other of RIDDLE_ROWS.slice(0, i).reverse().concat(RIDDLE_ROWS.slice(i + 1))){
+    const q = riddleQuestion(other, sentenceGate(other));
+    if(q){ q.fellBack = true; return q; }
+  }
+  const q = riddleQuestion(row, Infinity);
+  q.fellBack = true;
+  return q;
+}
+function buildRiddleLevels(){
+  const what = row => row.mode === "yesno" ? `Yes or no${row.facts.length === 1 ? ": " + row.facts[0] : ""}`
+    : row.mode === "whoami" ? `Who am I? ${row.clues} ${row.clues === 1 ? "clue" : "clues"}, ${row.choices} pictures${row.facts.includes("not") ? ', with "not"' : ""}`
+    : `Fix it: wrong ${row.wrong.join(" or ")}`;
+  return RIDDLE_ROWS.map(row => ({
+    id: String(row.level), row,
+    label: what(row) + (row.spoken ? ", read aloud" : ""),
+    gen: ()=> mkRiddle(row),
+  }));
+}
+
+let riddleState = null;
+function renderRiddle(p){
+  const stage = $("#stage");
+  stage.dataset.mode = p.mode;
+  delete stage.dataset.step;
+  const pic = `
+    <div class="frame-wrap">
+      <div class="poke-frame reading-frame sent-frame"><img alt="Mystery Pokémon" src="${p.poke.img || artwork(p.poke.id)}"></div>
+      <button class="frame-say" type="button" id="riddleSay" aria-label="Say it">${UI_ICONS.speaker}</button>
+    </div>`;
+  const text = p.mode === "yesno" ? `<span class="riddle-line">${riddleText(p.tokens, p.f, "?")}</span>`
+             : p.mode === "whoami" ? p.clues.map(c => `<span class="riddle-line">${riddleText(c, p.f, ".")}</span>`).join("") : "";
+  const say = p.spoken && text ? `<button class="riddle-say" type="button" id="riddleTextSay" aria-label="Read it">${UI_ICONS.speaker}</button>` : "";
+  stage.innerHTML = `
+    <div class="kind-tag kind-riddle">Riddles</div>
+    ${p.mode === "whoami" ? "" : pic}
+    ${text ? `<div class="riddle-text${say ? " has-say" : ""}">${text}${say}</div>` : ""}
+    ${p.mode === "fixit" ? `<div class="sent-line" id="riddleLine"></div>` : ""}
+    ${p.mode === "whoami" ? `<div class="reading-options reading-options-img" id="riddleOptions"></div>` : `<div class="tiles" id="riddleTiles"></div>`}
+    <div class="feedback" id="feedback"></div>
+  `;
+  riddleState = { p, done:false, answerEl:null, step: p.mode === "fixit" ? "find" : null };
+  const sayBtn = $("#riddleSay");
+  if(sayBtn) sayBtn.addEventListener("click", ()=> speakName(p.f.name));
+  const textSay = $("#riddleTextSay");
+  if(textSay) textSay.addEventListener("click", ()=> speak(p.mode === "yesno" ? riddleSpoken(p.tokens, p.f) : p.clues.map(c => riddleSpoken(c, p.f)).join(". ")));
+
+  if(p.mode === "yesno"){
+    const wrap = $("#riddleTiles");
+    ["yes", "no"].forEach(w => {
+      const t = document.createElement("button");
+      t.type = "button"; t.className = "tile word riddle-yn"; t.textContent = cap(w); t.dataset.word = w;
+      if(w === p.answer) riddleState.answerEl = t;
+      t.addEventListener("click", ()=> pickRiddleYesNo(t));
+      wrap.appendChild(t);
+    });
+  } else if(p.mode === "whoami"){
+    const wrap = $("#riddleOptions");
+    p.options.forEach(g => {
+      const cell = document.createElement("div");
+      cell.className = "reading-img-cell";
+      const btn = document.createElement("button");
+      btn.className = "reading-opt reading-opt-img";
+      btn.innerHTML = `<img alt="${cap(g.name)}" src="${g.poke.img || artwork(g.poke.id)}">`;
+      if(g === p.f) riddleState.answerEl = btn;
+      btn.addEventListener("click", ()=> pickRiddleWho(g, btn));
+      const s = document.createElement("button");
+      s.className = "reading-say-mini"; s.type = "button"; s.innerHTML = UI_ICONS.speaker;
+      s.setAttribute("aria-label", `Say ${cap(g.name)}`);
+      s.addEventListener("click", ()=> speakName(g.name));
+      cell.append(btn, s);
+      wrap.appendChild(cell);
+    });
+    layoutReadingTiles();
+    wrap.querySelectorAll("img").forEach(im => { im.addEventListener("load", ()=> fitTileArt(im)); if(im.complete) fitTileArt(im); });
+  } else {
+    const line = $("#riddleLine");
+    p.words.forEach((w, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "tile word fix-word"; b.textContent = isPokemonName(w) ? cap(w) : w;
+      b.dataset.index = String(i);
+      if(i === p.at) riddleState.answerEl = b;
+      b.addEventListener("click", ()=> pickRiddleWrongWord(b));
+      line.appendChild(b);
+    });
+  }
+}
+
+function riddleMiss(el){
+  bumpMistake(riddleState.p);
+  el.classList.add("shake");
+  setTimeout(()=> el.classList.remove("shake"), 450);
+  const fb = $("#feedback");
+  fb.className = "feedback bad";
+  fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
+}
+function clearRiddleFeedback(){
+  const fb = $("#feedback");
+  if(fb.classList.contains("bad")){ fb.textContent = ""; fb.className = "feedback"; }
+}
+function pickRiddleYesNo(t){
+  const st = riddleState;
+  if(!st || st.done || t.disabled) return;
+  clearRiddleFeedback();
+  if(t.dataset.word === st.p.answer){ t.classList.add("riddle-right"); finishRiddle(); return; }
+  riddleMiss(t);
+  t.disabled = true; t.classList.add("riddle-wrong");
+  missAndMaybeReveal(st.answerEl);
+}
+function pickRiddleWho(g, btn){
+  const st = riddleState;
+  if(!st || st.done || btn.disabled) return;
+  clearRiddleFeedback();
+  if(g === st.p.f){ btn.classList.add("correct"); finishRiddle(); return; }
+  riddleMiss(btn);
+  btn.disabled = true; btn.classList.add("wrong");
+  missAndMaybeReveal(st.answerEl);
+}
+/* Fix it, step one: find the wrong word. Step two: the wrong word becomes a
+   blank with the amber cursor, and the bank offers the right word and others;
+   any word that makes the sentence true is accepted. */
+function pickRiddleWrongWord(b){
+  const st = riddleState;
+  if(!st || st.done || st.step !== "find") return;
+  clearRiddleFeedback();
+  if(Number(b.dataset.index) !== st.p.at){ riddleMiss(b); missAndMaybeReveal(st.answerEl); return; }
+  st.step = "fix";
+  $("#stage").dataset.step = "fix";
+  resetStepMisses();
+  const p = st.p, line = $("#riddleLine");
+  line.innerHTML = "";
+  p.words.forEach((w, i) => {
+    const el = document.createElement("span");
+    if(i === p.at){ el.className = "sent-slot current riddle-slot"; el.textContent = ""; }
+    else { el.className = "sent-word"; el.textContent = isPokemonName(w) ? cap(w) : w; }
+    line.appendChild(el);
+  });
+  const wrap = $("#riddleTiles");
+  st.tiles = [];
+  p.bank.forEach(w => {
+    const t = document.createElement("button");
+    t.type = "button"; t.className = "tile word"; t.textContent = w; t.dataset.word = w;
+    if(w === p.right) st.answerEl = t;
+    t.addEventListener("click", ()=> pickRiddleFix(t));
+    st.tiles.push(t);
+    if(!p.spoken){ wrap.appendChild(t); return; }
+    const cell = document.createElement("span");
+    cell.className = "word-cell";
+    t.classList.add("has-say");
+    const say = document.createElement("button");
+    say.type = "button"; say.className = "word-say"; say.innerHTML = UI_ICONS.speaker;
+    say.setAttribute("aria-label", `Say ${w}`);
+    say.addEventListener("click", ()=> speak(w));
+    cell.append(t, say);
+    wrap.appendChild(cell);
+  });
+}
+function pickRiddleFix(t){
+  const st = riddleState;
+  if(!st || st.done || st.step !== "fix" || t.classList.contains("used")) return;
+  clearRiddleFeedback();
+  const p = st.p, w = p.words.slice();
+  w[p.at] = t.dataset.word;
+  if(!sentenceTrue(p.f, w)){
+    riddleMiss(t);
+    noteStepMiss();
+    st.answerEl.classList.toggle("answer-lit", revealDue());
+    return;
+  }
+  if(revealDue()) noteTold(p);
+  p.fixed = w;
+  const slot = $("#riddleLine .riddle-slot");
+  slot.textContent = t.dataset.word;
+  slot.classList.remove("current"); slot.classList.add("sent-correct");
+  t.classList.add("used");
+  finishRiddle();
+}
+function finishRiddle(){
+  const st = riddleState, p = st.p;
+  st.done = true;
+  correct++;
+  if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
+  const fb = $("#feedback");
+  fb.className = "feedback good";
+  fb.innerHTML = feedbackHTML("good", "Yes!");
+  if(p.mode === "whoami") lockAndAdvance(done => blendBack(p.f.name, done));
+  else if(p.mode === "fixit"){
+    const said = p.fixed.map(w => isPokemonName(w) ? sayAs(w) : w).join(" ");
+    lockAndAdvance(done => {
+      let fired = false;
+      const go = ()=>{ if(fired) return; fired = true; setTimeout(done, 450); };
+      setTimeout(()=>{ speak(said, go); setTimeout(go, 5000); }, 350);
+    });
+  }
+  else lockAndAdvance();
 }
 
 /* ---------------- ANSWER CHOICES ---------------- */
@@ -6513,7 +7026,7 @@ function markPatternDone(){
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
   const go = ()=>{
-    spellState=null; missingState=null; sentState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
+    spellState=null; missingState=null; sentState=null; riddleState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
     next();
   };
   if(typeof waitFor === "function") waitFor(go);
@@ -6909,6 +7422,7 @@ function renderTrailSettings(){
   renderTrailSelect("reading", "#readingFrontier", "#readingLevelHint", "Level");
   renderTrailSelect("alphabet", "#alphabetFrontier", "#alphabetLevelHint", "Level");
   renderTrailSelect("sentences", "#sentencesFrontier", "#sentencesLevelHint", "Level");
+  renderTrailSelect("riddles", "#riddlesFrontier", "#riddlesLevelHint", "Level");
 }
 
 /* ---------------- wire up ----------------
@@ -6948,6 +7462,7 @@ function migrateFrontiers(){
   READING_LEVELS = buildReadingLevels();
   ALPHABET_LEVELS = buildAlphabetLevels();
   SENTENCE_LEVELS = buildSentenceLevels();
+  RIDDLE_LEVELS = buildRiddleLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
   loadSettings();
@@ -6975,7 +7490,7 @@ $("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
 $("#dexTabs").addEventListener("scroll", updateDexArrows);
 window.addEventListener("resize", updateDexArrows);
 $("#quitBtn").addEventListener("click", ()=>{
-  spellState=null; missingState=null; sentState=null; mathState=null; readingState=null; patternState=null; visualState=null;
+  spellState=null; missingState=null; sentState=null; riddleState=null; mathState=null; readingState=null; patternState=null; visualState=null;
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });

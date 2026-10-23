@@ -148,6 +148,12 @@ Two rules carry the design, both from the owner:
 
 Scoring follows Spelling's: words *shown* are counted, wrong taps are free, and promotion still needs a spotless sentence.
 
+### Riddles — 8 levels
+
+**Reading for meaning** rather than building: Sentences asks the child to produce a true sentence, Riddles asks him to read one and decide. It uses the same facts, the same reading gate and the same truth test, and climbs through three tasks in rising demand — answer a question about the picture (*Yes or No*), combine clues to find a Pokémon with no picture to anchor on (*Who am I?*), and notice the one word that makes a sentence untrue (*Fix it*), which is proofreading. Clues grow from one to three and the last adds a negative ("I am not blue").
+
+The rule carried over from Sentences: only **definite** facts are used, so a judgement call is never right or wrong. Two Pokémon sentences (*and*, *bigger than*, *grows into*) went into the Sentences ladder instead, since they are sentences to build.
+
 ### Why the frontiers are separate
 
 Same grading, two frontiers. Reading will naturally run ahead of Spelling, and that is the intended shape: recognise a word, then produce it. The old trails drew from unrelated pools, so nothing one taught reinforced the other.
