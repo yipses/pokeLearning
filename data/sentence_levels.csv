@@ -8,3 +8,6 @@ level,blanks,frame,stretch,spare_tiles,spoken_tiles,promote_5_pct,promote_10_pct
 7,4,last4,2,4,no,100,80
 8,2,verb_given,2,3,no,100,80
 9,all,all,2,4,no,100,80
+10,1,and_are,2,2,no,100,80
+11,1,compare,2,1,no,100,80
+12,1,grows_into,2,2,no,100,80

@@ -801,6 +801,26 @@ Reported: the clouds "look too much like a button" beside the gear. They were wh
 
 **Measured.** Spoken level: one speaker per tile; tapping one spoke only its word, with `_mistakes` 0, no step miss, the slot still empty and the tile unplaced; the picture's speaker said only the name; a wrong tap said nothing; a placed tile's speaker and, at the finish, every speaker hidden; the help light still lands. Silent level: no tile speakers. Levels 1–5 (the spoken ones, tiles now ~44px wider), worst 40 banks each at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800, 1440×900: no scroll. Grass at 360, 390 and 2000 wide, shaking: no sideways scroll. The 1,350-question answer loop still finishes every question with 0 mistakes; mixed-mode smoke clean; no console errors.
 
+## Phase 96 — Riddles, and two-Pokémon sentences
+
+Brainstormed with the owner as modules that grow out of Sentences; four were chosen and placed: a new **Riddles** trail (Yes or No → Who am I? → Fix it) and three new **Sentences** levels for two Pokémon (*and/are*, *bigger/smaller than*, *grows into*). Comparisons use only the size column, two or more steps apart; reading aloud is per level. Samples were agreed before building (Overview §7.2b–c).
+
+**How it works.** Riddles reuses the Sentences facts, reading gate and fallback. One function, `riddleTruth`, says whether a fact is true, false or *unknown* of a Pokémon; unknowns (also colours, unlisted actions, blank sizes) are never asked, clued or used to rule a picture out. Who am I? prefers wrong pictures that fail exactly one clue. Fix it is two steps — find the wrong word, then fix it from tiles — and accepts any word that makes the sentence true. Two-Pokémon sentences carry their own truth test; the sentence renderer now takes one or two pictures and treats every Pokémon name as ungraded.
+
+**Measured.**
+
+- **Generators**: Riddles 8 levels × Reading 1–10 × 150 = 12,000 questions, and Sentences 10–12 × Reading 1–10 × 150 = 4,500 — 0 problems: every yes/no answer matches the facts, every clue is true of its Pokémon, every wrong picture fails a clue, every Fix it shows a false sentence with exactly one fixing tile, every word within the gate, every two-Pokémon bank with exactly one true tile.
+- **Reach**: Riddles has questions at every level from Reading 1 (Fix it level 5 reaches 20 Pokémon there, 64 at Reading 3). Sentences 10–12 wait on harder words: *bigger* (7) opens level 11 at Reading 5, *into* (8) and *and* (9 in `word_levels.csv`) open 12 and 10 at Reading 6–7.
+- **Answers driven**:
+  - a clean Yes or No records a clean attempt;
+  - a wrong one is silent, counts and greys out;
+  - Who am I? lights the right picture after two misses and stops counting for the round;
+  - Fix it charges a mistake for tapping a correct word, opens the blank on the wrong one, charges a wrong tile, lights the right tile green, and finishes on the fix;
+  - spoken levels read the question; the picture's speaker says only the name.
+- **Fit**: every Riddles level (Fix it in both steps) and Sentences 10–12, with "try again" showing, has no scroll at 360×640, 390×844, 470×830, 820×1180, 1024×768, 1280×800, 1440×900. No console errors.
+
+**Still open — home.** A seventh progress card adds a row. Nothing scrolls at the seven sizes, but the meadow gives way: the home Pokémon goes from 191 to 108px tall at 390×844 and from 107 to 51px at 360×640; at 320×568 the page now scrolls 35px. The layout needs a decision.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

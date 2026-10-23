@@ -33,13 +33,13 @@ Seven top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A meadow carrying two counters and the gear, with one of your Pokémon on its hill; a name card with the generation count; six trail tiles; then "Start playing" and "Battle" |
+| **Start** | A meadow carrying two counters and the gear, with one of your Pokémon on its hill; a name card with the generation count; seven trail tiles; then "Start playing" and "Battle" |
 | **Settings** | The chrome, then per-mode toggles and each trail's frontier control |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit |
 | **Results** | The HUD and "Round finished!" over the meadow, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game; its session record sits beside the screen name |
 | **Pokédex** | The HUD, a ✕ beside **POKÉDEX**, generation tabs, then one generation's grid — caught in colour, uncaught as grey silhouettes |
-| **My progress** | The chrome, a 7-day rounds chart, a card each for Spelling, Reading, Alphabet and Sentences, then one card per maths family |
+| **My progress** | The chrome, a 7-day rounds chart, a card each for Spelling, Reading, Alphabet, Sentences and Riddles, then one card per maths family |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
 
@@ -92,7 +92,7 @@ Each mode toggles on/off in Settings. A session of **N** challenges is **split i
 
 ## 6. Lesson Trails
 
-Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are twelve: **Spelling**, **Reading**, **Alphabet**, **Sentences**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
+Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are thirteen: **Spelling**, **Reading**, **Alphabet**, **Sentences**, **Riddles**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
@@ -238,7 +238,7 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 
 **"not" turns the bank round.** In *Pikachu is not ___* the bank holds exactly **one** colour Pikachu isn't, and the traps are its own colours — *yellow* is the wrong tile. Two colours it isn't would make two right answers to a question about spotting the false one.
 
-**The ladder** (`data/sentence_levels.csv`, nine levels) makes the sentence longer, and introduces each longer length with a word already in place:
+**The ladder** (`data/sentence_levels.csv`, twelve levels) makes the sentence longer, and introduces each longer length with a word already in place:
 
 | Level | Frame | Example |
 |---|---|---|
@@ -251,6 +251,9 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 | 7 | four blanks | Onix ___ ___ ___ ___ |
 | 8 | name and a word, the verb given | ___ can ___ |
 | 9 | the whole sentence | ___ ___ ___ |
+| 10 | two Pokémon, "and" | Pikachu and Psyduck ___ yellow |
+| 11 | two Pokémon, bigger or smaller | Onix is ___ than Pikachu |
+| 12 | two Pokémon, grows into | Charmander grows into ___ |
 
 "not" appears nowhere before level 2, and level 2 asks nothing else, so the flip is learned on its own — still one blank, like level 1 — before it mixes with everything at level 4. It sits before the two-blank level so that level 1's stretch questions (one in five comes from the level above) are still one blank.
 
@@ -261,6 +264,31 @@ A Pokémon's picture, and a sentence about it with words missing — **Pikachu i
 **Scoring is Spelling's** (§5.1): wrong taps are free, and a question stops counting toward the round once more words have been *shown* than one per three blanks; promotion still needs a spotless sentence. The help light lands on the word the question was built around.
 
 **On screen** the sentence is one line of word-sized cells (20/800, 56px, down to 48 on a short phone) that wraps only between words: given words on grey, blanks outlined, the open one amber, a filled one green. **Every blank is the same width** and grows to its word once filled — a blank sized to its answer would say which tile goes there. The picture uses the Read & Choose frame and gives way first on short screens.
+
+**Two Pokémon** (levels 10–12) show both pictures, each with its own speaker, and an arrow when one grows into the other. *and* only pairs Pokémon that share a main colour; *bigger/smaller* only compares sizes two or more steps apart on very small · small · (medium) · big · very big, and never a Pokémon whose size is blank; *grows into* accepts only the very next stage, its wrong names coming from other families' evolved forms (never Charizard for Charmander). These levels wait on harder words — `bigger` 7, `into` 8, and `and`, which `word_levels.csv` grades **9**.
+
+### 7.2c Riddles — its own trail
+
+Reading for **meaning**, built on the same facts and reading gate as Sentences. Three modes, chosen per level by `data/riddle_levels.csv`:
+
+- **Yes or No** — the picture and a question about it, *Is Pikachu blue?*, answered with **Yes** / **No** tiles. Half true, half false.
+- **Who am I?** — one to three clues in the Pokémon's own voice, *I am yellow. I can swim.*, and three or four pictures, laid out like Reverse Read & Choose with a speaker naming each. Only one fits every clue; each wrong picture fails at least one clue outright, and those failing just one are preferred, so every clue has to be read. The last level adds an *I am not ___* clue.
+- **Fix it** — a sentence with one wrong word, every word a tile: tap the wrong one (*blue*), then it becomes a blank with the amber cursor and the bank offers the fix. Any word that makes the sentence true is accepted. The wrong word is a fact (*Pikachu is blue*) or, on later levels, grammar (*Psyduck am yellow*, *Onix is an rock type*).
+
+**Only definite facts are asked.** An `also` colour is neither yes nor no, an action on neither list is unknown and a blank size says nothing, so none of those is ever a question, a clue or a wrong answer.
+
+On levels marked `spoken_tiles` a speaker inside the plate's right end reads the question or clues aloud; the picture's speaker names only the Pokémon. Scoring is Reading's: at most `Mistakes allowed` wrong taps, the help light amber — except Fix it's second step, which has a cursor, so it lights green. A level with nothing to ask at the current Reading level falls back to the nearest one, uncounted, as in Sentences.
+
+| Level | Mode | |
+|---|---|---|
+| 1 | Yes or No | colour, read aloud |
+| 2 | Yes or No | colour, size, can, type, read aloud |
+| 3 | Who am I? | 1 clue, 3 pictures, read aloud |
+| 4 | Who am I? | 2 clues, 3 pictures |
+| 5 | Fix it | a wrong fact |
+| 6 | Who am I? | 2 clues, 4 pictures |
+| 7 | Fix it | a wrong fact or grammar |
+| 8 | Who am I? | 3 clues, one of them "not", 4 pictures |
 
 ### 7.3 Math Trails
 
@@ -436,11 +464,11 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 ## 8d. Home Levels
 
-Headed **"Your progress"**, six small white cards — Spelling, Reading, Alphabet, Sentences, **Add & take away** and **Times & share** — two across on a phone and three from 640px (two again in the right-hand column of the wide layout), each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is. A maths family that has not opened says **Locked**.
+Headed **"Your progress"**, seven small white cards — Spelling, Reading, Alphabet, Sentences, Riddles, **Add & take away** and **Times & share** — two across on a phone and three from 640px (two again in the right-hand column of the wide layout), each showing the track's icon, its **current level**, the number of levels on that trail, and a coloured bar for how far along it is. A maths family that has not opened says **Locked**.
 
 The heading is set through `text-transform` rather than typed in capitals, the same reason the wordmark is.
 
-**Each icon is a small square in the trail's own colour with a white mark** — `Aa` for Spelling, an open book for Reading, `ABC` for Alphabet, two word blocks and a blank for Sentences, `+−` and `×÷` for the two maths families. With the families named in words, the icon no longer has to say *this is maths*; the colour does that, and the operators say which. The trail colours are the same ones the question screens use for their mode tags: Spelling blue, Reading violet, Alphabet teal, Sentences brown, Add & take away berry, Times & share amber. `text-transform` is reset on the SVG text, which would otherwise inherit the label's.
+**Each icon is a small square in the trail's own colour with a white mark** — `Aa` for Spelling, an open book for Reading, `ABC` for Alphabet, two word blocks and a blank for Sentences, `?` for Riddles, `+−` and `×÷` for the two maths families. With the families named in words, the icon no longer has to say *this is maths*; the colour does that, and the operators say which. The trail colours are the same ones the question screens use for their mode tags: Spelling blue, Reading violet, Alphabet teal, Sentences brown, Riddles indigo, Add & take away berry, Times & share amber. `text-transform` is reset on the SVG text, which would otherwise inherit the label's.
 
 **The bar is there because the number can't do the job alone.** Level 3 of 25 and level 3 of 10 are not the same place, and the number by itself implies they are.
 
@@ -496,8 +524,8 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 ## 12. Settings & Persistence
 
 - **General**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (wrong taps a maths, reading or alphabet question may take and still count, default 1; `0` means it must be right first time — spelling and sentences are scored on what was told instead, §5.1), **Show the answer after** (wrong taps before the answer lights up, default 2; the light goes out once taken, so the next one is earned again — outside spelling it is always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), Rounds per day (the streak goal, default 2), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
-- **Per mode**: an on/off toggle for Spelling, Reading, Alphabet, Sentences, Math, and Visual Math. **With every mode off, Start opens a short notice** — "Nothing to play yet", with a button straight to Settings — rather than a browser alert, which a child cannot read and which looks like the page broke.
-- **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All twelve trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
+- **Per mode**: an on/off toggle for Spelling, Reading, Alphabet, Sentences, Riddles, Math, and Visual Math. **With every mode off, Start opens a short notice** — "Nothing to play yet", with a button straight to Settings — rather than a browser alert, which a child cannot read and which looks like the page broke.
+- **Per trail**: a frontier dropdown showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All thirteen trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
@@ -515,9 +543,10 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/spelling_levels.csv` | 25 | `level`, `word_level`, `compound_level`, `name_letters`, `hinted_letters`, `promote_5_pct`, `promote_10_pct` |
 | `data/reading_levels.csv` | 10 | `level`, `word_level`, `compound_level`, `name_letters`, `wrong_answers`, `distractor_level`, `promote_5_pct`, `promote_10_pct` |
 | `data/alphabet_levels.csv` | 11 | `level`, `alpha_length`, `alpha_blanks`, `alpha_blank_position`, `promote_5_pct`, `promote_10_pct` |
-| `data/sentence_levels.csv` | 9 | `level`, `blanks`, `frame`, `stretch`, `spare_tiles`, `spoken_tiles`, `promote_5_pct`, `promote_10_pct` |
+| `data/sentence_levels.csv` | 12 | `level`, `blanks`, `frame`, `stretch`, `spare_tiles`, `spoken_tiles`, `promote_5_pct`, `promote_10_pct` |
 | `data/pokemon_facts.csv` | 147 | `id`, `name`, `colours`, `also`, `size`, `can`, `cannot` |
-| `data/sentence_words.csv` | 22 | `word`, `level`, `note` |
+| `data/sentence_words.csv` | 30 | `word`, `level`, `note` |
+| `data/riddle_levels.csv` | 8 | `level`, `mode`, `clues`, `choices`, `facts`, `wrong`, `stretch`, `spoken_tiles`, `promote_5_pct`, `promote_10_pct` |
 | `data/phonemes.csv` | 91 | `chunk`, `context`, `say_as`, `notes` |
 | `data/math_tracks.csv` | 8 | `track`, `label`, `symbol`, `kind`, `group`, `prereq_track`, `prereq_level` |
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |
@@ -561,7 +590,7 @@ The reader is five and still learning to read. Every word on a child-facing scre
 ## 15. Technical Architecture
 
 - **Stack**: vanilla HTML/CSS/JS, no framework, no build step, no package manager.
-- **Data loading**: `loadData()` fetches **all fifteen** CSVs in parallel at startup — `word_levels.csv` only for its `level` column, which grades the words Sentences may use; the word trails read the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
+- **Data loading**: `loadData()` fetches **all sixteen** CSVs in parallel at startup — `word_levels.csv` only for its `level` column, which grades the words Sentences may use; the word trails read the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
 - **State**: in-memory JS objects for the active session/battle; `localStorage` for everything persisted.
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
 - **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all ten tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.

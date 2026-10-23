@@ -156,7 +156,7 @@ A Pokémon's picture and a sentence about it with words missing, filled from a b
 | --- | --- |
 | `level` | 1-based |
 | `blanks` | how many words are blank — `1`–`4` or `all`. **Must match `frame`** (it documents it; the frame decides); a mismatch stops the app naming the level |
-| `frame` | which words are blank. `last1` *Pikachu is ___* · `last2` *Pikachu ___ ___* · `not1` *Pikachu is not ___*, and only "not" sentences · `given` two blanks around a given word, *Onix ___ very ___*, *Onix ___ a ___ type* · `last3` the last three words · `type_given` *Onix ___ ___ rock ___* · `last4` *Onix ___ ___ ___ ___* · `verb_given` *___ can ___*, the name a tile · `all` every word, the name included |
+| `frame` | which words are blank. Two Pokémon: `and_are` *Pikachu and Psyduck ___ yellow* · `compare` *Onix is ___ than Pikachu* · `grows_into` *Charmander grows into ___*. One Pokémon: `last1` *Pikachu is ___* · `last2` *Pikachu ___ ___* · `not1` *Pikachu is not ___*, and only "not" sentences · `given` two blanks around a given word, *Onix ___ very ___*, *Onix ___ a ___ type* · `last3` the last three words · `type_given` *Onix ___ ___ rock ___* · `last4` *Onix ___ ___ ___ ___* · `verb_given` *___ can ___*, the name a tile · `all` every word, the name included |
 | `stretch` | how far past the child's **Reading** word level the words may go. Every word in the sentence and the bank, the name aside, must be at or under Reading's `word_level` + this |
 | `spare_tiles` | wrong tiles in the bank, 0–8. When a sentence can't find that many it settles for one, rather than not being asked |
 | `spoken_tiles` | `yes` / `no`. On `yes` every word tile carries its own speaker for its own word; on `no` the tiles have none. The picture's speaker always says only the name. Tapping a tile never speaks it |
@@ -179,11 +179,29 @@ The type comes from `pokemon.csv`'s `type1`/`type2`; either counts.
 
 **Colours** must be one of `red pink black white blue green yellow brown gray orange purple` (note `gray`). **Eyes never count** — leave them out of both colour columns. A word in both `can` and `cannot` stops the app.
 
-### `sentence_words.csv` — 22 rows
+### `sentence_words.csv` — 30 rows
 
-Reading levels (1–9, the same scale as `word_levels.csv`) for the words Sentences uses that the phonics list doesn't grade: `is am are a an not very can high type`, `run dig swim fly`, `purple`, and the type words. **`word_levels.csv` wins** where both have a word — the duplicate is skipped with a console warning, never an error, because regenerating `word_levels.csv` can add a word at any time. A word in neither file has no level and **never appears**; the console names it. `note` is for humans.
+Reading levels (1–9, the same scale as `word_levels.csv`) for the words Sentences and Riddles use that the phonics list doesn't grade: `is am are a an not very can high type`, `run dig swim fly`, `purple`, the type words, `i yes no` (Riddles), and `than bigger smaller grows into` (two-Pokémon sentences). **`word_levels.csv` wins** where both have a word — the duplicate is skipped with a console warning, never an error, because regenerating `word_levels.csv` can add a word at any time. A word in neither file has no level and **never appears**; the console names it. `note` is for humans.
 
 Traps: `type` is graded 5, so the type levels (6–7) have nothing to ask below Reading 3 — the trail then serves the nearest level that has a question, and that question doesn't count toward promotion. Lowering `type` opens them earlier.
+
+Trap: `and` is graded **9** in `word_levels.csv`, which wins, so the *and* level (10) waits for Reading 7. Correcting it there regrades every item containing "and".
+
+## `riddle_levels.csv` — the Riddles trail, 8 rows
+
+| column | meaning |
+| --- | --- |
+| `level` | 1-based |
+| `mode` | `yesno`, `whoami` or `fixit` |
+| `clues` | Who am I?: how many clues, 1–3 |
+| `choices` | Who am I?: how many pictures (2–6). Fix it: how many tiles for the fix (2–5), though grammar fixes may offer fewer. Yes or No ignores it |
+| `facts` | which facts questions and clues may use, `\|`-separated: `colour`, `size`, `can`, `type`, and `not` ("I am not blue", Who am I? only — when listed, one clue is always a "not") |
+| `wrong` | Fix it: `fact`, `grammar` or `fact\|grammar` |
+| `stretch` | words may go this far past the child's Reading word level, as in Sentences |
+| `spoken_tiles` | `yes`: a speaker reads the question or clues aloud (Fix it: each fix tile gets a speaker). The picture's speaker always names only the Pokémon |
+| `promote_5_pct`, `promote_10_pct` | the two promotion gates |
+
+Every row is checked at load; a bad mode, fact, clue or choice count stops the app naming the level.
 
 ## `phonemes.csv` — what each chunk says out loud
 
