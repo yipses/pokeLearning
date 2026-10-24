@@ -821,6 +821,29 @@ Brainstormed with the owner as modules that grow out of Sentences; four were cho
 
 **Still open — home.** A seventh progress card adds a row. Nothing scrolls at the seven sizes, but the meadow gives way: the home Pokémon goes from 191 to 108px tall at 390×844 and from 107 to 51px at 360×640; at 320×568 the page now scrolls 35px. The layout needs a decision.
 
+## Phase 97 — smoother changes between questions
+
+Asked for polish on the move from one question to the next. A real round was recorded frame by frame at 390×844 first. That run showed four things:
+- **A hard cut.** The answered card was swapped for the next in a single frame.
+- **A blank picture.** The new picture was not loaded when its card appeared, so an empty circle showed for 5–265ms even from localhost. The art averages 126KB.
+- **A jumping card.** Card height changes by up to 100px between modes.
+- **A late reward.** The round step filled only at the cut.
+
+The owner chose the slide, no blank pictures and the reward landing first. The card's size change was left as it is.
+
+**How it works.**
+- `lockAndAdvance`, the one place every mode reports a right answer, fills the step at once when the question counts (`updateProgress(false, true)`, `.step-pop`).
+- `enterQuestion` replaces the bare `renderProblem` between questions. The contents slide out (`#stage.q-out`). The next question renders hidden (`q-wait`) until its pictures are complete, capped at 400ms, and then slides in (`q-in`).
+- `questionPictures` finds a question's pictures by walking it rather than from a list per mode. Read & Choose's word options are the one exclusion. `preloadNext` fetches the next question's pictures as soon as the current one is shown.
+- The slide out is taken from the beat before it: 850 → 690ms, and 450 → 290ms after a spoken word.
+
+**Measured.**
+- **Pace.** The time from a right answer to the next question is unchanged: 852–867ms for maths, riddles, visual and alphabet (was 851–854), and 1,543–1,555ms for reading and spelling (was 1,542–1,550).
+- **Coverage.** Every mode was rendered at random levels, about 1,500 questions. `questionPictures` found every picture each question showed. The only extras are Alphabet's option pictures for later gaps, which that question shows anyway.
+- **Blank pictures.** Unthrottled, 0 pictures were pending at reveal (was 1–10 per question). On an emulated slow line (300ms latency, 200KB/s, 3s thinking per question) every question after the first arrived with its pictures in. A first-of-round question waited ≤404ms. Preloading only during the 0.85s beat was tried first and failed on that line, which is why it starts when the question appears.
+- **Behaviour.** A counting answer fills its step at once. One that won't count fills nothing. A catch modal opens over the answered card with no slide, and the slide follows its OK. Quitting mid-slide and starting again shows the first question normally. Reduced motion: no transform, a fade only.
+- **Regressions.** Mixed-mode smoke clean. The answer loop: 1,800 questions, 0 mistakes. Riddles and tile-speaker drives pass. The duplicate-function grep is empty, and there are no console errors. The old Sentences drive script is stale: it still expects the picture's bank-reading speaker removed in Phase 95.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

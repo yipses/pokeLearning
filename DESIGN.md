@@ -107,6 +107,18 @@ a two-word name breaks only between words.
   390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900, with the longest
   content (12-letter names, two-word names, five options, four catches).
 
+## Motion
+
+- **Questions leave left, arrive right.** The card's contents slide out (160ms)
+  and the next question's slide in (200ms); the white card itself never moves.
+  The slide is taken out of the wait before it, so the pace doesn't change.
+- **The reward comes before the change.** A step on the round bar fills, with a
+  pop, the moment the answer is right, not when the next question appears.
+- **A picture is never shown blank.** The next question's pictures load while
+  the current one is being answered; a question waits, unseen, at most 0.4s for
+  any that haven't arrived.
+- **Reduced motion keeps the fades, drops the slides and pops.**
+
 ## How to work
 
 1. **Measure before designing** — sizes, ink, counts, the real data's extremes.
