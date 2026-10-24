@@ -56,6 +56,18 @@ a two-word name breaks only between words.
   wide enough that the word never sits under it.
 - **Icons are judged by their ink, not their box.** A mark is centred to within
   half a pixel and fills about half its button. Check at 4× zoom.
+- **Three corner sizes.** 24 for a container (the question card, Settings
+  cards, the name card, the catch card, a list); 20 for a button; 16 for
+  anything tapped inside a container (answer, pair, letter and level tiles,
+  the Pokédex row, inputs). Pills only for small labels and counters (mode
+  tags, the HUD, type badges); circles only for round icon buttons and picture
+  frames. Letter cells that shrink to fit keep a corner in proportion, and icon
+  badges round to about a quarter of their size.
+- **A press edge is the face on a darker edge directly beneath it**, and
+  pressing flattens it: the face drops 3px and the edge goes from 4px to 1px.
+  Buttons and tiles alike. No white outline around a button: it put a white
+  line between the face and its edge, so the button read as a sticker over a
+  separate slab, and the outline's rule also stopped the edge flattening.
 - **Only tappable things have a press edge.** A label with an edge reads as a
   button; if it does nothing, it can't look pressable (that killed the "Caught!"
   ribbon and the logo Pokéball).
@@ -125,7 +137,10 @@ a two-word name breaks only between words.
 - **A picture is never shown blank.** The next question's pictures load while
   the current one is being answered; a question waits, unseen, at most 0.4s for
   any that haven't arrived.
-- **Reduced motion keeps the fades, drops the slides and pops.**
+- **Something hiding moves.** The grass's **!** ducks down and pops up
+  somewhere else every 2.4s; it never reappears near where it just was.
+- **Reduced motion keeps the fades, drops the slides and pops.** The **!**
+  stands still.
 
 ## How to work
 
