@@ -2094,6 +2094,25 @@
   }
   .prog-steps i.done{ background:var(--leaf-600); box-shadow:none; }
   .prog-steps i.now{ background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
+  /* The step a right answer just earned (previewProgress), filled with a pop. */
+  .prog-steps i.step-pop{ animation:stepPop .3s ease-out; }
+  @keyframes stepPop{ 50%{ transform:scale(1.15, 1.5); } }
+
+  /* Between questions (enterQuestion). The white card stays where it is; only
+     what is on it moves — out to the left, then the next question in from the
+     right. q-wait holds the new question unseen, and untappable, while its
+     pictures finish loading, so a picture is never shown blank. */
+  #stage.q-out > *{ opacity:0; transform:translateX(-24px); transition:opacity .16s ease-in, transform .16s ease-in; }
+  #stage.q-out, #stage.q-wait{ pointer-events:none; }
+  #stage.q-wait > *{ opacity:0; }
+  #stage.q-in > *{ animation:qIn .2s ease-out both; }
+  @keyframes qIn{ from{ opacity:0; transform:translateX(24px); } }
+  @keyframes qFade{ from{ opacity:0; } }
+  @media (prefers-reduced-motion: reduce){
+    .prog-steps i.step-pop{ animation:none; }
+    #stage.q-out > *{ transform:none; }
+    #stage.q-in > *{ animation-name:qFade; }
+  }
 
   /* The cell the home card's Pokédex row opened on, ringed like the cursor. */
   .dex-cell.dex-found{ box-shadow:0 0 0 3px var(--sun-700), 0 0 0 9px var(--sun-300); animation:dexFound 1.2s ease-in-out 2; }
@@ -2463,7 +2482,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 113;
+const APP_BUILD = 114;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -3889,7 +3908,7 @@ function startGame(){
   if(queue.length===0){ $("#noModesModal").classList.remove("hidden"); $("#noModesSettingsBtn").focus(); return; }
   idx=0; correct=0; roundCredits=0; roundCatches=[]; sinceEncounter=0;
   show("play");
-  renderProblem();
+  enterQuestion(false);
 }
 
 /* The bar measures credits, not questions seen. That is the honest number now —
@@ -3900,9 +3919,9 @@ function startGame(){
    number of steps rather than a distance. A longer round keeps the continuous
    bar: fifty segments on a phone are 3px each, a stripe rather than steps. */
 const STEP_BAR_MAX = 20;
-function updateProgress(finished){
+function updateProgress(finished, ahead){
   const target = roundTarget();
-  const done = finished ? target : Math.min(target, roundCredits);
+  const done = finished ? target : Math.min(target, roundCredits + (ahead ? 1 : 0));
   const stepped = target <= STEP_BAR_MAX;
   $("#progBar").classList.toggle("steps", stepped);
   $("#progFill").style.width = (done / target * 100) + "%";
@@ -3912,6 +3931,7 @@ function updateProgress(finished){
   [...steps.children].forEach((seg, k)=>{
     seg.classList.toggle("done", k < done);
     seg.classList.toggle("now", k === done);
+    seg.classList.toggle("step-pop", !!ahead && k === done - 1);
   });
 }
 
@@ -4105,7 +4125,7 @@ function advanceQueue(){
     if(!more.length){ finish(); return; }   // every mode switched off mid-round
     queue = queue.concat(more);
   }
-  renderProblem();
+  enterQuestion(true);
 }
 
 /* ---------------- grass encounters & collection ---------------- */
@@ -5024,7 +5044,7 @@ function blendBack(name, done){
   const finish = ()=>{
     if(fired) return;
     fired = true;
-    setTimeout(done, 450);                   // a beat to sit with it
+    setTimeout(done, 450 - Q_OUT_MS);        // a beat to sit with it (the slide out is the rest)
   };
   setTimeout(()=>{
     speak(sayAs(name), finish);
@@ -5940,7 +5960,7 @@ function finishSentence(){
                       .map(w => isPokemonName(w) ? sayAs(w) : w).join(" ");
   lockAndAdvance(done => {
     let fired = false;
-    const finish = ()=>{ if(fired) return; fired = true; setTimeout(done, 450); };
+    const finish = ()=>{ if(fired) return; fired = true; setTimeout(done, 450 - Q_OUT_MS); };
     setTimeout(()=>{ speak(said, finish); setTimeout(finish, 5000); }, 350);
   });
 }
@@ -6290,7 +6310,7 @@ function finishRiddle(){
     const said = p.fixed.map(w => isPokemonName(w) ? sayAs(w) : w).join(" ");
     lockAndAdvance(done => {
       let fired = false;
-      const go = ()=>{ if(fired) return; fired = true; setTimeout(done, 450); };
+      const go = ()=>{ if(fired) return; fired = true; setTimeout(done, 450 - Q_OUT_MS); };
       setTimeout(()=>{ speak(said, go); setTimeout(go, 5000); }, 350);
     });
   }
@@ -7025,12 +7045,98 @@ function markPatternDone(){
    fixed beat. */
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
+  // The reward lands with the right answer, not with the next question.
+  if(countsForRound(queue[idx])) updateProgress(false, true);
   const go = ()=>{
     spellState=null; missingState=null; sentState=null; riddleState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
     next();
   };
   if(typeof waitFor === "function") waitFor(go);
-  else setTimeout(go, 850);
+  else setTimeout(go, 850 - Q_OUT_MS);
+}
+
+/* ---------------- between questions ----------------
+   Measured before this existed: the answered card was swapped for the next in a
+   single frame, and the new picture was not loaded yet, so an empty circle showed
+   for up to a quarter of a second even from localhost (the art averages 126KB, so
+   longer on a phone). Now the old question slides out, the new one waits unseen
+   until its pictures are in (never longer than PIC_WAIT_MS), then slides in.
+
+   The slide out is taken from the wait before it (850 → 850 − Q_OUT_MS, and the
+   450ms beat after a spoken word likewise), so a right answer reaches the next
+   question exactly as fast as before. */
+const Q_OUT_MS = 160, Q_IN_MS = 200, PIC_WAIT_MS = 400;
+
+/* Every picture a question will show, found by walking it rather than listed per
+   mode, so a new mode is covered without remembering to add it here. A Pokémon
+   record is {id, n}; an item record carries its own img. The one exception is
+   Read & Choose, whose options are records shown as words. */
+function questionPictures(p){
+  const urls = new Set();
+  const wordsOnly = p && p.kind === "reading" && p.mode === "choose" ? p.options : null;
+  const walk = (x, depth)=>{
+    if(!x || typeof x !== "object" || x === wordsOnly || depth > 5 || urls.size >= 24) return;
+    if(Array.isArray(x)){ x.forEach(y => walk(y, depth + 1)); return; }
+    if(typeof x.img === "string") urls.add(x.img);
+    else if(Number.isInteger(x.id) && typeof x.n === "string") urls.add(artwork(x.id));
+    for(const k in x) if(k[0] !== "_") walk(x[k], depth + 1);
+  };
+  walk(p, 0);
+  return [...urls];
+}
+
+/* Fetch the next question's pictures as soon as this one is on screen, so they
+   load while the child is still thinking — the wait after a right answer alone
+   (0.85s) is too short for a phone on a slow line. The question after the last of
+   a batch isn't built yet; enterQuestion's wait covers that one. */
+let preloadedPictures = [];
+function preloadNext(){
+  const p = queue[idx + 1];
+  preloadedPictures = p ? questionPictures(p).map(src => {
+    const im = new Image();
+    im.src = src;
+    if(im.decode) im.decode().catch(()=>{});
+    return im;
+  }) : [];
+}
+
+function enterQuestion(slideOut){
+  const stage = $("#stage");
+  const round = queue;
+  const stillHere = ()=> queue === round && !$("#play").classList.contains("hidden");
+  const arrive = ()=>{
+    if(!stillHere()) return;   // left mid-slide; the next round's enterQuestion clears the card
+    stage.classList.remove("q-out", "q-in");
+    stage.classList.add("q-wait");
+    renderProblem();
+    if(!stillHere() || !queue[idx]){ stage.classList.remove("q-wait"); return; }   // the round ended
+    const pending = [...stage.querySelectorAll("img")].filter(im => !im.complete);
+    let shown = false;
+    const reveal = ()=>{
+      if(shown) return;
+      shown = true;
+      stage.classList.remove("q-wait");
+      stage.classList.add("q-in");
+      preloadNext();
+      // Only this arrival slides in; a mode that redraws part of the card later must not.
+      setTimeout(()=> stage.classList.remove("q-in"), Q_IN_MS + 50);
+    };
+    if(!pending.length){ reveal(); return; }
+    let left = pending.length;
+    pending.forEach(im => {
+      const one = ()=>{ if(--left === 0) reveal(); };
+      im.addEventListener("load", one, { once:true });
+      im.addEventListener("error", one, { once:true });
+    });
+    setTimeout(reveal, PIC_WAIT_MS);
+  };
+  stage.classList.remove("q-in", "q-wait");
+  if(slideOut){
+    stage.classList.add("q-out");
+    setTimeout(arrive, Q_OUT_MS);
+  } else {
+    arrive();
+  }
 }
 
 /* ---------------- keyboard typing for spelling ---------------- */
