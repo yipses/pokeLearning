@@ -203,6 +203,28 @@ Trap: `and` is graded **9** in `word_levels.csv`, which wins, so the *and* level
 
 Every row is checked at load; a bad mode, fact, clue or choice count stops the app naming the level.
 
+## `word_pair_levels.csv` — the Word Pairs trail, 5 rows
+
+| column | meaning |
+| --- | --- |
+| `level` | 1-based |
+| `pairs` | how many pairs on a board, 3–6 |
+| `same_start` | `yes`: every word on the board starts with the same letter |
+| `promote_5_pct`, `promote_10_pct` | the two promotion gates |
+
+The words are the **Reading** level's pool, not a list of their own. Traps: a board can't have more pairs than Reading has words (Reading 1 has four), and a `same_start` board needs that many words sharing a first letter — below Reading 3 there are none, so the board quietly becomes an ordinary one.
+
+## `math_pair_levels.csv` — the Maths Pairs trail, 5 rows
+
+| column | meaning |
+| --- | --- |
+| `level` | 1-based |
+| `pairs` | how many pairs on a board, 3–6 |
+| `mix` | `one` (one maths track per board), `addsub` (the open + and − tracks mixed) or `all` (every open single-sum track mixed) |
+| `promote_5_pct`, `promote_10_pct` | the two promotion gates |
+
+The sums come from each maths track **at the level reached**; pattern tracks are never used. Every answer on a board is different, so a level with few possible answers (Subtract 1 has three, Divide 1 two) shrinks the board and then borrows from the other open tracks. Every row is checked at load: `pairs` outside 3–6 or an unknown `mix` stops the app naming the level.
+
 ## `phonemes.csv` — what each chunk says out loud
 
 Spoken when a child places a letter or chunk correctly. Keyed on `chunk` **and** `context`, because a letter's sound depends on the word it's in.

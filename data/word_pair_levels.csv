@@ -1,0 +1,6 @@
+level,pairs,same_start,promote_5_pct,promote_10_pct
+1,3,no,100,80
+2,4,no,100,80
+3,5,no,100,80
+4,4,yes,100,80
+5,5,yes,100,80

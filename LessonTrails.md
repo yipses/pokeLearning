@@ -154,6 +154,12 @@ Scoring follows Spelling's: words *shown* are counted, wrong taps are free, and 
 
 The rule carried over from Sentences: only **definite** facts are used, so a judgement call is never right or wrong. Two Pokémon sentences (*and*, *bigger than*, *grows into*) went into the Sentences ladder instead, since they are sentences to build.
 
+### Word Pairs and Maths Pairs — 5 levels each
+
+**Matching, Duolingo's "tap the pairs".** Neither trail teaches new content: Word Pairs uses the Reading level's words and Maths Pairs the sums of the maths levels already reached. What they add is **volume and comparison** — five words or five sums read on one board, each checked against the others — in a format that feels like a game rather than a question. So their ladders only shape the board: three pairs, then four, then five; then, for words, every word starting with the same letter, so the first letter stops being enough; and for maths, + and − on one board, then every kind open.
+
+Two rules keep a board fair, and both are checked as it is built: every word and picture on it is different, and so is every answer. The calm version was chosen over the timed one: no clock, and matched pairs stay where they are.
+
 ### Why the frontiers are separate
 
 Same grading, two frontiers. Reading will naturally run ahead of Spelling, and that is the intended shape: recognise a word, then produce it. The old trails drew from unrelated pools, so nothing one taught reinforced the other.

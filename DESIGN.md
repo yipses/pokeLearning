@@ -22,7 +22,8 @@ zooms the question scales everything together.
 - **Orange = the answer revealed** (the help light) in Maths and Reading;
   Spelling, Alphabet and Pattern light green instead, because amber is already
   their cursor.
-- **Trail colours** live only on the trail's icon, bar and mode tag.
+- **Trail colours** live only on the trail's icon, bar and mode tag. Subjects
+  borrow their first trail's: English blue, Maths berry.
 - **Done steps back.** Finished rows fade (pale `#b3aa97` text, pictures at
   40%, the green answer at 70%) so the open one is the only thing at full
   strength.
@@ -103,6 +104,13 @@ a two-word name breaks only between words.
 - **Highlights never touch.** Two coloured shapes (a ring and a highlight)
   keep at least ~10px apart, or they merge into one.
 - **Spacing is a 4px scale** (gaps of 4, 8, 12, 16, 20, 24).
+- **Home is two choices.** The levels are a summary (English, Maths — each
+  the sum of its trails' levels) that opens the subject's own page; the play
+  buttons are one per subject and carry that subject's count for today. A
+  subject's page is a page with a ✕, never a pop-up.
+- **A matching board keeps its rows.** Pairs are laid out row by row, so a
+  long word makes its row taller instead of putting the columns out of step;
+  a matched pair stays in place, green and faded.
 - **Fit or it isn't done.** No vertical or horizontal scroll at 360×640,
   390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900, with the longest
   content (12-letter names, two-word names, five options, four catches).
