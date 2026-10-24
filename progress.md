@@ -868,6 +868,16 @@ Then the home screen changed shape:
 - **Fit:** home, both subject pages and the worst boards (five longest Reading 10 words; two-digit sums) have no scroll at all 7 sizes. Words drop to 17px under 700px tall. The home Pokémon is back to 194px at 360×640 (it was 51px with seven cards) and about 240px at 390×844 (was 108). That closes Phase 96's open home question.
 - **Regressions:** smoke clean (pairs now among the kinds); answer loop 1,800 / 0 mistakes; riddles, tile-speaker, transition and quit-mid-slide checks pass; duplicate-function grep empty; no console errors.
 
+## Phase 99 — one set of corners, a real press edge, a "!" that moves
+
+**Corners.** The owner found the corner radii inconsistent. Measured: rectangles used nine radii (30, 24, 22, 20, 18, 16, 14, 12, 11) with no rule, and the home screen put 18px level tiles directly above full-pill play buttons of the same size. Now there are three sizes, one per role: 24 for a container, 20 for a button, 16 for anything tapped inside a container. Pills stay only on small labels and counters, and circles on round icon buttons and frames. Re-measured: every container is 24, every button 20, every tile 16.
+
+**Buttons.** The owner found the button style strange: "looks 3D but not". The big buttons drew a 3px white outline and then a second shadow 7px down and 3px wider, so the dark edge appeared below a white line, detached from the face. The outline's rule also outranked the pressed state: held down, the whole button slid 3px and its edge never collapsed. Measured before: `white 0 0 0 3px, edge 0 7px 0 3px`, the same while pressed. Now: `edge 0 4px 0` at rest, and `edge 0 1px 0` with a 3px drop when pressed, the same model the tiles already used.
+
+**The "!".** The grass's "!" now ducks into the grass and pops up elsewhere every 2.4s, chosen at least 22% of the strip away from the last spot. With reduced motion it stands still. Measured: over 9.6s it moved 43% → 14.5% → 48.1% → 25.7%, one move per hop.
+
+**Checks.** No scroll at the 7 sizes on home, both subject pages and the worst pairs boards. Smoke clean; answer loop 1,800 / 0 mistakes; riddles, pairs, transition and quit checks pass; no console errors. Build 116.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

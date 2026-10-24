@@ -94,7 +94,11 @@
     --white:     #ffffff;
     --shadow:    0 1px 2px rgba(46,43,36,.06), 0 8px 24px rgba(46,43,36,.08);
     --shadow-sm: 0 1px 2px rgba(46,43,36,.08), 0 2px 8px rgba(46,43,36,.06);
+    /* Three corner sizes, one per role: a container 24, a button 20, anything
+       tapped inside a container 16. Pills are only for small labels and counters,
+       circles only for round icon buttons and picture frames. */
     --radius:    24px;
+    --radius-btn: 20px;
     --radius-sm: 16px;
     --font-ui:   "M PLUS Rounded 1c", "Baloo 2", "Varela Round", "Trebuchet MS", system-ui, sans-serif;
     font-size: 16px;
@@ -209,7 +213,7 @@
   /* ---------- Buttons ---------- */
   .btn{
     font: inherit; font-weight:800; cursor:pointer; border:none;
-    border-radius: 999px; padding: 14px 26px; font-size:1.125rem; color:var(--white);
+    border-radius: var(--radius-btn); padding: 14px 26px; font-size:1.125rem; color:var(--white);
     background:var(--primary);
     box-shadow: 0 var(--press-edge) 0 var(--primary-edge);
     transition: transform .06s ease, box-shadow .06s ease;
@@ -600,7 +604,7 @@
 
   @media (prefers-reduced-motion: reduce){
     .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p{ animation:none; }
-    .grass-strip.shaking, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
+    .grass-strip.shaking, .grass-strip.shaking::after, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
     .confetti-layer, .catch-shine{ display:none; }
     .catch-card.celebrating #catchOkBtn{ animation:none; }
   }
@@ -1023,7 +1027,7 @@
      at all. */
   .showcase-dex{
     display:flex; align-items:center; gap:9px; width:100%;
-    margin-top:10px; padding:6px 8px 7px; border:0; border-radius:12px;
+    margin-top:10px; padding:6px 8px 7px; border:0; border-radius:var(--radius-sm);
     background:var(--surface-sunken); font:inherit; color:inherit; text-align:left;
     cursor:pointer; -webkit-tap-highlight-color:transparent;
     transition: background .15s, transform .06s;
@@ -1190,7 +1194,7 @@
   .evo{
     display:flex; flex-direction:column; align-items:center; gap:1px;
     width:62px; padding:5px 2px; font:inherit; cursor:pointer;
-    background:var(--white); border:2px solid var(--cream-2); border-radius:12px;
+    background:var(--white); border:2px solid var(--cream-2); border-radius:var(--radius-sm);
   }
   .evo:hover:not(:disabled){ border-color:var(--sun-deep); }
   .evo.current{ border-color:var(--leaf-700); background:var(--leaf-100); cursor:default; }
@@ -1448,7 +1452,7 @@
   .showcase{
     position:relative; z-index:3; margin:-30px 0 0; padding:12px 14px;
     display:flex; flex-direction:column; gap:8px;
-    background:var(--surface); border:0; border-radius:22px;
+    background:var(--surface); border:0; border-radius:var(--radius);
     box-shadow:0 0 0 3px var(--paper-line), 0 8px 20px rgba(46,43,36,.08);
   }
   .showcase-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -1458,7 +1462,7 @@
   .showcase-types{ margin:0; }
   .showcase .showcase-dex{
     display:flex; align-items:center; gap:8px; width:100%; min-height:46px; margin:0; padding:0 12px;
-    border-radius:14px; background:#f6f0e0; box-shadow:inset 0 0 0 2px var(--paper-line);
+    border-radius:var(--radius-sm); background:#f6f0e0; box-shadow:inset 0 0 0 2px var(--paper-line);
     font-size:.8125rem; font-weight:800; color:var(--ink-soft);
   }
   .showcase .showcase-dex:hover{ background:#f1e9d4; }
@@ -1473,7 +1477,7 @@
   /* Each trail is a small card: on a wide screen five lines of text on paper
      read as a list, not a panel. Three across from 640px. */
   .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
-  .level-tile{ background:var(--surface); border-radius:18px; padding:10px 12px 12px; box-shadow:0 0 0 2px var(--paper-line); gap:6px; }
+  .level-tile{ background:var(--surface); border-radius:var(--radius-sm); padding:10px 12px 12px; box-shadow:0 0 0 2px var(--paper-line); gap:6px; }
   .level-tile .level-bar{ height:8px; }
   .level-tile.locked{ background:transparent; box-shadow:inset 0 0 0 2px var(--paper-line); }
   @media (min-width:640px){ .levels-grid{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
@@ -1488,8 +1492,6 @@
     padding:18px 0 max(18px, env(safe-area-inset-bottom));
   }
   .home-actions .btn{ flex-direction:row; gap:9px; min-height:60px; padding:0 14px; font-size:1.1875rem; }
-  .home-actions .btn.green, .result-actions .btn.green, #catchOkBtn{ box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--primary-edge); }
-  .home-actions .btn.berry{ box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--accent-edge); }
   .action-icon{ display:inline-grid; place-items:center; width:20px; height:20px; font-size:0; }
   .action-icon svg{ width:100%; height:100%; }
   @media (max-height:700px){
@@ -1511,7 +1513,7 @@
       grid-template-rows:1fr auto auto 1fr; column-gap:40px;
       height:100vh; height:100dvh; min-height:560px; padding-right:40px;
     }
-    .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 32px; border-radius:0 32px 32px 0; }
+    .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 32px; border-radius:0 var(--radius) var(--radius) 0; }
     /* The ground and the Pokémon scale with the window's height, as they do in
        effect on a phone; fixed, a tall window left it pressed against the card
        under a lot of sky. */
@@ -1542,18 +1544,30 @@
     position:absolute; left:0; right:0; bottom:0; height:54px; margin:0;
     background-color:transparent; box-shadow:none; z-index:1;
   }
+  /* The "!" doesn't sit still: it ducks into the grass and pops up somewhere
+     else, as if whatever is hiding is moving about. Each time it is down,
+     hopBang() picks a new spot, well away from the last one. */
   .grass-strip.shaking::after{
-    content:"!"; position:absolute; right:calc(var(--scene-pad) + 40px); top:-26px;
+    content:"!"; position:absolute; left:var(--bang-x, 78%); top:-26px; margin-left:-15px;
     width:30px; height:30px; border-radius:50%; display:grid; place-items:center;
     background:#fff; color:var(--leaf-700); font-weight:900; font-size:18px;
     box-shadow:0 3px 0 rgba(35,102,58,.25);
+    animation:bangHop 2.4s ease-in-out infinite;
+  }
+  @keyframes bangHop{
+    0%     { transform:translateY(34px) scale(.5); opacity:0; }
+    12%    { transform:translateY(-6px) scale(1.1); opacity:1; }
+    20%    { transform:translateY(0) scale(1); }
+    30%    { transform:translateY(-4px) scale(1); }
+    38%,74%{ transform:translateY(0) scale(1); opacity:1; }
+    88%,100%{ transform:translateY(34px) scale(.5); opacity:0; }
   }
   /* The card ends where its question ends; below it is paper. Stretched to the
      bottom of the screen it was mostly empty card on anything taller than a
      phone. Feedback and the ✓ appear below the answers, so when they arrive only
      the card's bottom edge moves — nothing a child is looking at shifts. */
   #stage.card{
-    position:relative; z-index:2; margin:-22px 0 0; border-radius:30px; padding:20px 18px 20px;
+    position:relative; z-index:2; margin:-22px 0 0; border-radius:var(--radius); padding:20px 18px 20px;
     box-shadow:0 0 0 3px var(--paper-line), 0 10px 30px rgba(46,43,36,.1);
   }
   /* Room to spare becomes a bigger question, not an emptier one: one uniform
@@ -1631,7 +1645,7 @@
      tiles do on a short screen. */
   .reading-word{
     display:grid; place-items:center; min-height:60px; box-sizing:border-box; margin:0 0 16px; padding:8px 14px;
-    background:var(--surface-sunken); border-radius:20px; font-size:32px; font-weight:900; line-height:1.05; overflow-wrap:anywhere;
+    background:var(--surface-sunken); border-radius:var(--radius-sm); font-size:32px; font-weight:900; line-height:1.05; overflow-wrap:anywhere;
   }
   @media (max-height:860px){ .reading-word{ min-height:52px; font-size:28px; margin-bottom:12px; padding:6px 12px; } #stage .kind-tag{ margin-bottom:8px; } }
   @media (max-height:700px){ .reading-word{ min-height:46px; font-size:26px; } }
@@ -1712,7 +1726,7 @@
   .mw-sep, .slot-sep{ width:calc(var(--wf, 28px) * .6); height:calc(var(--wf, 28px) * 1.93); }
   .tile, .tile.chunk{
     width:auto; min-width:48px; height:56px; padding:0 10px; box-sizing:border-box;
-    font-size:28px; font-weight:900; color:var(--ink); border-radius:12px;
+    font-size:28px; font-weight:900; color:var(--ink); border-radius:var(--radius-sm);
     border:2px solid var(--paper-line); box-shadow:0 var(--press-edge) 0 var(--paper-edge);
   }
   .tile:active{ box-shadow:0 1px 0 var(--paper-edge); }
@@ -1731,7 +1745,7 @@
   .sent-word, .sent-slot, #sentTiles .tile.word{ height:var(--cell); }
   #sentTiles{ --cell:56px; gap:8px 10px; margin-top:18px; }
   .sent-word, .sent-slot{
-    box-sizing:border-box; min-width:48px; padding:0 14px; border-radius:12px;
+    box-sizing:border-box; min-width:48px; padding:0 14px; border-radius:var(--radius-sm);
     display:inline-flex; align-items:center; justify-content:center;
     font-size:20px; font-weight:800; line-height:1; color:var(--ink);
   }
@@ -1768,7 +1782,7 @@
      On a spoken level a speaker sits inside the plate's right end and reads it. */
   .riddle-text{
     position:relative; display:grid; gap:4px; place-items:center; box-sizing:border-box; margin:14px 0 0;
-    padding:10px 16px; background:var(--surface-sunken); border-radius:20px;
+    padding:10px 16px; background:var(--surface-sunken); border-radius:var(--radius-sm);
     font-size:28px; font-weight:900; line-height:1.15; text-align:center;
   }
   .riddle-text.has-say{ padding-right:60px; }
@@ -1823,7 +1837,7 @@
   .subj-levels{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .subj-level{
     display:grid; grid-template-columns:auto 1fr auto; align-items:center; column-gap:10px; row-gap:2px;
-    padding:10px 12px; border-radius:18px; text-align:left; cursor:pointer; font:inherit; color:var(--ink);
+    padding:10px 12px; border-radius:var(--radius-sm); text-align:left; cursor:pointer; font:inherit; color:var(--ink);
     background:var(--surface); border:2px solid var(--paper-line); box-shadow:0 var(--press-edge) 0 var(--paper-edge);
   }
   .subj-level:active{ translate:0 3px; box-shadow:0 1px 0 var(--paper-edge); }
@@ -1857,7 +1871,7 @@
   .subj-hero .h-icon svg{ width:100%; height:100%; display:block; }
   .subj-hero .h-num{ font-size:28px; font-weight:900; line-height:1.1; }
   .subj-hero .h-sub{ font-size:14px; font-weight:800; color:var(--ink-soft); }
-  .trail-list{ background:var(--surface); border-radius:20px; box-shadow:0 0 0 2px var(--paper-line); overflow:hidden; }
+  .trail-list{ background:var(--surface); border-radius:var(--radius); box-shadow:0 0 0 2px var(--paper-line); overflow:hidden; }
   .trail-row{ display:grid; grid-template-columns:32px 1fr auto; column-gap:12px; row-gap:6px; padding:11px 16px; align-items:center; }
   .trail-row + .trail-row{ border-top:2px solid var(--surface-sunken); }
   .trail-row .t-icon{ grid-row:1 / span 2; width:32px; height:32px; border-radius:9px; padding:4px; box-sizing:border-box; color:#fff; display:grid; place-items:center; }
@@ -1943,7 +1957,7 @@
   /* ---------- Catch: its own moment; browsing the Pokédex: a sheet ---------- */
   .catch-sky, .catch-info{ display:contents; }
   .catch-sky .meadow-art{ display:none; }
-  .catch-card{ border-radius:30px; }
+  .catch-card{ border-radius:var(--radius); }
   .modal-overlay.is-catch{ background:var(--canvas); padding:0; align-items:stretch; overflow-y:auto; }
   .is-catch .catch-card{
     max-width:440px; min-height:100%; margin:0 auto; padding:0 22px max(26px, env(safe-area-inset-bottom));
@@ -2031,7 +2045,7 @@
   .caught-none{ font-size:1.125rem; font-weight:800; margin:24px 0; }
   #results .caught-row{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; max-width:420px; margin:0 auto 16px; }
   #results .caught-chip{
-    position:relative; width:auto; padding:12px 4px; border:0; border-radius:18px;
+    position:relative; width:auto; padding:12px 4px; border:0; border-radius:var(--radius-sm);
     background:var(--surface); box-shadow:inset 0 0 0 2px var(--paper-line);
   }
   #results .caught-chip img{ width:76px; height:76px; }
@@ -2068,7 +2082,7 @@
 
   .dex-tab{ min-height:44px; }
   .dex-arrow{ width:44px; height:44px; }
-  .dex-cell{ border-radius:18px; box-shadow:none; }
+  .dex-cell{ border-radius:var(--radius-sm); box-shadow:none; }
   .dex-rare{ background:var(--sun-500); color:var(--sun-800); border:2px solid var(--canvas); }
   .dex-rare svg{ width:12px; height:12px; }
   .dex-rare.mythical{ background:#d9b6f0; color:#5f3a7a; }
@@ -2090,14 +2104,14 @@
   .battle-result{ text-align:center; }
   .battle-announce{ font-size:1.75rem; }
   #battleStage .actions{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px; }
-  #battleStage .actions .btn{ padding:14px 8px; font-size:1rem; overflow-wrap:anywhere; box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--primary-edge); }
+  #battleStage .actions .btn{ padding:14px 8px; font-size:1rem; overflow-wrap:anywhere; }
   #battleStage .actions .btn:only-child{ grid-column:1 / -1; display:flex; align-items:center; justify-content:center; gap:9px; }
   @media (max-width:480px){ .battle-frame{ width:108px; height:108px; } }
 
   .track-caret{ font-size:1rem; font-weight:900; }
 
   .field select{
-    max-width:100%; min-height:44px; padding:0 30px 0 12px; border-radius:12px; border:2px solid var(--line-strong);
+    max-width:100%; min-height:44px; padding:0 30px 0 12px; border-radius:var(--radius-sm); border:2px solid var(--line-strong);
     font:inherit; font-size:.8125rem; font-weight:800; color:var(--ink); background-color:var(--surface);
     -webkit-appearance:none; appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232e2b24' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -2625,7 +2639,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 115;
+const APP_BUILD = 116;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -8031,6 +8045,17 @@ function migrateFrontiers(){
   window.__dataReady = true;      // tools/pronounce.html waits on this
 })();
 
+/* The grass's "!" moves each time it ducks down (see .grass-strip::after). The
+   strip's own shake fires the same event, so only the hop's is taken. */
+let bangX = 78;
+function hopBang(e){
+  if(e.animationName !== "bangHop") return;
+  let x;
+  do { x = 8 + Math.random() * 80; } while(Math.abs(x - bangX) < 22);
+  bangX = x;
+  $("#grassStrip").style.setProperty("--bang-x", x.toFixed(1) + "%");
+}
+$("#grassStrip").addEventListener("animationiteration", hopBang);
 $("#playEnglish").addEventListener("click", ()=> startGame("english"));
 $("#playMaths").addEventListener("click", ()=> startGame("maths"));
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
