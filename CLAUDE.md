@@ -28,8 +28,8 @@ preference, and it has been broken more than once.
 - `progress.md` — how it got here, and what's still open.
 - `LessonTrails.md` — curriculum design rationale.
 - `data/README.md` — every CSV column, and the editing traps that aren't obvious.
-- `data/*.csv` — the game's content **and** all thirteen lesson ladders: spelling,
-  reading, alphabet, sentences, riddles, and eight maths tracks. `index.html` holds no copy of any of them;
+- `data/*.csv` — the game's content **and** all fifteen lesson ladders: spelling,
+  reading, alphabet, sentences, riddles, word pairs, maths pairs, and eight maths tracks. `index.html` holds no copy of any of them;
   the CSVs are authored from a design spreadsheet.
 
 # One file, one namespace

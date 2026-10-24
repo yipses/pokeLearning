@@ -68,6 +68,8 @@
     --bark-700:#7a4e24;
     /* Riddles' trail colour. White on it is 7.7:1. */
     --indigo-700:#3d4aa6;
+    /* Word Pairs and Maths Pairs. White on them is 8.1:1 and 7.9:1. */
+    --plum-700:#86307e; --slate-700:#3f5566;
     --primary:      var(--leaf-600);
     --primary-edge: var(--leaf-700);
     --accent:       var(--berry-600);
@@ -274,6 +276,8 @@
   .kind-alpha{ background:var(--teal-600); }
   .kind-sentence{ background:var(--bark-700); }
   .kind-riddle{ background:var(--indigo-700); }
+  .kind-wordpairs{ background:var(--plum-700); }
+  .kind-mathpairs{ background:var(--slate-700); }
   .kind-battle{ background:var(--ink); color:var(--sun-500); }
 
   /* The number pad is tall, and on a phone the maths screens ran past the fold
@@ -1812,6 +1816,99 @@
   .word-say[hidden]{ display:none; }
 
 
+  /* ===== Home: subjects =====
+     "Your levels" is a summary, not a control panel: two tiles, each the sum of a
+     subject's trail levels, that open the subject's own page. The play buttons
+     sit below, one per subject, each carrying today's count for that subject. */
+  .subj-levels{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .subj-level{
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; column-gap:10px; row-gap:2px;
+    padding:10px 12px; border-radius:18px; text-align:left; cursor:pointer; font:inherit; color:var(--ink);
+    background:var(--surface); border:2px solid var(--paper-line); box-shadow:0 var(--press-edge) 0 var(--paper-edge);
+  }
+  .subj-level:active{ translate:0 3px; box-shadow:0 1px 0 var(--paper-edge); }
+  .subj-level .s-icon{ grid-row:1 / span 2; width:36px; height:36px; border-radius:10px; padding:5px; box-sizing:border-box; color:#fff; display:grid; place-items:center; }
+  .subj-level .s-icon svg{ width:100%; height:100%; display:block; }
+  .subj-level .s-name{ font-size:14px; font-weight:800; color:var(--ink-soft); line-height:1.2; }
+  .subj-level .s-num{ grid-column:2; font-size:20px; font-weight:900; line-height:1.2; white-space:nowrap; }
+  .subj-level .s-more{ grid-row:1 / span 2; grid-column:3; color:var(--ink-soft); font-weight:900; font-size:20px; }
+  @media (max-width:400px){
+    .subj-level{ column-gap:8px; padding:10px; }
+    .subj-level .s-icon{ width:30px; height:30px; padding:4px; }
+  }
+  .home-actions{ grid-template-columns:1fr 1fr; }
+  .home-actions .btn.subj-btn{ flex-direction:column; gap:2px; min-height:76px; padding:6px 10px; }
+  .subj-btn .s-title{ display:flex; align-items:center; gap:8px; font-size:20px; }
+  .subj-btn .s-title .action-icon{ width:18px; height:18px; }
+  .subj-btn .s-meta{ display:flex; align-items:center; gap:5px; font-size:14px; font-weight:800; }
+  .subj-btn .s-meta svg{ width:14px; height:14px; }
+  .home-actions .btn.battle-mini{ grid-column:1 / -1; min-height:48px; font-size:16px; }
+  @media (max-height:700px){
+    .home-actions .btn.subj-btn{ min-height:64px; }
+    .home-actions .btn.battle-mini{ min-height:44px; }
+  }
+
+  /* ===== A subject's own page =====
+     Opened from its level on home. One list, not a grid of cards: a row per
+     trail with its icon, its level and a thin bar, and the subject's play button
+     at the foot, so the page is somewhere to go from as well as to look at. */
+  .subj-hero{ display:flex; align-items:center; gap:14px; margin:4px 2px 16px; }
+  .subj-hero .h-icon{ width:56px; height:56px; border-radius:16px; padding:10px; box-sizing:border-box; color:#fff; display:grid; place-items:center; }
+  .subj-hero .h-icon svg{ width:100%; height:100%; display:block; }
+  .subj-hero .h-num{ font-size:28px; font-weight:900; line-height:1.1; }
+  .subj-hero .h-sub{ font-size:14px; font-weight:800; color:var(--ink-soft); }
+  .trail-list{ background:var(--surface); border-radius:20px; box-shadow:0 0 0 2px var(--paper-line); overflow:hidden; }
+  .trail-row{ display:grid; grid-template-columns:32px 1fr auto; column-gap:12px; row-gap:6px; padding:11px 16px; align-items:center; }
+  .trail-row + .trail-row{ border-top:2px solid var(--surface-sunken); }
+  .trail-row .t-icon{ grid-row:1 / span 2; width:32px; height:32px; border-radius:9px; padding:4px; box-sizing:border-box; color:#fff; display:grid; place-items:center; }
+  .trail-row .t-icon svg{ width:100%; height:100%; display:block; }
+  .trail-row .t-name{ font-size:16px; font-weight:800; }
+  .trail-row .t-lvl{ font-size:16px; font-weight:900; white-space:nowrap; }
+  .trail-row .t-lvl small{ font-size:13px; font-weight:700; color:var(--ink-soft); margin-left:3px; }
+  .trail-row .t-bar{ grid-column:2 / span 2; height:6px; border-radius:99px; background:var(--surface-sunken); overflow:hidden; }
+  .trail-row .t-bar i{ display:block; height:100%; border-radius:99px; }
+  .trail-row.locked .t-name, .trail-row.locked .t-lvl{ color:var(--ink-soft); }
+  .trail-row.off .t-lvl small{ margin-left:6px; }
+  .subj-play{ width:100%; margin-top:18px; min-height:64px; font-size:19px; gap:10px; }
+  .subj-play .s-meta{ font-size:14px; font-weight:800; opacity:.95; }
+  .subj-play .action-icon{ width:20px; height:20px; margin-right:8px; }
+  .subj-play .s-meta{ margin-left:6px; }
+  @media (max-height:700px){
+    .subj-hero{ margin-bottom:10px; }
+    .subj-hero .h-icon{ width:46px; height:46px; }
+    .subj-hero .h-num{ font-size:24px; }
+    .trail-row{ padding:6px 14px; row-gap:3px; }
+    .trail-row .t-icon{ width:28px; height:28px; }
+    .subj-play{ margin-top:12px; min-height:56px; }
+  }
+
+  /* ===== Word Pairs and Maths Pairs =====
+     Two columns, each shuffled: pictures or sums on the left, words or answers on
+     the right. The picked tile is amber (you are here); a matched pair is green and
+     steps back where it stands, so the board empties as it is solved. */
+  .pairs-board{ display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-top:4px; }
+  .pair-tile{
+    min-height:62px; border-radius:16px; padding:4px 8px; display:grid; place-items:center;
+    background:var(--surface); color:var(--ink); border:2px solid var(--paper-line);
+    box-shadow:0 var(--press-edge) 0 var(--paper-edge); font:inherit; cursor:pointer;
+  }
+  .pair-tile:active{ box-shadow:0 1px 0 var(--paper-edge); translate:0 3px; }
+  .pair-tile img{ height:52px; width:auto; max-width:90%; object-fit:contain; }
+  .pair-tile.word{ font-size:20px; font-weight:800; line-height:1.15; overflow-wrap:anywhere; }
+  .pair-tile.num{ font-size:28px; font-weight:900; white-space:nowrap; }
+  .pair-tile.picked{ border:3px solid var(--sun-700); background:var(--sun-100); box-shadow:0 var(--press-edge) 0 var(--sun-700); }
+  .pair-tile.matched{ border-color:var(--leaf-700); background:var(--leaf-100); box-shadow:none; translate:0 3px; color:#b3aa97; cursor:default; }
+  .pair-tile.matched img{ opacity:.4; }
+  .pair-tile:disabled{ opacity:1; }
+  .pair-tile.shake{ animation:shake .42s; }
+  @media (max-height:700px){
+    .pairs-board{ row-gap:8px; }
+    .pair-tile{ min-height:52px; }
+    .pair-tile.word{ font-size:17px; }
+    .pair-tile img{ height:44px; }
+    .pair-tile.num{ font-size:26px; }
+  }
+
   /* The help light. Alphabet and Pattern light GREEN, like Spelling: all three
      already wear an amber ring as the "you are here" cursor, and a second amber
      meaning "this is the answer" made the help invisible. Plain maths and
@@ -1819,7 +1916,8 @@
   #stage[data-kind="alpha"] .answer-lit,
   #stage[data-kind="pattern"] .answer-lit,
   #stage[data-kind="sentence"] .answer-lit,
-  #stage[data-kind="riddle"][data-step="fix"] .answer-lit{
+  #stage[data-kind="riddle"][data-step="fix"] .answer-lit,
+  #stage[data-kind="pairs"] .answer-lit{
     border-color:var(--leaf-700) !important; background:var(--leaf-100);
     animation:answer-lit-green-pulse 1.25s ease-in-out infinite;
   }
@@ -1827,7 +1925,8 @@
     #stage[data-kind="alpha"] .answer-lit,
     #stage[data-kind="pattern"] .answer-lit,
     #stage[data-kind="sentence"] .answer-lit,
-    #stage[data-kind="riddle"][data-step="fix"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
+    #stage[data-kind="riddle"][data-step="fix"] .answer-lit,
+    #stage[data-kind="pairs"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
   }
   @media (max-width:480px){ .alpha-name{ font-size:11px; } }
 
@@ -2213,8 +2312,9 @@
     <div class="levels-card" id="homeLevels"></div>
 
     <div class="home-actions">
-      <button class="btn green" id="startBtn"><span class="action-icon" data-icon="play"></span>Start playing</button>
-      <button class="btn berry" id="battleBtn"><span class="action-icon" data-icon="bolt"></span>Battle</button>
+      <button class="btn green subj-btn" id="playEnglish" type="button" data-subject="english"></button>
+      <button class="btn green subj-btn" id="playMaths" type="button" data-subject="maths"></button>
+      <button class="btn berry battle-mini" id="battleBtn" type="button"><span class="action-icon" data-icon="bolt"></span>Battle</button>
     </div>
 
   </section>
@@ -2354,6 +2454,25 @@
     </div>
 
     <div class="card">
+      <h2>Word Pairs Trail</h2>
+      <p class="sub">Tap a picture, then its word, until every pair is matched. The words come from the Reading level; its own ladder in <code>data/word_pair_levels.csv</code> sets how many pairs, and whether they all start with the same letter.</p>
+
+      <div class="field">
+        <label>Turn on word pairs
+          <span class="hint">Include word pairs in English rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="wordPairsOn" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="field">
+        <label>Word Pairs level
+          <span class="hint" id="wordpairsLevelHint">—</span>
+        </label>
+        <select id="wordpairsFrontier"></select>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Math Trails</h2>
       <p class="sub">Eight tracks — add, subtract, multiply, divide and a skip-counting pattern track for each. A track opens once its prerequisite reaches the level named in <code>data/math_tracks.csv</code>, and everything open has a chance to come up.</p>
 
@@ -2376,6 +2495,25 @@
           <span class="hint">Include picture-based math problems</span>
         </label>
         <label class="switch"><input type="checkbox" id="visualOn" checked><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Maths Pairs Trail</h2>
+      <p class="sub">Tap a sum, then its answer, until every pair is matched. The sums come from the maths levels already reached; its own ladder in <code>data/math_pair_levels.csv</code> sets how many pairs and which kinds of sum share a board. Every answer on a board is different.</p>
+
+      <div class="field">
+        <label>Turn on maths pairs
+          <span class="hint">Include maths pairs in Maths rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="mathPairsOn" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="field">
+        <label>Maths Pairs level
+          <span class="hint" id="mathpairsLevelHint">—</span>
+        </label>
+        <select id="mathpairsFrontier"></select>
       </div>
     </div>
 
@@ -2438,6 +2576,11 @@
   </section>
 
   <!-- ============ DASHBOARD ============ -->
+  <section id="subject" class="hidden">
+    <div class="chrome"></div>
+    <div id="subjectBody"></div>
+  </section>
+
   <section id="dashboard" class="hidden">
     <div class="chrome"></div>
     <div id="dashboardGrid"></div>
@@ -2482,7 +2625,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 114;
+const APP_BUILD = 115;
 const APP_BUILD_DATE = "11 Oct 2026";
 
 function renderAbout(){
@@ -2587,7 +2730,7 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 async function loadData(){
   const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows,
-         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows] = await Promise.all([
+         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows, wordPairRows, mathPairRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -2604,6 +2747,8 @@ async function loadData(){
     fetchCsv("data/sentence_words.csv"),
     fetchCsv("data/word_levels.csv"),
     fetchCsv("data/riddle_levels.csv"),
+    fetchCsv("data/word_pair_levels.csv"),
+    fetchCsv("data/math_pair_levels.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -2713,6 +2858,7 @@ async function loadData(){
   for(const row of ALPHABET_ROWS) checkAlphaRow(row);
   loadSentenceData(sentRows, factRows, sentWordRows, wordLevelRows);
   loadRiddleData(riddleRows);
+  loadPairData(wordPairRows, mathPairRows);
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
@@ -2874,7 +3020,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
-const TRACK_IDS = ["spelling","reading","alphabet","sentences","riddles", ...MATH_TRACK_IDS];
+const TRACK_IDS = ["spelling","reading","alphabet","sentences","riddles","wordpairs","mathpairs", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -2909,6 +3055,8 @@ function trackLevels(track){
   if(track==="alphabet") return ALPHABET_LEVELS;
   if(track==="sentences") return SENTENCE_LEVELS;
   if(track==="riddles") return RIDDLE_LEVELS;
+  if(track==="wordpairs") return WORD_PAIR_LEVELS;
+  if(track==="mathpairs") return MATH_PAIR_LEVELS;
   return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
 function frontierIndex(track){
@@ -3486,13 +3634,19 @@ function buildQueue(){
     return p;
   };
 
+  // Only the chosen subject's trails. Within it the split is even, as before.
   const groups = [];
-  if($("#spellOn").checked)   groups.push(wordPick("spelling"));
-  if($("#readingOn").checked) groups.push(wordPick("reading"));
-  if($("#alphaOn").checked)   groups.push(wordPick("alphabet"));
-  if($("#sentOn").checked)    groups.push(wordPick("sentences"));
-  if($("#riddleOn").checked)  groups.push(wordPick("riddles"));
-  if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
+  if(roundSubject === "english"){
+    if($("#spellOn").checked)     groups.push(wordPick("spelling"));
+    if($("#readingOn").checked)   groups.push(wordPick("reading"));
+    if($("#alphaOn").checked)     groups.push(wordPick("alphabet"));
+    if($("#sentOn").checked)      groups.push(wordPick("sentences"));
+    if($("#riddleOn").checked)    groups.push(wordPick("riddles"));
+    if($("#wordPairsOn").checked) groups.push(wordPick("wordpairs"));
+  } else {
+    if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
+    if($("#mathPairsOn").checked) groups.push(wordPick("mathpairs"));
+  }
   if(groups.length === 0) return [];
 
   const total = clampInt($("#totalCount").value,1,50,10);
@@ -3547,6 +3701,8 @@ function saveSettings(){
     alphaOn: $("#alphaOn").checked,
     sentOn: $("#sentOn").checked,
     riddleOn: $("#riddleOn").checked,
+    wordPairsOn: $("#wordPairsOn").checked,
+    mathPairsOn: $("#mathPairsOn").checked,
     mathOn: $("#mathOn").checked,
     visualOn: $("#visualOn").checked
   };
@@ -3566,6 +3722,8 @@ function loadSettings(){
   if(saved.alphaOn!=null) $("#alphaOn").checked = saved.alphaOn;
   if(saved.sentOn!=null) $("#sentOn").checked = saved.sentOn;
   if(saved.riddleOn!=null) $("#riddleOn").checked = saved.riddleOn;
+  if(saved.wordPairsOn!=null) $("#wordPairsOn").checked = saved.wordPairsOn;
+  if(saved.mathPairsOn!=null) $("#mathPairsOn").checked = saved.mathPairsOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
 }
@@ -3579,13 +3737,28 @@ function mistakeAllowance(){ return clampInt($("#mistakeAllowance")?.value, 0, 5
 
 /* Consecutive days that met the goal. Today counts once met; until then the
    streak stands on yesterday, so it holds all day and only breaks when a whole
-   day has passed unmet — rather than resetting to zero every midnight. */
+   day has passed unmet — rather than resetting to zero every midnight.
+
+   The goal is per subject — two English rounds, or two Maths — and a day meets it
+   when EITHER subject does, so a missed Maths day doesn't break a reading habit.
+   Days from before subjects existed have only a total, and keep the rule they
+   were played under, so the streak a child already has carries over. */
+const SUBJECT_DAY_KEY = "pokeLearningDailySubjects";
+function loadSubjectDays(){
+  try{ return JSON.parse(localStorage.getItem(SUBJECT_DAY_KEY)) || {}; }catch(e){ return {}; }
+}
+function roundsToday(subject){ return (loadSubjectDays()[dateKey(new Date())] || {})[subject] || 0; }
+function dayMet(key, totals, bySubject, goal){
+  const day = bySubject[key];
+  if(day) return SUBJECTS.some(x => (day[x.id] || 0) >= goal);
+  return (totals[key] || 0) >= goal;
+}
 function currentStreak(){
-  const data = loadStreak(), goal = roundsGoal();
+  const totals = loadStreak(), bySubject = loadSubjectDays(), goal = roundsGoal();
   const d = new Date();
-  if((data[dateKey(d)]||0) < goal) d.setDate(d.getDate()-1);
+  if(!dayMet(dateKey(d), totals, bySubject, goal)) d.setDate(d.getDate()-1);
   let n = 0;
-  while((data[dateKey(d)]||0) >= goal){ n++; d.setDate(d.getDate()-1); }
+  while(dayMet(dateKey(d), totals, bySubject, goal)){ n++; d.setDate(d.getDate()-1); }
   return n;
 }
 
@@ -3601,17 +3774,22 @@ function saveStreak(data){
   try{ localStorage.setItem(STREAK_KEY, JSON.stringify(data)); }catch(e){}
 }
 
-function recordDailyCompletion(){
+function recordDailyCompletion(subject){
   const data = loadStreak();
   const key = dateKey(new Date());
   data[key] = (data[key]||0) + 1;
   // Every day is kept. A decade of {date: count} is ~70KB against a multi-MB
   // budget, and pruning to a window would silently cap the streak at its length.
   saveStreak(data);
+  // The total above still drives the week chart; this is what the goal reads.
+  const days = loadSubjectDays();
+  const day = days[key] || (days[key] = {});
+  day[subject] = (day[subject] || 0) + 1;
+  try{ localStorage.setItem(SUBJECT_DAY_KEY, JSON.stringify(days)); }catch(e){}
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles"), { dex:false }); renderTiles($("#resultTiles")); renderShowcase(); renderHomeLevels(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles"), { dex:false }); renderTiles($("#resultTiles"), { subject: roundSubject }); renderShowcase(); renderHomeLevels(); }
 
 /* The home screen's middle band: one of YOUR Pokémon, shown big — number, then
    name. It is a trophy shelf, not a teaser: showing off a catch is what makes a
@@ -3761,7 +3939,10 @@ function renderTiles(el, opts){
   const collected = loadCollection();
   const g = currentGenRange(collected);
   const goal = roundsGoal();
-  const done = data[dateKey(new Date())] || 0;
+  // Today's count is per subject now, so it lives on each play button. Only the
+  // results screen, which knows the subject just played, still shows one.
+  const subj = opts && opts.subject && SUBJECT_BY_ID[opts.subject];
+  const done = subj ? roundsToday(subj.id) : 0;
 
   let dexBig, dexSmall;
   if(g){
@@ -3784,7 +3965,7 @@ function renderTiles(el, opts){
     </button>`;
 
   el.innerHTML =
-    hud("dashboard", "today",  `${done} of ${goal}`, "today", `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") +
+    (subj ? hud("dashboard", "today",  `${done} of ${goal}`, subj.label, `${subj.label} rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") : "") +
     hud("dashboard", "streak", streak, streak === 1 ? "day" : "days", `Day streak: ${streak}`, "streak") +
     (withDex ? hud("pokedex", "dex", dexBig, "", `${dexSmall}: ${dexBig} caught`, "dex") : "");
   el.querySelectorAll("[data-go]").forEach(b=>{
@@ -3812,6 +3993,9 @@ function renderTiles(el, opts){
    as *numbers* in a way three hand-drawn digits at 6px each would not be.
    `text-transform` has to be reset explicitly — the tile label above is
    uppercase and SVG text inherits it, which turns "Aa" into "AA". */
+const PAIRS_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor">
+      <rect x="2" y="3.5" width="9" height="7.5" rx="2"/><rect x="13" y="13" width="9" height="7.5" rx="2"/>
+      <path d="M11 7.25h2.5a2.5 2.5 0 0 1 2.5 2.5V13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
 const LEVEL_ICONS = {
   spelling: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18.5"
       text-anchor="middle" textLength="21" lengthAdjust="spacingAndGlyphs"
@@ -3848,7 +4032,32 @@ const LEVEL_ICONS = {
   muldiv: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><text x="12" y="18"
       text-anchor="middle" font-family="M PLUS Rounded 1c, sans-serif" font-size="17" font-weight="900"
       style="text-transform:none" fill="currentColor">×÷</text></svg>`,
+  // Two tiles joined by a line: the pair the board asks for. Both pairs trails
+  // share it; the trail colour says which.
+  wordpairs: PAIRS_ICON,
+  mathpairs: PAIRS_ICON,
 };
+
+/* ---------------- subjects ----------------
+   Home offers two subjects, and a round is one of them — every trail in a
+   round belongs to the subject chosen, mixed as before. A subject's level is the
+   SUM of its trails' levels, not their average: a sum only ever goes up, where
+   an average fell every time a new trail opened at level 1. A maths track that
+   has not opened counts nothing, as the maths groups always have. */
+const SUBJECTS = [
+  { id:"english", label:"English", color:"var(--sky-700)", icon:"spelling",
+    tracks:["spelling","reading","alphabet","sentences","riddles","wordpairs"] },
+  { id:"maths",   label:"Maths",   color:"var(--berry-600)", icon:"addsub",
+    tracks:[...MATH_TRACK_IDS, "mathpairs"] },
+];
+const SUBJECT_BY_ID = Object.fromEntries(SUBJECTS.map(x => [x.id, x]));
+let roundSubject = "english";
+function trackLevelNow(track){
+  if(!trackLevels(track).length) return 0;
+  if(MATH_BY_ID[track] && !trackLive(track)) return 0;
+  return frontierIndex(track) + 1;
+}
+function subjectLevel(id){ return SUBJECT_BY_ID[id].tracks.reduce((a, t) => a + trackLevelNow(t), 0); }
 
 const LEVEL_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-700)"},
@@ -3856,41 +4065,79 @@ const LEVEL_TRACKS = [
   {id:"alphabet", label:"Alphabet", color:"var(--teal-700)"},
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
   {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
+  {id:"wordpairs", label:"Word Pairs", color:"var(--plum-700)"},
 ];
+
+/* The rows of a subject's page: one per English trail; for Maths the two summed
+   families, as everywhere else, then Maths Pairs. */
+function subjectRows(id){
+  if(id === "english") return LEVEL_TRACKS.map(t => {
+    const levels = trackLevels(t.id);
+    return { icon: LEVEL_ICONS[t.id], label: t.label, color: t.color, at: frontierIndex(t.id) + 1, total: levels.length,
+             off: !trailSwitchedOn(t.id) };
+  }).filter(r => r.total);
+  const rows = MATH_GROUPS.map(g => {
+    const { at, total } = mathGroupProgress(g.id);
+    return { icon: LEVEL_ICONS[g.id], label: g.label, color: g.color, at, total, locked: !at, off: !trailSwitchedOn("maths") };
+  }).filter(r => r.total);
+  rows.push({ icon: LEVEL_ICONS.mathpairs, label: "Maths Pairs", color: "var(--slate-700)",
+              at: frontierIndex("mathpairs") + 1, total: MATH_PAIR_LEVELS.length, off: !trailSwitchedOn("mathpairs") });
+  return rows;
+}
+/* The Settings switch behind each trail. */
+const TRAIL_SWITCH = { spelling:"#spellOn", reading:"#readingOn", alphabet:"#alphaOn", sentences:"#sentOn",
+                       riddles:"#riddleOn", wordpairs:"#wordPairsOn", maths:"#mathOn", mathpairs:"#mathPairsOn" };
+function trailSwitchedOn(id){ const el = $(TRAIL_SWITCH[id]); return !el || el.checked; }
+
+function renderSubjectPage(id){
+  const subj = SUBJECT_BY_ID[id];
+  SCREEN_CHROME.subject.title = subj.label;
+  const rows = subjectRows(id);
+  const done = roundsToday(id), goal = roundsGoal();
+  $("#subjectBody").innerHTML = `
+    <div class="subj-hero">
+      <span class="h-icon" style="background:${subj.color}">${LEVEL_ICONS[subj.icon]}</span>
+      <span><span class="h-num">Level ${subjectLevel(id)}</span><br>
+        <span class="h-sub">Every ${subj.label} level added up</span></span>
+    </div>
+    <div class="trail-list">${rows.map(r => `
+      <div class="trail-row${r.locked ? " locked" : ""}${r.off ? " off" : ""}">
+        <span class="t-icon" style="background:${r.color}">${r.icon}</span>
+        <span class="t-name">${r.label}</span>
+        <span class="t-lvl">${r.locked ? "Locked" : `Level ${r.at}<small>of ${r.total}${r.off ? " · off" : ""}</small>`}</span>
+        <span class="t-bar"><i style="width:${r.total ? r.at / r.total * 100 : 0}%; background:${r.color}"></i></span>
+      </div>`).join("")}
+    </div>
+    <button class="btn green subj-play" type="button" data-subject="${id}">
+      <span class="action-icon">${UI_ICONS.play}</span>Play ${subj.label}
+      <span class="s-meta">· ${done} of ${goal} today</span>
+    </button>`;
+  $("#subjectBody .subj-play").addEventListener("click", ()=> startGame(id));
+}
+function openSubject(id){ renderSubjectPage(id); show("subject"); }
+
 function renderHomeLevels(){
   const el = $("#homeLevels");
   if(!el) return;
-  const heading = `<span class="card-heading">Your progress</span>`;
-  const tile = (icon, label, color, at, total) => {
-    if(!total) return "";
-    const pct = Math.round((at / total) * 100);
-    return `<div class="level-tile">
-      <span class="level-name"><span class="level-icon" style="background:${color}">${icon}</span>${label}</span>
-      <span class="level-num">Level ${at}<span class="of">of ${total}</span></span>
-      <span class="level-bar" role="img" aria-label="${label}: level ${at} of ${total}">
-        <span class="level-fill" style="width:${pct}%; background:${color}"></span>
-      </span>
-    </div>`;
-  };
-  const word = LEVEL_TRACKS.map(({id, label, color})=>{
-    const levels = trackLevels(id);
-    if(!levels.length) return "";
-    return tile(LEVEL_ICONS[id], label, color, frontierIndex(id) + 1, levels.length);
+  el.innerHTML = `<span class="card-heading">Your levels</span><div class="subj-levels">${SUBJECTS.map(x => `
+    <button class="subj-level" type="button" data-subject="${x.id}" aria-label="${x.label}: level ${subjectLevel(x.id)}. Open.">
+      <span class="s-icon" style="background:${x.color}">${LEVEL_ICONS[x.icon]}</span>
+      <span class="s-name">${x.label}</span>
+      <span class="s-num">Level ${subjectLevel(x.id)}</span>
+      <span class="s-more" aria-hidden="true">›</span>
+    </button>`).join("")}</div>`;
+  el.querySelectorAll(".subj-level").forEach(b => b.addEventListener("click", ()=> openSubject(b.dataset.subject)));
+  // The play buttons carry each subject's own count for today. Green when its
+  // goal is met is the button's own colour already, so the count says it.
+  const goal = roundsGoal();
+  SUBJECTS.forEach(x => {
+    const btn = $(x.id === "english" ? "#playEnglish" : "#playMaths");
+    if(!btn) return;
+    const done = roundsToday(x.id);
+    btn.innerHTML = `<span class="s-title"><span class="action-icon">${UI_ICONS.play}</span>${x.label}</span>
+      <span class="s-meta"><span class="hud-icon" aria-hidden="true">${HUD_ICONS.today}</span>${done} of ${goal} today</span>`;
+    btn.setAttribute("aria-label", `Play ${x.label}. ${done} of ${goal} rounds today.`);
   });
-  // Maths stays two tiles. Each is the sum of its four tracks' levels, so the
-  // number moves whenever any part of it does and eight tracks don't become
-  // eight tiles on a screen that has to stay above the fold.
-  const maths = MATH_GROUPS.map(g => {
-    const { at, total } = mathGroupProgress(g.id);
-    if(!total) return "";
-    if(at === 0) return `<div class="level-tile locked">
-      <span class="level-name"><span class="level-icon" style="background:${g.color}">${LEVEL_ICONS[g.id]}</span>${g.label}</span>
-      <span class="level-num">Locked</span>
-      <span class="level-bar"><span class="level-fill" style="width:0%; background:${g.color}"></span></span>
-    </div>`;
-    return tile(LEVEL_ICONS[g.id], g.label, g.color, at, total);
-  });
-  el.innerHTML = heading + `<div class="levels-grid">` + word.concat(maths).join("") + `</div>`;
 }
 
 /* ---------------- game state ---------------- */
@@ -3902,10 +4149,14 @@ let queue=[], idx=0, correct=0;
 let roundCredits = 0;
 function roundTarget(){ return clampInt($("#totalCount")?.value, 1, 50, 10); }
 
-function startGame(){
+function startGame(subject){
   saveSettings();
+  if(SUBJECT_BY_ID[subject]) roundSubject = subject;
   queue = buildQueue();
-  if(queue.length===0){ $("#noModesModal").classList.remove("hidden"); $("#noModesSettingsBtn").focus(); return; }
+  if(queue.length===0){
+    $("#noModesModal p").textContent = `Every ${SUBJECT_BY_ID[roundSubject].label} trail is switched off. Turn at least one on in Settings.`;
+    $("#noModesModal").classList.remove("hidden"); $("#noModesSettingsBtn").focus(); return;
+  }
   idx=0; correct=0; roundCredits=0; roundCatches=[]; sinceEncounter=0;
   show("play");
   enterQuestion(false);
@@ -3947,6 +4198,7 @@ function renderProblem(){
   else if(p.kind==="alpha") renderAlphabet(p);
   else if(p.kind==="sentence") renderSentence(p);
   else if(p.kind==="riddle") renderRiddle(p);
+  else if(p.kind==="pairs") renderPairs(p);
   else if(p.kind==="pattern") renderPattern(p);
   else if(p.kind==="visual") renderVisual(p);
   else renderMath(p);
@@ -4710,6 +4962,7 @@ const WORD_TRACKS = [
   {id:"alphabet", label:"Alphabet", color:"var(--teal-600)"},
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
   {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
+  {id:"wordpairs", label:"Word Pairs", color:"var(--plum-700)"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
@@ -4794,7 +5047,7 @@ function renderDashboard(){
   `;
   grid.appendChild(weekCard);
 
-  dashboardTracks().forEach(({id, label, color})=>{
+  const trackCard = ({id, label, color})=>{
     const card = document.createElement("div");
     card.className = "card dash-card";
     card.innerHTML = `
@@ -4808,7 +5061,8 @@ function renderDashboard(){
       ${trackDetailHTML(id, color)}
     `;
     grid.appendChild(card);
-  });
+  };
+  dashboardTracks().forEach(trackCard);
 
   MATH_GROUPS.forEach(g => {
     const tracks = MATH_TRACKS.filter(t => t.group === g.id && t.levels.length);
@@ -4857,7 +5111,8 @@ function renderDashboard(){
       });
     });
     grid.appendChild(card);
-  });
+  });  // Maths Pairs is a trail of its own, after the families it draws its sums from.
+  trackCard({ id:"mathpairs", label:"Maths Pairs", color:"var(--slate-700)" });
 }
 
 function levelLine(id){
@@ -6317,6 +6572,199 @@ function finishRiddle(){
   else lockAndAdvance();
 }
 
+/* ---------------- §pairs ----------------
+   Tap the pairs, the calm version of Duolingo's: two columns, each shuffled,
+   and a matched pair turns green and stays where it is, so the board empties as
+   it is solved. No timer — nothing else in the app rewards speed, and a child
+   still sounding words out should not be raced.
+
+   Two trails share the board. Word Pairs matches pictures to words; Maths Pairs
+   matches sums to answers. Neither has content of its own: the words are the
+   Reading level's, and the sums come from each maths track at the level reached.
+   The pairs ladders only shape the board — how many pairs, and (words) whether
+   they all start with one letter or (maths) which kinds of sum share a board.
+
+   Both rules the board depends on are checked when it is built, not hoped for:
+   every word and picture on a board is different, and so is every answer — two
+   sums both making 5 would leave a "5" that matches either.
+
+   A board is one question. A wrong pair is a mistake; the help light, when due,
+   shows one right pair, green, because amber is already the picked tile. */
+let WORD_PAIR_ROWS = [], MATH_PAIR_ROWS = [];
+let WORD_PAIR_LEVELS = [], MATH_PAIR_LEVELS = [];
+let pairsState = null;
+const PAIRS_MIN = 3, PAIRS_MAX = 6;
+const MATH_PAIR_MIXES = { one:"one kind of sum", addsub:"+ and − mixed", all:"every kind mixed" };
+
+function loadPairData(wordRows, mathRows){
+  const n = v => Number(v);
+  const yes = v => /^(yes|y|true|1)$/i.test(String(v || "").trim());
+  WORD_PAIR_ROWS = wordRows.map(r => ({
+    level: n(r.level), pairs: n(r.pairs), sameStart: yes(r.same_start),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
+  }));
+  MATH_PAIR_ROWS = mathRows.map(r => ({
+    level: n(r.level), pairs: n(r.pairs), mix: String(r.mix || "").trim().toLowerCase(),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
+  }));
+  if(!WORD_PAIR_ROWS.length) throw new Error("data/word_pair_levels.csv is empty");
+  if(!MATH_PAIR_ROWS.length) throw new Error("data/math_pair_levels.csv is empty");
+  const checkPairs = (file, row) => {
+    if(!(Number.isInteger(row.pairs) && row.pairs >= PAIRS_MIN && row.pairs <= PAIRS_MAX))
+      throw new Error(`${file} level ${row.level}: pairs must be ${PAIRS_MIN} to ${PAIRS_MAX}`);
+  };
+  WORD_PAIR_ROWS.forEach(r => checkPairs("data/word_pair_levels.csv", r));
+  MATH_PAIR_ROWS.forEach(r => {
+    checkPairs("data/math_pair_levels.csv", r);
+    if(!MATH_PAIR_MIXES[r.mix]) throw new Error(`data/math_pair_levels.csv level ${r.level}: mix "${r.mix}" is not one of ${Object.keys(MATH_PAIR_MIXES).join(", ")}`);
+  });
+}
+
+function buildWordPairLevels(){
+  return WORD_PAIR_ROWS.map(row => ({
+    id: String(row.level), row,
+    label: `${row.pairs} pairs${row.sameStart ? ", all one first letter" : ""}`,
+    gen: ()=> mkWordPairs(row),
+  }));
+}
+function buildMathPairLevels(){
+  return MATH_PAIR_ROWS.map(row => ({
+    id: String(row.level), row,
+    label: `${row.pairs} pairs, ${MATH_PAIR_MIXES[row.mix]}`,
+    gen: ()=> mkMathPairs(row),
+  }));
+}
+
+/* Words from the Reading frontier's pool, one per word and one per picture. A
+   same-start level needs that many words sharing a first letter; Reading 1–2 and
+   some letters never have them, so the board quietly becomes an ordinary one —
+   which is why `sameStart` is recorded on the question, not assumed from the row. */
+function mkWordPairs(row){
+  const rRow = (currentLevel("reading") || {}).row || READING_ROWS[0];
+  const seen = new Set(), pool = [];
+  for(const x of shuffle(poolForRow(rRow).slice())){
+    const word = x.n.toLowerCase(), pic = x.img || artwork(x.id);
+    if(seen.has(word) || seen.has(pic)) continue;
+    seen.add(word); seen.add(pic);
+    pool.push(x);
+  }
+  let pick = null, sameStart = false;
+  if(row.sameStart){
+    const groups = {};
+    pool.forEach(x => (groups[x.n[0].toLowerCase()] ||= []).push(x));
+    const big = Object.values(groups).filter(g => g.length >= row.pairs);
+    if(big.length){ pick = big[rand(big.length)].slice(0, row.pairs); sameStart = true; }
+  }
+  if(!pick) pick = pool.slice(0, Math.min(row.pairs, pool.length));
+  return { kind:"pairs", sub:"word", sameStart,
+           items: pick.map((x, key) => ({ key, rec:x, img: x.img || artwork(x.id), word: x.n })) };
+}
+
+/* Sums from the single-sum maths tracks that are open (patterns are sequences,
+   not a sum with one answer), each at the level reached. `one` keeps a board to
+   one track; `addsub` mixes the open + and − tracks; `all` mixes everything open.
+   Answers are kept distinct as they are drawn. A level with too few answers to
+   fill the board (Subtract 1 has three) shrinks it, then borrows from the other
+   open tracks rather than show fewer than PAIRS_MIN. */
+function mathPairTracks(mix){
+  const open = liveMathTracks().filter(t => t.kind === "single");
+  return mix === "addsub" ? open.filter(t => t.group === "addsub") : open;
+}
+function mkMathPairs(row){
+  const open = mathPairTracks("all");
+  let tracks = mathPairTracks(row.mix);
+  if(!tracks.length) tracks = open;
+  if(row.mix === "one") tracks = [tracks[rand(tracks.length)]];
+  const byAns = new Map();
+  const draw = from => {
+    for(let k = 0; k < 300 && byAns.size < row.pairs; k++){
+      const t = from[rand(from.length)];
+      const q = mkMathSingle(t, currentLevel(t.id).row);
+      if(!byAns.has(q.ans)) byAns.set(q.ans, { a:q.a, b:q.b, sym:q.sym, ans:q.ans, track:t.id });
+    }
+  };
+  draw(tracks);
+  if(byAns.size < PAIRS_MIN && tracks.length < open.length) draw(open);
+  return { kind:"pairs", sub:"math", borrowed: [...byAns.values()].some(x => !tracks.some(t => t.id === x.track)),
+           items: [...byAns.values()].map((x, key) => ({ key, ...x, sum:`${x.a} ${x.sym} ${x.b}` })) };
+}
+
+function renderPairs(p){
+  const word = p.sub === "word";
+  $("#stage").innerHTML = `
+    <div class="kind-tag ${word ? "kind-wordpairs" : "kind-mathpairs"}">${word ? "Word Pairs" : "Maths Pairs"}</div>
+    <div class="pairs-board" id="pairsBoard"></div>
+    <div class="feedback" id="feedback"></div>`;
+  pairsState = { p, picked:null, matched:0, finished:false };
+  const tile = (it, side) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "pair-tile " + (word ? (side === "left" ? "pic" : "word") : "num");
+    b.dataset.key = it.key;
+    b.dataset.side = side;
+    if(word && side === "left") b.innerHTML = `<img alt="" src="${it.img}">`;
+    else b.textContent = word ? cap(it.word) : (side === "left" ? it.sum : String(it.ans));
+    if(word && side === "left") b.setAttribute("aria-label", "Picture");
+    b.addEventListener("click", ()=> pickPair(b));
+    return b;
+  };
+  // Laid out row by row, so a long word that wraps makes its whole row taller
+  // rather than leaving the two columns out of step.
+  const left = shuffle(p.items.slice()), right = shuffle(p.items.slice());
+  const board = $("#pairsBoard");
+  left.forEach((it, i) => { board.appendChild(tile(it, "left")); board.appendChild(tile(right[i], "right")); });
+}
+
+/* Either side can be tapped first. Tapping the picked tile again lets it go, and
+   tapping another tile on the same side moves the pick — changing your mind is
+   free. Only a finished pair that doesn't match counts as a mistake. */
+function pickPair(b){
+  const st = pairsState;
+  if(!st || st.finished || b.classList.contains("matched")) return;
+  const first = st.picked;
+  if(!first){ st.picked = b; b.classList.add("picked"); return; }
+  if(first === b){ b.classList.remove("picked"); st.picked = null; return; }
+  if(first.dataset.side === b.dataset.side){
+    first.classList.remove("picked");
+    st.picked = b; b.classList.add("picked");
+    return;
+  }
+  first.classList.remove("picked");
+  st.picked = null;
+  if(first.dataset.key === b.dataset.key){
+    [first, b].forEach(t => { t.classList.add("matched"); t.disabled = true; });
+    st.matched++;
+    resetStepMisses();                       // the light, if it was on, is spent
+    syncPairsLight();
+    const it = st.p.items[Number(b.dataset.key)];
+    if(st.matched === st.p.items.length){ finishPairs(it); return; }
+    if(st.p.sub === "word") speak(sayAs(it.word));
+  } else {
+    bumpMistake(st.p);
+    [first, b].forEach(t => { t.classList.add("shake"); setTimeout(()=> t.classList.remove("shake"), 450); });
+    noteStepMiss();
+    syncPairsLight();
+  }
+}
+function syncPairsLight(){
+  const tiles = [...document.querySelectorAll("#pairsBoard .pair-tile")];
+  tiles.forEach(t => t.classList.remove("answer-lit"));
+  if(!revealDue()) return;
+  const open = tiles.find(t => !t.classList.contains("matched"));
+  if(open) tiles.filter(t => t.dataset.key === open.dataset.key).forEach(t => t.classList.add("answer-lit"));
+}
+function finishPairs(last){
+  const st = pairsState;
+  st.finished = true;
+  correct++;
+  if(st.p.track && st.p.isFrontier) recordAttempt(st.p.track, spotless(st.p));
+  const fb = $("#feedback");
+  fb.className = "feedback good";
+  fb.innerHTML = feedbackHTML("good", "Yes!");
+  if(st.p.sub === "word") lockAndAdvance(done => blendBack(last.word, done));
+  else lockAndAdvance();
+}
+
 /* ---------------- ANSWER CHOICES ---------------- */
 /* Every maths mode answers the same way: tap the right number out of six.
 
@@ -7048,7 +7496,7 @@ function lockAndAdvance(waitFor){
   // The reward lands with the right answer, not with the next question.
   if(countsForRound(queue[idx])) updateProgress(false, true);
   const go = ()=>{
-    spellState=null; missingState=null; sentState=null; riddleState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
+    spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
     next();
   };
   if(typeof waitFor === "function") waitFor(go);
@@ -7344,7 +7792,7 @@ function finishBattle(){
 /* ---------------- results ---------------- */
 
 function finish(){
-  recordDailyCompletion();
+  recordDailyCompletion(roundSubject);
   updateProgress(true);
   // No score here: every mode retries until correct, so a finished round is
   // always 100% and a "perfect run" reward meant nothing. The reward is what
@@ -7419,6 +7867,7 @@ const SCREEN_CHROME = {
   battle:    { title: "Battle", extra: () => `<span class="count-badge won" aria-label="${battleWins} right">${UI_ICONS.tick}${battleWins}</span><span class="count-badge lost" aria-label="${battleLosses} wrong">${UI_ICONS.cross}${battleLosses}</span>` },
   pokedex:   { title: "Pokédex" },
   dashboard: { title: "My progress" },
+  subject:   { title: "English" },
 };
 function renderChrome(which){
   const spec = SCREEN_CHROME[which];
@@ -7441,6 +7890,7 @@ function renderChrome(which){
     host.dataset.built = "1";
   }
   renderTiles(host.querySelector(".home-tiles"));
+  host.nextElementSibling.querySelector(".screen-title").textContent = spec.title;
   // Anything a screen wants beside its name. Filled on every render, so a screen
   // that updates it before the chrome exists — Battle sets its record inside
   // newBattle(), which runs before show() — still lands.
@@ -7455,7 +7905,7 @@ function syncScreenBars(){
 window.addEventListener("scroll", syncScreenBars, { passive:true });
 
 function show(which){
-  ["setup","settings","play","results","battle","pokedex","dashboard"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
+  ["setup","settings","play","results","battle","pokedex","dashboard","subject"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
   document.body.dataset.screen = which;
   // The HUD sits above the logo, which is outside #setup — so it is hidden by
   // hand everywhere but home. A round has its own progress bar and a Quit
@@ -7529,6 +7979,8 @@ function renderTrailSettings(){
   renderTrailSelect("alphabet", "#alphabetFrontier", "#alphabetLevelHint", "Level");
   renderTrailSelect("sentences", "#sentencesFrontier", "#sentencesLevelHint", "Level");
   renderTrailSelect("riddles", "#riddlesFrontier", "#riddlesLevelHint", "Level");
+  renderTrailSelect("wordpairs", "#wordpairsFrontier", "#wordpairsLevelHint", "Level");
+  renderTrailSelect("mathpairs", "#mathpairsFrontier", "#mathpairsLevelHint", "Level");
 }
 
 /* ---------------- wire up ----------------
@@ -7569,6 +8021,8 @@ function migrateFrontiers(){
   ALPHABET_LEVELS = buildAlphabetLevels();
   SENTENCE_LEVELS = buildSentenceLevels();
   RIDDLE_LEVELS = buildRiddleLevels();
+  WORD_PAIR_LEVELS = buildWordPairLevels();
+  MATH_PAIR_LEVELS = buildMathPairLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
   loadSettings();
@@ -7577,7 +8031,8 @@ function migrateFrontiers(){
   window.__dataReady = true;      // tools/pronounce.html waits on this
 })();
 
-$("#startBtn").addEventListener("click", startGame);
+$("#playEnglish").addEventListener("click", ()=> startGame("english"));
+$("#playMaths").addEventListener("click", ()=> startGame("maths"));
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
 $("#settingsBtn").innerHTML = HUD_ICONS.gear;
 // Static markup that names a drawn icon rather than carrying an emoji.
@@ -7596,7 +8051,7 @@ $("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
 $("#dexTabs").addEventListener("scroll", updateDexArrows);
 window.addEventListener("resize", updateDexArrows);
 $("#quitBtn").addEventListener("click", ()=>{
-  spellState=null; missingState=null; sentState=null; riddleState=null; mathState=null; readingState=null; patternState=null; visualState=null;
+  spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null;
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 });
@@ -7625,7 +8080,7 @@ $("#catchOkBtn").addEventListener("click", ()=>{
 $("#catchModal").addEventListener("click", (e)=>{
   if(e.target === e.currentTarget && e.currentTarget.classList.contains("dismissable")) hideCatchModal();
 });
-$("#againBtn").addEventListener("click", startGame);
+$("#againBtn").addEventListener("click", ()=> startGame(roundSubject));
 $("#backSetupBtn").addEventListener("click", ()=> show("setup"));
 
 // persist setup/settings changes as they happen

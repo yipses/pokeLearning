@@ -844,6 +844,30 @@ The owner chose the slide, no blank pictures and the reward landing first. The c
 - **Behaviour.** A counting answer fills its step at once. One that won't count fills nothing. A catch modal opens over the answered card with no slide, and the slide follows its OK. Quitting mid-slide and starting again shows the first question normally. Reduced motion: no transform, a fade only.
 - **Regressions.** Mixed-mode smoke clean. The answer loop: 1,800 questions, 0 mistakes. Riddles and tile-speaker drives pass. The duplicate-function grep is empty, and there are no console errors. The old Sentences drive script is stale: it still expects the picture's bank-reading speaker removed in Phase 95.
 
+## Phase 98 — English or Maths; Word Pairs and Maths Pairs
+
+The owner asked for a new reading exercise. Three ideas were turned down, two of them for being easier versions of Sentences, and Duolingo was researched instead. Its "tap the pairs" was chosen for both subjects, as **two trails** with their own ladders, in the calm version: no timer, and matched pairs stay where they are.
+
+Then the home screen changed shape:
+- he chooses **English or Maths**, and a round is one subject; the mixed round is gone;
+- **Your levels** shows each subject as the **sum** of its trails' levels, chosen over an average because a sum never falls when a trail opens;
+- a level opens the subject's **own page** (a list, chosen over a pop-up after a pass on best practice);
+- the daily goal is **per subject**, and the **streak is shared** — met by either.
+
+**Changed from the plan.** The look-alike Word Pairs levels (cat / cap / car) could not work. Reading's pool is words with pictures, and an edit-distance search found at most three near-spellings at any level, all from Reading 8. They became **one-first-letter** boards. Measured: a few letters have enough words for a five-pair board from Reading 3, nine letters at Reading 5, and 22 by Reading 10.
+
+**Measured.**
+- **Word boards:** 3,000 across every Reading level × Word Pairs level. Every word and picture was distinct, every one-first-letter board was one letter, and no board had fewer than 3 pairs.
+- **Maths boards:** 7,600 across every single-sum maths track at every level × Maths Pairs level. Every answer was distinct and correct, and no board had fewer than 3 pairs.
+- **Drives:**
+  - a clean board records a clean attempt and speaks each word;
+  - switching or dropping a pick costs nothing;
+  - two wrong pairs count two mistakes and light one right pair green;
+  - matching it spends the light.
+- **Rounds:** an English round only ever builds English kinds, and Maths only maths, visual and Maths Pairs. Real rounds were played through for each subject. Play again keeps the subject. The Maths button read `2 of 2 today` after two Maths rounds while English stayed at 0. A streak of two old-format days became 3 with today's goal met.
+- **Fit:** home, both subject pages and the worst boards (five longest Reading 10 words; two-digit sums) have no scroll at all 7 sizes. Words drop to 17px under 700px tall. The home Pokémon is back to 194px at 360×640 (it was 51px with seven cards) and about 240px at 390×844 (was 108). That closes Phase 96's open home question.
+- **Regressions:** smoke clean (pairs now among the kinds); answer loop 1,800 / 0 mistakes; riddles, tile-speaker, transition and quit-mid-slide checks pass; duplicate-function grep empty; no console errors.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
