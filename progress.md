@@ -878,6 +878,69 @@ Then the home screen changed shape:
 
 **Checks.** No scroll at the 7 sizes on home, both subject pages and the worst pairs boards. Smoke clean; answer loop 1,800 / 0 mistakes; riddles, pairs, transition and quit checks pass; no console errors. Build 116.
 
+## Phase 100 — the audit's fixes
+
+The owner had two audits run on build 116, one by me and one by an agent briefed as a mobile app designer. The combined list had 35 items. The owner picked 1–21 and 24–29, 31, 33, 34, and dropped 35's decoration; 21 became a confirm sheet shown only when something is at stake, and 10 became real landscape layouts rather than a "turn your phone" card. DESIGN.md took the new rules first: green is correct or the one forward action, amber is "you are here", wrong taps are silent, leaving asks first, word buttons carry an icon, and landscape phones get their own layouts.
+
+**Fit.**
+- **Results with four catches:** clipped on phones. It now goes 2×2 under 420px wide, with name tags counted in the fit. Larger caps apply from 700px wide (440 / 340 / 260 / 220), and the mound seam on tablets is gone.
+- **Visual × and ÷:** each lot is a dashed group in its own shape, and the icons shrink before anything else moves.
+- **Spelling level 25 at 360×640:** "Simple square tiling" (14 slots, 13 tiles) was 222px over. It now fits: the frame goes first to 96px, then the answers together to 0.8 (56px tiles stay at 44px), then the frame to 72px.
+- **A bug found while checking that:** the new fit function read `scrollHeight`, which is never less than the screen. Every question therefore looked a reserve's height "over", and every picture was shrunk to the minimum: a Fix it frame on a 1280×800 desktop was 72px. Both fitters now measure the card's bottom edge, and the 34px reserve is gone, because the feedback line already keeps its height while empty. Measured after the fix: that frame is back to 180px, and Visual 6 + 6 icons at 360×640 are back from 22px to 30px.
+- **Pairs tiles:** they grow into the free height (5:4 down to 3:2, 62px minimum).
+- **Tall phones:** a 1.08 step at 380–439 × 800+, and the Read & Choose frame's 148px step moved from 900 to 780 tall.
+- **Tablet home:** the Pokémon is sized from the free height, 482px at 820×1180.
+- **Landscape phones (844×390, 780×360, 640×360):**
+  - home splits as on a desktop, and a round's meadow strip shrinks to 74px;
+  - questions sit side by side, with the picture, tag and ✓ in one cell spanning every row, so the answers' rows can't push the picture down. A first try put the tag in row 1 and Read & Choose overflowed by 58px;
+  - Reverse Read & Choose and Who am I? put the word or clues on the left, with square picture tiles on the right. Their art had been about 30px; it is now 121–164px;
+  - Alphabet's answers go 2×2, since four in a row split names a letter per line at 640;
+  - Battle's arena takes the whole width until the fight, and its result goes beside it. The result was 89px over;
+  - the "!" fits the band of grass between the bar and the card;
+  - results and catch go side by side, and results is full-bleed. Its scene had been pushed off to the right by the scene's own negative margins.
+- **Measured:** no vertical scroll for any question type at its longest, home, catch, results with 1–4 catches, or Battle before and after the fight, at 360×640, 390×844, 390×780, 470×830, 820×1180, 1024×768, 1280×800, 1440×900 and the three landscape sizes. Subject pages scroll in landscape under their pinned ✕, as Settings does.
+
+**Behaviour.**
+- **Help light:** the light is cleared when the answer is taken, so a right answer is green alone.
+- **Pairs light:** now a green ring on a white tile, so it can't be mistaken for a matched pair. A picked lit tile shows amber.
+- **Wrong taps:** they no longer show captions, and DESIGN now states which tiles fade and which stay live.
+- **The ✕:** it asks first when something is at stake. Driven:
+  - with nothing at stake it leaves at once;
+  - with a credit, or a Pokémon in the grass, the sheet opens with Keep playing focused;
+  - Keep playing and a tap outside both keep playing, and Stop leaves.
+- **Battle:** you tap the Pokémon, and a health bar under each one drops over four blows. Driven: two picks and no "Pick" buttons; health went 100 → 55/79 → 0/50; the verdict and Battle again appeared.
+- **Fix it:** the sentence sits on a paper strip with dotted words, which wiggle after 6s. A tap scan found "a" and "is" at 26px wide, so the words have a 44px minimum.
+- **Word Pairs at Reading 1:** it borrows the next level's words below eight.
+- **Plain Maths and Pattern:** they lose the decorative Pokémon.
+- **Speakers:** art in round frames steps aside from the speaker.
+
+**Unclear pictures.** A measured score (drawn area, colour count, edge detail) flagged too many clear pictures to use on its own. A contact sheet of all 55 level 1–3 pictures, judged by eye, picked four instead: Glass, Gravel, Fluff and Moss. They are listed in `data/unclear_pictures.csv` and the sheet's *Unclear Pictures* tab, and they leave levels 1–3 while a pool keeps eight words. Pools before → after:
+
+| Pool | Before | After |
+|---|---|---|
+| Reading 1 | 4 | 4 |
+| Reading 2 | 11 | 10 |
+| Reading 3 | 55 | 51 |
+| Spelling 1 | 4 | 4 |
+| Spelling 2 | 11 | 10 |
+| Spelling 3 | 11 | 10 |
+
+**For the grown-up.**
+- **Settings:** in plain words, grouped as English and Maths, with every input labelled and the paths and build under Advanced.
+- **My progress:** one card format ("Level 3 of 25", a bar, and "4 of the last 5 right first time"), with headings at 4.5:1 or better and 44px rows.
+- **The week chart:** per-subject bars, with a ✓ under each day decided by `dayMet`, the streak's own rule. Driven with a mixed week: 3 ticks for 3 met days, a streak of 1, and old-format days drawn grey. The goal label had sat on the goal line and collided with a bar's count, so it moved into a key under the chart.
+
+**Checks.**
+- duplicate-function grep empty;
+- smoke clean;
+- answer loop 1,800 / 0 mistakes;
+- riddles, pairs, tile-speaker and quit checks pass;
+- the transition check passes, updated to tap Stop on the new sheet;
+- the contrast and tap-target scan leaves only the 40px speakers, which reach 44 with their hit ring;
+- no console errors.
+
+Build 117.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
