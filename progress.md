@@ -941,6 +941,26 @@ The owner had two audits run on build 116, one by me and one by an agent briefed
 
 Build 117.
 
+## Phase 101 — one daily goal; a step that sweeps; a board that ends with the card
+
+**Yes and No icons.** The owner saw the ✓ and ✗ sitting high. The tile was a plain button, so its `gap` did nothing and the icon sat on the text's baseline, above the word's middle. It is a centred flex row now. Measured at 390×844, 1280×800 and 844×390: icon, word and tile centres agree to 0.1px.
+
+**One daily goal, his choice.** The owner wanted the day's goal to be one number, any mix of subjects, shown as its own bar. It is a **GOAL** row above "Your levels", and the play buttons carry only their names. The rule: a day is met when its total reaches the goal (Settings, default 2). The old per-subject rule implied that total, so no day that counted before stops counting. Driven with a mixed week: 4 met days, a 3-day streak, and a day of 1 English + 1 Maths now counts. The week chart stacks English and Maths into one bar, so a bar reaching the goal line is a met day. The results counter is the day's total. Home still fits at every size; the home Pokémon at 360×640 is 149px.
+
+**The earned step sweeps.** The owner found the round bar's step "just pops on": a 0.25s colour fade on a 9px pill. Green now sweeps in from the left over 0.35s, then the step bounces once. Sampled: background 29% at 60ms, 66% at 150ms, full at 250ms, scaled ×1.08/×1.32 at 400ms, settled by 520ms. With reduced motion it turns green with no sweep.
+
+**Word Pairs ends with the card.** The owner saw an empty band under the board, about 85px on a tablet: the feedback line's 34px reserve (×1.35 zoom), its 14px margin and the card padding. A board now keeps no line for the ✓; the "✓ Yes!" arrives as a white pill over the finished board. The space under the board is now just the card padding (20px; 12px on a landscape phone), and the tiles take the reclaimed height.
+
+**Also.** The Pokédex row's small bar is hidden on every landscape phone; at 844×390 it ran into "3 of 147".
+
+**Checks.**
+- no scroll at the 7 sizes, 390×780 or the three landscape sizes;
+- smoke clean, answer loop 1,800 / 0 mistakes;
+- transition, quit and pairs checks pass;
+- duplicate-function grep empty, no console errors.
+
+Build 118.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

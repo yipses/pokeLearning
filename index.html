@@ -1565,7 +1565,7 @@
     body[data-screen="setup"] .wrap{ max-width:none; padding:0; }
     #setup:not(.hidden){
       display:grid; grid-template-columns:minmax(0,1fr) minmax(400px, 500px);
-      grid-template-rows:1fr auto auto 1fr; column-gap:40px;
+      grid-template-rows:1fr auto auto auto 1fr; column-gap:40px;
       height:100vh; height:100dvh; min-height:560px; padding-right:40px;
     }
     .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 32px; border-radius:0 var(--radius) var(--radius) 0; }
@@ -1580,9 +1580,10 @@
        as something separate. The right column is progress and the buttons. */
     #homeShowcase{ grid-column:1; grid-row:1 / -1; align-self:end; justify-self:center; z-index:3;
       width:min(460px, calc(100% - 64px)); margin:0 0 28px; }
-    #homeLevels{ grid-column:2; grid-row:2; }
+    #homeGoal{ grid-column:2; grid-row:2; padding-top:0; }
+    #homeLevels{ grid-column:2; grid-row:3; }
     #homeLevels .levels-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
-    .home-actions{ grid-column:2; grid-row:3; padding-bottom:0; }
+    .home-actions{ grid-column:2; grid-row:4; padding-bottom:0; }
   }
 
   /* ---------- A question ---------- */
@@ -1871,8 +1872,10 @@
   #riddleLine.nudge .fix-word:nth-of-type(2n){ animation-delay:.08s; }
   @keyframes fixNudge{ 25%{ transform:translateY(-4px) rotate(-3deg); } 60%{ transform:translateY(0) rotate(2deg); } }
   @media (prefers-reduced-motion: reduce){ #riddleLine.nudge .fix-word{ animation:none; } }
-  .tile.word.riddle-yn{ min-width:120px; gap:8px; }
-  .yn-icon{ display:inline-grid; place-items:center; width:24px; height:24px; }
+  /* A flex row, so the icon centres on the word: as inline content it sat on the
+     text's baseline and rode above the word's middle. */
+  .tile.word.riddle-yn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-width:120px; }
+  .yn-icon{ display:inline-grid; place-items:center; width:24px; height:24px; flex:none; }
   .yn-icon svg{ width:22px; height:22px; }
   .yn-icon.yes{ color:var(--leaf-700); }
   .yn-icon.no{ color:var(--berry-700); }
@@ -1912,7 +1915,16 @@
   /* ===== Home: subjects =====
      "Your levels" is a summary, not a control panel: two tiles, each the sum of a
      subject's trail levels, that open the subject's own page. The play buttons
-     sit below, one per subject, each carrying today's count for that subject. */
+     sit below, one per subject. Above both, the day's goal: one bar. */
+  .home-goal{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:16px 2px 0; }
+  @media (max-height:700px){ .home-goal{ padding-top:10px; } }
+  .home-goal .goal-word{ font-size:14px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .home-goal .goal-bar{ height:14px; border-radius:999px; background:var(--surface); box-shadow:inset 0 0 0 2px var(--paper-line); overflow:hidden; }
+  .home-goal .goal-bar i{ display:block; height:100%; border-radius:999px; background:var(--leaf-600); transition:width .5s ease-out; }
+  .home-goal .goal-count{ display:inline-flex; align-items:center; gap:6px; font-size:16px; font-weight:900; color:var(--ink); white-space:nowrap; }
+  .home-goal .goal-tick{ display:inline-grid; width:20px; height:20px; color:var(--leaf-700); }
+  .home-goal .goal-tick svg{ width:100%; height:100%; }
+  .home-goal.met .goal-count{ color:var(--leaf-700); }
   .subj-levels{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .subj-level{
     display:grid; grid-template-columns:auto 1fr auto; align-items:center; column-gap:10px; row-gap:2px;
@@ -1933,8 +1945,6 @@
   .home-actions .btn.subj-btn{ flex-direction:column; gap:2px; min-height:76px; padding:6px 10px; }
   .subj-btn .s-title{ display:flex; align-items:center; gap:8px; font-size:20px; }
   .subj-btn .s-title .action-icon{ width:18px; height:18px; }
-  .subj-btn .s-meta{ display:flex; align-items:center; gap:5px; font-size:14px; font-weight:800; }
-  .subj-btn .s-meta svg{ width:14px; height:14px; }
   /* Battle is the side game: a quiet white button in Battle's own berry, under
      the two subjects, so the screen's forward actions stay the green ones. */
   .home-actions .btn.battle-mini{ grid-column:1 / -1; min-height:48px; font-size:16px; color:var(--berry-700); }
@@ -1965,9 +1975,8 @@
   .trail-row.locked .t-name, .trail-row.locked .t-lvl{ color:var(--ink-soft); }
   .trail-row.off .t-lvl small{ margin-left:6px; }
   .subj-play{ width:100%; margin-top:18px; min-height:64px; font-size:19px; gap:10px; }
-  .subj-play .s-meta{ font-size:14px; font-weight:800; opacity:.95; }
   .subj-play .action-icon{ width:20px; height:20px; margin-right:8px; }
-  .subj-play .s-meta{ margin-left:6px; }
+
   @media (max-height:700px){
     .subj-hero{ margin-bottom:10px; }
     .subj-hero .h-icon{ width:46px; height:46px; }
@@ -1988,6 +1997,17 @@
     box-shadow:0 var(--press-edge) 0 var(--paper-edge); font:inherit; cursor:pointer;
   }
   .pair-tile:active{ box-shadow:0 1px 0 var(--paper-edge); translate:0 3px; }
+  /* A board keeps no empty line under it for the ✓: under a tall grid that band
+     read as a mistake. The ✓ arrives over the finished (faded) board instead, as
+     a white pill in its middle. */
+  #stage[data-kind="pairs"] > .feedback{
+    position:absolute; left:50%; top:50%; translate:-50% -50%; z-index:3; margin:0; min-height:0;
+    pointer-events:none;
+  }
+  #stage[data-kind="pairs"] > .feedback.good{
+    padding:10px 22px; border-radius:999px; background:var(--surface); white-space:nowrap;
+    box-shadow:0 0 0 3px var(--leaf-300), 0 8px 24px rgba(46,43,36,.18); animation:checkPop .35s cubic-bezier(.34,1.56,.64,1);
+  }
   .pair-tile img{ height:calc(var(--ph, 62px) * .8); width:auto; max-width:90%; object-fit:contain; }
   .pair-tile.word{ font-size:20px; font-weight:800; line-height:1.15; overflow-wrap:anywhere; }
   .pair-tile.num{ font-size:28px; font-weight:900; white-space:nowrap; }
@@ -2289,9 +2309,15 @@
   }
   .prog-steps i.done{ background:var(--leaf-600); box-shadow:none; }
   .prog-steps i.now{ background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
-  /* The step a right answer just earned (previewProgress), filled with a pop. */
-  .prog-steps i.step-pop{ animation:stepPop .3s ease-out; }
-  @keyframes stepPop{ 50%{ transform:scale(1.15, 1.5); } }
+  /* The step a right answer just earned (previewProgress): green sweeps in from
+     the left, then the step gives one small bounce. A colour fade on a pill this
+     thin read as the step simply switching on. */
+  .prog-steps i.done.step-pop{
+    background:linear-gradient(var(--leaf-600), var(--leaf-600)) 0 0 / 100% 100% no-repeat, var(--surface);
+    animation:stepSweep .35s ease-out, stepPop .28s ease-out .35s;
+  }
+  @keyframes stepSweep{ from{ background-size:0% 100%, auto; } }
+  @keyframes stepPop{ 50%{ transform:scale(1.12, 1.45); } }
 
   /* Between questions (enterQuestion). The white card stays where it is; only
      what is on it moves — out to the left, then the next question in from the
@@ -2304,7 +2330,7 @@
   @keyframes qIn{ from{ opacity:0; transform:translateX(24px); } }
   @keyframes qFade{ from{ opacity:0; } }
   @media (prefers-reduced-motion: reduce){
-    .prog-steps i.step-pop{ animation:none; }
+    .prog-steps i.done.step-pop{ animation:none; background:var(--leaf-600); }
     #stage.q-out > *{ transform:none; }
     #stage.q-in > *{ animation-name:qFade; }
   }
@@ -2375,7 +2401,7 @@
     body[data-screen="setup"] .wrap{ max-width:none; padding:0; }
     #setup:not(.hidden){
       display:grid; grid-template-columns:minmax(0,1fr) minmax(280px, 44%);
-      grid-template-rows:1fr auto auto 1fr; column-gap:18px;
+      grid-template-rows:1fr auto auto auto 1fr; column-gap:18px;
       height:100vh; height:100dvh; min-height:0; padding-right:16px;
     }
     .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 16px; border-radius:0 var(--radius) var(--radius) 0; }
@@ -2385,10 +2411,12 @@
     .showcase-pick img{ max-width:none; }
     #homeShowcase{ grid-column:1; grid-row:1 / -1; align-self:end; justify-self:center; z-index:3;
       width:min(380px, calc(100% - 24px)); margin:0 0 10px; padding:8px 12px; gap:6px; }
-    #homeLevels{ grid-column:2; grid-row:2; padding-top:0; }
-    .home-actions{ grid-column:2; grid-row:3; padding:10px 0 0; gap:10px; }
+    #homeGoal{ grid-column:2; grid-row:2; padding:0 0 8px; }
+    #homeLevels{ grid-column:2; grid-row:3; padding-top:0; }
+    .home-actions{ grid-column:2; grid-row:4; padding:10px 0 0; gap:10px; }
     .home-actions .btn.subj-btn{ min-height:58px; }
     .home-actions .btn.battle-mini{ min-height:44px; }
+    .showcase-dex .level-bar{ display:none; }
 
     /* A round */
     .play-scene{ height:74px; }
@@ -2503,7 +2531,7 @@
     .subj-level .s-icon{ width:30px; height:30px; padding:4px; }
     .subj-level .s-num{ font-size:18px; }
     .subj-level .s-more{ display:none; }
-    .showcase-dex-go .go-word, .showcase-dex .level-bar{ display:none; }
+    .showcase-dex-go .go-word{ display:none; }
   }
 
   /* The no-trails notice. */
@@ -2556,6 +2584,8 @@
 
     <div class="showcase" id="homeShowcase"></div>
 
+    <div class="home-goal" id="homeGoal" role="img"></div>
+
     <div class="levels-card" id="homeLevels"></div>
 
     <div class="home-actions">
@@ -2580,8 +2610,8 @@
         <input type="number" id="totalCount" min="1" max="50" value="10">
       </div>
       <div class="field">
-        <label for="roundsGoal">Rounds per subject each day
-          <span class="hint">Two English rounds or two Maths rounds keeps the streak going — either subject counts</span>
+        <label for="roundsGoal">Rounds each day
+          <span class="hint">The day's goal on the home screen — any mix of English and Maths. Reaching it keeps the streak going.</span>
         </label>
         <input type="number" id="roundsGoal" min="1" max="20" value="2">
       </div>
@@ -2863,7 +2893,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 117;
+const APP_BUILD = 118;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -3989,26 +4019,22 @@ function mistakeAllowance(){ return clampInt($("#mistakeAllowance")?.value, 0, 5
    streak stands on yesterday, so it holds all day and only breaks when a whole
    day has passed unmet — rather than resetting to zero every midnight.
 
-   The goal is per subject — two English rounds, or two Maths — and a day meets it
-   when EITHER subject does, so a missed Maths day doesn't break a reading habit.
-   Days from before subjects existed have only a total, and keep the rule they
-   were played under, so the streak a child already has carries over. */
+   The goal is one number for the day, any mix of English and Maths: he chooses
+   what to play, and the day counts once that many rounds are done. (It was per
+   subject for a while; a day that met that rule had at least that many rounds
+   in all, so no streak is lost to the change.) */
 const SUBJECT_DAY_KEY = "pokeLearningDailySubjects";
 function loadSubjectDays(){
   try{ return JSON.parse(localStorage.getItem(SUBJECT_DAY_KEY)) || {}; }catch(e){ return {}; }
 }
-function roundsToday(subject){ return (loadSubjectDays()[dateKey(new Date())] || {})[subject] || 0; }
-function dayMet(key, totals, bySubject, goal){
-  const day = bySubject[key];
-  if(day) return SUBJECTS.some(x => (day[x.id] || 0) >= goal);
-  return (totals[key] || 0) >= goal;
-}
+function roundsToday(){ return loadStreak()[dateKey(new Date())] || 0; }
+function dayMet(key, totals, goal){ return (totals[key] || 0) >= goal; }
 function currentStreak(){
-  const totals = loadStreak(), bySubject = loadSubjectDays(), goal = roundsGoal();
+  const totals = loadStreak(), goal = roundsGoal();
   const d = new Date();
-  if(!dayMet(dateKey(d), totals, bySubject, goal)) d.setDate(d.getDate()-1);
+  if(!dayMet(dateKey(d), totals, goal)) d.setDate(d.getDate()-1);
   let n = 0;
-  while(dayMet(dateKey(d), totals, bySubject, goal)){ n++; d.setDate(d.getDate()-1); }
+  while(dayMet(dateKey(d), totals, goal)){ n++; d.setDate(d.getDate()-1); }
   return n;
 }
 
@@ -4031,7 +4057,7 @@ function recordDailyCompletion(subject){
   // Every day is kept. A decade of {date: count} is ~70KB against a multi-MB
   // budget, and pruning to a window would silently cap the streak at its length.
   saveStreak(data);
-  // The total above still drives the week chart; this is what the goal reads.
+  // The total above is what the goal reads; this splits the week chart's bars.
   const days = loadSubjectDays();
   const day = days[key] || (days[key] = {});
   day[subject] = (day[subject] || 0) + 1;
@@ -4039,7 +4065,7 @@ function recordDailyCompletion(subject){
   renderHomeTiles();
 }
 
-function renderHomeTiles(){ renderTiles($("#homeTiles"), { dex:false }); renderTiles($("#resultTiles"), { subject: roundSubject }); renderShowcase(); renderHomeLevels(); }
+function renderHomeTiles(){ renderTiles($("#homeTiles"), { dex:false }); renderTiles($("#resultTiles"), { today: true }); renderShowcase(); renderHomeLevels(); }
 
 /* The home screen's middle band: one of YOUR Pokémon, shown big — number, then
    name. It is a trophy shelf, not a teaser: showing off a catch is what makes a
@@ -4192,10 +4218,10 @@ function renderTiles(el, opts){
   const collected = loadCollection();
   const g = currentGenRange(collected);
   const goal = roundsGoal();
-  // Today's count is per subject now, so it lives on each play button. Only the
-  // results screen, which knows the subject just played, still shows one.
-  const subj = opts && opts.subject && SUBJECT_BY_ID[opts.subject];
-  const done = subj ? roundsToday(subj.id) : 0;
+  // Today's count lives in the goal row on home; the results screen, where a
+  // round just moved it, shows it here.
+  const withToday = !!(opts && opts.today);
+  const done = roundsToday();
 
   let dexBig, dexSmall;
   if(g){
@@ -4218,7 +4244,7 @@ function renderTiles(el, opts){
     </button>`;
 
   el.innerHTML =
-    (subj ? hud("dashboard", "today",  `${done} of ${goal}`, subj.label, `${subj.label} rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") : "") +
+    (withToday ? hud("dashboard", "today",  `${done} of ${goal}`, "today", `Rounds today: ${done} of ${goal}`, done >= goal ? "met" : "") : "") +
     hud("dashboard", "streak", streak, streak === 1 ? "day" : "days", `Day streak: ${streak}`, "streak") +
     (withDex ? hud("pokedex", "dex", dexBig, "", `${dexSmall}: ${dexBig} caught`, "dex") : "");
   el.querySelectorAll("[data-go]").forEach(b=>{
@@ -4346,7 +4372,6 @@ function renderSubjectPage(id){
   const subj = SUBJECT_BY_ID[id];
   SCREEN_CHROME.subject.title = subj.label;
   const rows = subjectRows(id);
-  const done = roundsToday(id), goal = roundsGoal();
   $("#subjectBody").innerHTML = `
     <div class="subj-hero">
       <span class="h-icon" style="background:${subj.color}">${LEVEL_ICONS[subj.icon]}</span>
@@ -4363,7 +4388,6 @@ function renderSubjectPage(id){
     </div>
     <button class="btn green subj-play" type="button" data-subject="${id}">
       <span class="action-icon">${UI_ICONS.play}</span>Play ${subj.label}
-      <span class="s-meta">· ${done} of ${goal} today</span>
     </button>`;
   $("#subjectBody .subj-play").addEventListener("click", ()=> startGame(id));
 }
@@ -4372,6 +4396,16 @@ function openSubject(id){ renderSubjectPage(id); show("subject"); }
 function renderHomeLevels(){
   const el = $("#homeLevels");
   if(!el) return;
+  // The day's goal comes first: one bar, any mix of subjects, his choice.
+  const goal = roundsGoal(), done = roundsToday(), met = done >= goal;
+  const goalEl = $("#homeGoal");
+  if(goalEl){
+    goalEl.classList.toggle("met", met);
+    goalEl.innerHTML = `<span class="goal-word">Goal</span>
+      <span class="goal-bar" aria-hidden="true"><i style="width:${Math.min(1, done / goal) * 100}%"></i></span>
+      <span class="goal-count">${met ? `<span class="goal-tick" aria-hidden="true">${UI_ICONS.tick}</span>` : ""}${done} of ${goal}</span>`;
+    goalEl.setAttribute("aria-label", `Goal: ${done} of ${goal} rounds today${met ? ", done" : ""}`);
+  }
   el.innerHTML = `<span class="card-heading">Your levels</span><div class="subj-levels">${SUBJECTS.map(x => `
     <button class="subj-level" type="button" data-subject="${x.id}" aria-label="${x.label}: level ${subjectLevel(x.id)}. Open.">
       <span class="s-icon" style="background:${x.color}">${LEVEL_ICONS[x.icon]}</span>
@@ -4380,16 +4414,11 @@ function renderHomeLevels(){
       <span class="s-more" aria-hidden="true">›</span>
     </button>`).join("")}</div>`;
   el.querySelectorAll(".subj-level").forEach(b => b.addEventListener("click", ()=> openSubject(b.dataset.subject)));
-  // The play buttons carry each subject's own count for today. Green when its
-  // goal is met is the button's own colour already, so the count says it.
-  const goal = roundsGoal();
   SUBJECTS.forEach(x => {
     const btn = $(x.id === "english" ? "#playEnglish" : "#playMaths");
     if(!btn) return;
-    const done = roundsToday(x.id);
-    btn.innerHTML = `<span class="s-title"><span class="action-icon">${UI_ICONS.play}</span>${x.label}</span>
-      <span class="s-meta"><span class="hud-icon" aria-hidden="true">${HUD_ICONS.today}</span>${done} of ${goal} today</span>`;
-    btn.setAttribute("aria-label", `Play ${x.label}. ${done} of ${goal} rounds today.`);
+    btn.innerHTML = `<span class="s-title"><span class="action-icon">${UI_ICONS.play}</span>${x.label}</span>`;
+    btn.setAttribute("aria-label", `Play ${x.label}`);
   });
 }
 
@@ -5281,7 +5310,7 @@ function lastNDays(n){
     const key = dateKey(d), split = bySubject[key];
     const count = data[key] || 0;
     // Met by the streak's own rule, so the chart and the 🔥 never disagree.
-    out.push({ date:d, label:dateLabel(d), count, met: dayMet(key, data, bySubject, goal), today: i===0,
+    out.push({ date:d, label:dateLabel(d), count, met: dayMet(key, data, goal), today: i===0,
                english: split ? split.english || 0 : null, maths: split ? split.maths || 0 : null });
   }
   return out;
@@ -5290,10 +5319,10 @@ function lastNDays(n){
 function renderDailyRoundsChart(days){
   const W=320, H=150, xL=24, xR=310, yTop=18, yBot=118;
   const goal = roundsGoal();
-  // Bars are per subject now, since the goal is: English and Maths side by side
-  // against one line. Days from before subjects existed have only a total, drawn
-  // as one grey bar.
-  const top = Math.max(goal, ...days.map(d => d.english == null ? d.count : Math.max(d.english, d.maths)));
+  // One bar a day against the goal line, since the goal is the day's total: English
+  // at the foot, Maths stacked on it. Days from before subjects existed have only
+  // a total, drawn as one grey bar.
+  const top = Math.max(goal, ...days.map(d => d.count));
   const yAt = v => yBot - (v/top)*(yBot-yTop);
   const slot = (xR-xL)/days.length;
   const bw = Math.min(30, slot*0.62);
@@ -5311,22 +5340,20 @@ function renderDailyRoundsChart(days){
   days.forEach((d,i)=>{
     const cx = xL + slot*(i+0.5);
     const x = (cx - bw/2).toFixed(1);
-    const y = yAt(d.count).toFixed(1);
-    const h = Math.max(0, yBot - Number(y)).toFixed(1);
     svg += `<rect x="${x}" y="${yBot-2}" width="${bw.toFixed(1)}" height="2" rx="1" class="day-base"/>`;
-    const bar = (bx, w, v, cls, title) => {
-      if(!v) return "";
-      const by = yAt(v);
-      return `<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(0, yBot - by).toFixed(1)}" rx="3" class="day-bar ${cls}"><title>${title}</title></rect>`
-           + `<text x="${(bx + w/2).toFixed(1)}" y="${(by-4).toFixed(1)}" class="day-val" text-anchor="middle">${v}</text>`;
+    // A segment from `from` rounds up to `to`; a 2px paper gap between stacked ones.
+    const seg = (from, to, cls, title, gap) => {
+      if(to <= from) return "";
+      const yTop = yAt(to), yLow = yAt(from) - (gap ? 2 : 0);
+      return `<rect x="${x}" y="${yTop.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0, yLow - yTop).toFixed(1)}" rx="3" class="day-bar ${cls}"><title>${title}</title></rect>`;
     };
     if(d.english == null){
-      if(d.count > 0) svg += bar(Number(x), bw, d.count, "old", `${d.label}: ${d.count} round${d.count===1?"":"s"}`);
+      svg += seg(0, d.count, "old", `${d.label}: ${d.count} round${d.count===1?"":"s"}`);
     } else {
-      const half = (bw - 2) / 2;
-      svg += bar(Number(x), half, d.english, "english", `${d.label}: ${d.english} English`);
-      svg += bar(Number(x) + half + 2, half, d.maths, "maths", `${d.label}: ${d.maths} Maths`);
+      svg += seg(0, d.english, "english", `${d.label}: ${d.english} English`);
+      svg += seg(d.english, d.english + d.maths, "maths", `${d.label}: ${d.maths} Maths`, d.english > 0);
     }
+    if(d.count > 0) svg += `<text x="${cx.toFixed(1)}" y="${(yAt(d.count)-4).toFixed(1)}" class="day-val" text-anchor="middle">${d.count}</text>`;
     // A day that kept the streak gets a green tick under it.
     if(d.met) svg += `<text x="${cx.toFixed(1)}" y="${yBot+27}" class="day-met" text-anchor="middle">✓</text>`;
     svg += `<text x="${cx.toFixed(1)}" y="${yBot+15}" class="axis-label${d.today ? " today" : ""}" text-anchor="middle">${d.today ? "Today" : d.label}</text>`;
@@ -5334,7 +5361,7 @@ function renderDailyRoundsChart(days){
   svg += `</svg>`;
   // The key sits under the chart: on the goal line, its label met a bar's count.
   svg += `<div class="days-key"><span><i class="k english"></i>English</span><span><i class="k maths"></i>Maths</span>`
-       + `<span><i class="k goal"></i>${goal} per subject</span><span><b class="k-met">✓</b>streak kept</span></div>`;
+       + `<span><i class="k goal"></i>Goal ${goal}</span><span><b class="k-met">✓</b>streak kept</span></div>`;
   return svg;
 }
 
@@ -7052,7 +7079,9 @@ function layoutPairs(){
   const zoom = board.getBoundingClientRect().width / (board.offsetWidth || 1) || 1;
   const colW = (board.offsetWidth - 14 * (cols - 1)) / cols;
   const gap = parseFloat(getComputedStyle(board).rowGap) || 10;
-  const free = (window.innerHeight - board.getBoundingClientRect().top) / zoom - 34 - 20 - 32;
+  // Below the board: only the card's padding and the page's (the ✓ goes over it).
+  const below = (parseFloat(getComputedStyle($("#stage")).paddingBottom) || 0) + (parseFloat(getComputedStyle($(".wrap")).paddingBottom) || 0) + 8;
+  const free = (window.innerHeight - board.getBoundingClientRect().top - below) / zoom;
   const fit = (free - gap * (rows - 1)) / rows;
   let h = colW / 1.25;
   if(h > fit) h = Math.max(colW / 1.5, fit);

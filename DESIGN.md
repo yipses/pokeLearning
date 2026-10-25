@@ -139,11 +139,14 @@ a two-word name breaks only between words.
 - **Spacing is a 4px scale** (gaps of 4, 8, 12, 16, 20, 24).
 - **Home is two choices.** The levels are a summary (English, Maths — each
   the sum of its trails' levels) that opens the subject's own page; the play
-  buttons are one per subject and carry that subject's count for today. A
+  buttons are one per subject and carry nothing but its name. Above both, one
+  **GOAL** bar: today's rounds against the day's goal, any mix of subjects. A
   subject's page is a page with a ✕, never a pop-up.
 - **A matching board keeps its rows.** Pairs are laid out row by row, so a
   long word makes its row taller instead of putting the columns out of step;
-  a matched pair stays in place, green and faded.
+  a matched pair stays in place, green and faded. A board keeps no empty
+  line under it for the ✓: the ✓ arrives as a white pill over the finished
+  board.
 - **Landscape phones have their own layouts** (landscape and under 500px
   tall): home splits like the desktop, a question card puts its picture or
   prompt on the left and its answers on the right, the meadow strip shrinks
@@ -158,15 +161,17 @@ a two-word name breaks only between words.
 - **Questions leave left, arrive right.** The card's contents slide out (160ms)
   and the next question's slide in (200ms); the white card itself never moves.
   The slide is taken out of the wait before it, so the pace doesn't change.
-- **The reward comes before the change.** A step on the round bar fills, with a
-  pop, the moment the answer is right, not when the next question appears.
+- **The reward comes before the change.** A step on the round bar fills the
+  moment the answer is right, not when the next question appears: green sweeps
+  in from the left (0.35s), then the step bounces once. A colour fade on a pill
+  that thin read as the step switching on.
 - **A picture is never shown blank.** The next question's pictures load while
   the current one is being answered; a question waits, unseen, at most 0.4s for
   any that haven't arrived.
 - **Something hiding moves.** The grass's **!** ducks down and pops up
   somewhere else every 2.4s; it never reappears near where it just was.
 - **Reduced motion keeps the fades, drops the slides and pops.** The **!**
-  stands still.
+  stands still, and an earned step turns green without the sweep.
 
 ## How to work
 
