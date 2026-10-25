@@ -530,10 +530,11 @@
   /* A wrong one is spent: dimmed and dead, so the same mistake cannot be made
      twice and the field narrows as the child reasons. */
   .choice:disabled{ opacity:.3; pointer-events:none; }
-  .choice.picked{ background:var(--leaf-100); }
-  /* Answered: the bank has nothing left to do, and hiding it rather than greying
-     it out is what lifts ✅ and Next above the fold on a phone. */
-  .choices.done{ display:none; }
+  /* Answered: the right number stays, green, while the rest grey out with the
+     frozen bank. (The bank used to vanish to lift a ✓ line into view; the ✓ is a
+     pill over the card now, and a vanishing bank made the card jump.) */
+  .choice.picked{ background:var(--leaf-100); border-color:var(--leaf-700); box-shadow:0 var(--press-edge) 0 var(--leaf-700); }
+  .choice.picked:disabled{ opacity:1; }
 
   /* pattern rows */
   .pattern-list{ display:flex; flex-direction:column; gap:10px; margin:14px 0 6px; }
@@ -821,11 +822,21 @@
 
   .actions{ display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
 
-  .feedback{ min-height:34px; margin-top:14px; font-weight:800; font-size:1.25rem; }
+  /* The ✓ Yes! is a white pill over the middle of the card, in every mode. It
+     takes no room of its own, so no question keeps an empty band under it. */
+  .feedback{
+    position:absolute; left:50%; top:50%; translate:-50% -50%; z-index:5; margin:0;
+    font-weight:800; font-size:1.25rem; pointer-events:none; white-space:nowrap;
+  }
+  .feedback:empty{ display:none; }
+  .feedback.good{
+    padding:10px 22px; border-radius:999px; background:var(--surface);
+    box-shadow:0 0 0 3px var(--leaf-300), 0 8px 24px rgba(46,43,36,.18);
+    animation:checkPop .35s cubic-bezier(.34,1.56,.64,1);
+  }
   .feedback.good{ color:var(--leaf-700); }
   .feedback.bad{ color:var(--berry-700); }
   @keyframes checkPop{ 0%{ transform:scale(0); opacity:0; } 60%{ transform:scale(1.25); opacity:1; } 100%{ transform:scale(1); } }
-  .feedback.big-check{ font-size:2.6rem; line-height:1; animation: checkPop .35s cubic-bezier(.34,1.56,.64,1); }
 
   /* ---------- Grass encounter ---------- */
   .stage{ position:relative; z-index:1; }
@@ -1827,7 +1838,6 @@
   @media (max-height:700px){
     #stage .frame-wrap .poke-frame.reading-frame.sent-frame{ width:96px; height:96px; }
     #stage[data-kind="sentence"] .kind-tag{ margin-bottom:4px; }
-    #stage[data-kind="sentence"] .feedback{ min-height:28px; margin-top:8px; }
     .sent-line, #sentTiles{ --cell:48px; }
     .sent-line{ gap:6px; margin-top:6px; } #sentTiles{ gap:6px 8px; margin-top:8px; }
     .sent-word, .sent-slot, .tile.word{ padding:0 11px; }
@@ -1997,17 +2007,7 @@
     box-shadow:0 var(--press-edge) 0 var(--paper-edge); font:inherit; cursor:pointer;
   }
   .pair-tile:active{ box-shadow:0 1px 0 var(--paper-edge); translate:0 3px; }
-  /* A board keeps no empty line under it for the ✓: under a tall grid that band
-     read as a mistake. The ✓ arrives over the finished (faded) board instead, as
-     a white pill in its middle. */
-  #stage[data-kind="pairs"] > .feedback{
-    position:absolute; left:50%; top:50%; translate:-50% -50%; z-index:3; margin:0; min-height:0;
-    pointer-events:none;
-  }
-  #stage[data-kind="pairs"] > .feedback.good{
-    padding:10px 22px; border-radius:999px; background:var(--surface); white-space:nowrap;
-    box-shadow:0 0 0 3px var(--leaf-300), 0 8px 24px rgba(46,43,36,.18); animation:checkPop .35s cubic-bezier(.34,1.56,.64,1);
-  }
+
   .pair-tile img{ height:calc(var(--ph, 62px) * .8); width:auto; max-width:90%; object-fit:contain; }
   .pair-tile.word{ font-size:20px; font-weight:800; line-height:1.15; overflow-wrap:anywhere; }
   .pair-tile.num{ font-size:28px; font-weight:900; white-space:nowrap; }
@@ -2051,12 +2051,6 @@
   .fb-icon{ display:inline-grid; place-items:center; width:1em; height:1em; margin-right:6px; vertical-align:-.12em; }
   .fb-icon svg{ width:100%; height:100%; }
   .feedback.bad{ color:var(--berry-700); }
-  .feedback.big-check{
-    display:grid; place-items:center; width:96px; height:96px; min-height:0; margin:18px auto 0;
-    border-radius:50%; background:var(--leaf-600); color:#fff; font-size:0;
-    box-shadow:0 0 0 10px var(--leaf-100);
-  }
-  .feedback.big-check svg{ width:52px; height:52px; }
 
   /* ---------- Catch: its own moment; browsing the Pokédex: a sheet ---------- */
   .catch-sky, .catch-info{ display:contents; }
@@ -2309,15 +2303,18 @@
   }
   .prog-steps i.done{ background:var(--leaf-600); box-shadow:none; }
   .prog-steps i.now{ background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
-  /* The step a right answer just earned (previewProgress): green sweeps in from
-     the left, then the step gives one small bounce. A colour fade on a pill this
-     thin read as the step simply switching on. */
-  .prog-steps i.done.step-pop{
-    background:linear-gradient(var(--leaf-600), var(--leaf-600)) 0 0 / 100% 100% no-repeat, var(--surface);
-    animation:stepSweep .35s ease-out, stepPop .28s ease-out .35s;
+  /* The step a right answer just earned (previewProgress) blinks on, like a
+     light: on bright with a glow, off for a moment, on again, then it settles.
+     Hard switches, no in-between colours — a step is earned or it isn't, so a
+     fill (which reads as progress within the step) was the wrong picture. */
+  .prog-steps i.done.step-pop{ animation:stepBlink .5s step-end; }
+  @keyframes stepBlink{
+    0%   { background:var(--leaf-500); box-shadow:0 0 0 4px var(--leaf-300); }
+    18%  { background:var(--surface);  box-shadow:inset 0 0 0 2px rgba(46,43,36,.14); }
+    34%  { background:var(--leaf-500); box-shadow:0 0 0 4px var(--leaf-300); }
+    70%  { background:var(--leaf-600); box-shadow:0 0 0 2px var(--leaf-300); }
+    100% { background:var(--leaf-600); box-shadow:none; }
   }
-  @keyframes stepSweep{ from{ background-size:0% 100%, auto; } }
-  @keyframes stepPop{ 50%{ transform:scale(1.12, 1.45); } }
 
   /* Between questions (enterQuestion). The white card stays where it is; only
      what is on it moves — out to the left, then the next question in from the
@@ -2330,7 +2327,7 @@
   @keyframes qIn{ from{ opacity:0; transform:translateX(24px); } }
   @keyframes qFade{ from{ opacity:0; } }
   @media (prefers-reduced-motion: reduce){
-    .prog-steps i.done.step-pop{ animation:none; background:var(--leaf-600); }
+    .prog-steps i.done.step-pop{ animation:none; }
     #stage.q-out > *{ transform:none; }
     #stage.q-in > *{ animation-name:qFade; }
   }
@@ -2427,17 +2424,17 @@
     #stage.card{ margin-top:-12px; padding:10px 14px 12px; }
     #stage > *{ zoom:1 !important; }
     #stage .kind-tag{ margin-bottom:6px; }
-    /* A picture on the left, the answers stacked on the right. The tag, the
-       picture and the ✓ share one cell spanning every row, so the answers'
-       rows never push the picture down: the tag sits at the cell's top, the
-       ✓ at its bottom, and the picture's margins keep room for both. */
+    /* A picture on the left, the answers stacked on the right. The tag and the
+       picture share one cell spanning every row, so the answers' rows never
+       push the picture down: the tag sits at the cell's top and the picture's
+       top margin keeps room for it. */
     #stage:has(> .frame-wrap, > .sent-pics){
       display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-rows:repeat(6, auto);
       column-gap:18px; align-items:center; align-content:center;
     }
     #stage:has(> .frame-wrap, > .sent-pics) > *{ grid-column:2; }
     #stage:has(> .frame-wrap, > .sent-pics) > .kind-tag{ grid-column:1; grid-row:1 / -1; align-self:start; margin:0; }
-    #stage > .frame-wrap, #stage > .sent-pics{ grid-column:1; grid-row:1 / -1; align-self:center; margin:36px 0 38px; }
+    #stage > .frame-wrap, #stage > .sent-pics{ grid-column:1; grid-row:1 / -1; align-self:center; margin:36px 0 4px; }
     #stage > .kind-tag{ justify-self:center; }
     #stage .frame-wrap .poke-frame, #stage .frame-wrap .poke-frame.reading-frame{ width:132px; height:132px; }
     .reading-word{ min-height:44px; font-size:24px; margin-bottom:8px; }
@@ -2452,7 +2449,7 @@
     }
     #stage[data-kind="pattern"] > .kind-tag, #stage[data-kind="visual"] > .kind-tag, #stage[data-kind="alpha"] > .kind-tag{ grid-column:1 / -1; }
     /* Picture answers (Reverse Read & Choose, Who am I?): the word or clues
-       with the tag and the ✓ on the left, the pictures get the whole height. */
+       with the tag on the left, the pictures get the whole height. */
     #stage:has(> .reading-options-img){
       display:grid; grid-template-columns:minmax(140px, 30%) minmax(0,1fr); grid-template-rows:auto auto auto;
       column-gap:16px; align-items:center; align-content:center;
@@ -2460,14 +2457,12 @@
     #stage:has(> .reading-options-img) > *{ grid-column:1; }
     #stage:has(> .reading-options-img) > .kind-tag{ grid-row:1; align-self:end; }
     #stage:has(> .reading-options-img) > .reading-word, #stage:has(> .reading-options-img) > .riddle-text{ grid-row:2; margin:6px 0; }
-    #stage:has(> .reading-options-img) > .feedback{ grid-column:1; grid-row:3; align-self:start; }
     #stage > .reading-options-img, #stage[data-kind="riddle"] > .reading-options-img{ grid-column:2; grid-row:1 / span 3; margin:0; justify-self:center; }
     #stage[data-kind="riddle"]:has(> .reading-options-img){ grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
     #stage[data-kind="riddle"] > .riddle-text{ font-size:20px; }
-    #stage > .feedback{ grid-column:1 / -1; }
-    /* With a picture on the left, the ✓ goes under it: the answers' column is
-       the tall one, and the picture's column has room to spare. */
-    #stage:has(> .frame-wrap, > .sent-pics) > .feedback{ grid-column:1; grid-row:1 / -1; align-self:end; margin:0; }
+    /* The ✓ pill stays over the whole card, not inside a grid cell (an
+       absolutely placed grid item would centre on its own cell). */
+    #stage.card > .feedback.feedback{ grid-column:auto; grid-row:auto; }
     #stage[data-kind="pattern"] > #patternList{ grid-column:1; grid-row:2; }
     #stage[data-kind="pattern"] > #patternChoiceWrap{ grid-column:2; grid-row:2; }
     #stage[data-kind="visual"] > .visual-eq{ grid-column:1; grid-row:2; }
@@ -2614,6 +2609,12 @@
           <span class="hint">The day's goal on the home screen — any mix of English and Maths. Reaching it keeps the streak going.</span>
         </label>
         <input type="number" id="roundsGoal" min="1" max="20" value="2">
+      </div>
+      <div class="field">
+        <label for="chimeOn">Chime on right answers
+          <span class="hint">A short marimba note that climbs with each question of the round</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="chimeOn" checked><span class="slider"></span></label>
       </div>
       <div class="field">
         <label for="mistakeAllowance">Mistakes allowed
@@ -2893,7 +2894,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 118;
+const APP_BUILD = 119;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -3984,7 +3985,8 @@ function saveSettings(){
     wordPairsOn: $("#wordPairsOn").checked,
     mathPairsOn: $("#mathPairsOn").checked,
     mathOn: $("#mathOn").checked,
-    visualOn: $("#visualOn").checked
+    visualOn: $("#visualOn").checked,
+    chimeOn: $("#chimeOn").checked
   };
   try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }catch(e){}
 }
@@ -4006,6 +4008,7 @@ function loadSettings(){
   if(saved.mathPairsOn!=null) $("#mathPairsOn").checked = saved.mathPairsOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
+  if(saved.chimeOn!=null) $("#chimeOn").checked = saved.chimeOn;
 }
 
 /* ---------------- daily play streak ---------------- */
@@ -4197,6 +4200,11 @@ const UI_ICONS = {
 };
 /* A feedback line: one drawn mark and a few words, never the emoji they replace. */
 function clearFeedback(fb){ if(fb){ fb.className = "feedback"; fb.textContent = ""; } }
+/* A right answer says so one way in every mode: a white "✓ Yes!" pill over the
+   card (CSS, .feedback.good). It used to be a line under the answers in some
+   modes, "Yes! It's Pikachu!" in others and a big green tick in the rest, and the
+   line kept an empty band under every question while it waited. */
+function showYes(fb){ if(!fb) return; fb.className = "feedback good"; fb.innerHTML = feedbackHTML("good", "Yes!"); }
 function feedbackHTML(kind, text){
   return `<span class="fb-icon">${kind === "good" ? UI_ICONS.tick : UI_ICONS.cross}</span>${text}`;
 }
@@ -4490,8 +4498,8 @@ function renderProblem(){
 /* The picture gives way first (DESIGN, Layout). A question that would scroll —
    a two-word spelling at level 25 on a 360×640 phone ran 26px over — has its
    picture frame stepped down until it fits, to 96px; then the answers shrink;
-   then the picture again, to 72px. The feedback line holds its room while empty
-   (stageOverflow), so the answer's arrival doesn't push the card off the screen. */
+   then the picture again, to 72px. The ✓ is a pill over the card and takes no
+   room, so the answer's arrival can't push the card off the screen. */
 function fitQuestionFrame(){
   const frame = $("#stage .poke-frame:not(.compact)");
   if(!frame || $("#play").classList.contains("hidden")) return;
@@ -5647,8 +5655,7 @@ function checkSpell(){
   if(guess === spellState.target.join("")){
     correct++;
     if(spellState.p.track && spellState.p.isFrontier) recordAttempt(spellState.p.track, spotless(spellState.p));
-    fb.className="feedback good";
-    fb.innerHTML = feedbackHTML("good", `Yes! It's ${cap(spellState.name)}!`);
+    showYes(fb);
     const word = spellState.name;
     lockAndAdvance(done => blendBack(word, done));
   } else {
@@ -6033,8 +6040,7 @@ function finishMissingLetter(){
   const p = missingState.p;
   if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
   const fb = $("#feedback");
-  fb.className="feedback good";
-  fb.innerHTML = feedbackHTML("good", `Yes! It's ${cap(missingState.name)}!`);
+  showYes(fb);
   // Decoys outlive the answer, and the blend-back holds the screen for about a
   // second — long enough for a stray tap to be told off about a finished word.
   $("#missingTiles").querySelectorAll(".tile").forEach(t => t.classList.add("used"));
@@ -6538,8 +6544,7 @@ function finishSentence(){
   const p = st.p;
   if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
   const fb = $("#feedback");
-  fb.className = "feedback good";
-  fb.innerHTML = feedbackHTML("good", "Yes!");
+  showYes(fb);
   st.tiles.forEach(retireSentenceTile);
   // The whole sentence, read back as the child built it.
   const said = p.words.map((w, i) => i in st.filled ? st.filled[i] : w)
@@ -6900,8 +6905,7 @@ function finishRiddle(){
   correct++;
   if(p.track && p.isFrontier) recordAttempt(p.track, spotless(p));
   const fb = $("#feedback");
-  fb.className = "feedback good";
-  fb.innerHTML = feedbackHTML("good", "Yes!");
+  showYes(fb);
   if(p.mode === "whoami") lockAndAdvance(done => blendBack(p.f.name, done));
   else if(p.mode === "fixit"){
     const said = p.fixed.map(w => isPokemonName(w) ? sayAs(w) : w).join(" ");
@@ -7133,8 +7137,7 @@ function finishPairs(last){
   correct++;
   if(st.p.track && st.p.isFrontier) recordAttempt(st.p.track, spotless(st.p));
   const fb = $("#feedback");
-  fb.className = "feedback good";
-  fb.innerHTML = feedbackHTML("good", "Yes!");
+  showYes(fb);
   if(st.p.sub === "word") lockAndAdvance(done => blendBack(last.word, done));
   else lockAndAdvance();
 }
@@ -7257,8 +7260,7 @@ function renderMath(p){
       return false;
     }
     btn.classList.add("picked");
-    $("#mathChoices").classList.add("done");
-    fb.className="feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
+    showYes(fb);
     markMathDone();
     return true;
   });
@@ -7356,8 +7358,8 @@ function groupHTML(n, iconHTML){
   return `<div class="visual-group" style="--gcols:${cols}">${iconHTML.repeat(n)}</div>`;
 }
 /* How far the question card runs past the bottom of the screen, counting the
-   page's bottom padding. The feedback line keeps its height while empty, so the
-   ✓ arriving moves nothing and needs no room of its own. The page's scroll
+   page's bottom padding. The ✓ is a pill over the card, so it needs no room of
+   its own. The page's scroll
    height can't say this: the page is never shorter than the screen, so a
    reserve added to it read as "over" on every question and shrank every
    picture it was given. */
@@ -7460,8 +7462,7 @@ function renderVisual(p){
       return false;
     }
     btn.classList.add("picked");
-    $("#visualChoices").classList.add("done");
-    fb.className="feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
+    showYes(fb);
     markVisualDone();
     return true;
   });
@@ -7528,7 +7529,7 @@ function layoutReadingTiles(){
   const n = g.children.length, gap = 12, MAXW = 200;
   g.style.width = "100%";                                // the column's width, in a grid cell too
   const W = g.clientWidth, r = g.getBoundingClientRect(), cr = card.getBoundingClientRect();
-  const below = (cr.bottom - r.bottom) / z;              // feedback line and card padding, as rendered
+  const below = (cr.bottom - r.bottom) / z;              // card padding, as rendered
   let availH = (innerHeight - r.top) / z - below - 16;
   // Beside the word (a landscape phone), the pictures have the card's whole height.
   const cs = getComputedStyle(card);
@@ -7706,6 +7707,7 @@ function pickReading(opt, btn){
     readingState.done = true;
     correct++;
     btn.classList.add("correct");
+    showYes($("#feedback"));
     if(readingState.p.track && readingState.p.isFrontier) recordAttempt(readingState.p.track, spotless(readingState.p));
     /* Say the word once it's been found, and hold the round open until it
        finishes — the same trail Spelling leaves. This doesn't break the rule that
@@ -7805,8 +7807,7 @@ function pickAlphabet(opt, btn){
   st.at++;
   if(st.at < st.p.blanks.length){ openAlphaGap(); return; }
   st.done = true;
-  $("#alphaChoiceWrap").innerHTML = "";
-  fb.className = "feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
+  showYes(fb);
   markAlphabetDone();
 }
 
@@ -7919,8 +7920,7 @@ function openPatternRow(){
     slot.classList.add("pattern-correct");
     st.at++;
     if(st.at < slots.length){ openPatternRow(); return true; }
-    wrap.innerHTML = "";
-    fb.className="feedback good big-check"; fb.innerHTML = UI_ICONS.tick;
+    showYes(fb);
     markPatternDone();
     return true;
   });
@@ -7936,20 +7936,73 @@ function markPatternDone(){
 
 /* ---------------- shared advance ---------------- */
 /* Every mode advances on its own; nothing waits for a Next tap. Maths used to,
-   and the button had nothing to offer: `.choices.done` hides the whole grid the
-   moment an answer is right, so the screen was a question still reading "= ?", a
-   checkmark, and a button with one possible action. A tap that buys nothing.
+   and the button had nothing to offer: once an answer is right the screen is a
+   question, its answer and a ✓, and a button with one possible action is a tap
+   that buys nothing.
 
    Freeze the controls, then move on. `waitFor` lets a caller hold the round open
    until something finishes — the word trails use it so a word is spoken in full
    before the next question replaces it. Maths has no such payload and keeps the
    fixed beat. */
+/* ---------------- the chime ----------------
+   One short marimba chime per question that counts, climbing a pentatonic
+   ladder as the round goes, so a right answer sounds a little higher each time
+   and the last one of the round plays a small flourish at the top. Pentatonic,
+   so no step is ever a sour one. Made in the browser, no sound files; every
+   chime follows a tap, which is what lets a phone play it. Nothing plays on a
+   wrong tap or on a question the answer was shown for. */
+const CHIME_LADDER = [523.3, 587.3, 659.3, 784, 880, 1046.5, 1174.7, 1318.5, 1568, 1760, 2093]; // C5 … C7, C-major pentatonic
+let chimeCtx = null;
+function chimeAudio(){
+  try{
+    if(!chimeCtx) chimeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(chimeCtx.state === "suspended") chimeCtx.resume();
+    return chimeCtx;
+  }catch(e){ return null; }
+}
+/* A marimba note: a warm fundamental with 4× and 10× partials that die fast. */
+function marimbaNote(c, f, t0, dur, gain){
+  const out = c.createGain();
+  out.gain.setValueAtTime(0.0001, t0);
+  out.gain.exponentialRampToValueAtTime(gain, t0 + 0.008);
+  out.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  out.connect(c.destination);
+  [[1, 1], [4, 0.18], [10, 0.04]].forEach(([mult, g]) => {
+    const o = c.createOscillator(), og = c.createGain();
+    o.type = "sine"; o.frequency.value = f * mult; og.gain.value = g;
+    o.connect(og); og.connect(out); o.start(t0); o.stop(t0 + dur + 0.05);
+  });
+}
+/* Question k of n (k counted from 1). The questions before the last are spread
+   over the ladder's nine steps — a round of 10 climbs one step each, never the
+   same note twice — and the last plays the flourish at the top, whatever the
+   round's length. */
+function playChime(k, n){
+  if(!$("#chimeOn") || !$("#chimeOn").checked) return;
+  const c = chimeAudio();
+  if(!c) return;
+  const top = CHIME_LADDER.length - 3;                   // leave room for the rise above it
+  const d = n > 2 ? Math.round((Math.min(k, n - 1) - 1) / (n - 2) * top) : 0;
+  const t = c.currentTime + 0.02, gain = 0.24, L = CHIME_LADDER;
+  if(k >= n){
+    // The round's last: three notes up to the top, the last one left to ring.
+    [L[top], L[top + 1], L[top + 2]].forEach((f, i) => marimbaNote(c, f, t + i * 0.08, i === 2 ? 0.55 : 0.22, gain));
+  } else {
+    marimbaNote(c, L[d], t, 0.22, gain);
+    marimbaNote(c, L[d + 2], t + 0.09, 0.35, gain);
+  }
+}
+
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
   // A taken answer shows green, never green and the help light at once.
   document.querySelectorAll("#stage .answer-lit").forEach(e => e.classList.remove("answer-lit"));
-  // The reward lands with the right answer, not with the next question.
-  if(countsForRound(queue[idx])) updateProgress(false, true);
+  // The reward lands with the right answer, not with the next question: the
+  // step blinks on and the chime climbs one note.
+  if(countsForRound(queue[idx])){
+    updateProgress(false, true);
+    playChime(roundCredits + 1, roundTarget());
+  }
   const go = ()=>{
     spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
     next();

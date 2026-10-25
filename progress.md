@@ -961,6 +961,36 @@ Build 117.
 
 Build 118.
 
+## Phase 102 — a step that blinks, one "✓ Yes!", a chime that climbs
+
+**Blink, not fill.** The owner: the sweep implied progress within a step, but a step is binary. It now blinks on: bright with a glow, off, on again, settled by 0.5s. Sampled at 20/120/200/300/420/560ms: on, off, on, on, settling, settled. No background fill is involved. With reduced motion it simply turns green.
+
+**One "✓ Yes!".** Three styles had grown up:
+- "Yes! It's Pikachu!" in Spelling;
+- "✓ Yes!" in Sentences, Riddles and Pairs;
+- a big green tick in Maths, Reading, Patterns and Alphabet.
+
+Reading Choose often showed nothing. Every mode now calls one `showYes()`, and the pill sits over the card. Two things went with the old line:
+- **The empty band under every question.** It existed only to keep room for the line, and it was most of the owner's "poor spacing" in Sentences. A card now ends with its answers plus padding.
+- **Maths, Visual, Pattern and Alphabet banks vanishing on a right answer.** That was only to lift the old ✓ into view, and it made a 390×844 maths card jump from 440px to 308px. The bank now stays, with the right number green and the rest greyed.
+
+Fit is unchanged at every size.
+
+**The chime.** The owner wanted a feel-good sound on every right answer.
+- **Choosing it:** listened to on a test page of 7 candidates (3 bells, 4 inspired by Japanese station chimes). The owner picked the marimba and asked for it to climb through the round.
+- **What it does:**
+  - one chime per counted question, on the same moment as the step's blink;
+  - questions 1–9 of a 10-question round each play a two-note rise one pentatonic step higher (C5 → G6), and the 10th plays a G6–A6–C7 flourish;
+  - other round lengths spread over the same nine steps, so the last question is always the flourish.
+- **Logged with a stubbed AudioContext:**
+  - a 10-question round climbs nine distinct steps, then the flourish;
+  - a counted right answer schedules 6 oscillators (two notes × three partials);
+  - a helped question, the switch off, and a wrong tap schedule 0.
+- **Real audio:** loads with no console errors.
+- **Settings:** "Chime on right answers" (on), saved like the other settings.
+
+**Checks.** No scroll at 360×640, 390×844, 1280×800 or 640×360. Smoke, the 1,800-question answer loop, and the reading, pairs and transition checks pass. Duplicate-function grep is empty. Build 119.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
