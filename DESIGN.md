@@ -145,8 +145,7 @@ a two-word name breaks only between words.
 - **A matching board keeps its rows.** Pairs are laid out row by row, so a
   long word makes its row taller instead of putting the columns out of step;
   a matched pair stays in place, green and faded. A board keeps no empty
-  line under it for the ✓: the ✓ arrives as a white pill over the finished
-  board.
+  line under it for the ✓, like every question.
 - **Landscape phones have their own layouts** (landscape and under 500px
   tall): home splits like the desktop, a question card puts its picture or
   prompt on the left and its answers on the right, the meadow strip shrinks
@@ -161,17 +160,26 @@ a two-word name breaks only between words.
 - **Questions leave left, arrive right.** The card's contents slide out (160ms)
   and the next question's slide in (200ms); the white card itself never moves.
   The slide is taken out of the wait before it, so the pace doesn't change.
-- **The reward comes before the change.** A step on the round bar fills the
-  moment the answer is right, not when the next question appears: green sweeps
-  in from the left (0.35s), then the step bounces once. A colour fade on a pill
-  that thin read as the step switching on.
+- **The reward comes before the change.** A step on the round bar **blinks
+  on** the moment the answer is right, not when the next question appears: on
+  bright with a glow, off for a moment, on again, then it settles. Hard
+  switches, no fill — a step is earned or it isn't, and a fill reads as
+  progress within the step.
+- **A right answer says "✓ Yes!" one way, everywhere:** a white pill over the
+  middle of the card, with a pop. It takes no room, so no question keeps an
+  empty band under its answers, and the answers stay where they are (the right
+  one green, the rest greyed).
+- **A right answer chimes, and the chime climbs.** One short marimba chime per
+  question that counts, a step higher up a pentatonic ladder each time, with a
+  small flourish on the round's last question. Never on a wrong tap or a
+  question whose answer was shown. A Settings switch turns it off.
 - **A picture is never shown blank.** The next question's pictures load while
   the current one is being answered; a question waits, unseen, at most 0.4s for
   any that haven't arrived.
 - **Something hiding moves.** The grass's **!** ducks down and pops up
   somewhere else every 2.4s; it never reappears near where it just was.
 - **Reduced motion keeps the fades, drops the slides and pops.** The **!**
-  stands still, and an earned step turns green without the sweep.
+  stands still, and an earned step turns green without the blink.
 
 ## How to work
 
