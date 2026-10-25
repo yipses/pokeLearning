@@ -198,13 +198,20 @@
     content:""; position:absolute; height:24px; width:24px; left:4px; top:4px;
     background:var(--white); border-radius:50%; transition:.18s; box-shadow:inset 0 0 0 2px var(--line-strong);
   }
-  .switch input:checked + .slider{ background:var(--primary); box-shadow:none; }
+  .switch input:checked + .slider{ background:var(--sky-700); box-shadow:none; }
   .switch input:checked + .slider::before{ box-shadow:none; }
   .switch input:focus-visible + .slider{ outline:3px solid var(--focus); outline-offset:2px; }
   .switch input:checked + .slider::before{ transform:translateX(26px); }
 
   .op-max{ display:flex; align-items:center; gap:8px; font-size:.9rem; color:var(--ink-soft); }
-  .op-max input{ width:78px; }
+  .op-max input{ width:80px; }
+  .field input[type="number"]{ width:80px; }
+  .settings-subject{ margin:22px 4px 10px; font-size:14px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+  details.advanced summary{ list-style:none; cursor:pointer; }
+  details.advanced summary::-webkit-details-marker{ display:none; }
+  details.advanced summary h2{ display:inline; }
+  details.advanced summary::after{ content:" ›"; font-weight:900; color:var(--ink-soft); }
+  details.advanced[open] summary::after{ content:" ⌄"; }
 
   .streak-row label{ font-weight:700; }
   .streak-stars{ font-size:1.25rem; letter-spacing:3px; }
@@ -274,8 +281,10 @@
      text at this size, so they swap to dark text. */
   .kind-spell{ background:var(--sky-700); }
   .kind-math{ background:var(--berry-600); }
-  .kind-pattern{ background:var(--sun-500); color:var(--sun-800); }
-  .kind-visual{ background:var(--leaf-600); }
+  /* Every Maths mode wears Maths berry: amber is "you are here" and green is
+     "correct", and the pattern's amber tag sat right above its amber cursor. */
+  .kind-pattern{ background:var(--berry-600); }
+  .kind-visual{ background:var(--berry-600); }
   .kind-reading{ background:var(--violet-600); }
   .kind-alpha{ background:var(--teal-600); }
   .kind-sentence{ background:var(--bark-700); }
@@ -551,14 +560,14 @@
   .battle-frame img{ width:82%; height:82%; object-fit:contain; filter:drop-shadow(0 5px 7px rgba(0,0,0,.15)); }
   .battle-vs{
     width:52px; height:52px; border-radius:50%; flex:0 0 auto;
-    background:var(--sun-500); color:var(--sun-800);
+    background:var(--ink); color:var(--white);
     display:grid; place-items:center; font-weight:900; font-size:1.05rem;
   }
   .battle-name{ font-weight:800; font-size:1.05rem; color:var(--ink); text-transform:capitalize; display:flex; align-items:center; gap:6px; }
   .battle-types{ display:flex; gap:5px; justify-content:center; flex-wrap:wrap; }
   .type-badge{
     font-size:.68rem; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:.03em;
-    padding:2px 9px; border-radius:999px; box-shadow:0 2px 0 rgba(0,0,0,.12);
+    padding:2px 9px; border-radius:999px;
   }
   .type-normal{background:#a8a878} .type-fire{background:#f08030} .type-water{background:#6890f0}
   .type-electric{background:#e8c020;color:#3b2f00} .type-grass{background:#5a9e42} .type-ice{background:#59c6c6}
@@ -586,11 +595,31 @@
     80%{ transform:translateX(4px) rotate(2deg); }
   }
   .battle-arena.shaking .battle-frame{ animation: battleShake .5s ease-in-out infinite; }
+  /* Picking: the two Pokémon are the buttons, and bob gently to say so. */
+  .battle-pick{ padding:0; border:0; cursor:pointer; font:inherit; }
+  .battle-arena.picking .battle-pick{ animation:battleBob 1.6s ease-in-out infinite; }
+  .battle-arena.picking #fighterB .battle-pick{ animation-delay:.8s; }
+  .battle-pick:active{ transform:translateY(3px) scale(.97); }
+  @keyframes battleBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+  /* The one you picked wears the amber "you" ring through the fight. */
+  .battle-fighter.picked .battle-frame{ box-shadow:0 0 0 5px var(--sun-500), inset 0 0 0 5px var(--surface); }
+  .battle-hp{ width:min(120px, 90%); height:10px; border-radius:99px; background:rgba(255,255,255,.75); box-shadow:inset 0 0 0 2px rgba(46,43,36,.15); overflow:hidden; }
+  .battle-hp i{ display:block; width:100%; height:100%; border-radius:99px; background:var(--leaf-500); transition:width .35s ease; }
+  .battle-fighter.lunge-right{ animation:lungeR .5s ease; }
+  .battle-fighter.lunge-left{ animation:lungeL .5s ease; }
+  @keyframes lungeR{ 40%{ transform:translateX(28px) rotate(4deg); } }
+  @keyframes lungeL{ 40%{ transform:translateX(-28px) rotate(-4deg); } }
+  .battle-fighter.hit .battle-frame{ animation:battleShake .3s ease-in-out; }
+  .battle-log{ font-size:13px; color:var(--ink-soft); }
+  .battle-verdict{ display:inline-grid; place-items:center; width:40px; height:40px; border-radius:50%; vertical-align:middle; margin-right:8px; color:#fff; }
+  .battle-verdict svg{ width:24px; height:24px; }
+  .battle-result.correct .battle-verdict{ background:var(--leaf-600); }
+  .battle-result.wrong .battle-verdict{ background:var(--berry-600); }
 
   @keyframes battleWin{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
   .battle-fighter.winner .battle-frame{
     animation: battleWin .6s ease .1s 2;
-    box-shadow:0 0 0 6px var(--sun-500), inset 0 0 0 5px var(--surface);
+    box-shadow:0 0 0 6px rgba(255,255,255,.95), 0 0 22px 8px rgba(255,255,255,.7), inset 0 0 0 5px var(--surface);
   }
   .battle-fighter.loser .battle-frame{ filter:grayscale(75%); opacity:.5; transform:translateY(10px) rotate(-6deg); transition:all .5s ease; }
 
@@ -603,7 +632,8 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p{ animation:none; }
+    .battle-arena.shaking .battle-frame, .battle-fighter.winner .battle-frame, .battle-log p,
+    .battle-arena.picking .battle-pick, .battle-fighter.lunge-right, .battle-fighter.lunge-left, .battle-fighter.hit .battle-frame{ animation:none; }
     .grass-strip.shaking, .grass-strip.shaking::after, .catch-frame, .modal-overlay, .dex-new{ animation:none; }
     .confetti-layer, .catch-shine{ display:none; }
     .catch-card.celebrating #catchOkBtn{ animation:none; }
@@ -680,6 +710,13 @@
      nearly the card's width — so four groups became four rows. Grouped layouts
      get narrower boxes and smaller icons, sized so a group still sits on one
      line and two groups fit side by side. */
+  .visual-groups.grouped-set{ gap:8px; }
+  .visual-group{
+    display:inline-grid; grid-template-columns:repeat(var(--gcols), auto); gap:3px; padding:6px;
+    border:2px dashed #b9ae95; border-radius:var(--radius-sm); background:var(--surface);
+  }
+  .visual-group .visual-icon{ width:var(--gi, 34px); height:var(--gi, 34px); }
+  .visual-groups.grouped-set .visual-op{ font-size:1.2rem; }
   .visual-groups.grouped{ gap:6px; }
   /* Wide enough for five icons on one line — 5x20 + 4 gaps + padding + the 3px
      border — because a group of five shown as four-and-one is not a group of
@@ -733,9 +770,7 @@
      carries its own dimensions and the icon inside it is absolutely positioned,
      so missing it left subtraction's crossed ones at full size. */
   .visual-groups .ones-row .visual-icon,
-  .visual-groups .ones-row .visual-icon-wrap{ width:30px; height:30px; }
-  .visual-groups.packed .ones-row .visual-icon,
-  .visual-groups.packed .ones-row .visual-icon-wrap{ width:28px; height:28px; }
+  .visual-groups .ones-row .visual-icon-wrap{ width:var(--one); height:var(--one); }
   .visual-groups .ten-box .visual-icon,
   .visual-groups .ten-box .visual-icon-wrap{ width:22px; height:22px; }
   .visual-groups .ten-box .visual-icon-wrap .cross::before,
@@ -749,10 +784,6 @@
     .visual-groups{ --one:27px; --onegap:4px; }
     .visual-groups.packed{ --one:25px; }
     .tens-row, .ones-row{ gap:4px; }
-    .visual-groups .ones-row .visual-icon,
-    .visual-groups .ones-row .visual-icon-wrap{ width:27px; height:27px; }
-    .visual-groups.packed .ones-row .visual-icon,
-    .visual-groups.packed .ones-row .visual-icon-wrap{ width:25px; height:25px; }
     .visual-groups .ten-box .visual-icon,
     .visual-groups .ten-box .visual-icon-wrap{ width:19px; height:19px; }
     .visual-groups .ten-box .visual-icon-wrap .cross::before,
@@ -1131,8 +1162,8 @@
   .dex-tab:active{ transform:translateY(2px); }
   .dex-tab.done{ border-color:var(--leaf-600); color:var(--leaf-700); }
   .dex-tab.on{
-    color:var(--white); border-color:var(--primary);
-    background:var(--primary);
+    color:var(--white); border-color:var(--ink);
+    background:var(--ink);
   }
   .dex-gen-section{ margin:0 0 26px; }
   .dex-gen-title{
@@ -1152,6 +1183,9 @@
     border:2px solid var(--line); padding:10px 6px; text-align:center;
     transition: transform .06s, border-color .15s, box-shadow .15s;
   }
+  /* Top-aligned, so a cell without a name (not caught yet) keeps its number on
+     the same line as its caught neighbours'. A button centres its content. */
+  .dex-cell{ display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
   .dex-cell:hover{ border-color:var(--sky-600); }
   .dex-cell:active{ transform:translateY(2px); }
   /* Legendaries and mythicals get a gold treatment on the cell and a chip in the
@@ -1229,7 +1263,11 @@
   #dashboardGrid{ display:flex; flex-direction:column; gap:18px; }
   .dash-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; }
   .dash-track{ font-weight:800; font-size:1.1rem; }
-  .dash-level{ color:var(--ink-soft); font-size:.9rem; margin-top:2px; }
+  .dash-level{ color:var(--ink); font-size:1rem; font-weight:800; margin-top:2px; }
+  .dash-what{ display:block; color:var(--ink-soft); font-size:.8rem; font-weight:600; margin-top:2px; }
+  .dash-bar{ display:block; height:8px; margin:10px 0 6px; border-radius:99px; background:var(--surface-sunken); overflow:hidden; }
+  .dash-bar i{ display:block; height:100%; border-radius:99px; }
+  .dash-summary{ color:var(--ink-soft); font-size:.88rem; font-weight:700; }
   .dash-days{ color:var(--ink-soft); font-size:.85rem; text-align:right; white-space:nowrap; }
   .window-row{ display:flex; align-items:center; gap:10px; margin:8px 0; }
   .window-label{ width:56px; flex:0 0 auto; font-weight:700; font-size:.85rem; color:var(--ink-soft); }
@@ -1250,7 +1288,7 @@
      row is a <button> and a locked one a <div>, so :last-of-type counts per element
      type and stripped the border from the last button rather than the last row —
      and a bottom border would trail off the end of the card besides. */
-  .track-row{ display:flex; align-items:center; gap:10px; width:100%; padding:10px 2px;
+  .track-row{ display:flex; align-items:center; gap:10px; width:100%; padding:10px 2px; min-height:44px;
               background:none; border:0; border-top:1px solid var(--line);
               font:inherit; color:inherit; text-align:left; cursor:pointer; }
   .track-row.first{ border-top:0; }
@@ -1269,13 +1307,22 @@
   .days-chart{ width:100%; height:auto; overflow:visible; }
   .day-base{ fill:var(--cream-2); }
   .day-bar{ fill:var(--sky-deep); }
-  .day-bar.met{ fill:var(--leaf); }
+  .day-bar.english{ fill:var(--sky-700); }
+  .day-bar.maths{ fill:var(--berry-600); }
+  .day-bar.old{ fill:#b3aa97; }
+  .day-met{ font-size:11px; font-weight:900; fill:var(--leaf-600); }
   .day-val{ font-size:9px; font-weight:800; fill:var(--ink); }
   .axis-label.today{ font-weight:800; fill:var(--ink); }
   .grid-line{ stroke:var(--cream-2); stroke-width:1; }
   .axis-label{ font-size:8px; fill:var(--ink-soft); }
   .threshold-line{ stroke:var(--sun-deep); stroke-width:1; stroke-dasharray:4 3; opacity:.6; }
-  .threshold-label{ font-size:7px; fill:var(--ink-soft); }
+  .days-key{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 14px; margin-top:8px; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .days-key span{ display:inline-flex; align-items:center; gap:6px; }
+  .days-key .k{ display:inline-block; width:12px; height:12px; border-radius:3px; }
+  .days-key .k.english{ background:var(--sky-700); }
+  .days-key .k.maths{ background:var(--berry-600); }
+  .days-key .k.goal{ width:16px; height:0; border-radius:0; border-top:2px dashed var(--sun-deep); opacity:.8; }
+  .days-key .k-met{ color:var(--leaf-600); font-weight:900; }
 
   /* ---------- Results ---------- */
   .result{ text-align:center; }
@@ -1440,6 +1487,12 @@
   .showcase-pick img{
     position:relative; height:100%; max-height:260px; width:auto; max-width:min(70vw, 280px); object-fit:contain;
   }
+  /* A tablet held upright keeps the phone layout but has far more meadow: the
+     260px cap left Gengar 200px tall under 450px of sky at 820×1180. */
+  @media (min-width:600px) and (max-width:899px) and (min-height:900px){
+    .showcase-pick, .showcase-pick img{ max-height:min(42vh, 480px); }
+    .showcase-pick img{ max-width:min(70vw, 520px); }
+  }
   /* A soft ground shadow under every Pokémon, as wide as what is drawn. It
      plants the picture on the hill; a flying one hovers a little above it. */
   .showcase-pick::before, .is-catch .catch-frame::after{
@@ -1467,11 +1520,13 @@
   }
   .showcase .showcase-dex:hover{ background:#f1e9d4; }
   .showcase-dex .hud-icon{ width:18px; height:18px; color:var(--berry-600); }
-  .showcase-dex-text{ display:block; white-space:nowrap; }
+  .showcase-dex-text{ display:block; white-space:nowrap; min-width:0; }
   .showcase-dex-text b{ color:var(--ink); font-weight:900; }
   .showcase .showcase-dex .level-bar{ display:block; flex:0 0 60px; width:60px; height:6px; margin:0; }
   .showcase-dex-go{ margin-left:auto; color:var(--berry-700); font-weight:900; white-space:nowrap; }
   @media (max-width:400px){ .showcase .showcase-dex .level-bar{ display:none; } }
+  /* At 360 wide "12 of 147" and "Pokédex ›" ran together; the arrow alone says it. */
+  @media (max-width:380px){ .showcase-dex-go .go-word{ display:none; } }
 
   .levels-card{ margin:0; padding:16px 2px 0; background:transparent; box-shadow:none; border-radius:0; }
   /* Each trail is a small card: on a wide screen five lines of text on paper
@@ -1549,9 +1604,12 @@
      hopBang() picks a new spot, well away from the last one. */
   .grass-strip.shaking::after{
     content:"!"; position:absolute; left:var(--bang-x, 78%); top:-26px; margin-left:-15px;
-    width:30px; height:30px; border-radius:50%; display:grid; place-items:center;
+    width:30px; height:30px; display:grid; place-items:center;
+    /* A speech puff — round, with its tail corner toward the grass — not a disc
+       with a drop edge, which read as a button. */
+    border-radius:50% 50% 50% 6px;
     background:#fff; color:var(--leaf-700); font-weight:900; font-size:18px;
-    box-shadow:0 3px 0 rgba(35,102,58,.25);
+    box-shadow:0 0 0 2px rgba(35,102,58,.18);
     animation:bangHop 2.4s ease-in-out infinite;
   }
   @keyframes bangHop{
@@ -1572,6 +1630,9 @@
   }
   /* Room to spare becomes a bigger question, not an emptier one: one uniform
      scale on the card's contents, stepped by the space the screen really has. */
+  /* A tall phone (390×844) was left out at 440px wide and showed its question
+     in the top two-thirds of the screen; it now takes a smaller step up. */
+  @media (min-width:380px) and (max-width:439px) and (min-height:800px){ #stage > *{ zoom:1.08; } }
   @media (min-width:440px) and (min-height:820px){ #stage > *{ zoom:1.15; } }
   @media (min-width:700px) and (min-height:960px){ #stage > *{ zoom:1.35; } }
   @media (max-height:700px){
@@ -1671,9 +1732,10 @@
   .reading-options:not(.reading-options-img) > .reading-opt{
     flex:0 0 calc((100% - 12px) / 2); min-height:56px; font-size:20px; font-weight:800; border-radius:16px; position:relative;
   }
-  /* Under 900px tall the question is zoomed 1.15× from 440 wide; two-line
-     word buttons then pushed it 24–58px past the screen (seen at 470×830). */
-  @media (max-height:900px){ #stage .frame-wrap .poke-frame.reading-frame{ width:148px; height:148px; } }
+  /* The frame steps down under 780px tall. Between 780 and 900 it stays at
+     180; a question that would then scroll (two-line word buttons at 470×830)
+     is caught by fitQuestionFrame, which shrinks the frame first. */
+  @media (max-height:780px){ #stage .frame-wrap .poke-frame.reading-frame{ width:148px; height:148px; } }
   @media (max-height:700px){
     #stage .frame-wrap .poke-frame.reading-frame{ width:116px; height:116px; }
     .reading-options:not(.reading-options-img){ gap:8px; margin-top:10px; }
@@ -1797,7 +1859,24 @@
   .riddle-say svg{ width:22px; height:22px; display:block; }
   .riddle-say::after{ content:""; position:absolute; inset:-2px; border-radius:50%; }
   #riddleTiles .tile.word, #riddleLine .tile.word{ height:56px; }
-  .tile.word.riddle-yn{ min-width:120px; }
+  /* Fix it, step one: a sentence on a paper strip, not a row of answer tiles. */
+  #riddleLine.fix-strip{ align-items:center; padding:10px 12px; border-radius:var(--radius-sm); background:var(--surface-sunken); }
+  #stage[data-kind="riddle"]:not([data-step="fix"]) #riddleLine .fix-word{
+    background:transparent; border:0; box-shadow:none; border-radius:6px; padding:0 4px; min-width:44px;
+    text-decoration:underline dotted 3px var(--line-strong); text-underline-offset:6px;
+  }
+  .fix-glass{ display:inline-grid; place-items:center; width:30px; height:30px; color:var(--ink-soft); }
+  .fix-glass svg{ width:24px; height:24px; }
+  #riddleLine.nudge .fix-word{ animation:fixNudge .7s ease-in-out; }
+  #riddleLine.nudge .fix-word:nth-of-type(2n){ animation-delay:.08s; }
+  @keyframes fixNudge{ 25%{ transform:translateY(-4px) rotate(-3deg); } 60%{ transform:translateY(0) rotate(2deg); } }
+  @media (prefers-reduced-motion: reduce){ #riddleLine.nudge .fix-word{ animation:none; } }
+  .tile.word.riddle-yn{ min-width:120px; gap:8px; }
+  .yn-icon{ display:inline-grid; place-items:center; width:24px; height:24px; }
+  .yn-icon svg{ width:22px; height:22px; }
+  .yn-icon.yes{ color:var(--leaf-700); }
+  .yn-icon.no{ color:var(--berry-700); }
+  .btn.icon-btn{ display:flex; align-items:center; justify-content:center; gap:10px; }
   .tile.word.riddle-right{ border-color:var(--leaf-700); background:var(--leaf-100); color:var(--leaf-700); }
   .tile.word.riddle-wrong{ opacity:.4; }
   #stage[data-kind="riddle"] .reading-options-img{ margin-top:16px; }
@@ -1856,7 +1935,9 @@
   .subj-btn .s-title .action-icon{ width:18px; height:18px; }
   .subj-btn .s-meta{ display:flex; align-items:center; gap:5px; font-size:14px; font-weight:800; }
   .subj-btn .s-meta svg{ width:14px; height:14px; }
-  .home-actions .btn.battle-mini{ grid-column:1 / -1; min-height:48px; font-size:16px; }
+  /* Battle is the side game: a quiet white button in Battle's own berry, under
+     the two subjects, so the screen's forward actions stay the green ones. */
+  .home-actions .btn.battle-mini{ grid-column:1 / -1; min-height:48px; font-size:16px; color:var(--berry-700); }
   @media (max-height:700px){
     .home-actions .btn.subj-btn{ min-height:64px; }
     .home-actions .btn.battle-mini{ min-height:44px; }
@@ -1902,12 +1983,12 @@
      steps back where it stands, so the board empties as it is solved. */
   .pairs-board{ display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-top:4px; }
   .pair-tile{
-    min-height:62px; border-radius:16px; padding:4px 8px; display:grid; place-items:center;
+    min-height:var(--ph, 62px); border-radius:16px; padding:4px 8px; display:grid; place-items:center;
     background:var(--surface); color:var(--ink); border:2px solid var(--paper-line);
     box-shadow:0 var(--press-edge) 0 var(--paper-edge); font:inherit; cursor:pointer;
   }
   .pair-tile:active{ box-shadow:0 1px 0 var(--paper-edge); translate:0 3px; }
-  .pair-tile img{ height:52px; width:auto; max-width:90%; object-fit:contain; }
+  .pair-tile img{ height:calc(var(--ph, 62px) * .8); width:auto; max-width:90%; object-fit:contain; }
   .pair-tile.word{ font-size:20px; font-weight:800; line-height:1.15; overflow-wrap:anywhere; }
   .pair-tile.num{ font-size:28px; font-weight:900; white-space:nowrap; }
   .pair-tile.picked{ border:3px solid var(--sun-700); background:var(--sun-100); box-shadow:0 var(--press-edge) 0 var(--sun-700); }
@@ -1915,11 +1996,16 @@
   .pair-tile.matched img{ opacity:.4; }
   .pair-tile:disabled{ opacity:1; }
   .pair-tile.shake{ animation:shake .42s; }
+  /* The help light on a board is a pulsing green ring and nothing else: a filled
+     tile is what a MATCHED pair looks like, and the light must not pass for one.
+     A picked tile stays amber even when it is the lit one. */
+  .pair-tile.answer-lit{ border-color:var(--leaf-700); background:var(--surface); animation:answer-lit-green-pulse 1.25s ease-in-out infinite; }
+  .pair-tile.answer-lit.picked{ border-color:var(--sun-700); background:var(--sun-100); }
+  @media (prefers-reduced-motion: reduce){ .pair-tile.answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); } }
   @media (max-height:700px){
     .pairs-board{ row-gap:8px; }
-    .pair-tile{ min-height:52px; }
+    .pair-tile{ min-height:var(--ph, 52px); }
     .pair-tile.word{ font-size:17px; }
-    .pair-tile img{ height:44px; }
     .pair-tile.num{ font-size:26px; }
   }
 
@@ -1930,8 +2016,7 @@
   #stage[data-kind="alpha"] .answer-lit,
   #stage[data-kind="pattern"] .answer-lit,
   #stage[data-kind="sentence"] .answer-lit,
-  #stage[data-kind="riddle"][data-step="fix"] .answer-lit,
-  #stage[data-kind="pairs"] .answer-lit{
+  #stage[data-kind="riddle"][data-step="fix"] .answer-lit{
     border-color:var(--leaf-700) !important; background:var(--leaf-100);
     animation:answer-lit-green-pulse 1.25s ease-in-out infinite;
   }
@@ -1939,8 +2024,7 @@
     #stage[data-kind="alpha"] .answer-lit,
     #stage[data-kind="pattern"] .answer-lit,
     #stage[data-kind="sentence"] .answer-lit,
-    #stage[data-kind="riddle"][data-step="fix"] .answer-lit,
-    #stage[data-kind="pairs"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
+    #stage[data-kind="riddle"][data-step="fix"] .answer-lit{ animation:none; box-shadow:0 0 0 6px var(--leaf-300); }
   }
   @media (max-width:480px){ .alpha-name{ font-size:11px; } }
 
@@ -1992,7 +2076,7 @@
      press edge looked like something to tap and did nothing, and it floated
      well away from everything else. A rare catch turns the button gold. */
   #catchOkBtn .ok-tick svg{ width:1.15em; height:1.15em; vertical-align:-.2em; margin-right:6px; }
-  #catchOkBtn.rare{ background:var(--sun-500); color:var(--sun-800); box-shadow:0 0 0 3px #fff, 0 7px 0 3px var(--sun-700); }
+  #catchOkBtn.rare{ background:var(--sun-500); color:var(--sun-800); box-shadow:0 var(--press-edge) 0 var(--sun-700); }
   /* The Pokémon is sized to the sky rather than fixed: 250px left a desktop
      window two-thirds empty. A family that splits stacks a column of
      evolutions on the card, so its Pokémon gives up some height to keep the
@@ -2099,7 +2183,7 @@
   .battle-frame{ width:124px; height:124px; }
   .battle-frame-wrap .battle-sound{ position:absolute; font-size:0; }
   .battle-name{ justify-content:center; text-align:center; font-size:1rem; line-height:1.15; overflow-wrap:anywhere; }
-  .battle-vs{ margin-top:40px; background:var(--sun-500); color:var(--sun-800); }
+  .battle-vs{ margin-top:40px; background:var(--ink); color:var(--white); }
   .battle-log{ padding:6px 4px 0; text-align:left; }
   .battle-result{ text-align:center; }
   .battle-announce{ font-size:1.75rem; }
@@ -2185,8 +2269,6 @@
   .visual-box.slot5 .visual-empty{ filter:brightness(0) opacity(.12); }
   @media (max-width:560px){
     .visual-groups:has(.slot5){ --one:40px; --onegap:6px; }
-    .visual-groups .slot5 .ones-row .visual-icon,
-    .visual-groups .slot5 .ones-row .visual-icon-wrap{ width:40px; height:40px; }
   }
 
   /* A family that splits stacks taller than one row, so on a short phone its
@@ -2262,7 +2344,11 @@
   .results-scene > :not(.meadow-art){ position:relative; z-index:1; }
   #resultTiles{ margin:0 auto; flex:0 0 auto; }
   .results-scene > .rs-row{ position:absolute; left:0; right:0; top:var(--rtop, auto); bottom:auto; margin:0;
-    display:flex; justify-content:center; align-items:flex-end; gap:12px; padding:0 12px; }
+    display:grid; grid-template-columns:repeat(var(--cols, 4), auto); justify-content:center; align-items:end;
+    column-gap:12px; row-gap:var(--rgap, 12px); padding:0 12px; }
+  /* The mound is the home Pokémon's; under a row of catches its flat-cut bottom
+     read as a seam across the grass. */
+  .results-scene .meadow-art ellipse{ display:none; }
   .rs-poke{ position:relative; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0; border:0; background:none; font:inherit; cursor:pointer; }
   .rs-poke:active{ transform:translateY(2px); }
   .rs-art{ position:relative; width:var(--rs); height:var(--rs); display:flex; align-items:flex-end; justify-content:center; }
@@ -2277,11 +2363,158 @@
   #results .result-sub{ margin:0 0 12px; text-align:center; font-size:14px; font-weight:800; color:var(--ink-soft); }
   @media (max-height:700px){ #results .result-title{ font-size:28px; } }
 
+
+  /* ===== Landscape phones (landscape, under 500px tall) =====
+     A phone on its side is 360–430px tall: the portrait layouts scrolled 40–180px
+     and hid the buttons. Each screen gets a side-by-side layout instead — home
+     splits like the desktop, a question puts its picture on the left and its
+     answers on the right, the meadow strip over a round shrinks to the bar and
+     a band of grass, and the catch and results screens sit side by side. */
+  @media (orientation:landscape) and (max-height:500px){
+    /* Home */
+    body[data-screen="setup"] .wrap{ max-width:none; padding:0; }
+    #setup:not(.hidden){
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(280px, 44%);
+      grid-template-rows:1fr auto auto 1fr; column-gap:18px;
+      height:100vh; height:100dvh; min-height:0; padding-right:16px;
+    }
+    .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 16px; border-radius:0 var(--radius) var(--radius) 0; }
+    .home-top{ padding-top:8px; }
+    .showcase-pick{ bottom:104px; height:calc(100% - 104px - 52px); max-height:none; }
+    .showcase-pick, .showcase-pick img{ max-height:calc(100dvh - 170px); }
+    .showcase-pick img{ max-width:none; }
+    #homeShowcase{ grid-column:1; grid-row:1 / -1; align-self:end; justify-self:center; z-index:3;
+      width:min(380px, calc(100% - 24px)); margin:0 0 10px; padding:8px 12px; gap:6px; }
+    #homeLevels{ grid-column:2; grid-row:2; padding-top:0; }
+    .home-actions{ grid-column:2; grid-row:3; padding:10px 0 0; gap:10px; }
+    .home-actions .btn.subj-btn{ min-height:58px; }
+    .home-actions .btn.battle-mini{ min-height:44px; }
+
+    /* A round */
+    .play-scene{ height:74px; }
+    .play-scene .topbar{ padding-top:8px; }
+    .play-scene .grass-strip{ height:30px; background-size:173px 30px, 241px 30px; }
+    /* The "!" fits the strip of grass between the progress steps and the card. */
+    .grass-strip.shaking::after{ top:-6px; width:22px; height:22px; font-size:14px; margin-left:-11px; }
+    #stage.card{ margin-top:-12px; padding:10px 14px 12px; }
+    #stage > *{ zoom:1 !important; }
+    #stage .kind-tag{ margin-bottom:6px; }
+    /* A picture on the left, the answers stacked on the right. The tag, the
+       picture and the ✓ share one cell spanning every row, so the answers'
+       rows never push the picture down: the tag sits at the cell's top, the
+       ✓ at its bottom, and the picture's margins keep room for both. */
+    #stage:has(> .frame-wrap, > .sent-pics){
+      display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-rows:repeat(6, auto);
+      column-gap:18px; align-items:center; align-content:center;
+    }
+    #stage:has(> .frame-wrap, > .sent-pics) > *{ grid-column:2; }
+    #stage:has(> .frame-wrap, > .sent-pics) > .kind-tag{ grid-column:1; grid-row:1 / -1; align-self:start; margin:0; }
+    #stage > .frame-wrap, #stage > .sent-pics{ grid-column:1; grid-row:1 / -1; align-self:center; margin:36px 0 38px; }
+    #stage > .kind-tag{ justify-self:center; }
+    #stage .frame-wrap .poke-frame, #stage .frame-wrap .poke-frame.reading-frame{ width:132px; height:132px; }
+    .reading-word{ min-height:44px; font-size:24px; margin-bottom:8px; }
+    .reading-options:not(.reading-options-img){ margin-top:8px; }
+    .pairs-board{ grid-template-columns:repeat(4, minmax(0,1fr)); row-gap:8px; }
+    .pair-tile.word{ font-size:16px; }
+    .visual-eq, .math-q{ font-size:24px; margin-bottom:6px; }
+    /* Modes whose question is not a picture still go side by side: the sum,
+       pattern, run or clues on the left, the answers on the right. */
+    #stage[data-kind="pattern"], #stage[data-kind="visual"], #stage[data-kind="alpha"]{
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:16px; align-items:center;
+    }
+    #stage[data-kind="pattern"] > .kind-tag, #stage[data-kind="visual"] > .kind-tag, #stage[data-kind="alpha"] > .kind-tag{ grid-column:1 / -1; }
+    /* Picture answers (Reverse Read & Choose, Who am I?): the word or clues
+       with the tag and the ✓ on the left, the pictures get the whole height. */
+    #stage:has(> .reading-options-img){
+      display:grid; grid-template-columns:minmax(140px, 30%) minmax(0,1fr); grid-template-rows:auto auto auto;
+      column-gap:16px; align-items:center; align-content:center;
+    }
+    #stage:has(> .reading-options-img) > *{ grid-column:1; }
+    #stage:has(> .reading-options-img) > .kind-tag{ grid-row:1; align-self:end; }
+    #stage:has(> .reading-options-img) > .reading-word, #stage:has(> .reading-options-img) > .riddle-text{ grid-row:2; margin:6px 0; }
+    #stage:has(> .reading-options-img) > .feedback{ grid-column:1; grid-row:3; align-self:start; }
+    #stage > .reading-options-img, #stage[data-kind="riddle"] > .reading-options-img{ grid-column:2; grid-row:1 / span 3; margin:0; justify-self:center; }
+    #stage[data-kind="riddle"]:has(> .reading-options-img){ grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+    #stage[data-kind="riddle"] > .riddle-text{ font-size:20px; }
+    #stage > .feedback{ grid-column:1 / -1; }
+    /* With a picture on the left, the ✓ goes under it: the answers' column is
+       the tall one, and the picture's column has room to spare. */
+    #stage:has(> .frame-wrap, > .sent-pics) > .feedback{ grid-column:1; grid-row:1 / -1; align-self:end; margin:0; }
+    #stage[data-kind="pattern"] > #patternList{ grid-column:1; grid-row:2; }
+    #stage[data-kind="pattern"] > #patternChoiceWrap{ grid-column:2; grid-row:2; }
+    #stage[data-kind="visual"] > .visual-eq{ grid-column:1; grid-row:2; }
+    #stage[data-kind="visual"] > .visual-groups{ grid-column:1; grid-row:3; margin:0; }
+    #stage[data-kind="visual"] > .choices{ grid-column:2; grid-row:2 / span 2; }
+    #stage[data-kind="visual"]{ grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); }
+    .choices{ gap:8px; margin:6px auto 4px; }
+    .choice{ min-height:52px; }
+    .pattern-list{ gap:8px; margin:4px 0; }
+    /* Two-digit sums stand side by side here; stacked, 12 + 9 was 220px tall. */
+    #stage[data-kind="visual"] .visual-groups.stacked{ flex-direction:row; flex-wrap:nowrap; gap:6px; }
+    #stage[data-kind="alpha"] > .alpha-strip{ grid-column:1; grid-row:2; }
+    #stage[data-kind="alpha"] > #alphaChoiceWrap{ grid-column:2; grid-row:2; }
+    /* Four in a row left a name a letter per line at 640 wide; two by two fits. */
+    #stage[data-kind="alpha"] .alpha-opts{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin:0; }
+    #stage[data-kind="alpha"] .alpha-opt{ padding:6px; gap:2px; }
+    #stage[data-kind="alpha"] .alpha-opt img{ width:44px; height:44px; }
+    #stage[data-kind="alpha"] .alpha-strip{ margin:0; }
+    .pairs-board{ row-gap:6px; }
+    #tiles .tile, #missingTiles .tile, #sentTiles .tile, #riddleTiles .tile{ height:46px; min-width:46px; font-size:22px; }
+    .battle-frame{ width:84px !important; height:84px !important; }
+    .battle-name{ font-size:.9rem; }
+    /* The chrome's counters stay on home and the results; on a short landscape
+       screen a page keeps only its ✕ bar, so the page itself has the height. */
+    #settings .chrome, #dashboard .chrome, #pokedex .chrome, #battle .chrome, #subject .chrome{ display:none; }
+    .battle-arena{ margin:6px 0; padding-top:10px; padding-bottom:16px; }
+    #battleStage{ display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); column-gap:16px; align-items:center; }
+    #battleStage > .battle-arena{ grid-column:1; grid-row:1 / span 3; }
+    /* Before the fight the log is empty: the two Pokémon have the whole width. */
+    #battleStage > .battle-arena.picking{ grid-column:1 / -1; }
+    #battleStage:has(> .battle-arena.picking) > .battle-log:empty{ display:none; }
+    .battle-fighter .battle-types{ flex-wrap:nowrap; }
+    #battleStage .battle-log{ margin:0; min-height:0; }
+    #battleStage .battle-log p{ margin:2px 0; }
+    #battleStage .battle-result{ margin:6px 0 4px; line-height:1.3; }
+    #battleStage .battle-announce{ font-size:1.375rem; }
+    #battleStage .battle-verdict{ width:32px; height:32px; }
+    #battleStage .actions{ margin:4px 0 0; }
+
+    /* Catch: the Pokémon on the left, its card and button on the right. */
+    .is-catch .catch-card{ max-width:none; display:grid; grid-template-columns:1fr minmax(260px, 42%); grid-template-rows:1fr auto; column-gap:18px; padding:0 16px 0 0; }
+    .is-catch .catch-sky{ grid-column:1; grid-row:1 / -1; margin:0; padding:10px; }
+    .is-catch .catch-frame, .is-catch:has(.evo-row.branched) .catch-frame{ width:min(70vh, 300px); height:min(70vh, 300px); }
+    .is-catch .catch-info{ grid-column:2; grid-row:1; align-self:end; margin:0 0 10px; }
+    .is-catch #catchOkBtn{ grid-column:2; grid-row:2; margin:0 0 12px !important; }
+
+    /* Results: the catches on the left, the heading and buttons on the right. */
+    body[data-screen="results"] .wrap{ max-width:none; padding:0; }
+    #results:not(.hidden){ display:grid; grid-template-columns:1fr minmax(260px, 40%); min-height:100dvh; }
+    #results .results-scene{ min-height:0; margin:0; }
+    #results .result{ align-self:center; padding:12px 16px; }
+    #results .result-title{ font-size:26px; }
+  }
+
+  /* A narrow landscape phone (640×360): the two columns split evenly, and the
+     level cards and the name card drop their extra words to fit. */
+  @media (orientation:landscape) and (max-height:500px) and (max-width:720px){
+    #setup:not(.hidden){ grid-template-columns:minmax(0,1fr) 50%; }
+    .subj-levels{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+    .subj-level{ column-gap:8px; padding:8px 10px; }
+    .subj-level .s-icon{ width:30px; height:30px; padding:4px; }
+    .subj-level .s-num{ font-size:18px; }
+    .subj-level .s-more{ display:none; }
+    .showcase-dex-go .go-word, .showcase-dex .level-bar{ display:none; }
+  }
+
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
   .notice-card h2{ margin:0 0 8px; font-size:1.375rem; font-weight:900; }
   .notice-card p{ margin:0 0 20px; color:var(--ink-soft); line-height:1.5; }
   .notice-card .btn + .btn{ margin-top:14px; }
+  .quit-art{ height:150px; display:grid; place-items:center; margin:0 0 14px; }
+  .quit-art img{ max-width:150px; max-height:150px; object-fit:contain; }
+  .quit-art img.silhouette{ filter:brightness(0) opacity(.28); }
+  .quit-card .btn{ display:flex; align-items:center; justify-content:center; gap:10px; }
 
 </style>
 </head>
@@ -2328,7 +2561,7 @@
     <div class="home-actions">
       <button class="btn green subj-btn" id="playEnglish" type="button" data-subject="english"></button>
       <button class="btn green subj-btn" id="playMaths" type="button" data-subject="maths"></button>
-      <button class="btn berry battle-mini" id="battleBtn" type="button"><span class="action-icon" data-icon="bolt"></span>Battle</button>
+      <button class="btn ghost battle-mini" id="battleBtn" type="button"><span class="action-icon" data-icon="bolt"></span>Battle</button>
     </div>
 
   </section>
@@ -2338,53 +2571,53 @@
     <div class="chrome"></div>
 
     <div class="card">
-      <h2>General Settings</h2>
-      <p class="sub">Each challenge is randomly picked from whichever modes are turned on below.</p>
+      <h2>Every round</h2>
+      <p class="sub">He chooses English or Maths on the home screen. A round mixes the trails switched on below for that subject.</p>
       <div class="field">
-        <label>Questions per round
-          <span class="hint">How many challenges make up one round</span>
+        <label for="totalCount">Questions per round
+          <span class="hint">How many questions he answers well to finish a round</span>
         </label>
         <input type="number" id="totalCount" min="1" max="50" value="10">
       </div>
       <div class="field">
-        <label>Mistakes allowed
-          <span class="hint">Wrong taps a maths, reading or alphabet question may take and still count toward finishing the round. 0 means it must be right first time. Spelling is scored differently — on how many letters it had to show, which scales with the length of the word</span>
-        </label>
-        <input type="number" id="mistakeAllowance" min="0" max="5" value="1">
-      </div>
-      <div class="field">
-        <label>Show the answer after
-          <span class="hint">Wrong taps before the right answer lights up. They still have to tap it themselves, and the light goes out once taken — the next one has to be earned again. Outside spelling it is always kept at least one above Mistakes allowed, so a shown answer never counts toward finishing the round</span>
-        </label>
-        <input type="number" id="revealAfter" min="1" max="6" value="2">
-      </div>
-      <div class="field">
-        <label>Rounds per day
-          <span class="hint">Rounds needed to keep the streak going</span>
+        <label for="roundsGoal">Rounds per subject each day
+          <span class="hint">Two English rounds or two Maths rounds keeps the streak going — either subject counts</span>
         </label>
         <input type="number" id="roundsGoal" min="1" max="20" value="2">
       </div>
       <div class="field">
-        <label>Expected drop
-          <span class="hint">Out of 100 questions, about this many hide a Pok&eacute;mon</span>
+        <label for="mistakeAllowance">Mistakes allowed
+          <span class="hint">Wrong taps a question can take and still count toward the round. Spelling and Sentences count letters or words shown instead.</span>
+        </label>
+        <input type="number" id="mistakeAllowance" min="0" max="5" value="1">
+      </div>
+      <div class="field">
+        <label for="revealAfter">Show the answer after
+          <span class="hint">Wrong taps before the right answer lights up. He still taps it himself.</span>
+        </label>
+        <input type="number" id="revealAfter" min="1" max="6" value="2">
+      </div>
+      <div class="field">
+        <label for="grassRate">Pokémon to find
+          <span class="hint">About this many questions in 100 hide a Pok&eacute;mon in the grass</span>
         </label>
         <span class="op-max"><input type="number" id="grassRate" min="0" max="100" value="10"> %</span>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Spelling Trail</h2>
-      <p class="sub">One graduated trail: a Phonics Ladder using real Pok&eacute;mon Pokopia items (Phase A), then Pok&eacute;mon-name fluency practice (Phase B). Each round mixes review, current-level, and stretch questions around the frontier.</p>
+    <h2 class="settings-subject">English</h2>
 
+    <div class="card">
+      <h2>Spelling</h2>
+      <p class="sub">Fill in the missing letters of a Pok&eacute;mon or an item, starting with short, regular words.</p>
       <div class="field">
-        <label>Turn on spelling
-          <span class="hint">Include spelling problems in this round</span>
+        <label for="spellOn">Turn on spelling
+          <span class="hint">Include spelling in English rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="spellOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Spelling level
+        <label for="spellingFrontier">Spelling level
           <span class="hint" id="spellingLevelHint">—</span>
         </label>
         <select id="spellingFrontier"></select>
@@ -2392,18 +2625,16 @@
     </div>
 
     <div class="card">
-      <h2>Reading Trail</h2>
-      <p class="sub">Fixed 5-choice formats — Read &amp; Choose (see a picture, pick the word) and Reverse Read &amp; Choose (see a word, pick the picture) — so difficulty stays constant round to round. The alphabet run has its own trail below.</p>
-
+      <h2>Reading</h2>
+      <p class="sub">See a picture and pick its word, or see a word and pick its picture.</p>
       <div class="field">
-        <label>Turn on reading
-          <span class="hint">Include Read &amp; Choose / Reverse Read &amp; Choose rounds</span>
+        <label for="readingOn">Turn on reading
+          <span class="hint">Include reading in English rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="readingOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Reading level
+        <label for="readingFrontier">Reading level
           <span class="hint" id="readingLevelHint">—</span>
         </label>
         <select id="readingFrontier"></select>
@@ -2411,18 +2642,16 @@
     </div>
 
     <div class="card">
-      <h2>Alphabet Trail</h2>
-      <p class="sub">A run of the alphabet with gaps in it, filled by picking the Pok&eacute;mon whose name starts with the missing letter. Its own ladder in <code>data/alphabet_levels.csv</code> — the run grows, the gaps multiply, and they move between the start, middle and end.</p>
-
+      <h2>Alphabet</h2>
+      <p class="sub">A run of the alphabet with a gap: pick the Pok&eacute;mon whose name starts with the missing letter.</p>
       <div class="field">
-        <label>Turn on alphabet
-          <span class="hint">Include alphabet-run rounds</span>
+        <label for="alphaOn">Turn on alphabet
+          <span class="hint">Include the alphabet in English rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="alphaOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Alphabet level
+        <label for="alphabetFrontier">Alphabet level
           <span class="hint" id="alphabetLevelHint">—</span>
         </label>
         <select id="alphabetFrontier"></select>
@@ -2430,18 +2659,16 @@
     </div>
 
     <div class="card">
-      <h2>Sentences Trail</h2>
-      <p class="sub">A Pok&eacute;mon's picture and a sentence about it with words missing &mdash; &ldquo;Pikachu is ___&rdquo; &mdash; filled from a bank of word tiles. Its own ladder in <code>data/sentence_levels.csv</code>: the sentences grow longer, a given word bridges each step, and every word stays within reach of the Reading level. Facts per Pok&eacute;mon are in <code>data/pokemon_facts.csv</code>.</p>
-
+      <h2>Sentences</h2>
+      <p class="sub">Build a true sentence about a Pok&eacute;mon from word tiles &mdash; &ldquo;Pikachu is yellow&rdquo;.</p>
       <div class="field">
-        <label>Turn on sentences
-          <span class="hint">Include sentence rounds</span>
+        <label for="sentOn">Turn on sentences
+          <span class="hint">Include sentences in English rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="sentOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Sentences level
+        <label for="sentencesFrontier">Sentences level
           <span class="hint" id="sentencesLevelHint">—</span>
         </label>
         <select id="sentencesFrontier"></select>
@@ -2449,18 +2676,16 @@
     </div>
 
     <div class="card">
-      <h2>Riddles Trail</h2>
-      <p class="sub">Reading for meaning, from the same Pok&eacute;mon facts as Sentences: <em>Yes or No</em> (&ldquo;Is Pikachu blue?&rdquo;), <em>Who am I?</em> (clues, then pick the Pok&eacute;mon) and <em>Fix it</em> (find the wrong word, then fix it). Its own ladder in <code>data/riddle_levels.csv</code>; every word stays within reach of the Reading level.</p>
-
+      <h2>Riddles</h2>
+      <p class="sub">Read and decide: Yes or No, Who am I?, and Fix it (find the wrong word).</p>
       <div class="field">
-        <label>Turn on riddles
-          <span class="hint">Include riddle rounds</span>
+        <label for="riddleOn">Turn on riddles
+          <span class="hint">Include riddles in English rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="riddleOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Riddles level
+        <label for="riddlesFrontier">Riddles level
           <span class="hint" id="riddlesLevelHint">—</span>
         </label>
         <select id="riddlesFrontier"></select>
@@ -2468,78 +2693,69 @@
     </div>
 
     <div class="card">
-      <h2>Word Pairs Trail</h2>
-      <p class="sub">Tap a picture, then its word, until every pair is matched. The words come from the Reading level; its own ladder in <code>data/word_pair_levels.csv</code> sets how many pairs, and whether they all start with the same letter.</p>
-
+      <h2>Word Pairs</h2>
+      <p class="sub">Match pictures to their words, using the words from his Reading level.</p>
       <div class="field">
-        <label>Turn on word pairs
+        <label for="wordPairsOn">Turn on word pairs
           <span class="hint">Include word pairs in English rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="wordPairsOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Word Pairs level
+        <label for="wordpairsFrontier">Word Pairs level
           <span class="hint" id="wordpairsLevelHint">—</span>
         </label>
         <select id="wordpairsFrontier"></select>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Math Trails</h2>
-      <p class="sub">Eight tracks — add, subtract, multiply, divide and a skip-counting pattern track for each. A track opens once its prerequisite reaches the level named in <code>data/math_tracks.csv</code>, and everything open has a chance to come up.</p>
+    <h2 class="settings-subject">Maths</h2>
 
+    <div class="card">
+      <h2>Maths</h2>
+      <p class="sub">Adding, taking away, times and sharing, each with a counting-pattern version. A new kind opens when the one before it is far enough along.</p>
       <div class="field">
-        <label>Turn on math
-          <span class="hint">Include maths questions in this round</span>
+        <label for="mathOn">Turn on maths
+          <span class="hint">Include maths questions in Maths rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="mathOn" checked><span class="slider"></span></label>
       </div>
-
+      <div class="field">
+        <label for="visualOn">Draw the sums as Pok&eacute;mon
+          <span class="hint">On the early levels, show the numbers as Pok&eacute;mon to count</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="visualOn" checked><span class="slider"></span></label>
+      </div>
       <div id="mathTrails"></div>
     </div>
 
     <div class="card">
-      <h2>Pokémon Visual Math</h2>
-      <p class="sub">Not a separate mode — the same maths questions above, shown as Pok&eacute;mon icons instead of bare numbers. Which rungs can be drawn is set per level in <code>data/math_levels.csv</code>, so it leads the early levels and stops where the numbers outgrow a picture.</p>
-
+      <h2>Maths Pairs</h2>
+      <p class="sub">Match sums to their answers, using the sums from the maths levels he has reached.</p>
       <div class="field">
-        <label>Turn on visual math
-          <span class="hint">Include picture-based math problems</span>
-        </label>
-        <label class="switch"><input type="checkbox" id="visualOn" checked><span class="slider"></span></label>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Maths Pairs Trail</h2>
-      <p class="sub">Tap a sum, then its answer, until every pair is matched. The sums come from the maths levels already reached; its own ladder in <code>data/math_pair_levels.csv</code> sets how many pairs and which kinds of sum share a board. Every answer on a board is different.</p>
-
-      <div class="field">
-        <label>Turn on maths pairs
+        <label for="mathPairsOn">Turn on maths pairs
           <span class="hint">Include maths pairs in Maths rounds</span>
         </label>
         <label class="switch"><input type="checkbox" id="mathPairsOn" checked><span class="slider"></span></label>
       </div>
-
       <div class="field">
-        <label>Maths Pairs level
+        <label for="mathpairsFrontier">Maths Pairs level
           <span class="hint" id="mathpairsLevelHint">—</span>
         </label>
         <select id="mathpairsFrontier"></select>
       </div>
     </div>
 
-    <div class="card">
-      <h2>About</h2>
-      <p class="sub">Which version of the app this device is running. If the build here is older than the one you just published, this device is showing a cached copy — reload the page.</p>
+    <details class="card advanced">
+      <summary><h2>Advanced</h2></summary>
+      <p class="sub">Every ladder is a file the app reads at start-up, authored in the design spreadsheet: <code>data/spelling_levels.csv</code>, <code>reading_levels.csv</code>, <code>alphabet_levels.csv</code>, <code>sentence_levels.csv</code>, <code>riddle_levels.csv</code>, <code>word_pair_levels.csv</code>, <code>math_tracks.csv</code>, <code>math_levels.csv</code> and <code>math_pair_levels.csv</code>. A level changed above moves where he is on that ladder; it does not change the ladder.</p>
+      <p class="sub">Which version of the app this device is running. If the build here is older than the one you just published, this device is showing a cached copy &mdash; reload the page.</p>
       <div class="about-rows">
         <div class="about-row"><span>Build</span><b id="aboutBuild">—</b></div>
         <div class="about-row"><span>Published</span><b id="aboutDate">—</b></div>
         <div class="about-row"><span>This file</span><b id="aboutFile">—</b></div>
       </div>
-    </div>
+    </details>
 
   </section>
 
@@ -2566,8 +2782,8 @@
       <h2 class="result-title" id="resultTitle">Round finished!</h2>
       <p class="result-sub hidden" id="resultSub">No catch this time</p>
       <div class="result-actions">
-        <button class="btn green big" id="againBtn">Play again</button>
-        <button class="btn ghost big" id="backSetupBtn">Go back</button>
+        <button class="btn green big icon-btn" id="againBtn"><span class="action-icon" data-icon="again"></span>Play again</button>
+        <button class="btn ghost big icon-btn" id="backSetupBtn"><span class="action-icon" data-icon="home"></span>Go back</button>
       </div>
     </div>
   </section>
@@ -2622,6 +2838,14 @@
   <!-- Every trail switched off. This is for whoever set it up, so it can say so in
        a sentence; it used to be a browser alert(), which a child can't read and
        which looks like the page broke. -->
+  <div class="modal-overlay hidden" id="quitModal" role="dialog" aria-modal="true" aria-label="Stop playing?">
+    <div class="catch-card notice-card quit-card">
+      <div class="quit-art" id="quitArt"></div>
+      <button class="btn green big" id="keepPlayingBtn" type="button"><span class="action-icon" data-icon="play"></span>Keep playing</button>
+      <button class="btn ghost big" id="stopPlayingBtn" type="button"><span class="action-icon" data-icon="home"></span>Stop</button>
+    </div>
+  </div>
+
   <div class="modal-overlay hidden" id="noModesModal" role="dialog" aria-modal="true" aria-labelledby="noModesTitle">
     <div class="catch-card notice-card">
       <h2 id="noModesTitle">Nothing to play yet</h2>
@@ -2639,8 +2863,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 116;
-const APP_BUILD_DATE = "11 Oct 2026";
+const APP_BUILD = 117;
+const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -2744,7 +2968,7 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 async function loadData(){
   const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows,
-         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows, wordPairRows, mathPairRows] = await Promise.all([
+         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows, wordPairRows, mathPairRows, unclearRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -2763,6 +2987,7 @@ async function loadData(){
     fetchCsv("data/riddle_levels.csv"),
     fetchCsv("data/word_pair_levels.csv"),
     fetchCsv("data/math_pair_levels.csv"),
+    fetchCsv("data/unclear_pictures.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -2873,6 +3098,7 @@ async function loadData(){
   loadSentenceData(sentRows, factRows, sentWordRows, wordLevelRows);
   loadRiddleData(riddleRows);
   loadPairData(wordPairRows, mathPairRows);
+  UNCLEAR_PICTURES = new Set(unclearRows.map(r => String(r.name || "").trim().toLowerCase()).filter(Boolean));
 }
 
 /* Which blank patterns each `alpha_blank_position` allows, as index sets within
@@ -3402,8 +3628,18 @@ function pokemonForRow(row){
 /* The whole pool for a row. Items and Pokémon are pooled rather than picked from
    in fixed proportion: the mix shifts naturally as the ladder climbs, since the
    generation gate opens Pokémon slowly while the word levels open items fast. */
+/* Pictures that don't read as their word at question size (data/unclear_pictures.csv)
+   stay out of the first three levels, where the picture is a beginner's only
+   cue — but only while the level keeps UNCLEAR_MIN_POOL words without them, so
+   a small pool is never emptied to make it tidier. */
+let UNCLEAR_PICTURES = new Set();
+const UNCLEAR_MAX_LEVEL = 3, UNCLEAR_MIN_POOL = 8;
 function poolForRow(row, skipProper){
-  const pool = itemsForRow(row, skipProper).concat(pokemonForRow(row));
+  let pool = itemsForRow(row, skipProper).concat(pokemonForRow(row));
+  if(row && row.level <= UNCLEAR_MAX_LEVEL && UNCLEAR_PICTURES.size){
+    const clear = pool.filter(x => !UNCLEAR_PICTURES.has(x.n.toLowerCase()));
+    if(clear.length >= UNCLEAR_MIN_POOL) pool = clear;
+  }
   return pool.length ? pool : GRADED_ITEMS;   // never hand back nothing
 }
 
@@ -3850,7 +4086,7 @@ function renderShowcase(){
         <span class="level-bar" aria-hidden="true">
           <span class="level-fill" style="width:${genPct}%; background:var(--berry-600)"></span>
         </span>
-        <span class="showcase-dex-go">Pokédex ›</span>
+        <span class="showcase-dex-go"><span class="go-word">Pokédex </span>›</span>
       </button>` : "";
 
   // The Pokémon stands on the meadow's hill; everything that labels it is on the
@@ -3925,6 +4161,8 @@ const UI_ICONS = {
   speaker: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M3 9.6h3.4L11 5.8v12.4l-4.6-3.8H3z"/><path d="M14.6 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
   play: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>`,
   bolt: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  home: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3.2 2.6 11.1a1 1 0 0 0 1.3 1.5l.6-.5V20a1 1 0 0 0 1 1h4.3v-5.6h4.4V21h4.3a1 1 0 0 0 1-1v-7.9l.6.5a1 1 0 0 0 1.3-1.5z"/></svg>`,
+  again: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path fill="currentColor" d="M20.6 3.4v6.4h-6.4z"/></svg>`,
   tick: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   cross: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>`,
   // Rarity is a five-point star. The four-point sparkle it replaced read as a
@@ -3932,6 +4170,7 @@ const UI_ICONS = {
   star: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.5 1.2 6.4L12 17.1l-5.7 3.1 1.2-6.4-4.7-4.5 6.4-.8z"/></svg>`,
 };
 /* A feedback line: one drawn mark and a few words, never the emoji they replace. */
+function clearFeedback(fb){ if(fb){ fb.className = "feedback"; fb.textContent = ""; } }
 function feedbackHTML(kind, text){
   return `<span class="fb-icon">${kind === "good" ? UI_ICONS.tick : UI_ICONS.cross}</span>${text}`;
 }
@@ -4216,6 +4455,42 @@ function renderProblem(){
   else if(p.kind==="pattern") renderPattern(p);
   else if(p.kind==="visual") renderVisual(p);
   else renderMath(p);
+  fitQuestionFrame();
+}
+
+/* The picture gives way first (DESIGN, Layout). A question that would scroll —
+   a two-word spelling at level 25 on a 360×640 phone ran 26px over — has its
+   picture frame stepped down until it fits, to 96px; then the answers shrink;
+   then the picture again, to 72px. The feedback line holds its room while empty
+   (stageOverflow), so the answer's arrival doesn't push the card off the screen. */
+function fitQuestionFrame(){
+  const frame = $("#stage .poke-frame:not(.compact)");
+  if(!frame || $("#play").classList.contains("hidden")) return;
+  frame.style.removeProperty("width"); frame.style.removeProperty("height");
+  let size = frame.getBoundingClientRect().width;
+  const zoom = size / (frame.offsetWidth || size) || 1;
+  for(let k = 0; k < 10; k++){
+    const over = stageOverflow();
+    if(over <= 0 || size <= 96) break;
+    size = Math.max(96, size - Math.max(8, over));
+    frame.style.width = frame.style.height = (size / zoom) + "px";
+  }
+  // Still over with the picture at its smallest (a three-word name at level 25:
+  // 14 slots and 13 tiles): the slots and tiles shrink together, no further than
+  // 0.8, which keeps a 56px tile at the 44px a finger needs.
+  const parts = [...$("#stage").children].filter(e => !e.matches(".kind-tag, .frame-wrap, .feedback"));
+  const base = parts.map(e => parseFloat(getComputedStyle(e).zoom) || 1);
+  for(let k = 0.96; k >= 0.8 - 1e-6; k -= 0.04){
+    if(stageOverflow() <= 0) break;
+    parts.forEach((e, i) => e.style.zoom = base[i] * k);
+  }
+  // And only then does the picture go below 96px, to 72 at the least.
+  for(let k = 0; k < 4; k++){
+    const over = stageOverflow();
+    if(over <= 0 || size <= 72) break;
+    size = Math.max(72, size - Math.max(8, over));
+    frame.style.width = frame.style.height = (size / zoom) + "px";
+  }
 }
 
 /* A Pokémon is a reward for ANSWERING, not for arriving. The encounter is rolled
@@ -4973,13 +5248,14 @@ function renderPokedex(){
 const WORD_TRACKS = [
   {id:"spelling", label:"Spelling", color:"var(--sky-700)"},
   {id:"reading",  label:"Reading",  color:"var(--violet-600)"},
-  {id:"alphabet", label:"Alphabet", color:"var(--teal-600)"},
+  {id:"alphabet", label:"Alphabet", color:"var(--teal-700)"},
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
   {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
   {id:"wordpairs", label:"Word Pairs", color:"var(--plum-700)"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
-function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-deep)" : "var(--sun-deep)"; }
+// The darker shade of each family, so the heading reads at 4.5:1 or better on white.
+function groupColor(groupId){ return groupId === "addsub" ? "var(--berry-700)" : "var(--sun-800)"; }
 /* What a locked track is waiting on. The immediate prerequisite, not the root of
    the chain — "Opens at Subtract 6" is what the reader can act on, even when
    Subtract is itself still shut. */
@@ -4998,12 +5274,15 @@ function unlockNote(track){
    so a bar reaching it and a day counting toward the streak are the same
    statement made twice. */
 function lastNDays(n){
-  const data = loadStreak(), goal = roundsGoal(), out = [];
+  const data = loadStreak(), bySubject = loadSubjectDays(), goal = roundsGoal(), out = [];
   for(let i=n-1; i>=0; i--){
     const d = new Date();
     d.setDate(d.getDate()-i);
-    const count = data[dateKey(d)] || 0;
-    out.push({ date:d, label:dateLabel(d), count, met: count >= goal, today: i===0 });
+    const key = dateKey(d), split = bySubject[key];
+    const count = data[key] || 0;
+    // Met by the streak's own rule, so the chart and the 🔥 never disagree.
+    out.push({ date:d, label:dateLabel(d), count, met: dayMet(key, data, bySubject, goal), today: i===0,
+               english: split ? split.english || 0 : null, maths: split ? split.maths || 0 : null });
   }
   return out;
 }
@@ -5011,7 +5290,10 @@ function lastNDays(n){
 function renderDailyRoundsChart(days){
   const W=320, H=150, xL=24, xR=310, yTop=18, yBot=118;
   const goal = roundsGoal();
-  const top = Math.max(goal, ...days.map(d=>d.count));
+  // Bars are per subject now, since the goal is: English and Maths side by side
+  // against one line. Days from before subjects existed have only a total, drawn
+  // as one grey bar.
+  const top = Math.max(goal, ...days.map(d => d.english == null ? d.count : Math.max(d.english, d.maths)));
   const yAt = v => yBot - (v/top)*(yBot-yTop);
   const slot = (xR-xL)/days.length;
   const bw = Math.min(30, slot*0.62);
@@ -5025,7 +5307,6 @@ function renderDailyRoundsChart(days){
   if(goal > 0 && goal < top){
     const yG = yAt(goal).toFixed(1);
     svg += `<line x1="${xL}" y1="${yG}" x2="${xR}" y2="${yG}" class="threshold-line"/>`;
-    svg += `<text x="${xR}" y="${Number(yG)-4}" class="threshold-label" text-anchor="end">${goal}/day goal</text>`;
   }
   days.forEach((d,i)=>{
     const cx = xL + slot*(i+0.5);
@@ -5033,14 +5314,27 @@ function renderDailyRoundsChart(days){
     const y = yAt(d.count).toFixed(1);
     const h = Math.max(0, yBot - Number(y)).toFixed(1);
     svg += `<rect x="${x}" y="${yBot-2}" width="${bw.toFixed(1)}" height="2" rx="1" class="day-base"/>`;
-    if(d.count > 0){
-      svg += `<rect x="${x}" y="${y}" width="${bw.toFixed(1)}" height="${h}" rx="3" class="day-bar${d.met ? " met" : ""}">`
-           + `<title>${d.label}: ${d.count} round${d.count===1?"":"s"}</title></rect>`;
-      svg += `<text x="${cx.toFixed(1)}" y="${(Number(y)-4).toFixed(1)}" class="day-val" text-anchor="middle">${d.count}</text>`;
+    const bar = (bx, w, v, cls, title) => {
+      if(!v) return "";
+      const by = yAt(v);
+      return `<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(0, yBot - by).toFixed(1)}" rx="3" class="day-bar ${cls}"><title>${title}</title></rect>`
+           + `<text x="${(bx + w/2).toFixed(1)}" y="${(by-4).toFixed(1)}" class="day-val" text-anchor="middle">${v}</text>`;
+    };
+    if(d.english == null){
+      if(d.count > 0) svg += bar(Number(x), bw, d.count, "old", `${d.label}: ${d.count} round${d.count===1?"":"s"}`);
+    } else {
+      const half = (bw - 2) / 2;
+      svg += bar(Number(x), half, d.english, "english", `${d.label}: ${d.english} English`);
+      svg += bar(Number(x) + half + 2, half, d.maths, "maths", `${d.label}: ${d.maths} Maths`);
     }
+    // A day that kept the streak gets a green tick under it.
+    if(d.met) svg += `<text x="${cx.toFixed(1)}" y="${yBot+27}" class="day-met" text-anchor="middle">✓</text>`;
     svg += `<text x="${cx.toFixed(1)}" y="${yBot+15}" class="axis-label${d.today ? " today" : ""}" text-anchor="middle">${d.today ? "Today" : d.label}</text>`;
   });
   svg += `</svg>`;
+  // The key sits under the chart: on the goal line, its label met a bar's count.
+  svg += `<div class="days-key"><span><i class="k english"></i>English</span><span><i class="k maths"></i>Maths</span>`
+       + `<span><i class="k goal"></i>${goal} per subject</span><span><b class="k-met">✓</b>streak kept</span></div>`;
   return svg;
 }
 
@@ -5131,7 +5425,7 @@ function renderDashboard(){
 
 function levelLine(id){
   const level = currentLevel(id);
-  return level ? `${level.id} — ${level.label}` : "—";
+  return level ? `Level ${level.id} of ${trackLevels(id).length}<span class="dash-what">${level.label}</span>` : "—";
 }
 function daysAtLevel(id){
   const days = Math.max(0, Math.floor((Date.now()-progress[id].frontierSince)/86400000));
@@ -5148,16 +5442,15 @@ function daysAtLevel(id){
    answer the question the screen is for — how close is this track to promoting —
    and they answer it exactly. `trend` is still recorded; nothing draws it yet. */
 function trackDetailHTML(id, color){
-  const p = progress[id];
-  return promoteGates(id).map(g => {
-    const w = p.history.slice(-g.questions);
-    const hits = w.reduce((a,b)=>a+b,0);
-    return `<div class="window-row">
-      <span class="window-label">Last ${g.questions}</span>
-      <span class="window-track"><span class="window-fill" style="width:${w.length ? (hits/w.length*100) : 0}%; background:${color}"></span></span>
-      <span class="window-val">${hits}/${w.length}</span>
-    </div>`;
-  }).join("");
+  /* One sentence a grown-up can read at a glance, in place of "Last 5 0/0" bars:
+     how many of the last five at this level were right first time. */
+  const h = progress[id].history.slice(-5), clean = h.reduce((a,b)=>a+b,0);
+  const said = !h.length ? "Not tried at this level yet"
+    : h.length < 5 ? `${clean} of ${h.length} so far right first time`
+    : `${clean} of the last 5 right first time`;
+  const at = frontierIndex(id) + 1, of = trackLevels(id).length;
+  return `<span class="dash-bar"><i style="width:${of ? at / of * 100 : 0}%; background:${color}"></i></span>
+    <div class="dash-summary">${said}</div>`;
 }
 
 
@@ -5347,8 +5640,7 @@ function markWrong(){
     noteStepMiss();
     syncSpellLight();
   }
-  fb.className="feedback bad";
-  fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
+  clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
 }
 
 /* ---------------- Pronunciation ----------------
@@ -5685,8 +5977,7 @@ function placeMissingChunk(chunk, tileEl){
     bumpMistake(st.p);
     tileEl.classList.add("shake");
     setTimeout(()=> tileEl.classList.remove("shake"), 450);
-    fb.className="feedback bad";
-    fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
+    clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
     noteStepMiss();
     syncMissingLight();
     return;                                   // deliberately silent on a miss
@@ -6171,8 +6462,7 @@ function placeSentenceWord(tileEl){
     bumpMistake(st.p);
     tileEl.classList.add("shake");
     setTimeout(()=> tileEl.classList.remove("shake"), 450);
-    fb.className = "feedback bad";
-    fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
+    clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
     noteStepMiss();
     syncSentenceLight();
     return;                                   // deliberately silent on a miss
@@ -6440,7 +6730,9 @@ function renderRiddle(p){
     const wrap = $("#riddleTiles");
     ["yes", "no"].forEach(w => {
       const t = document.createElement("button");
-      t.type = "button"; t.className = "tile word riddle-yn"; t.textContent = cap(w); t.dataset.word = w;
+      t.type = "button"; t.className = "tile word riddle-yn"; t.dataset.word = w;
+      // An icon beside the word, so Yes and No can be chosen without reading them.
+      t.innerHTML = `<span class="yn-icon ${w === "yes" ? "yes" : "no"}" aria-hidden="true">${w === "yes" ? UI_ICONS.tick : UI_ICONS.cross}</span>${cap(w)}`;
       if(w === p.answer) riddleState.answerEl = t;
       t.addEventListener("click", ()=> pickRiddleYesNo(t));
       wrap.appendChild(t);
@@ -6465,7 +6757,16 @@ function renderRiddle(p){
     layoutReadingTiles();
     wrap.querySelectorAll("img").forEach(im => { im.addEventListener("load", ()=> fitTileArt(im)); if(im.complete) fitTileArt(im); });
   } else {
+    /* Step one has to look like a sentence to read, not a bank of answers: the
+       words sit on a paper strip as text with a dotted underline, after a
+       magnifier, and if nothing is tapped for six seconds they wiggle once. */
     const line = $("#riddleLine");
+    line.classList.add("fix-strip");
+    line.insertAdjacentHTML("beforeend", `<span class="fix-glass" aria-hidden="true">${FIX_GLASS}</span>`);
+    const idle = setTimeout(()=>{
+      if(riddleState && riddleState.p === p && riddleState.step === "find") line.classList.add("nudge");
+    }, 6000);
+    riddleState.idle = idle;
     p.words.forEach((w, i) => {
       const b = document.createElement("button");
       b.type = "button"; b.className = "tile word fix-word"; b.textContent = isPokemonName(w) ? cap(w) : w;
@@ -6477,13 +6778,13 @@ function renderRiddle(p){
   }
 }
 
+const FIX_GLASS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/></svg>`;
 function riddleMiss(el){
   bumpMistake(riddleState.p);
   el.classList.add("shake");
   setTimeout(()=> el.classList.remove("shake"), 450);
   const fb = $("#feedback");
-  fb.className = "feedback bad";
-  fb.innerHTML = feedbackHTML("bad", "Not that one — try again!");
+  clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
 }
 function clearRiddleFeedback(){
   const fb = $("#feedback");
@@ -6655,8 +6956,15 @@ function buildMathPairLevels(){
    which is why `sameStart` is recorded on the question, not assumed from the row. */
 function mkWordPairs(row){
   const rRow = (currentLevel("reading") || {}).row || READING_ROWS[0];
+  // Reading 1 has four words, so every board there was the same four. A pool
+  // that small borrows the next Reading level's words too.
+  let source = poolForRow(rRow);
+  if(new Set(source.map(x => x.n.toLowerCase())).size < 8){
+    const next = READING_ROWS.find(r => r.level === rRow.level + 1);
+    if(next) source = source.concat(poolForRow(next));
+  }
   const seen = new Set(), pool = [];
-  for(const x of shuffle(poolForRow(rRow).slice())){
+  for(const x of shuffle(source.slice())){
     const word = x.n.toLowerCase(), pic = x.img || artwork(x.id);
     if(seen.has(word) || seen.has(pic)) continue;
     seen.add(word); seen.add(pic);
@@ -6727,6 +7035,29 @@ function renderPairs(p){
   const left = shuffle(p.items.slice()), right = shuffle(p.items.slice());
   const board = $("#pairsBoard");
   left.forEach((it, i) => { board.appendChild(tile(it, "left")); board.appendChild(tile(right[i], "right")); });
+  layoutPairs();
+}
+
+/* Rows grow into the screen's free height, as Reverse Read & Choose's tiles do:
+   a tile is 5:4, flattening toward 3:2 only if that is what fits, and never
+   under 62px. At a fixed 62px a picture tile was 2.4:1 with the art a 45px
+   smudge, over 260px of empty card. */
+function layoutPairs(){
+  const board = $("#pairsBoard");
+  if(!board || $("#play").classList.contains("hidden")) return;
+  board.style.removeProperty("--ph");
+  // Two columns, or four on a landscape phone (two pairs to a row).
+  const cols = getComputedStyle(board).gridTemplateColumns.split(" ").length || 2;
+  const rows = Math.ceil(board.children.length / cols);
+  const zoom = board.getBoundingClientRect().width / (board.offsetWidth || 1) || 1;
+  const colW = (board.offsetWidth - 14 * (cols - 1)) / cols;
+  const gap = parseFloat(getComputedStyle(board).rowGap) || 10;
+  const free = (window.innerHeight - board.getBoundingClientRect().top) / zoom - 34 - 20 - 32;
+  const fit = (free - gap * (rows - 1)) / rows;
+  let h = colW / 1.25;
+  if(h > fit) h = Math.max(colW / 1.5, fit);
+  h = Math.max(window.innerHeight <= 500 ? 44 : window.innerHeight <= 700 ? 52 : 62, Math.min(h, fit, 150));
+  board.style.setProperty("--ph", Math.floor(h) + "px");
 }
 
 /* Either side can be tapped first. Tapping the picked tile again lets it go, and
@@ -6883,8 +7214,7 @@ function wireMathChoices(id, ans, onPick){
 function renderMath(p){
   const stage = $("#stage");
   stage.innerHTML = `
-    <div class="kind-tag kind-math">Math</div>
-    <div class="poke-frame compact"><img alt="${cap(p.poke.n)}" src="${artwork(p.poke.id)}"></div>
+    <div class="kind-tag kind-math">Maths</div>
     <div class="math-q">${p.a} ${p.sym} ${p.b} = ?</div>
     ${mathChoicesHTML("mathChoices", p)}
     <div class="feedback" id="feedback"></div>
@@ -6894,7 +7224,7 @@ function renderMath(p){
     const fb = $("#feedback");
     if(val !== p.ans){
       bumpMistake(p);
-      fb.className="feedback bad"; fb.innerHTML = feedbackHTML("bad", "Try again!");
+      clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
       return false;
     }
     btn.classList.add("picked");
@@ -6988,6 +7318,40 @@ function tensAndOnes(n, iconHTML, crossedHTML, crossed, emptyHTML = ""){
 // anything two-digit.
 function visualObjectCount(n){ return Math.floor(n / 10) + (n % 10); }
 
+/* A group for × and ÷. Not the blue box — a blue box always means five (or
+   ten) places, and a group of four in one read as a five-box one short. A group
+   is a dashed outline, shaped by its size so it is one thing to look at: up to
+   three in a row, four as a square, five in a row, six to ten in two rows. */
+function groupHTML(n, iconHTML){
+  const cols = n <= 3 ? n : n === 4 ? 2 : n === 5 ? 5 : Math.ceil(n / 2);
+  return `<div class="visual-group" style="--gcols:${cols}">${iconHTML.repeat(n)}</div>`;
+}
+/* How far the question card runs past the bottom of the screen, counting the
+   page's bottom padding. The feedback line keeps its height while empty, so the
+   ✓ arriving moves nothing and needs no room of its own. The page's scroll
+   height can't say this: the page is never shorter than the screen, so a
+   reserve added to it read as "over" on every question and shrank every
+   picture it was given. */
+function stageOverflow(){
+  const pad = parseFloat(getComputedStyle($(".wrap")).paddingBottom) || 0;
+  return Math.ceil($("#stage").getBoundingClientRect().bottom + pad - window.innerHeight);
+}
+/* Shrink the picture until the question fits the screen: × groups and two
+   stacked boxes overflowed a 360×640 phone, pushing the answers off the bottom.
+   Icons give way before anything else does, never below 16px. */
+function fitVisual(){
+  const g = $("#stage .visual-groups");
+  if(!g) return;
+  const over = ()=> stageOverflow();
+  g.style.removeProperty("--gi"); g.style.removeProperty("--one");
+  let gi = 34, one = parseFloat(getComputedStyle(g).getPropertyValue("--one")) || 30;
+  for(let k = 0; k < 12 && over() > 0; k++){
+    gi = Math.max(16, gi - 3); one = Math.max(18, one - 2);
+    g.style.setProperty("--gi", gi + "px");
+    g.style.setProperty("--one", one + "px");
+  }
+}
+
 function renderVisual(p){
   const stage = $("#stage");
   const icon = ()=> `<img class="visual-icon" src="${artwork(p.poke.id)}" alt="${cap(p.poke.n)}">`;
@@ -7041,30 +7405,29 @@ function renderVisual(p){
     </div>`;
   } else if(p.op==="mul"){
     eqText = `${p.a} × ${p.b} = ?`;
-    const box = `<div class="visual-box">${icon().repeat(p.a)}</div>`;
-    visualHTML = `<div class="visual-groups${density}">${Array(p.b).fill(box).join('<span class="visual-op">+</span>')}</div>`;
-  } else { // div — same "separate boxes" layout as multiplication (its inverse),
+    visualHTML = `<div class="visual-groups grouped-set">${Array(p.b).fill(groupHTML(p.a, icon())).join('<span class="visual-op">+</span>')}</div>`;
+  } else { // div — same "separate groups" layout as multiplication (its inverse),
     // rather than one shared box with an internal divider line: that broke down
     // and wrapped into a confusing grid once a slice's icons didn't fit one row.
     eqText = `${p.a} ÷ ${p.b} = ?`;
-    const box = `<div class="visual-box">${icon().repeat(p.ans)}</div>`;
-    visualHTML = `<div class="visual-groups${density}">${Array(p.b).fill(box).join('')}</div>`;
+    visualHTML = `<div class="visual-groups grouped-set">${Array(p.b).fill(groupHTML(p.ans, icon())).join('')}</div>`;
   }
 
   stage.innerHTML = `
-    <div class="kind-tag kind-visual">Visual Math</div>
+    <div class="kind-tag kind-visual">Visual Maths</div>
     <div class="visual-eq">${eqText}</div>
     ${visualHTML}
     ${mathChoicesHTML("visualChoices", p)}
     <div class="feedback" id="feedback"></div>
   `;
+  fitVisual();
 
   visualState = {p};
   wireMathChoices("visualChoices", p.ans, (val, btn)=>{
     const fb = $("#feedback");
     if(val !== p.ans){
       bumpMistake(p);
-      fb.className="feedback bad"; fb.innerHTML = feedbackHTML("bad", "Count again!");
+      clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
       return false;
     }
     btn.classList.add("picked");
@@ -7094,7 +7457,8 @@ function fitWordCells(el, wordSel){
   const words = [...el.querySelectorAll(wordSel)];
   if(!words.length) return;
   const W = el.clientWidth;
-  let f = 28;
+  // A landscape phone has width to spare and no height: start a size smaller.
+  let f = window.innerHeight <= 500 ? 22 : 28;
   el.style.setProperty("--wf", f + "px");
   const widest = () => Math.max(...words.map(w => w.scrollWidth));
   while(f > 16 && widest() > W){ f -= 1; el.style.setProperty("--wf", f + "px"); }
@@ -7125,7 +7489,7 @@ function fitReadingWord(){
 /* Lay the picture options out by rule rather than by a fixed grid: try every
    balanced column count from two up (5 → 2+2+1, 3+2, or one row), and keep the
    one whose tiles have the biggest short side while the whole grid fits under
-   the word. Tiles are 5:4, flattening to 3:2 only if that is what fits, and
+   the word. Tiles are 5:4 (square on a landscape phone), flattening to 3:2 only if that is what fits, and
    never wider than 200px. The controls keep their sizes; the layout gives way. */
 function layoutReadingTiles(){
   const g = document.querySelector("#stage .reading-options-img");
@@ -7133,15 +7497,21 @@ function layoutReadingTiles(){
   const z = parseFloat(getComputedStyle(g.closest("#stage > *") || g).zoom) || 1;
   const card = g.closest(".card") || g.parentElement;
   const n = g.children.length, gap = 12, MAXW = 200;
-  g.style.width = "";
+  g.style.width = "100%";                                // the column's width, in a grid cell too
   const W = g.clientWidth, r = g.getBoundingClientRect(), cr = card.getBoundingClientRect();
   const below = (cr.bottom - r.bottom) / z;              // feedback line and card padding, as rendered
-  const availH = (innerHeight - r.top) / z - below - 16;
+  let availH = (innerHeight - r.top) / z - below - 16;
+  // Beside the word (a landscape phone), the pictures have the card's whole height.
+  const cs = getComputedStyle(card);
+  if(getComputedStyle(g).gridColumnStart === "2")
+    availH = (innerHeight - cr.top) / z - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 16;
+  // A landscape phone is short of width, not height: tiles may stand square.
+  const tall = innerWidth > innerHeight && innerHeight <= 500 ? 1 : 0.8;
   let best = null;
   for(let c = 2; c <= n; c++){
     const rows = Math.ceil(n / c), cols = Math.ceil(n / rows);
     const w = Math.min(MAXW, (W - (cols - 1) * gap) / cols);
-    const h = Math.min(w * 0.8, Math.max(w / 1.5, (availH - (rows - 1) * gap) / rows));
+    const h = Math.min(w * tall, Math.max(w / 1.5, (availH - (rows - 1) * gap) / rows));
     const fits = rows * h + (rows - 1) * gap <= availH + 0.5, s = Math.min(w, h);
     if(!best || (fits && !best.fits) || (fits === best.fits && s > best.s + 0.5)) best = { cols, w, h, fits, s };
   }
@@ -7170,6 +7540,47 @@ function artMask(img){
     return artMaskCache[key] = pts;
   }catch(e){ return []; }
 }
+/* Nothing drawn sits under a speaker (DESIGN, Pictures). Round frames centre
+   their art, and a tail or a wing reaching the bottom-right ran under the
+   speaker there (Clefairy in Sentences, Ledyba in Battle). The art steps up and
+   left, then shrinks a little, until none of its drawn pixels is under the
+   button. */
+function avoidFrameSpeaker(img){
+  const wrap = img.closest(".frame-wrap, .battle-frame-wrap");
+  const frame = img.closest(".poke-frame, .battle-frame");
+  const say = wrap && wrap.querySelector(".frame-say, .battle-sound");
+  if(!say || !frame || !img.naturalWidth) return;
+  img.style.translate = ""; img.style.scale = "";
+  const pts = artMask(img);
+  if(!pts.length) return;
+  const ir = img.getBoundingClientRect(), sr = say.getBoundingClientRect();
+  if(!ir.width) return;
+  const z = frame.getBoundingClientRect().width / (frame.offsetWidth || 1) || 1;
+  const f = Math.min(ir.width / img.naturalWidth, ir.height / img.naturalHeight);
+  const cw = img.naturalWidth * f, ch = img.naturalHeight * f;
+  const ox = ir.left + (ir.width - cw) / 2, oy = ir.top + (ir.height - ch) / 2;
+  const mx = ir.left + ir.width / 2, my = ir.top + ir.height / 2;
+  const scx = sr.left + sr.width / 2, scy = sr.top + sr.height / 2, rad = sr.width / 2 + 3 * z;
+  const clear = (d, k) => !pts.some(([u, v]) => {
+    const px = mx + (ox + u * cw - mx) * k - d, py = my + (oy + v * ch - my) * k - d;
+    return (px - scx) ** 2 + (py - scy) ** 2 < rad * rad;
+  });
+  const step = frame.getBoundingClientRect().width * 0.03;
+  for(let k = 1; k >= 0.76; k -= 0.06){
+    for(let m = 0; m <= 3; m++){
+      if(clear(m * step, k)){
+        if(m || k < 1){ img.style.translate = `${-m * step / z}px ${-m * step / z}px`; img.style.scale = String(k); }
+        return;
+      }
+    }
+  }
+  img.style.translate = `${-3 * step / z}px ${-3 * step / z}px`; img.style.scale = "0.76";
+}
+document.addEventListener("load", e => {
+  // The catch screen sizes and places its own art (fitCatchArt), clear of its speaker.
+  if(e.target.tagName === "IMG" && e.target.id !== "catchImg" && e.target.closest(".frame-wrap, .battle-frame-wrap")) avoidFrameSpeaker(e.target);
+}, true);
+
 function fitTileArt(img){
   const tile = img.closest(".reading-opt"), bb = img.naturalWidth ? artBounds(img) : null;
   if(!tile || !bb) return;
@@ -7352,7 +7763,7 @@ function pickAlphabet(opt, btn){
     btn.disabled = true;
     btn.classList.add("wrong", "shake");
     setTimeout(()=> btn.classList.remove("shake"), 450);
-    fb.className = "feedback bad"; fb.innerHTML = feedbackHTML("bad", "Try again!");
+    clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
     missAndMaybeReveal($("#alphaOpts .alpha-opt[data-answer]"));
     return;
   }
@@ -7390,8 +7801,7 @@ let patternState=null;
 function renderPattern(p){
   const stage = $("#stage");
   stage.innerHTML = `
-    <div class="kind-tag kind-pattern">Math Pattern</div>
-    ${p.drawn ? "" : `<div class="poke-frame compact"><img alt="Mystery Pokémon" src="${artwork(p.poke.id)}"></div>`}
+    <div class="kind-tag kind-pattern">Maths Patterns</div>
     <div class="pattern-list${p.drawn ? " drawn" : ""}" id="patternList"></div>
     <div id="patternChoiceWrap"></div>
     <div class="feedback" id="feedback"></div>
@@ -7470,7 +7880,7 @@ function openPatternRow(){
     const fb = $("#feedback");
     if(val !== item.ans){
       bumpMistake(st.p);
-      fb.className="feedback bad"; fb.innerHTML = feedbackHTML("bad", "Try again!");
+      clearFeedback(fb);   // a miss is silent and uncaptioned (DESIGN)
       return false;
     }
     if(fb.classList.contains("bad")){ fb.textContent=""; fb.className="feedback"; }
@@ -7507,6 +7917,8 @@ function markPatternDone(){
    fixed beat. */
 function lockAndAdvance(waitFor){
   document.querySelectorAll("#stage button, #stage .tile, #stage input").forEach(b=> b.disabled=true);
+  // A taken answer shows green, never green and the help light at once.
+  document.querySelectorAll("#stage .answer-lit").forEach(e => e.classList.remove("answer-lit"));
   // The reward lands with the right answer, not with the next question.
   if(countsForRound(queue[idx])) updateProgress(false, true);
   const go = ()=>{
@@ -7536,6 +7948,8 @@ const Q_OUT_MS = 160, Q_IN_MS = 200, PIC_WAIT_MS = 400;
 function questionPictures(p){
   const urls = new Set();
   const wordsOnly = p && p.kind === "reading" && p.mode === "choose" ? p.options : null;
+  // Plain maths draws no picture now; its Pokémon is only for Visual Maths.
+  if(p && (p.kind === "math" || (p.kind === "pattern" && !p.drawn))) return [];
   const walk = (x, depth)=>{
     if(!x || typeof x !== "object" || x === wordsOnly || depth > 5 || urls.size >= 24) return;
     if(Array.isArray(x)){ x.forEach(y => walk(y, depth + 1)); return; }
@@ -7686,38 +8100,39 @@ function newBattle(){
   const a = POKEMON[rand(POKEMON.length)];
   let b = POKEMON[rand(POKEMON.length)];
   while(b === a){ b = POKEMON[rand(POKEMON.length)]; }
-  battleState = {a, b, pick:null};
+  battleState = {a, b, pick:null, winner:null};
   renderBattlePicker();
 }
 
+/* The Pokémon ARE the choice: tap the one you think will win. The pick used to be
+   two "Pick Tapu Koko" buttons under the pictures, which only a reader could
+   use. The fight then plays as motion — each side lunges, the other shakes and
+   its health bar drops — with the move names kept small underneath for a
+   grown-up. */
+function battleFighterHTML(side, poke, pickable){
+  const frame = pickable
+    ? `<button class="battle-frame battle-pick" type="button" id="pick${side.toUpperCase()}" aria-label="Pick ${cap(poke.n)}"><img src="${artwork(poke.id)}" alt=""></button>`
+    : `<div class="battle-frame"><img src="${artwork(poke.id)}" alt="${cap(poke.n)}"></div>`;
+  return `
+      <div class="battle-fighter" id="fighter${side.toUpperCase()}">
+        <div class="battle-frame-wrap">
+          ${frame}
+          <button class="battle-sound" id="sound${side.toUpperCase()}" type="button" aria-label="Say ${cap(poke.n)}">${UI_ICONS.speaker}</button>
+        </div>
+        <div class="battle-name">${cap(poke.n)}</div>
+        ${typeBadges(poke)}
+        <div class="battle-hp" aria-hidden="true"><i id="hp${side.toUpperCase()}"></i></div>
+      </div>`;
+}
 function renderBattlePicker(){
   const {a, b} = battleState;
-  const stage = $("#battleStage");
-  stage.innerHTML = `
-    <div class="battle-arena" id="battleArena">
-      <div class="battle-fighter" id="fighterA">
-        <div class="battle-frame-wrap">
-          <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
-          <button class="battle-sound" id="soundA" type="button" aria-label="Say ${cap(a.n)}">${UI_ICONS.speaker}</button>
-        </div>
-        <div class="battle-name">${cap(a.n)}</div>
-        ${typeBadges(a)}
-      </div>
+  $("#battleStage").innerHTML = `
+    <div class="battle-arena picking" id="battleArena">
+      ${battleFighterHTML("a", a, true)}
       <div class="battle-vs">VS</div>
-      <div class="battle-fighter" id="fighterB">
-        <div class="battle-frame-wrap">
-          <div class="battle-frame"><img src="${artwork(b.id)}" alt="${cap(b.n)}"></div>
-          <button class="battle-sound" id="soundB" type="button" aria-label="Say ${cap(b.n)}">${UI_ICONS.speaker}</button>
-        </div>
-        <div class="battle-name">${cap(b.n)}</div>
-        ${typeBadges(b)}
-      </div>
+      ${battleFighterHTML("b", b, true)}
     </div>
-    <div class="actions">
-      <button class="btn green" id="pickA">Pick ${cap(a.n)}</button>
-      <button class="btn green" id="pickB">Pick ${cap(b.n)}</button>
-    </div>
-  `;
+    <div class="battle-log" id="battleLog"></div>`;
   $("#soundA").addEventListener("click", ()=> speakName(a.n));
   $("#soundB").addEventListener("click", ()=> speakName(b.n));
   $("#pickA").addEventListener("click", ()=> startBattle("a"));
@@ -7725,77 +8140,60 @@ function renderBattlePicker(){
 }
 
 function startBattle(pick){
+  if(battleState.pick) return;                  // a second tap mid-fight does nothing
   battleState.pick = pick;
   const {a, b} = battleState;
-  const stage = $("#battleStage");
-  stage.innerHTML = `
-    <div class="battle-arena shaking" id="battleArena">
-      <div class="battle-fighter" id="fighterA">
-        <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
-        <div class="battle-name">${cap(a.n)}</div>
-        ${typeBadges(a)}
-      </div>
-      <div class="battle-vs">VS</div>
-      <div class="battle-fighter" id="fighterB">
-        <div class="battle-frame"><img src="${artwork(b.id)}" alt="${cap(b.n)}"></div>
-        <div class="battle-name">${cap(b.n)}</div>
-        ${typeBadges(b)}
-      </div>
-    </div>
-    <div class="battle-log" id="battleLog"></div>
-  `;
-  const log = $("#battleLog");
-  const lines = [
-    `${cap(a.n)} used ${MOVES[rand(MOVES.length)]}!`,
-    `${cap(b.n)} used ${MOVES[rand(MOVES.length)]}!`
+  // Decided up front, so the health bars can tell the story of how it went.
+  // Higher stat total and type advantage tilt the odds; it is still a roll.
+  const powerA = battlePower(a, b), powerB = battlePower(b, a);
+  battleState.winner = Math.random() < powerA/(powerA+powerB) ? "a" : "b";
+  const arena = $("#battleArena");
+  arena.classList.remove("picking");
+  document.querySelectorAll(".battle-pick").forEach(btn => btn.disabled = true);
+  $("#fighter" + pick.toUpperCase()).classList.add("picked");
+  const win = battleState.winner, lose = win === "a" ? "b" : "a";
+  const hp = { a:100, b:100 };
+  const hits = [
+    [lose, win, 20 + rand(20)], [win, lose, 45],
+    [lose, win, 15 + rand(20)], [win, lose, 55],
   ];
+  const log = $("#battleLog");
   let i = 0;
-  const showNext = ()=>{
-    if(i < lines.length){
-      const p = document.createElement("p");
-      p.textContent = lines[i];
-      log.appendChild(p);
-      i++;
-      setTimeout(showNext, 700);
-    } else {
-      setTimeout(finishBattle, 500);
-    }
+  const step = ()=>{
+    if(i >= hits.length){ setTimeout(finishBattle, 450); return; }
+    const [from, to, dmg] = hits[i++];
+    const attacker = $("#fighter" + from.toUpperCase()), target = $("#fighter" + to.toUpperCase());
+    attacker.classList.add(from === "a" ? "lunge-right" : "lunge-left");
+    setTimeout(()=>{
+      target.classList.add("hit");
+      hp[to] = Math.max(0, hp[to] - dmg);
+      $("#hp" + to.toUpperCase()).style.width = hp[to] + "%";
+      const line = document.createElement("p");
+      line.textContent = `${cap(battleState[from].n)} used ${MOVES[rand(MOVES.length)]}!`;
+      log.appendChild(line);
+    }, 220);
+    setTimeout(()=>{ attacker.classList.remove("lunge-right", "lunge-left"); target.classList.remove("hit"); }, 520);
+    setTimeout(step, 760);
   };
-  setTimeout(showNext, 300);
+  setTimeout(step, 250);
 }
 
 function finishBattle(){
-  const {a, b, pick} = battleState;
-  // higher stat total + type advantage tilts the odds, but it's still a roll — not a guaranteed outcome
-  const powerA = battlePower(a, b), powerB = battlePower(b, a);
-  const winnerSide = Math.random() < powerA/(powerA+powerB) ? "a" : "b";
+  const {a, b, pick, winner: winnerSide} = battleState;
   const winner = winnerSide==="a" ? a : b;
   const correctGuess = pick === winnerSide;
-  const stage = $("#battleStage");
-  stage.innerHTML = `
-    <div class="battle-arena" id="battleArena">
-      <div class="battle-fighter" id="fighterA">
-        <div class="battle-frame"><img src="${artwork(a.id)}" alt="${cap(a.n)}"></div>
-        <div class="battle-name">${cap(a.n)}</div>
-        ${typeBadges(a)}
-      </div>
-      <div class="battle-vs">VS</div>
-      <div class="battle-fighter" id="fighterB">
-        <div class="battle-frame"><img src="${artwork(b.id)}" alt="${cap(b.n)}"></div>
-        <div class="battle-name">${cap(b.n)}</div>
-        ${typeBadges(b)}
-      </div>
-    </div>
+  $("#fighter" + winnerSide.toUpperCase()).classList.add("winner");
+  $("#fighter" + (winnerSide==="a" ? "B" : "A")).classList.add("loser");
+  const after = document.createElement("div");
+  after.innerHTML = `
     <p class="battle-result ${correctGuess?"correct":"wrong"}">
-      <span class="battle-announce">${cap(winner.n)} wins!</span><br>
-      ${correctGuess ? feedbackHTML("good", "You called it!") : feedbackHTML("bad", "Not this time")}
+      <span class="battle-verdict" aria-hidden="true">${correctGuess ? UI_ICONS.tick : UI_ICONS.cross}</span>
+      <span class="battle-announce">${cap(winner.n)} wins!</span>
     </p>
     <div class="actions">
-      <button class="btn green" id="battleAgainBtn"><span class="action-icon">${UI_ICONS.bolt}</span>Battle again</button>
-    </div>
-  `;
-  $(winnerSide==="a" ? "#fighterA" : "#fighterB").classList.add("winner");
-  $(winnerSide==="a" ? "#fighterB" : "#fighterA").classList.add("loser");
+      <button class="btn berry" id="battleAgainBtn"><span class="action-icon">${UI_ICONS.bolt}</span>Battle again</button>
+    </div>`;
+  $("#battleStage").append(...after.children);
   $("#battleAgainBtn").addEventListener("click", newBattle);
 
   if(correctGuess) battleWins++; else battleLosses++;
@@ -7847,15 +8245,30 @@ function layoutCatches(){
   const n = row.children.length;
   if(!n){ scene.style.removeProperty("--svgh"); return; }
   const tag = 44, gap = 12;
+  /* Four in a row on a phone left each catch 70px with its name tag wider than
+     it, so the row ran off both edges. Below 420px wide four stand two by two,
+     the back pair a little smaller. Every column is at least as wide as its
+     widest name tag. */
+  const rows = n === 4 && row.clientWidth < 420 ? 2 : 1;
+  const cols = Math.ceil(n / rows);
+  const nameW = Math.max(...[...row.querySelectorAll(".rs-name")].map(e => e.offsetWidth));
   const sr = scene.getBoundingClientRect(), hudB = $("#resultTiles").getBoundingClientRect().bottom - sr.top;
-  const freeH = sr.height - hudB - 24 - tag - 16;
-  const freeW = (row.clientWidth - 24 - gap * (n - 1)) / n;
-  const cap = [0, 300, 240, 190, 150][Math.min(n, 4)];
-  const size = Math.max(70, Math.min(cap, freeH * 0.8, freeW * 1.05));
-  const top = hudB + 24 + Math.max(0, (freeH - size) * 0.55);
+  const freeH = sr.height - hudB - 24 - rows * tag - (rows - 1) * gap - 16;
+  const freeW = (row.clientWidth - 24 - gap * (cols - 1)) / cols;
+  // A tablet or desktop meadow has the room; capped for a phone, four catches
+  // stood 150px tall under 600px of sky.
+  const cap = (row.clientWidth >= 700 ? [0, 440, 340, 260, 220] : [0, 300, 240, 190, 150])[cols];
+  const size = Math.max(70, Math.min(cap, freeH / rows * 0.85, freeW * 1.05));
+  const groupH = rows * (size + tag) + (rows - 1) * gap;
+  // Low in the meadow, so they stand on the grass rather than over a slab of it.
+  const top = hudB + 24 + Math.max(0, (sr.height - hudB - 24 - groupH - 16) * 0.8);
+  row.style.setProperty("--cols", cols);
   row.style.setProperty("--rs", size + "px");
+  row.style.setProperty("--rgap", gap + "px");
   row.style.setProperty("--rtop", top + "px");
-  scene.style.setProperty("--svgh", Math.min(sr.height, (top + size) / 0.9) + "px");
+  row.style.minWidth = "";
+  row.querySelectorAll(".rs-poke").forEach(b => b.style.minWidth = Math.min(nameW, freeW + 12) + "px");
+  scene.style.setProperty("--svgh", Math.min(sr.height, (top + groupH - tag) / 0.9) + "px");
   row.querySelectorAll(".rs-poke").forEach(fitResultArt);
 }
 
@@ -7935,7 +8348,7 @@ function show(which){
      the third and only guard the first two; the rule is now applied to both
      screens, so the next one that displays a frontier belongs in this list too. */
   if(which === "setup" && window.__dataReady) renderHomeTiles();
-  if(which === "settings" && window.__dataReady) renderTrailSettings();
+  if(which === "settings" && window.__dataReady){ renderTrailSettings(); renderAbout(); }
   if(window.__dataReady) renderChrome(which);
   window.scrollTo({top:0, behavior:"smooth"});
   // Widths only exist once the section is displayed, so the tab strip is sized
@@ -7977,7 +8390,7 @@ function renderMathTrailSettings(){
     const live = trackLive(t.id);
     const need = t.prereqTrack ? `Opens at ${MATH_BY_ID[t.prereqTrack].label} level ${t.prereqLevel}` : "";
     return `<div class="field">
-      <label>${t.label}
+      <label${live ? ` for="sel_${t.id}"` : ""}>${t.label}
         <span class="hint" id="hint_${t.id}">${live ? "—" : need}</span>
       </label>
       ${live ? `<select id="sel_${t.id}"></select>` : `<span class="locked-chip">Locked</span>`}
@@ -8051,7 +8464,9 @@ let bangX = 78;
 function hopBang(e){
   if(e.animationName !== "bangHop") return;
   let x;
-  do { x = 8 + Math.random() * 80; } while(Math.abs(x - bangX) < 22);
+  // Clear of the ✕ in the top-left corner, which on a short phone sits at the
+  // same height as the grass.
+  do { x = 24 + Math.random() * 66; } while(Math.abs(x - bangX) < 18);
   bangX = x;
   $("#grassStrip").style.setProperty("--bang-x", x.toFixed(1) + "%");
 }
@@ -8075,11 +8490,27 @@ $("#dexTabsPrev").addEventListener("click", ()=> scrollDexTabs(-1));
 $("#dexTabsNext").addEventListener("click", ()=> scrollDexTabs(1));
 $("#dexTabs").addEventListener("scroll", updateDexArrows);
 window.addEventListener("resize", updateDexArrows);
-$("#quitBtn").addEventListener("click", ()=>{
+/* ✕ in a round asks first when something would be lost — a question already
+   counted, or a Pokémon still in the grass — because one tap used to throw the
+   round away, and the ✕ is where a hand rests on a tablet. The big green button
+   keeps playing; so does a tap outside. With nothing at stake it just leaves. */
+function leaveRound(){
+  $("#quitModal").classList.add("hidden");
   spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null;
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
+}
+$("#quitBtn").addEventListener("click", ()=>{
+  const atStake = roundCredits > 0 || (grassEncounter && !grassEncounter.caught);
+  if(!atStake){ leaveRound(); return; }
+  const pick = $(".showcase-pick img");
+  $("#quitArt").innerHTML = pick && pick.getAttribute("src") ? `<img src="${pick.getAttribute("src")}" alt="" class="${pick.classList.contains("silhouette") ? "silhouette" : ""}">` : "";
+  $("#quitModal").classList.remove("hidden");
+  $("#keepPlayingBtn").focus();
 });
+$("#keepPlayingBtn").addEventListener("click", ()=> $("#quitModal").classList.add("hidden"));
+$("#stopPlayingBtn").addEventListener("click", leaveRound);
+$("#quitModal").addEventListener("click", e => { if(e.target === e.currentTarget) e.currentTarget.classList.add("hidden"); });
 // The catch screen's meadow is the home screen's, cloned rather than copied
 // into the markup, so the two can never drift apart.
 $(".catch-sky").prepend($(".home-scene .meadow-art").cloneNode(true));
@@ -8087,6 +8518,7 @@ $(".results-scene").prepend($(".home-scene .meadow-art").cloneNode(true));
 $("#catchImg").addEventListener("load", fitCatchArt);
 // Both fits are in pixels, so they follow the window.
 window.addEventListener("resize", ()=>{
+  if(pairsState) layoutPairs();
   fitShowcase();
   layoutCatches();
   if(document.querySelector("#stage .reading-options-img")){ fitReadingWord(); layoutReadingTiles(); }

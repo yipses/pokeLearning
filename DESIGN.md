@@ -16,14 +16,25 @@ zooms the question scales everything together.
 
 ## Colour means one thing each
 
-- **Green = correct**, and nothing else. Answer tiles, choices and letter tiles
-  are **neutral** (white, `paper-line` edge, `#958b75` press edge) until chosen.
-- **Amber = you are here** (the open slot, row or gap).
+- **Green = correct, or the one forward action** (Play, Play again, Caught!,
+  OK), and nothing else: not a selected tab, a switch, a mode tag or a choice.
+  Answer tiles, choices and letter tiles are **neutral** (white, `paper-line`
+  edge, `#958b75` press edge) until chosen — the Battle picks included.
+- **Amber = you are here** (the open slot, row or gap, the picked tile), and
+  nothing else: not a mode tag, not Battle's VS.
 - **Orange = the answer revealed** (the help light) in Maths and Reading;
   Spelling, Alphabet and Pattern light green instead, because amber is already
   their cursor.
 - **Trail colours** live only on the trail's icon, bar and mode tag. Subjects
-  borrow their first trail's: English blue, Maths berry.
+  borrow their first trail's: English blue, Maths berry. Every Maths mode tag
+  (Maths, Visual Maths, Maths Patterns) is Maths berry; Maths Pairs, a trail of
+  its own, keeps its slate. Battle is berry throughout.
+- **A wrong tap is silent and has no caption.** The tile shakes and counts. An
+  option that cannot be right on this question fades and goes dead (choices,
+  pictures, pairs, Yes or No). A bank tile that may still be right for a later
+  blank stays live (Spelling, Sentences, Fix it), because fading it would give
+  away which letters or words are left. A lit answer loses its light the
+  moment it is taken; it shows green, never green and orange at once.
 - **Done steps back.** Finished rows fade (pale `#b3aa97` text, pictures at
   40%, the green answer at 70%) so the open one is the only thing at full
   strength.
@@ -74,6 +85,12 @@ a two-word name breaks only between words.
 - **Scenery never wears a control's shape.** A white pill is a counter or a
   button here, so the clouds are puffs, a little see-through, and sit below the
   HUD row rather than behind it.
+- **Leaving a round asks first when something is at stake** — a question
+  already counted, or a Pokémon in the grass: a sheet with a big green
+  **Keep playing** (the default; a tap outside also keeps playing) and a quiet
+  **Stop**. With nothing at stake, ✕ leaves at once.
+- **Words on a child's button carry an icon** (▶ play, ↻ again, ⌂ home,
+  ✓ yes, ✗ no), so the button can be chosen without reading it.
 - **The way out stays on screen.** On a screen that scrolls, the ✕ row is
   pinned to the top (a cream bar that casts a shadow once something scrolls
   under it); the counters above it scroll away. What you'd navigate with goes in
@@ -89,6 +106,7 @@ a two-word name breaks only between words.
   as the Pokémon.
 - **Nothing sits under a speaker.** Test the drawing's pixels against the
   speaker's circle; shrink only the pictures that collide, only as far as needed.
+  In a round frame the art may first step up and left, then shrink (to 0.76).
 - **No frame inside a frame.** A tile is the picture's frame; don't add a disc
   or box inside it.
 - **The ground meets the Pokémon.** In a tall scene, seat the subject where it
@@ -104,7 +122,10 @@ a two-word name breaks only between words.
 - **The layout gives way, the controls don't.** When space runs out, change the
   arrangement (columns are chosen per question: every balanced count is tried,
   the biggest tiles that fit both width and height win), then shrink text, then
-  pictures — never tap targets.
+  pictures — never tap targets below 44px. On a question card the picture frame
+  goes first (to 96px), then the answers together (to 0.8, which keeps a 56px
+  tile at 44), then the picture again (to 72px). Measure the card's bottom edge,
+  not the page's scroll height, which is never less than the screen.
 - **Tiles have fixed shapes**: 5:4, flattening to 3:2 only if that fits; at
   most 200px wide. A short last row is centred.
 - **A box means one thing.** In Visual Maths a blue box is always five (or ten)
@@ -123,6 +144,11 @@ a two-word name breaks only between words.
 - **A matching board keeps its rows.** Pairs are laid out row by row, so a
   long word makes its row taller instead of putting the columns out of step;
   a matched pair stays in place, green and faded.
+- **Landscape phones have their own layouts** (landscape and under 500px
+  tall): home splits like the desktop, a question card puts its picture or
+  prompt on the left and its answers on the right, the meadow strip shrinks
+  to the bar and a band of grass, and catch and results sit side by side. No
+  scroll at 844×390, 780×360 and 640×360.
 - **Fit or it isn't done.** No vertical or horizontal scroll at 360×640,
   390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900, with the longest
   content (12-letter names, two-word names, five options, four catches).

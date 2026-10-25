@@ -7,7 +7,8 @@ no build step.
 **The ladders come from the design sheet** — spelling, reading, alphabet,
 sentences and all eight maths tracks, including which track unlocks which — and
 so do the Sentences trail's facts and word list (tabs *Sentence Level*,
-*Pokémon Facts*, *Sentence Words*):
+*Pokémon Facts*, *Sentence Words*) and the unclear-pictures list (*Unclear
+Pictures*):
 
 <https://docs.google.com/spreadsheets/d/1MtlBnXPMFt3x_LpcMmWe7LIeISjoC9wJddhTM8_zbVY/edit>
 
@@ -224,6 +225,23 @@ The words are the **Reading** level's pool, not a list of their own. Traps: a bo
 | `promote_5_pct`, `promote_10_pct` | the two promotion gates |
 
 The sums come from each maths track **at the level reached**; pattern tracks are never used. Every answer on a board is different, so a level with few possible answers (Subtract 1 has three, Divide 1 two) shrinks the board and then borrows from the other open tracks. Every row is checked at load: `pairs` outside 3–6 or an unknown `mix` stops the app naming the level.
+
+## `unclear_pictures.csv` — pictures kept out of the first levels, 4 rows
+
+Tab *Unclear Pictures* in the design sheet.
+
+| Column | Notes |
+|---|---|
+| `name` | An item or Pokémon name exactly as the word trails see it (`Glass`, `Moss`); matched case-insensitively |
+| `reason` | Why the picture doesn't say what it is at question size. For people; the app ignores it |
+
+A listed picture is left out of Spelling and Reading **levels 1–3** — and so
+Word Pairs, which uses Reading's pool — **only while that level's pool keeps at
+least eight words** without it. A smaller pool keeps it, so adding a row can
+never empty a level. From level 4 every picture is back. The list was chosen by
+eye from a contact sheet of all 55 pictures in levels 1–3; a measured score
+(drawn area, colours, edge detail) flagged too many clear pictures to be used
+on its own. Removing a row is always safe.
 
 ## `phonemes.csv` — what each chunk says out loud
 
