@@ -172,7 +172,13 @@ a two-word name breaks only between words.
 - **A right answer chimes, and the chime climbs.** One short marimba chime per
   question that counts, a step higher up a pentatonic ladder each time, with a
   small flourish on the round's last question. Never on a wrong tap or a
-  question whose answer was shown. A Settings switch turns it off.
+  question whose answer was shown.
+- **A catch sings.** A real catch plays an angelic choir "woooah" (voices
+  gliding up into a major chord, bells on top); a legendary or mythical one
+  plays the grand version, which lifts a step higher at its peak with more
+  voices and a soft low drum. Sounds only ever rise. The name is said after
+  the choir, not over it. Browsing the Pokédex is silent. One **Sounds**
+  switch in Settings turns the chime and the choir off together.
 - **A picture is never shown blank.** The next question's pictures load while
   the current one is being answered; a question waits, unseen, at most 0.4s for
   any that haven't arrived.
