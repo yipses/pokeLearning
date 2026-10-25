@@ -1025,6 +1025,29 @@ Fit is unchanged at every size.
 
 **Checks.** Smoke, the transition check, the answer loop (1,800 / 0) and the pairs check pass. No scroll at 360×640 or 1280×800. Duplicate-function grep empty; no console errors. Build 120.
 
+## Phase 104 — one blink, then the next step
+
+**The ask.** The owner on the bar: the blink was too fast ("almost like a glitch"), it blinked twice, and the next step was already amber, so there was no story.
+
+**Now.**
+- The earned step switches on once: bright with a glow for about 0.5s, settled by 0.8s.
+- The next step stays white until then, and fades to amber from 0.8s to 1.2s.
+
+**The catch.** A maths question arrives about 0.85s in, and its re-render used to reset the bar mid-story. `updateProgress` now keeps the story classes for 1.3s (`stepStoryAt`).
+
+**Sampled on a real answer:**
+
+| Time | Earned step | Next step |
+|---|---|---|
+| 100 / 300 / 450ms | glow | white |
+| 700ms | green | white |
+| 850ms | green | white (next question shown) |
+| 1000ms | green | fading to amber |
+| 1150ms | green | fading to amber |
+| 1300ms | green | amber |
+
+**Checks.** Transition check, smoke and the answer loop pass; duplicate-function grep empty. Build 121.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

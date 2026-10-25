@@ -160,11 +160,12 @@ a two-word name breaks only between words.
 - **Questions leave left, arrive right.** The card's contents slide out (160ms)
   and the next question's slide in (200ms); the white card itself never moves.
   The slide is taken out of the wait before it, so the pace doesn't change.
-- **The reward comes before the change.** A step on the round bar **blinks
-  on** the moment the answer is right, not when the next question appears: on
-  bright with a glow, off for a moment, on again, then it settles. Hard
-  switches, no fill — a step is earned or it isn't, and a fill reads as
-  progress within the step.
+- **The reward comes before the change, then the next step.** The moment an
+  answer is right, the step it earned **blinks on once** (bright, with a glow,
+  for about half a second, settled by 0.8s); only then does the next step fade
+  in as "you are here" (0.8–1.2s). One switch, no fill — a step is earned or it
+  isn't, and on-off-on read as two blinks. The story keeps playing across the
+  next question's arrival.
 - **A right answer says "✓ Yes!" one way, everywhere:** a white pill over the
   middle of the card, with a pop. It takes no room, so no question keeps an
   empty band under its answers, and the answers stay where they are (the right
