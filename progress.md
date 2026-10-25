@@ -991,6 +991,40 @@ Fit is unchanged at every size.
 
 **Checks.** No scroll at 360×640, 390×844, 1280×800 or 640×360. Smoke, the 1,800-question answer loop, and the reading, pairs and transition checks pass. Duplicate-function grep is empty. Build 119.
 
+## Phase 103 — a catch that sings
+
+**The ask.** The owner wanted a fanfare when a Pokémon is caught. Mallet fanfares (marimba, vibraphone, glockenspiel) were "not great". The owner asked for something angelic, a "WOOOOAH".
+
+**Choosing it.** Three synthesized choir candidates were rendered to MP3 so they could be heard on a phone; the HTML test page's audio didn't play in the chat viewer. The owner picked **B**: detuned sawtooth voices through "ah" vowel formants (800 / 1150 / 2900 Hz), gliding up a fourth into C major, with a hall-like echo and three bells.
+
+**The legendary version.**
+- A first try (L2) lifted to a brighter chord and came back down, and it "felt like a mistake".
+- The chosen **grand lift** only rises. The choir goes from C3 to E5, then lifts a whole step to D major at 1s. A5 and D6 join on top, a soft low drum swells under the lift, and four bells cascade.
+
+**In the app.**
+- `catchSoundGraph()` is the same design in Web Audio, played from `celebrateCatch()`, so it fires on real catches only, like the confetti.
+- The name now waits for the choir: 1.6s on a normal catch and 2.7s on a grand one, instead of 0.35s.
+- The **Sounds** switch (was "Chime on right answers") covers both the chime and the choir.
+
+**Measured** by rendering both offline:
+
+| Sound | Length | Peak | RMS |
+|---|---|---|---|
+| Normal catch | 2.4s | 0.31 | 0.050 |
+| Grand catch | 3.6s | 0.37 | 0.043 |
+| Answer chime (for comparison) | — | 0.27 | — |
+
+**Driven with a logging AudioContext:**
+
+| Case | Voices | Name spoken at |
+|---|---|---|
+| Normal catch | 15 | 1.6s |
+| Legendary catch | 27 | 2.7s |
+| Pokédex open | 0 | 0.35s |
+| Sounds off | 0 | 0.35s |
+
+**Checks.** Smoke, the transition check, the answer loop (1,800 / 0) and the pairs check pass. No scroll at 360×640 or 1280×800. Duplicate-function grep empty; no console errors. Build 120.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
