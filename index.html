@@ -2304,16 +2304,21 @@
   .prog-steps i.done{ background:var(--leaf-600); box-shadow:none; }
   .prog-steps i.now{ background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
   /* The step a right answer just earned (previewProgress) blinks on, like a
-     light: on bright with a glow, off for a moment, on again, then it settles.
-     Hard switches, no in-between colours — a step is earned or it isn't, so a
+     light: one switch on, bright with a glow, then it settles. (On-off-on read
+     as two blinks.) Hard switches, no in-between colours — a step is earned or it isn't, so a
      fill (which reads as progress within the step) was the wrong picture. */
-  .prog-steps i.done.step-pop{ animation:stepBlink .5s step-end; }
+  .prog-steps i.done.step-pop{ animation:stepBlink .8s step-end; }
   @keyframes stepBlink{
-    0%   { background:var(--leaf-500); box-shadow:0 0 0 4px var(--leaf-300); }
-    18%  { background:var(--surface);  box-shadow:inset 0 0 0 2px rgba(46,43,36,.14); }
-    34%  { background:var(--leaf-500); box-shadow:0 0 0 4px var(--leaf-300); }
-    70%  { background:var(--leaf-600); box-shadow:0 0 0 2px var(--leaf-300); }
+    0%   { background:var(--leaf-500); box-shadow:0 0 0 4px var(--leaf-300); }   /* on, bright, 0.5s */
+    62%  { background:var(--leaf-600); box-shadow:0 0 0 2px var(--leaf-300); }   /* settling */
     100% { background:var(--leaf-600); box-shadow:none; }
+  }
+  /* …and only then does the next step light up as "you are here". Until its
+     turn it stays an empty white step, so the blink is the only thing moving. */
+  .prog-steps i.now.now-late{ animation:stepNowIn .4s ease-out .8s both; }
+  @keyframes stepNowIn{
+    from{ background:var(--surface); box-shadow:inset 0 0 0 2px rgba(46,43,36,.14); }
+    to  { background:var(--sun-500); box-shadow:inset 0 0 0 2px var(--sun-700); }
   }
 
   /* Between questions (enterQuestion). The white card stays where it is; only
@@ -2327,7 +2332,7 @@
   @keyframes qIn{ from{ opacity:0; transform:translateX(24px); } }
   @keyframes qFade{ from{ opacity:0; } }
   @media (prefers-reduced-motion: reduce){
-    .prog-steps i.done.step-pop{ animation:none; }
+    .prog-steps i.done.step-pop, .prog-steps i.now.now-late{ animation:none; }
     #stage.q-out > *{ transform:none; }
     #stage.q-in > *{ animation-name:qFade; }
   }
@@ -2894,7 +2899,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 120;
+const APP_BUILD = 121;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -4460,6 +4465,12 @@ function startGame(subject){
    number of steps rather than a distance. A longer round keeps the continuous
    bar: fifty segments on a phone are 3px each, a stripe rather than steps. */
 const STEP_BAR_MAX = 20;
+/* A right answer tells a short story on the bar: the earned step blinks on
+   (0.8s), then the next step fades in as "you are here" (to 1.2s). The next
+   question can arrive in the middle of it (0.85s in maths), so for that long
+   the bar keeps its story classes rather than being reset by the re-render. */
+const STEP_STORY_MS = 1300;
+let stepStoryAt = -Infinity;
 function updateProgress(finished, ahead){
   const target = roundTarget();
   const done = finished ? target : Math.min(target, roundCredits + (ahead ? 1 : 0));
@@ -4469,10 +4480,13 @@ function updateProgress(finished, ahead){
   const steps = $("#progSteps");
   if(!stepped){ steps.innerHTML = ""; return; }
   if(steps.children.length !== target) steps.innerHTML = "<i></i>".repeat(target);
+  if(ahead) stepStoryAt = performance.now();
+  const story = !!ahead || performance.now() - stepStoryAt < STEP_STORY_MS;
   [...steps.children].forEach((seg, k)=>{
     seg.classList.toggle("done", k < done);
     seg.classList.toggle("now", k === done);
-    seg.classList.toggle("step-pop", !!ahead && k === done - 1);
+    seg.classList.toggle("step-pop", story && k === done - 1 && (!!ahead || seg.classList.contains("step-pop")));
+    seg.classList.toggle("now-late", story && k === done && (!!ahead || seg.classList.contains("now-late")));
   });
 }
 
