@@ -1,0 +1,11 @@
+level,task,case,guide,letters,max_letters,promote_5_pct,promote_10_pct
+1,letter,upper,path,LTIEFH,,100,80
+2,letter,upper,path,,,100,80
+3,letter,upper,dots,,,100,80
+4,letter,upper,none,,,100,80
+5,letter,lower,path,,,100,80
+6,letter,lower,none,,,100,80
+7,word,lower,path,,4,100,80
+8,first_letter,lower,none,,,100,80
+9,word,lower,none,,3,100,80
+10,word,lower,none,,4,100,80

@@ -243,6 +243,31 @@ eye from a contact sheet of all 55 pictures in levels 1–3; a measured score
 (drawn area, colours, edge detail) flagged too many clear pictures to be used
 on its own. Removing a row is always safe.
 
+## `writing_levels.csv` and `letter_strokes.csv` — the Writing trail
+
+Tabs *Writing Level* and *Letter Strokes* in the design sheet.
+
+`writing_levels.csv`, 10 rows:
+
+| Column | Notes |
+|---|---|
+| `task` | `letter` (one letter), `word` (a whole word, letter by letter) or `first_letter` (the first letter of a picture's word) |
+| `case` | `upper` or `lower`. Words and first letters are written in the case given |
+| `guide` | `path` (pale path, start dots, arrow), `dots` (start dots and arrow only) or `none` (lines only — written from memory and judged by shape) |
+| `letters` | `letter` tasks only: the letters to draw from, e.g. `LTIEFH`. Blank means every letter of the case |
+| `max_letters` | `word` tasks: the longest word asked for. Words come from his Reading level's pool |
+| `promote_5_pct`, `promote_10_pct` | As every other ladder |
+
+`letter_strokes.csv`, 101 rows — every capital and small letter, one row per stroke, in the order he should draw them:
+
+| Column | Notes |
+|---|---|
+| `letter` | One character, A–Z or a–z. All 52 are required; the app refuses to start without them |
+| `stroke` | 1, 2, 3… — the order taught when tracing, and the numbers on the start dots |
+| `path` | SVG path data (`M`, `L`, `Q`…) on a 100×100 grid, in the stroke's direction. Capitals sit between lines at 12 and 88 (dashed middle at 50); small letters have their x-height from 45 to 78, ascenders up to 12 and descenders down to about 96 |
+
+**Traps.** A stroke's direction matters: tracing checks that it starts at the path's first point. A dot (the dot on i and j) is a path shorter than 3 units, e.g. `M50 30 L50 30.5`; any short touch near it counts. Changing a letter's shape also changes what free writing accepts, since the same paths are the templates his ink is matched against.
+
 ## `phonemes.csv` — what each chunk says out loud
 
 Spoken when a child places a letter or chunk correctly. Keyed on `chunk` **and** `context`, because a letter's sound depends on the word it's in.

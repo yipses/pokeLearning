@@ -1048,6 +1048,47 @@ Fit is unchanged at every size.
 
 **Checks.** Transition check, smoke and the answer loop pass; duplicate-function grep empty. Build 121.
 
+## Phase 105 — a Writing trail
+
+**The ask.** The owner wanted a trail where Tanner writes letters on the screen, leading to words: brainstorm and mock the screens first.
+- **Decided:** capitals first, then lowercase; the shape is checked, with stroke order guided only when tracing; finger on a tablet.
+- **The mocks:** first drawn in the app's own look, then approved ("all good, build it!").
+- **Changed from the mocks:** a word went from three small pads to one big pad plus progress tiles, because the small pads were too small for a finger on a phone.
+
+**Built.**
+- **Data:**
+  - `data/writing_levels.csv` (10 levels: trace capitals → start dots only → from memory → small letters → words, with "first letter of a picture" in between);
+  - `data/letter_strokes.csv` (all 52 letters as ordered SVG strokes on a 100 grid);
+  - sheet tabs *Writing Level* and *Letter Strokes*.
+- **App:** a pad with pointer input, a per-stroke tracing check, and a whole-letter point-cloud match for writing from memory. The help path comes back after `Show the answer after` misses (and the question then no longer counts). Words are written letter by letter.
+- **Plumbing:** Settings card, home and subject rows, My progress, the quit reset, and landscape rules.
+
+**Tuning the free-writing check.** Measured on 2,080 deliberately messy letters (scale ±20%, slant, rotation, wobble, random stroke order and direction):
+
+| Version | Capitals accepted | Small letters accepted | Wrong letter accepted |
+|---|---|---|---|
+| Shape only | 96.7% | 91.9% | 0.6–0.9% |
+| + where it sits on the lines | 99.0% | 96.7% | 0.52% / 0.64% |
+
+- Shape alone let *a* pass for *o*, *u* for *w*, and *s* for *o*; adding where the letter sits on the lines fixed most of that.
+- Random scribbles then passed 3–8% of the time, taps included. An ink-length check (between 0.45× and 2.4× the letter's own length) brought taps and zigzags to 0%, a single line to 0.3–2.7% (as *l* or *I*), and random walks to 3–4%, with letters still accepted as above.
+- Hardest letter: messy small *a*, at 13 of 20.
+
+**Driven with real pointer input:**
+- exact and wobbly traces accepted;
+- a stroke drawn backwards and a scribble rejected, one mistake each, with nothing advancing;
+- B from memory in a random stroke order accepted; O written for B rejected;
+- three misses bring the path back, and the question stops counting;
+- traced and free words go letter by letter;
+- the dot on the i works;
+- the clear button resets the letter at no cost.
+
+**Fit.**
+- Traced capital, traced small letter and free word: no scroll at all 11 sizes.
+- The seventh English trail made the English subject page scroll 16–36px at 360×640, 390×780 and 1024×768. Its rows now tighten in two steps (under 860 and under 700 tall), and it fits again.
+
+**Checks.** Smoke (now with Writing questions in English rounds), transition, quit, answer loop (1,800 / 0) and pairs checks pass; duplicate-function grep empty; no console errors. Build 122.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

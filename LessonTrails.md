@@ -160,6 +160,12 @@ The rule carried over from Sentences: only **definite** facts are used, so a jud
 
 Two rules keep a board fair, and both are checked as it is built: every word and picture on it is different, and so is every answer. The calm version was chosen over the timed one: no clock, and matched pairs stay where they are.
 
+### Writing — 10 levels
+
+**Producing the letter, not choosing it.** Every other English trail picks or arranges letters and words that are already drawn; this one asks him to make them. The ladder follows how handwriting is usually taught: **capitals first** (mostly straight lines, easier for small hands), starting with the six made of straight lines only (L T I E F H), then the rest in rough order of difficulty, with S G J Q last. Each case goes **trace with the full path → trace with only the start dots → write from memory**, so the support is taken away a piece at a time. Small letters come after the capitals; words come last and use his Reading level's words, so he writes words he can already read. Writing the first letter of a picture sits between letters and words: it joins the sound at the start of a word to the letter he now knows how to make.
+
+Checking is **guided on tracing, forgiving from memory**: stroke order and direction are taught where the dots show them, and not marked down where he writes on his own, where only the shape counts. A five-year-old's letters are wobbly, so the free-writing check was tuned on deliberately messy letters until nearly all were accepted while wrong letters almost never were.
+
 ### Why the frontiers are separate
 
 Same grading, two frontiers. Reading will naturally run ahead of Spelling, and that is the intended shape: recognise a word, then produce it. The old trails drew from unrelated pools, so nothing one taught reinforced the other.

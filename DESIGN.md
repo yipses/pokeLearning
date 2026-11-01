@@ -146,6 +146,12 @@ a two-word name breaks only between words.
   long word makes its row taller instead of putting the columns out of step;
   a matched pair stays in place, green and faded. A board keeps no empty
   line under it for the ✓, like every question.
+- **A writing pad is one letter, as big as the room allows.** Handwriting
+  lines, ink 7 units thick on a 100 grid; a word goes one letter at a time with
+  a row of tiles above for its progress (small pads side by side were too small
+  for a finger). Tracing shows a pale path, numbered start dots (the next one
+  amber) and an arrow; ink that works turns green, ink that doesn't fades —
+  never red. The clear button sits in the pad's corner.
 - **Landscape phones have their own layouts** (landscape and under 500px
   tall): home splits like the desktop, a question card puts its picture or
   prompt on the left and its answers on the right, the meadow strip shrinks
