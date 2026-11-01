@@ -151,7 +151,10 @@ a two-word name breaks only between words.
   a row of tiles above for its progress (small pads side by side were too small
   for a finger). Tracing shows a pale path, numbered start dots (the next one
   amber) and an arrow; ink that works turns green, ink that doesn't fades —
-  never red. The clear button sits in the pad's corner.
+  never red. The path sits under his ink; the dots and the arrow sit over it,
+  each dot ringed in white, so a finished stroke never hides where the next one
+  starts. The arrow is amber like the dot it belongs to, and goes on the side
+  of its stroke with no other dot near it. The clear button sits in the pad's corner.
 - **Landscape phones have their own layouts** (landscape and under 500px
   tall): home splits like the desktop, a question card puts its picture or
   prompt on the left and its answers on the right, the meadow strip shrinks
