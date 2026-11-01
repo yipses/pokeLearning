@@ -50,7 +50,7 @@ Settings, Lesson Trails progress, the Pokédex collection, and the play streak p
 
 ## 5. Sessions
 
-**A round is one subject.** Home offers **English** (Spelling, Reading, Alphabet, Sentences, Riddles, Word Pairs) and **Maths** (the eight maths tracks, Visual Maths as a way of drawing them, and Maths Pairs); there is no mixed round. Within a subject the round is split evenly between the trails that are switched on, as it always was. **Play again** replays the same subject.
+**A round is one subject.** Home offers **English** (Spelling, Reading, Alphabet, Sentences, Riddles, Word Pairs, Writing) and **Maths** (the eight maths tracks, Visual Maths as a way of drawing them, and Maths Pairs); there is no mixed round. Within a subject the round is split evenly between the trails that are switched on, as it always was. **Play again** replays the same subject.
 
 **A round ends after N questions answered well enough, not after N questions shown.** Every mode retries until the answer is right, so counting questions *shown* meant a round could be finished by guessing through it. How a question earns that credit depends on the mode. In **maths, reading and alphabet** it counts when answered with at most **`Mistakes allowed`** wrong taps — a Settings value, default 1. **Spelling scores differently**: wrong taps are free, and what is counted is how many letters the word had to *show* (§5.1). **Sentences scores the same way as Spelling**, counting words shown instead of letters.
 
@@ -103,7 +103,7 @@ Each mode toggles on/off in Settings. A session of **N** challenges is **split i
 
 ## 6. Lesson Trails
 
-Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are fifteen: **Spelling**, **Reading**, **Alphabet**, **Sentences**, **Riddles**, **Word Pairs**, **Maths Pairs**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
+Each core skill has its own **track** — an ordered sequence of levels — that advances on its own. There are sixteen: **Spelling**, **Reading**, **Alphabet**, **Sentences**, **Riddles**, **Word Pairs**, **Writing**, **Maths Pairs**, and eight maths tracks (§7.3). All of them share one progression engine; a track supplies only its level list and generator functions. Home and My progress collapse the eight maths tracks into two families, `+ / −` and `× / ÷`, so the screens stay readable — but every track keeps its own level, its own rolling window and its own promotion.
 
 **Difficulty blend.** Each track has a **frontier** — the level being worked on. Its question pool blends three bands: **Review** (20%, below frontier), **Current** (60%), **Stretch** (20%, above). Deliberately not "master level N, then jump to N+1"; see `LessonTrails.md`.
 
@@ -333,6 +333,33 @@ A board needs as many words as it has pairs. **Below eight words the pool borrow
 
 **Every answer on a board is different** — two sums both making 5 would leave a "5" that matches either. Some levels have too few answers to fill a board (Subtract 1 has three, Divide 1 two), so the board shrinks, then borrows sums from the other open tracks, and never has fewer than three pairs.
 
+### 7.2e Writing — its own trail
+
+**He writes the letters himself, with his finger.** A pad sized to the free space (200–460px; from 130 on a landscape phone) carries handwriting lines — for capitals a top line, a dashed middle and a baseline; for small letters an ascender line, a dashed x-height line and a baseline, with room for descenders. Above it, a Pokémon whose name starts with the letter (from the first 151 where there is one, else the first 251), or the word's own picture; its speaker says the letter or the word, and it is said once as the question arrives. A ↻ button in the pad's corner clears the letter to start again, at no cost.
+
+**Tracing** shows the letter as a pale path with a dotted centre line, numbered start dots (the next one amber, as the cursor) and an arrow for the way the stroke goes; a later level keeps only the dots. Each stroke is checked as the finger lifts: it has to start near its dot, end near the stroke's end, and follow the path (75% of the path covered, 75% of the ink on it). A right stroke turns green and the next dot lights; a wrong one fades away silently and counts. Stroke order is guided here and only here.
+
+**Writing from memory** shows only the lines. His ink is compared, as a whole letter, with every letter of the same case: once by shape (a $P point-cloud match, so stroke order and direction don't matter) and once by where it sits on the lines, which is what tells *a* from *o* and *u* from *w*. The target has to be the best match, or a close second, and the ink has to be about a letter's length (a tap or a stray line is never a letter). It is judged 0.35s after the letter has as many strokes as it should, or 1.1s after the last stroke. A miss fades. Measured on 2,080 deliberately messy letters (slanted, squashed, wobbly, any stroke order): 99.0% of capitals and 96.7% of small letters accepted, with a wrong letter accepted 0.5–0.6% of the time; taps and zigzags are never accepted, a single straight line 0.3–2.7% of the time (as *l* or *I*).
+
+**After `Show the answer after` misses the path comes back** and the letter is traced instead; that question no longer counts toward the round. Otherwise a word may take `Mistakes allowed` slips per letter and still count. Promotion stays spotless. A finished letter or word gets the same ✓ Yes! pill and chime as every mode, then the letter or word is said.
+
+**Words** go one letter at a time in the same big pad (three small pads were too small for a finger on a phone): a row of tiles above shows the word's progress — done letters green, the current one the amber cursor; on traced levels the tiles show the letters, on free levels only the ones already written. Words come from his Reading level's pool, plain words of 2 to N letters, borrowing the next Reading level's words when the pool is thin.
+
+| Level | What he does |
+|---|---|
+| 1 | Trace capitals L T I E F H |
+| 2 | Trace every capital (straight lines first: L T I E F H O C U B D P R J K M N V W X Y Z A S G Q) |
+| 3 | Trace capitals, start dots only |
+| 4 | Write capitals from memory |
+| 5 | Trace small letters |
+| 6 | Write small letters from memory |
+| 7 | Trace words of up to 4 letters |
+| 8 | Write the first letter of a picture |
+| 9 | Write words of up to 3 letters |
+| 10 | Write words of up to 4 letters |
+
+The ladder is `data/writing_levels.csv`; the letters' strokes, in order, are `data/letter_strokes.csv` — SVG path data on a 100×100 grid, so a letter's shape is a sheet edit, not code.
+
 ### 7.3 Math Trails
 
 **Eight tracks**, every level of every one read from `data/math_levels.csv` — add, subtract, multiply, divide, and a skip-counting pattern track for each. Nothing about maths difficulty lives in code: how many levels a track has, what ranges each one asks for, and which track unlocks which are all sheet values.
@@ -515,7 +542,7 @@ It is a trophy shelf, not a teaser: it only ever shows a species already caught.
 
 ## 8d. Home Levels
 
-Headed **"Your levels"**, two tiles side by side: **English** and **Maths**, each with its icon (`Aa`, `+−`) in the subject's colour, its level and a `›`. **A subject's level is the sum of its trails' levels**, not their average: a sum only ever goes up, where an average fell every time a new trail opened at level 1. A maths track that has not opened counts nothing. A new child starts at English 6 (six trails at level 1) and Maths 2.
+Headed **"Your levels"**, two tiles side by side: **English** and **Maths**, each with its icon (`Aa`, `+−`) in the subject's colour, its level and a `›`. **A subject's level is the sum of its trails' levels**, not their average: a sum only ever goes up, where an average fell every time a new trail opened at level 1. A maths track that has not opened counts nothing. A new child starts at English 7 (seven trails at level 1) and Maths 2.
 
 **Tapping a level opens the subject's own page**, which wears the same chrome as Settings (the ✕ beside its name): the subject's icon and level, then **one list** — a row per trail with its icon, name, `Level 3 of 11` and a thin bar in the trail's colour; for Maths the two families, as everywhere else, then Maths Pairs. A family not yet open says **Locked**, and a trail switched off in Settings says so. **Play English** (or Maths) sits at the foot with today's count, so the page is somewhere to go from as well as to look at. It is a page, not a pop-up: every other screen you look into is a page with a ✕, and a sheet would have been the app's only one.
 
@@ -578,7 +605,7 @@ Settings are written for a parent, in plain words: no "frontier", no file names 
 
 - **Every round**: Questions per round (how many must be answered well enough to finish, default 10), **Mistakes allowed** (wrong taps a maths, reading or alphabet question may take and still count, default 1; `0` means it must be right first time — spelling and sentences are scored on what was told instead, §5.1), **Show the answer after** (wrong taps before the answer lights up, default 2; the light goes out once taken, so the next one is earned again — outside spelling it is always held at least one above `Mistakes allowed`, so a shown answer never counts toward the round), **Rounds each day** (the day's goal on home, any mix of English and Maths, default 2 — reaching it keeps the streak), **Sounds** (on by default: the answer chime and the catch choir), and **Expected drop** — out of 100 questions, roughly how many hide a Pokémon. It is the measured outcome, pity timer included, not the underlying roll (§8).
 - **Per trail**: an on/off switch for each English trail and each Maths family; Visual Maths, a way of drawing maths, sits in the Maths group. **With every mode off, Start opens a short notice** — "Nothing to play yet", with a button straight to Settings — rather than a browser alert, which a child cannot read and which looks like the page broke.
-- **Level**: a dropdown per trail showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All fifteen trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
+- **Level**: a dropdown per trail showing the current level in plain language, built from that level's own CSV row — which doubles as the manual placement control. All sixteen trails are listed, maths one row per track rather than per family, since this screen is read by a parent placing a child precisely. A maths track that has not met its prerequisite yet is shown locked with what opens it.
 - **About**: a build number, the date that build was published, and the Last-Modified date of the HTML file this device actually loaded. Because a cached page reports the cached copy's date rather than today's, the two together tell a stale copy apart from a fresh one — the app is one static file that browsers cache aggressively, so "am I even running the new version?" is a real question. The build number has no build step behind it and is maintained by hand.
 - Everything saves to `localStorage` on every change and reloads automatically on the next visit. Settings degrade gracefully: if storage is unavailable (e.g. private browsing) the app uses defaults instead of erroring.
 
@@ -607,6 +634,8 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |
 | `data/math_promotion.csv` | 3 | `questions`, `percent` |
 | `data/unclear_pictures.csv` | 4 | `name`, `reason` |
+| `data/writing_levels.csv` | 10 | `level`, `task`, `case`, `guide`, `letters`, `max_letters`, `promote_5_pct`, `promote_10_pct` |
+| `data/letter_strokes.csv` | 101 | `letter`, `stroke`, `path` |
 
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). **1,020 of the 1,021 are spellable** — a name may contain a space or a hyphen, so Iron Hands and Ho-Oh both work; only Type: Null is excluded, for its colon. `rarity` marks **71 legendary** and **23 mythical** species.
 - **Pokopia items**: **922** items across 12 categories, of which **819** reach the word trails. 13 carry an apostrophe, accent, period or digit; **90 share their artwork with another item** and are dropped from both trails, because a picture that names two things names neither — one generic building icon serves ten place names, so `Boutique` and `Snowbelle City` are the same picture. A few are plain mislabels: `Acrylic poster` and `Campfire` are one image. The rule is mechanical — `tools/classify_words.py` hashes every PNG and flags any file that appears twice — so it needs no eyeballing. **25 are excluded from Spelling** as Pokémon-branded (§7.1). The `image` column holds a bare slug — the `items/` folder and `.png` extension are added by the loader.
@@ -646,7 +675,7 @@ The reader is five and still learning to read. Every word on a child-facing scre
 ## 15. Technical Architecture
 
 - **Stack**: vanilla HTML/CSS/JS, no framework, no build step, no package manager.
-- **Data loading**: `loadData()` fetches **all nineteen** CSVs in parallel at startup — `word_levels.csv` only for its `level` column, which grades the words Sentences may use; the word trails read the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
+- **Data loading**: `loadData()` fetches **all twenty-one** CSVs in parallel at startup — `word_levels.csv` only for its `level` column, which grades the words Sentences may use; the word trails read the per-item view rolled up from it — and parses them with a small RFC-4180-ish parser that handles quoted fields, so a spreadsheet export round-trips. Boot is therefore async: event listeners bind immediately since they only fire on interaction, but anything reading the roster waits for the data.
 - **State**: in-memory JS objects for the active session/battle; `localStorage` for everything persisted.
 - **Rendering**: each mode has its own `render*()`/`mk*()` function pair; a shared `buildQueue()` assembles the session from whichever modes are active.
 - **Lesson Trails engine**: each track is an ordered array of level objects (`{id, label, gen}`), with a shared `pickBand()` / `recordAttempt()` / `setFrontier()` layer handling the review/current/stretch mix and promotion logic identically across all ten tracks. Per-track progress records the frontier, rolling clean/labored history, a capped `trend` log, and a `frontierSince` timestamp.

@@ -69,7 +69,7 @@
     /* Riddles' trail colour. White on it is 7.7:1. */
     --indigo-700:#3d4aa6;
     /* Word Pairs and Maths Pairs. White on them is 8.1:1 and 7.9:1. */
-    --plum-700:#86307e; --slate-700:#3f5566;
+    --plum-700:#86307e; --slate-700:#3f5566; --rose-700:#a43f6a;
     --primary:      var(--leaf-600);
     --primary-edge: var(--leaf-700);
     --accent:       var(--berry-600);
@@ -290,6 +290,7 @@
   .kind-sentence{ background:var(--bark-700); }
   .kind-riddle{ background:var(--indigo-700); }
   .kind-wordpairs{ background:var(--plum-700); }
+  .kind-writing{ background:var(--rose-700); }
   .kind-mathpairs{ background:var(--slate-700); }
   .kind-battle{ background:var(--ink); color:var(--sun-500); }
 
@@ -1987,13 +1988,19 @@
   .subj-play{ width:100%; margin-top:18px; min-height:64px; font-size:19px; gap:10px; }
   .subj-play .action-icon{ width:20px; height:20px; margin-right:8px; }
 
+  /* Seven English trails: the rows tighten in two steps so the page still fits
+     without scrolling down to 360×640. */
+  @media (max-height:860px){
+    .trail-row{ padding:8px 16px; row-gap:4px; }
+    .subj-play{ margin-top:14px; }
+  }
   @media (max-height:700px){
-    .subj-hero{ margin-bottom:10px; }
+    .subj-hero{ margin-bottom:8px; }
     .subj-hero .h-icon{ width:46px; height:46px; }
     .subj-hero .h-num{ font-size:24px; }
-    .trail-row{ padding:6px 14px; row-gap:3px; }
-    .trail-row .t-icon{ width:28px; height:28px; }
-    .subj-play{ margin-top:12px; min-height:56px; }
+    .trail-row{ padding:3px 14px; row-gap:2px; }
+    .trail-row .t-icon{ width:26px; height:26px; }
+    .subj-play{ margin-top:10px; min-height:52px; }
   }
 
   /* ===== Word Pairs and Maths Pairs =====
@@ -2489,6 +2496,9 @@
     .pairs-board{ row-gap:6px; }
     #tiles .tile, #missingTiles .tile, #sentTiles .tile, #riddleTiles .tile{ height:46px; min-width:46px; font-size:22px; }
     .battle-frame{ width:84px !important; height:84px !important; }
+    .w-chip{ width:40px; height:40px; font-size:22px; }
+    .write-word{ margin-top:0; } .write-word + .write-pad{ margin-top:8px; }
+    #stage[data-kind="writing"] .write-pad{ margin-top:0; }
     .battle-name{ font-size:.9rem; }
     /* The chrome's counters stay on home and the results; on a short landscape
        screen a page keeps only its ✕ bar, so the page itself has the height. */
@@ -2533,6 +2543,35 @@
     .subj-level .s-more{ display:none; }
     .showcase-dex-go .go-word{ display:none; }
   }
+
+  /* ===== Writing: a pad to write on with a finger ===== */
+  #stage[data-kind="writing"] .frame-wrap .poke-frame{ width:96px; height:96px; }
+  .write-pad{ position:relative; width:340px; max-width:100%; aspect-ratio:1; margin:14px auto 0; background:var(--surface);
+    border:2px solid var(--paper-line); border-radius:var(--radius); box-shadow:0 var(--press-edge) 0 var(--paper-edge);
+    touch-action:none; user-select:none; -webkit-user-select:none; }
+  .write-pad svg{ width:100%; height:100%; display:block; touch-action:none; }
+  .wg{ stroke:#e6dcc6; stroke-width:.8; } .wg.mid{ stroke-dasharray:3 3; } .wg.base{ stroke:#cbbd9c; stroke-width:1.1; }
+  .w-track{ fill:none; stroke:#efe7d6; stroke-width:12; stroke-linecap:round; stroke-linejoin:round; }
+  .w-track.lit{ stroke:var(--leaf-300); animation:answer-lit-green-pulse 1.25s ease-in-out infinite; }
+  .w-centre{ fill:none; stroke:#cdbf9f; stroke-width:1.6; stroke-linecap:round; stroke-dasharray:.1 4; }
+  .w-track.gone, .w-centre.gone{ opacity:.5; }
+  .w-ink{ fill:none; stroke:var(--ink); stroke-width:7; stroke-linecap:round; stroke-linejoin:round; }
+  .w-ink.ok{ stroke:var(--leaf-600); }
+  .w-ink.miss{ transition:opacity .45s; opacity:0; }
+  .w-dot circle{ fill:var(--leaf-600); } .w-dot text{ fill:#fff; font:900 8px "M PLUS Rounded 1c", sans-serif; text-anchor:middle; }
+  .w-dot.now circle{ fill:var(--sun-500); stroke:var(--sun-700); stroke-width:1.4; } .w-dot.now text{ fill:var(--ink); }
+  .w-arrow{ stroke:var(--leaf-600); stroke-width:1.6; fill:none; }
+  #wArrow path{ fill:var(--leaf-600); }
+  .w-clear{ position:absolute; right:8px; bottom:8px; width:44px; height:44px; border-radius:50%; border:2px solid var(--paper-line);
+    background:var(--surface); color:var(--ink-soft); display:grid; place-items:center; box-shadow:0 3px 0 var(--paper-edge); cursor:pointer; }
+  .w-clear svg{ width:22px; height:22px; }
+  .write-word{ display:flex; gap:8px; justify-content:center; margin-top:12px; }
+  .w-chip{ width:52px; height:56px; border-radius:var(--radius-sm); display:grid; place-items:center; font-size:30px; font-weight:900;
+    background:var(--surface-sunken); color:var(--ink-soft); }
+  .w-chip.done{ background:var(--leaf-100); color:var(--leaf-700); }
+  .w-chip.now{ background:var(--surface); box-shadow:inset 0 0 0 3px var(--sun-700), 0 0 0 4px var(--sun-300); }
+  .write-word + .write-pad{ margin-top:12px; }
+  @media (prefers-reduced-motion: reduce){ .w-track.lit{ animation:none; } }
 
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
@@ -2745,6 +2784,23 @@
       </div>
     </div>
 
+    <div class="card">
+      <h2>Writing</h2>
+      <p class="sub">He writes letters with his finger: tracing capitals, then from memory, then small letters, then short words from his Reading level.</p>
+      <div class="field">
+        <label for="writeOn">Turn on writing
+          <span class="hint">Include writing in English rounds</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="writeOn" checked><span class="slider"></span></label>
+      </div>
+      <div class="field">
+        <label for="writingFrontier">Writing level
+          <span class="hint" id="writingLevelHint">—</span>
+        </label>
+        <select id="writingFrontier"></select>
+      </div>
+    </div>
+
     <h2 class="settings-subject">Maths</h2>
 
     <div class="card">
@@ -2784,7 +2840,7 @@
 
     <details class="card advanced">
       <summary><h2>Advanced</h2></summary>
-      <p class="sub">Every ladder is a file the app reads at start-up, authored in the design spreadsheet: <code>data/spelling_levels.csv</code>, <code>reading_levels.csv</code>, <code>alphabet_levels.csv</code>, <code>sentence_levels.csv</code>, <code>riddle_levels.csv</code>, <code>word_pair_levels.csv</code>, <code>math_tracks.csv</code>, <code>math_levels.csv</code> and <code>math_pair_levels.csv</code>. A level changed above moves where he is on that ladder; it does not change the ladder.</p>
+      <p class="sub">Every ladder is a file the app reads at start-up, authored in the design spreadsheet: <code>data/spelling_levels.csv</code>, <code>reading_levels.csv</code>, <code>alphabet_levels.csv</code>, <code>sentence_levels.csv</code>, <code>riddle_levels.csv</code>, <code>word_pair_levels.csv</code>, <code>writing_levels.csv</code> (with the letters' strokes in <code>letter_strokes.csv</code>), <code>math_tracks.csv</code>, <code>math_levels.csv</code> and <code>math_pair_levels.csv</code>. A level changed above moves where he is on that ladder; it does not change the ladder.</p>
       <p class="sub">Which version of the app this device is running. If the build here is older than the one you just published, this device is showing a cached copy &mdash; reload the page.</p>
       <div class="about-rows">
         <div class="about-row"><span>Build</span><b id="aboutBuild">—</b></div>
@@ -2899,7 +2955,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 121;
+const APP_BUILD = 122;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -3004,7 +3060,8 @@ const letterCount = n => n.replace(/[^A-Za-z]/g, "").length;
 async function loadData(){
   const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows,
-         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows, wordPairRows, mathPairRows, unclearRows] = await Promise.all([
+         sentRows, factRows, sentWordRows, wordLevelRows, riddleRows, wordPairRows, mathPairRows, unclearRows,
+         writingRows, strokeRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -3024,6 +3081,8 @@ async function loadData(){
     fetchCsv("data/word_pair_levels.csv"),
     fetchCsv("data/math_pair_levels.csv"),
     fetchCsv("data/unclear_pictures.csv"),
+    fetchCsv("data/writing_levels.csv"),
+    fetchCsv("data/letter_strokes.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -3134,6 +3193,7 @@ async function loadData(){
   loadSentenceData(sentRows, factRows, sentWordRows, wordLevelRows);
   loadRiddleData(riddleRows);
   loadPairData(wordPairRows, mathPairRows);
+  loadWritingData(writingRows, strokeRows);
   UNCLEAR_PICTURES = new Set(unclearRows.map(r => String(r.name || "").trim().toLowerCase()).filter(Boolean));
 }
 
@@ -3296,7 +3356,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    ================================================================== */
 const PROGRESS_KEY = "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
-const TRACK_IDS = ["spelling","reading","alphabet","sentences","riddles","wordpairs","mathpairs", ...MATH_TRACK_IDS];
+const TRACK_IDS = ["spelling","reading","alphabet","sentences","riddles","wordpairs","writing","mathpairs", ...MATH_TRACK_IDS];
 
 function loadProgress(){
   let saved;
@@ -3332,6 +3392,7 @@ function trackLevels(track){
   if(track==="sentences") return SENTENCE_LEVELS;
   if(track==="riddles") return RIDDLE_LEVELS;
   if(track==="wordpairs") return WORD_PAIR_LEVELS;
+  if(track==="writing") return WRITING_LEVELS;
   if(track==="mathpairs") return MATH_PAIR_LEVELS;
   return (MATH_BY_ID[track] && MATH_BY_ID[track].levels) || [];
 }
@@ -3929,6 +3990,7 @@ function buildQueue(){
     if($("#sentOn").checked)      groups.push(wordPick("sentences"));
     if($("#riddleOn").checked)    groups.push(wordPick("riddles"));
     if($("#wordPairsOn").checked) groups.push(wordPick("wordpairs"));
+    if($("#writeOn").checked)     groups.push(wordPick("writing"));
   } else {
     if($("#mathOn").checked && liveMathTracks().length) groups.push(mathPick);
     if($("#mathPairsOn").checked) groups.push(wordPick("mathpairs"));
@@ -3988,6 +4050,7 @@ function saveSettings(){
     sentOn: $("#sentOn").checked,
     riddleOn: $("#riddleOn").checked,
     wordPairsOn: $("#wordPairsOn").checked,
+    writeOn: $("#writeOn").checked,
     mathPairsOn: $("#mathPairsOn").checked,
     mathOn: $("#mathOn").checked,
     visualOn: $("#visualOn").checked,
@@ -4010,6 +4073,7 @@ function loadSettings(){
   if(saved.sentOn!=null) $("#sentOn").checked = saved.sentOn;
   if(saved.riddleOn!=null) $("#riddleOn").checked = saved.riddleOn;
   if(saved.wordPairsOn!=null) $("#wordPairsOn").checked = saved.wordPairsOn;
+  if(saved.writeOn!=null) $("#writeOn").checked = saved.writeOn;
   if(saved.mathPairsOn!=null) $("#mathPairsOn").checked = saved.mathPairsOn;
   if(saved.mathOn!=null) $("#mathOn").checked = saved.mathOn;
   if(saved.visualOn!=null) $("#visualOn").checked = saved.visualOn;
@@ -4328,6 +4392,9 @@ const LEVEL_ICONS = {
   // share it; the trail colour says which.
   wordpairs: PAIRS_ICON,
   mathpairs: PAIRS_ICON,
+  // A pencil: the one trail where he makes the letters himself.
+  writing: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 19.5l1.2-4.6L15.8 4.8a2.1 2.1 0 0 1 3 0l.4.4a2.1 2.1 0 0 1 0 3L9.1 18.3z"
+      fill="currentColor"/><path d="M13.8 6.8l3.4 3.4" stroke="#000" stroke-opacity=".25" stroke-width="1.6"/></svg>`,
 };
 
 /* ---------------- subjects ----------------
@@ -4338,7 +4405,7 @@ const LEVEL_ICONS = {
    has not opened counts nothing, as the maths groups always have. */
 const SUBJECTS = [
   { id:"english", label:"English", color:"var(--sky-700)", icon:"spelling",
-    tracks:["spelling","reading","alphabet","sentences","riddles","wordpairs"] },
+    tracks:["spelling","reading","alphabet","sentences","riddles","wordpairs","writing"] },
   { id:"maths",   label:"Maths",   color:"var(--berry-600)", icon:"addsub",
     tracks:[...MATH_TRACK_IDS, "mathpairs"] },
 ];
@@ -4358,6 +4425,7 @@ const LEVEL_TRACKS = [
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
   {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
   {id:"wordpairs", label:"Word Pairs", color:"var(--plum-700)"},
+  {id:"writing",   label:"Writing",    color:"var(--rose-700)"},
 ];
 
 /* The rows of a subject's page: one per English trail; for Maths the two summed
@@ -4378,7 +4446,7 @@ function subjectRows(id){
 }
 /* The Settings switch behind each trail. */
 const TRAIL_SWITCH = { spelling:"#spellOn", reading:"#readingOn", alphabet:"#alphaOn", sentences:"#sentOn",
-                       riddles:"#riddleOn", wordpairs:"#wordPairsOn", maths:"#mathOn", mathpairs:"#mathPairsOn" };
+                       riddles:"#riddleOn", wordpairs:"#wordPairsOn", writing:"#writeOn", maths:"#mathOn", mathpairs:"#mathPairsOn" };
 function trailSwitchedOn(id){ const el = $(TRAIL_SWITCH[id]); return !el || el.checked; }
 
 function renderSubjectPage(id){
@@ -4503,6 +4571,7 @@ function renderProblem(){
   else if(p.kind==="sentence") renderSentence(p);
   else if(p.kind==="riddle") renderRiddle(p);
   else if(p.kind==="pairs") renderPairs(p);
+  else if(p.kind==="writing") renderWriting(p);
   else if(p.kind==="pattern") renderPattern(p);
   else if(p.kind==="visual") renderVisual(p);
   else renderMath(p);
@@ -4702,6 +4771,9 @@ function syncMissingLight(){
 function spotless(p){ return !p || !p._mistakes; }
 function countsForRound(p){
   if(usesToldBudget(p)) return toldCount(p) <= freeHints(p._blankCount);
+  // Writing: a slip per letter is fine, but once the path had to be shown the
+  // letter was traced, not written, and it no longer counts.
+  if(p && p.kind === "writing") return !p._helped && (p._mistakes || 0) <= mistakeAllowance() * (p._letterCount || 1);
   return (p && p._mistakes || 0) <= mistakeAllowance();
 }
 
@@ -5307,6 +5379,7 @@ const WORD_TRACKS = [
   {id:"sentences", label:"Sentences", color:"var(--bark-700)"},
   {id:"riddles",   label:"Riddles",   color:"var(--indigo-700)"},
   {id:"wordpairs", label:"Word Pairs", color:"var(--plum-700)"},
+  {id:"writing",   label:"Writing",    color:"var(--rose-700)"},
 ];
 function dashboardTracks(){ return WORD_TRACKS.slice(); }
 // The darker shade of each family, so the heading reads at 4.5:1 or better on white.
@@ -7160,6 +7233,427 @@ function finishPairs(last){
   else lockAndAdvance();
 }
 
+/* ---------------- WRITING ----------------
+   He writes letters with his finger, then whole words. Two kinds of step:
+
+   TRACING (a path or start dots on the pad): each stroke is checked as he lifts
+   his finger. It has to start near its numbered dot and follow the letter's own
+   stroke — most of the stroke covered, little of the ink off it. A right stroke
+   turns green and the next dot lights; a wrong one fades away. Stroke order is
+   guided here and only here.
+
+   WRITING FROM MEMORY (no guide): his ink is compared, as a whole letter, with
+   every letter of the same case, by shape (a point-cloud match, so stroke order
+   and direction don't matter). The target has to be the best match, or a close
+   second, and close enough. Forgiving on purpose: a five-year-old's B is not a
+   font's B. A miss fades too.
+
+   Letters are drawn on a 100×100 grid in data/letter_strokes.csv — capitals
+   between lines at 12 and 88, small letters with an x-height from 45 to 78 and
+   descenders to 96. After `Show the answer after` misses the path appears and
+   the letter is traced instead (and the question can no longer count). */
+let WRITING_ROWS = [], WRITING_LEVELS = [];
+let LETTER_STROKES = {};          // letter → [svg path d, …] in stroke order
+let writeState = null;
+const WRITE_LETTER_ORDER = "LTIEFHOCUBDPRJKMNVWXYZASGQ";   // straight lines first, S G Q last
+const WRITE_TASKS = { letter:1, word:1, first_letter:1 };
+const WRITE_GUIDES = { path:1, dots:1, none:1 };
+
+function loadWritingData(levelRows, strokeRows){
+  const n = v => (v === "" || v == null) ? null : Number(v);
+  WRITING_ROWS = levelRows.map(r => ({
+    level: Number(r.level), task: String(r.task || "").trim(), lower: String(r.case || "").trim() === "lower",
+    guide: String(r.guide || "").trim(), letters: String(r.letters || "").trim(), maxLetters: n(r.max_letters),
+    fastPct: n(r.promote_5_pct), windowPct: n(r.promote_10_pct),
+  }));
+  if(!WRITING_ROWS.length) throw new Error("data/writing_levels.csv is empty");
+  WRITING_ROWS.forEach(r => {
+    if(!WRITE_TASKS[r.task]) throw new Error(`data/writing_levels.csv level ${r.level}: task "${r.task}" is not letter, word or first_letter`);
+    if(!WRITE_GUIDES[r.guide]) throw new Error(`data/writing_levels.csv level ${r.level}: guide "${r.guide}" is not path, dots or none`);
+  });
+  LETTER_STROKES = {};
+  strokeRows.slice().sort((a, b) => Number(a.stroke) - Number(b.stroke))
+    .forEach(r => (LETTER_STROKES[r.letter] ||= []).push(r.path));
+  for(const c of "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+    if(!LETTER_STROKES[c]) throw new Error(`data/letter_strokes.csv has no strokes for "${c}"`);
+}
+function writingLabel(r){
+  const what = r.task === "word" ? `words of up to ${r.maxLetters || 4} letters`
+             : r.task === "first_letter" ? "the first letter of a picture"
+             : `${r.lower ? "small letters" : "capitals"}${r.letters ? ` (${r.letters.split("").join(" ")})` : ""}`;
+  const how = r.task === "first_letter" ? "Write" : r.guide === "path" ? "Trace" : r.guide === "dots" ? "Trace" : "Write";
+  return `${how} ${what}${r.guide === "dots" ? ", start dots only" : ""}`;
+}
+function buildWritingLevels(){
+  return WRITING_ROWS.map(row => ({ id: String(row.level), row, label: writingLabel(row), gen: ()=> mkWriting(row) }));
+}
+
+/* A Pokémon whose name starts with the letter — from the first 151 where there
+   is one, else the first 251 (Q, U, X and Y have none in the first 151). */
+function writingPicFor(letter){
+  const up = letter.toUpperCase();
+  const all = SPELLABLE_POKEMON.filter(p => p.n[0].toUpperCase() === up);
+  const early = all.filter(p => p.id <= 151).length ? all.filter(p => p.id <= 151) : all.filter(p => p.id <= 251);
+  return pickFrom(early.length ? early : all, "write-pic-" + up);
+}
+/* Words come from his Reading level's pool, one plain word of 2 to N letters. */
+function writingWords(maxLetters){
+  const rRow = (currentLevel("reading") || {}).row || READING_ROWS[0];
+  let rows = [rRow];
+  const i = READING_ROWS.indexOf(rRow);
+  const ok = x => /^[a-z]{2,}$/i.test(x.n) && x.n.length <= (maxLetters || 99);
+  let pool = poolForRow(rRow).filter(ok);
+  for(let k = i + 1; pool.length < 4 && k < READING_ROWS.length; k++){ rows.push(READING_ROWS[k]); pool = pool.concat(poolForRow(READING_ROWS[k]).filter(ok)); }
+  return pool;
+}
+function mkWriting(row){
+  const p = { kind:"writing", task: row.task, guide: row.guide, lower: row.lower };
+  if(row.task === "letter"){
+    const set = (row.letters || WRITE_LETTER_ORDER).split("");
+    const up = pickFrom(set, "write-letter-" + row.level);
+    const ch = row.lower ? up.toLowerCase() : up;
+    p.letters = [ch]; p.rec = writingPicFor(up); p.say = up + ".";
+  } else {
+    const pool = writingWords(row.task === "word" ? row.maxLetters : 0);
+    const rec = pickFrom(pool, "write-word-" + row.level);
+    const word = rec.n.toLowerCase();
+    p.rec = rec; p.word = word; p.say = sayAs(rec.n);
+    p.letters = row.task === "first_letter" ? [word[0]] : word.split("");
+    if(!row.lower) p.letters = p.letters.map(c => c.toUpperCase());
+  }
+  p._letterCount = p.letters.length;
+  return p;
+}
+
+/* ---- the pad ---- */
+const WRITE_NS = "http://www.w3.org/2000/svg";
+function writeStart(d){ const m = d.match(/M\s*([\d.]+)\s+([\d.]+)/); return [Number(m[1]), Number(m[2])]; }
+/* Points along a path, every `step` units — measured on a real SVG path, so the
+   CSV can use any curve SVG understands. */
+let writeMeasure = null;
+function pathPoints(d, step){
+  if(!writeMeasure){
+    const svg = document.createElementNS(WRITE_NS, "svg");
+    svg.setAttribute("width", "0"); svg.setAttribute("height", "0");
+    svg.style.cssText = "position:absolute; width:0; height:0; overflow:hidden";
+    writeMeasure = document.createElementNS(WRITE_NS, "path");
+    svg.appendChild(writeMeasure); document.body.appendChild(svg);
+  }
+  writeMeasure.setAttribute("d", d);
+  const len = writeMeasure.getTotalLength(), pts = [];
+  const n = Math.max(1, Math.round(len / (step || 3)));
+  for(let i = 0; i <= n; i++){ const q = writeMeasure.getPointAtLength(len * i / n); pts.push([q.x, q.y]); }
+  return { pts, len };
+}
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+const nearest = (p, pts) => pts.reduce((m, q) => Math.min(m, dist(p, q)), Infinity);
+const inkD = pts => pts.length ? "M" + pts.map(q => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L") + (pts.length === 1 ? " l0.1 0" : "") : "";
+
+/* One traced stroke against its template. A dot (i, j) is any short touch near it. */
+const TRACE_START = 17, TRACE_NEAR = 13, TRACE_COVER = 0.75, TRACE_ON = 0.75;
+function checkTrace(ink, d){
+  const { pts: t, len } = pathPoints(d, 2.5);
+  if(len < 3){
+    const inkLen = ink.slice(1).reduce((a, q, i) => a + dist(q, ink[i]), 0);
+    return inkLen < 16 && ink.every(q => dist(q, t[0]) < 15);
+  }
+  if(dist(ink[0], t[0]) > TRACE_START) return false;
+  if(dist(ink[ink.length - 1], t[t.length - 1]) > TRACE_START + 4) return false;
+  const covered = t.filter(q => nearest(q, ink) <= TRACE_NEAR).length / t.length;
+  const onPath = ink.filter(q => nearest(q, t) <= TRACE_NEAR + 3).length / ink.length;
+  return covered >= TRACE_COVER && onPath >= TRACE_ON;
+}
+
+/* Free writing: a $P-style point-cloud match (Vatavu, Anthony & Wobbrock).
+   Both clouds are resampled to 32 points, scaled to a unit box by their larger
+   side and centred, then matched greedily. Only letters of the same case compete.
+   Shape alone confused small letters that differ in where they sit on the lines
+   (a and o, u and w, s and o), so a second match keeps the height on the pad —
+   measured on 2,080 messy letters, that raised small letters from 93% to 97%
+   accepted, with wrong letters accepted 0.6% of the time. */
+const WP_N = 32;
+function wpResample(strokes){
+  // Resample along all strokes together, keeping the stroke boundaries out of it.
+  const segs = strokes.filter(s => s.length);
+  let total = 0;
+  segs.forEach(s => { for(let i = 1; i < s.length; i++) total += dist(s[i - 1], s[i]); });
+  const out = [];
+  if(total === 0){ segs.forEach(s => out.push(s[0])); while(out.length < WP_N) out.push(out[0] || [0, 0]); }
+  else {
+    const step = total / (WP_N - 1); let carry = 0;
+    segs.forEach(s => {
+      out.push(s[0]); carry = 0;
+      for(let i = 1; i < s.length; i++){
+        let a = s[i - 1], b = s[i], dd = dist(a, b);
+        while(carry + dd >= step && dd > 0){
+          const t = (step - carry) / dd, q = [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])];
+          out.push(q); a = q; dd = dist(a, b); carry = 0;
+        }
+        carry += dd;
+      }
+    });
+  }
+  const pts = [];
+  for(let i = 0; i < WP_N; i++) pts.push(out[Math.min(out.length - 1, Math.round(i * (out.length - 1) / (WP_N - 1)))]);
+  return pts;
+}
+function wpCloud(strokes){
+  const pts = wpResample(strokes);
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const size = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) || 1;
+  const cx = xs.reduce((a, b) => a + b) / WP_N, cy = ys.reduce((a, b) => a + b) / WP_N;
+  return pts.map(p => [(p[0] - cx) / size, (p[1] - cy) / size]);
+}
+/* The same points, centred sideways only and left at their size and height. */
+function wpPlaced(strokes){
+  const pts = wpResample(strokes), cx = pts.reduce((a, p) => a + p[0], 0) / WP_N;
+  return pts.map(p => [(p[0] - cx) / 100, p[1] / 100]);
+}
+function wpCloudDistance(a, b, start){
+  const used = new Array(WP_N).fill(false);
+  let sum = 0, i = start;
+  do{
+    let best = Infinity, idx = -1;
+    for(let j = 0; j < WP_N; j++) if(!used[j]){ const d = dist(a[i], b[j]); if(d < best){ best = d; idx = j; } }
+    used[idx] = true;
+    const w = 1 - ((i - start + WP_N) % WP_N) / WP_N;
+    sum += w * best;
+    i = (i + 1) % WP_N;
+  } while(i !== start);
+  return sum;
+}
+function wpDistance(a, b){
+  const step = Math.floor(Math.sqrt(WP_N));
+  let min = Infinity;
+  for(let i = 0; i < WP_N; i += step) min = Math.min(min, wpCloudDistance(a, b, i), wpCloudDistance(b, a, i));
+  return min;
+}
+const writeTemplates = {};
+function letterTemplate(c){
+  if(!writeTemplates[c]){
+    const strokes = LETTER_STROKES[c].map(d => pathPoints(d, 2).pts);
+    writeTemplates[c] = { shape: wpCloud(strokes), placed: wpPlaced(strokes) };
+  }
+  return writeTemplates[c];
+}
+/* Ranked matches of his ink among every letter of the target's case. */
+const FREE_MAX = 6.4, FREE_MARGIN = 1.15;
+function rankLetters(strokes, lower){
+  const shape = wpCloud(strokes), placed = wpPlaced(strokes);
+  const set = lower ? "abcdefghijklmnopqrstuvwxyz" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return set.split("").map(c => { const t = letterTemplate(c);
+    return { c, d: wpDistance(shape, t.shape) + wpDistance(placed, t.placed) }; }).sort((x, y) => x.d - y.d);
+}
+/* How much ink a letter takes, so a tap or a short line is never read as one. */
+const writeLength = {};
+function letterLength(c){ return writeLength[c] ??= LETTER_STROKES[c].reduce((a, d) => a + pathPoints(d, 2).len, 0); }
+function inkLength(strokes){ return strokes.reduce((a, s) => a + s.slice(1).reduce((b, q, i) => b + dist(q, s[i]), 0), 0); }
+function checkFree(strokes, target){
+  const ratio = inkLength(strokes) / letterLength(target);
+  if(ratio < 0.45 || ratio > 2.4) return false;
+  const r = rankLetters(strokes, target === target.toLowerCase());
+  const mine = r.find(x => x.c === target);
+  return mine.d <= FREE_MAX && (r[0].c === target || (r[1].c === target && mine.d <= r[0].d * FREE_MARGIN));
+}
+
+/* ---- the screen ---- */
+function renderWriting(p){
+  const stage = $("#stage");
+  const word = p.letters.length > 1;
+  stage.innerHTML = `
+    <div class="kind-tag kind-writing">Writing</div>
+    <div class="frame-wrap">
+      <div class="poke-frame reading-frame compact"><img alt="" src="${p.rec.img || artwork(p.rec.id)}"></div>
+      <button class="frame-say" type="button" id="writeSay" aria-label="Say it">${UI_ICONS.speaker}</button>
+    </div>
+    ${word ? `<div class="write-word" id="writeWord">${p.letters.map(() => `<span class="w-chip"></span>`).join("")}</div>` : ""}
+    <div class="write-pad" id="writePad">
+      <svg viewBox="0 0 100 100" aria-label="Writing space" role="img">
+        <g class="w-lines"></g><g class="w-guide"></g><g class="w-done"></g><path class="w-ink live" d=""/>
+        <defs><marker id="wArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10z"/></marker></defs>
+      </svg>
+      <button class="w-clear" type="button" id="writeClear" aria-label="Start this letter again">${UI_ICONS.again}</button>
+    </div>
+    <div class="feedback" id="feedback"></div>`;
+  writeState = { p, at: 0, stroke: 0, inks: [], shown: false, timer: null, live: null, done: false };
+  $("#writeSay").addEventListener("click", ()=> speak(writeSaying(p)));
+  $("#writeClear").addEventListener("click", ()=> clearWriteLetter());
+  wireWritePad();
+  openWriteLetter();
+  layoutWritePad();
+  // Writing from memory starts from what he hears, so say it as it arrives.
+  setTimeout(()=>{ if(writeState && writeState.p === p) speak(writeSaying(p)); }, 450);
+}
+function writeSaying(p){ return p.say; }
+function writeLetter(){ return writeState.p.letters[writeState.at]; }
+function writeTracing(){ return writeState.p.guide !== "none" || writeState.shown; }
+
+/* The pad is as big as the space under the picture allows: 200 to 460px (from
+   130 on a landscape phone). */
+function layoutWritePad(){
+  const pad = $("#writePad");
+  if(!pad || $("#play").classList.contains("hidden")) return;
+  pad.style.width = "";
+  const card = $("#stage"), cs = getComputedStyle(card);
+  const zoom = pad.getBoundingClientRect().width / (pad.offsetWidth || 1) || 1;
+  const wrapPad = parseFloat(getComputedStyle($(".wrap")).paddingBottom) || 0;
+  const freeH = (innerHeight - pad.getBoundingClientRect().top - parseFloat(cs.paddingBottom) - wrapPad - 10) / zoom;
+  const freeW = pad.parentElement.clientWidth / (parseFloat(getComputedStyle(pad.parentElement).zoom) || 1);
+  const floor = innerHeight <= 500 ? 130 : 200;            // a landscape phone has little height
+  pad.style.width = Math.max(floor, Math.min(460, freeW, freeH)) + "px";
+}
+
+function openWriteLetter(){
+  const st = writeState, c = writeLetter(), lower = c === c.toLowerCase();
+  st.stroke = 0; st.inks = [];
+  const svg = $("#writePad svg");
+  const lines = lower ? [[12, ""], [45, " mid"], [78, " base"]] : [[12, ""], [50, " mid"], [88, " base"]];
+  svg.querySelector(".w-lines").innerHTML = lines.map(([y, cls]) => `<line x1="4" x2="96" y1="${y}" y2="${y}" class="wg${cls}"/>`).join("");
+  svg.querySelector(".w-done").innerHTML = "";
+  svg.querySelector(".w-ink.live").setAttribute("d", "");
+  // Word progress: the letters already written show, the current one is the cursor.
+  document.querySelectorAll("#writeWord .w-chip").forEach((chip, i) => {
+    chip.classList.toggle("done", i < st.at);
+    chip.classList.toggle("now", i === st.at);
+    chip.textContent = i < st.at || st.p.guide !== "none" ? st.p.letters[i] : "";
+  });
+  resetStepMisses();
+  drawWriteGuide();
+}
+function drawWriteGuide(){
+  const st = writeState, c = writeLetter(), strokes = LETTER_STROKES[c];
+  const g = $("#writePad .w-guide");
+  if(!writeTracing()){ g.innerHTML = ""; return; }
+  const path = st.p.guide === "path" || st.shown;
+  let html = "";
+  if(path) strokes.forEach((d, i) => html += `<path d="${d}" class="w-track${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/><path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`);
+  const placed = [];
+  strokes.forEach((d, i) => {
+    if(i < st.stroke) return;
+    // A dot that would sit on an earlier one moves along its own stroke until
+    // it is clear (m's second stroke starts just under its first).
+    const pts = pathPoints(d, 2).pts;
+    let k = 0;
+    while(k < pts.length - 1 && placed.some(q => dist(q, pts[k]) < 14)) k++;
+    const [x, y] = pts[k];
+    placed.push([x, y]);
+    html += `<g class="w-dot${i === st.stroke ? " now" : ""}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.5"/><text x="${x.toFixed(1)}" y="${(y + 2.8).toFixed(1)}">${i + 1}</text></g>`;
+  });
+  // Which way the current stroke goes.
+  const pts = pathPoints(strokes[st.stroke], 3).pts;
+  if(pts.length > 6){
+    const a = pts[3], b = pts[Math.min(pts.length - 1, 7)];
+    const ux = (b[0] - a[0]) / (dist(a, b) || 1), uy = (b[1] - a[1]) / (dist(a, b) || 1);
+    const ox = -uy * 10, oy = ux * 10;
+    html += `<path d="M${(a[0] + ox).toFixed(1)} ${(a[1] + oy).toFixed(1)} L${(b[0] + ox).toFixed(1)} ${(b[1] + oy).toFixed(1)}" class="w-arrow" marker-end="url(#wArrow)"/>`;
+  }
+  g.innerHTML = html;
+}
+
+function wireWritePad(){
+  const svg = $("#writePad svg"), live = svg.querySelector(".w-ink.live");
+  const at = e => { const m = svg.getScreenCTM().inverse(); const q = new DOMPoint(e.clientX, e.clientY).matrixTransform(m); return [q.x, q.y]; };
+  svg.addEventListener("pointerdown", e => {
+    const st = writeState;
+    if(!st || st.done || st.busy) return;
+    e.preventDefault();
+    svg.setPointerCapture(e.pointerId);
+    clearTimeout(st.timer);
+    st.live = [at(e)];
+    live.setAttribute("d", inkD(st.live));
+  });
+  svg.addEventListener("pointermove", e => {
+    const st = writeState;
+    if(!st || !st.live) return;
+    const q = at(e), last = st.live[st.live.length - 1];
+    if(dist(q, last) < 0.8) return;
+    st.live.push(q);
+    live.setAttribute("d", inkD(st.live));
+  });
+  const end = () => {
+    const st = writeState;
+    if(!st || !st.live) return;
+    const ink = st.live; st.live = null;
+    live.setAttribute("d", "");
+    writeStroke(ink);
+  };
+  svg.addEventListener("pointerup", end);
+  svg.addEventListener("pointercancel", end);
+}
+function addInk(ink, cls){
+  const path = document.createElementNS(WRITE_NS, "path");
+  path.setAttribute("d", inkD(ink)); path.setAttribute("class", "w-ink " + (cls || ""));
+  $("#writePad .w-done").appendChild(path);
+  return path;
+}
+function writeStroke(ink){
+  const st = writeState, c = writeLetter();
+  if(writeTracing()){
+    const d = LETTER_STROKES[c][st.stroke];
+    if(checkTrace(ink, d)){
+      addInk(ink, "ok");
+      st.stroke++;
+      if(st.stroke >= LETTER_STROKES[c].length) return writeLetterDone();
+      resetStepMisses();
+      drawWriteGuide();
+    } else {
+      writeMiss([addInk(ink, "miss")]);
+    }
+    return;
+  }
+  // Free writing: wait for the letter, then judge it whole.
+  st.inks.push(ink);
+  st.inkEls = (st.inkEls || []).concat(addInk(ink));
+  const judge = () => {
+    if(!writeState || writeState !== st || st.done) return;
+    if(checkFree(st.inks, c)){ st.inkEls.forEach(el => el.classList.add("ok")); writeLetterDone(); }
+    else { const els = st.inkEls; st.inks = []; st.inkEls = []; writeMiss(els); }
+  };
+  clearTimeout(st.timer);
+  if(st.inks.length >= LETTER_STROKES[c].length) st.timer = setTimeout(judge, 350);
+  else st.timer = setTimeout(judge, 1100);
+}
+/* A miss: the ink fades, silently, and counts. Enough misses and the path
+   comes back to trace. */
+function writeMiss(els){
+  const st = writeState;
+  bumpMistake(st.p);
+  els.forEach(el => { el.classList.add("miss"); setTimeout(()=> el.remove(), 500); });
+  noteStepMiss();
+  if(revealDue() && !writeTracing()){ st.shown = true; st.p._helped = true; st.inks = []; st.inkEls = []; }
+  else if(revealDue()) st.p._helped = true;
+  drawWriteGuide();
+}
+function clearWriteLetter(){
+  const st = writeState;
+  if(!st || st.done) return;
+  clearTimeout(st.timer);
+  st.stroke = 0; st.inks = []; st.inkEls = [];
+  $("#writePad .w-done").innerHTML = "";
+  drawWriteGuide();
+}
+function writeLetterDone(){
+  const st = writeState;
+  if(st.at + 1 < st.p.letters.length){
+    st.busy = true;
+    setTimeout(()=>{
+      if(writeState !== st) return;
+      st.at++; st.busy = false; st.shown = false;
+      openWriteLetter();
+    }, 450);
+    const chip = document.querySelectorAll("#writeWord .w-chip")[st.at];
+    if(chip){ chip.classList.add("done"); chip.textContent = st.p.letters[st.at]; }
+    return;
+  }
+  st.done = true;
+  document.querySelectorAll("#writeWord .w-chip").forEach((chip, i) => { chip.classList.add("done"); chip.classList.remove("now"); chip.textContent = st.p.letters[i]; });
+  correct++;
+  if(st.p.track && st.p.isFrontier) recordAttempt(st.p.track, spotless(st.p) && !st.p._helped);
+  showYes($("#feedback"));
+  const say = st.p.word ? st.p.word : st.p.letters[0].toUpperCase() + ".";
+  lockAndAdvance(done => blendBack(say, done));
+}
+
 /* ---------------- ANSWER CHOICES ---------------- */
 /* Every maths mode answers the same way: tap the right number out of six.
 
@@ -8100,7 +8594,7 @@ function lockAndAdvance(waitFor){
     playChime(roundCredits + 1, roundTarget());
   }
   const go = ()=>{
-    spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null;
+    spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null; alphaState=null; writeState=null;
     next();
   };
   if(typeof waitFor === "function") waitFor(go);
@@ -8585,6 +9079,7 @@ function renderTrailSettings(){
   renderTrailSelect("sentences", "#sentencesFrontier", "#sentencesLevelHint", "Level");
   renderTrailSelect("riddles", "#riddlesFrontier", "#riddlesLevelHint", "Level");
   renderTrailSelect("wordpairs", "#wordpairsFrontier", "#wordpairsLevelHint", "Level");
+  renderTrailSelect("writing", "#writingFrontier", "#writingLevelHint", "Level");
   renderTrailSelect("mathpairs", "#mathpairsFrontier", "#mathpairsLevelHint", "Level");
 }
 
@@ -8627,6 +9122,7 @@ function migrateFrontiers(){
   SENTENCE_LEVELS = buildSentenceLevels();
   RIDDLE_LEVELS = buildRiddleLevels();
   WORD_PAIR_LEVELS = buildWordPairLevels();
+  WRITING_LEVELS = buildWritingLevels();
   MATH_PAIR_LEVELS = buildMathPairLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
@@ -8674,7 +9170,7 @@ window.addEventListener("resize", updateDexArrows);
    keeps playing; so does a tap outside. With nothing at stake it just leaves. */
 function leaveRound(){
   $("#quitModal").classList.add("hidden");
-  spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null;
+  spellState=null; missingState=null; sentState=null; riddleState=null; pairsState=null; mathState=null; readingState=null; patternState=null; visualState=null; writeState=null;
   grassEncounter=null; pendingCatchCallback=null; hideCatchModal();
   show("setup");
 }
@@ -8697,6 +9193,7 @@ $("#catchImg").addEventListener("load", fitCatchArt);
 // Both fits are in pixels, so they follow the window.
 window.addEventListener("resize", ()=>{
   if(pairsState) layoutPairs();
+  if(writeState) layoutWritePad();
   fitShowcase();
   layoutCatches();
   if(document.querySelector("#stage .reading-options-img")){ fitReadingWord(); layoutReadingTiles(); }
