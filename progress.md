@@ -1089,6 +1089,14 @@ Fit is unchanged at every size.
 
 **Checks.** Smoke (now with Writing questions in English rounds), transition, quit, answer loop (1,800 / 0) and pairs checks pass; duplicate-function grep empty; no console errors. Build 122.
 
+## Phase 106 — start dots and the arrow stay readable
+
+Two reports from tracing, both fixed in build 123:
+- **Ink hid the numbers.** In a traced E, the green ink of strokes 1–2 covered the 3 and 4 dots, because the dots were drawn under the ink. Now the path stays under the ink and the dots and arrow sit over it, each dot with a white ring so it reads on green.
+- **The arrow looked like it belonged to the next dot.** In I, the arrow for stroke 1 was green, like the waiting dots, and it sat to the left of the stroke, directly under the 2. It is now amber like the current dot. It goes on whichever side of the stroke has no other dot within 18 units along its length, and stays on the left when there's a tie. That moves it right in I, and leaves it in place for E, H and m. T is a tie, because its 2 is equally close on both sides, so the colour alone has to carry it there.
+
+**Checks.** Screenshots of traced E and I, H, T and m; the writing drive (traces, misses, help path, words) gives the same results as build 122; smoke and transition pass; duplicate-function grep empty; no console errors.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

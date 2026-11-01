@@ -2558,10 +2558,12 @@
   .w-ink{ fill:none; stroke:var(--ink); stroke-width:7; stroke-linecap:round; stroke-linejoin:round; }
   .w-ink.ok{ stroke:var(--leaf-600); }
   .w-ink.miss{ transition:opacity .45s; opacity:0; }
-  .w-dot circle{ fill:var(--leaf-600); } .w-dot text{ fill:#fff; font:900 8px "M PLUS Rounded 1c", sans-serif; text-anchor:middle; }
+  /* Over the ink, with a white ring so a dot reads against green ink too. */
+  .w-marks{ pointer-events:none; }
+  .w-dot circle{ fill:var(--leaf-600); stroke:var(--surface); stroke-width:1.6; } .w-dot text{ fill:#fff; font:900 8px "M PLUS Rounded 1c", sans-serif; text-anchor:middle; }
   .w-dot.now circle{ fill:var(--sun-500); stroke:var(--sun-700); stroke-width:1.4; } .w-dot.now text{ fill:var(--ink); }
-  .w-arrow{ stroke:var(--leaf-600); stroke-width:1.6; fill:none; }
-  #wArrow path{ fill:var(--leaf-600); }
+  .w-arrow{ stroke:var(--sun-700); stroke-width:1.6; fill:none; } /* the stroke he is on: amber, like its dot */
+  #wArrow path{ fill:var(--sun-500); stroke:var(--sun-700); stroke-width:1.2; }
   .w-clear{ position:absolute; right:8px; bottom:8px; width:44px; height:44px; border-radius:50%; border:2px solid var(--paper-line);
     background:var(--surface); color:var(--ink-soft); display:grid; place-items:center; box-shadow:0 3px 0 var(--paper-edge); cursor:pointer; }
   .w-clear svg{ width:22px; height:22px; }
@@ -2955,7 +2957,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 122;
+const APP_BUILD = 123;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -7469,7 +7471,7 @@ function renderWriting(p){
     ${word ? `<div class="write-word" id="writeWord">${p.letters.map(() => `<span class="w-chip"></span>`).join("")}</div>` : ""}
     <div class="write-pad" id="writePad">
       <svg viewBox="0 0 100 100" aria-label="Writing space" role="img">
-        <g class="w-lines"></g><g class="w-guide"></g><g class="w-done"></g><path class="w-ink live" d=""/>
+        <g class="w-lines"></g><g class="w-guide"></g><g class="w-done"></g><path class="w-ink live" d=""/><g class="w-marks"></g>
         <defs><marker id="wArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10z"/></marker></defs>
       </svg>
       <button class="w-clear" type="button" id="writeClear" aria-label="Start this letter again">${UI_ICONS.again}</button>
@@ -7522,11 +7524,14 @@ function openWriteLetter(){
 }
 function drawWriteGuide(){
   const st = writeState, c = writeLetter(), strokes = LETTER_STROKES[c];
-  const g = $("#writePad .w-guide");
-  if(!writeTracing()){ g.innerHTML = ""; return; }
+  // The path sits under his ink; the numbered dots and the arrow sit over it,
+  // so a finished stroke never hides where the next one starts.
+  const g = $("#writePad .w-guide"), marks = $("#writePad .w-marks");
+  if(!writeTracing()){ g.innerHTML = ""; marks.innerHTML = ""; return; }
   const path = st.p.guide === "path" || st.shown;
-  let html = "";
-  if(path) strokes.forEach((d, i) => html += `<path d="${d}" class="w-track${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/><path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`);
+  let track = "", html = "";
+  if(path) strokes.forEach((d, i) => track += `<path d="${d}" class="w-track${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/><path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`);
+  g.innerHTML = track;
   const placed = [];
   strokes.forEach((d, i) => {
     if(i < st.stroke) return;
@@ -7544,10 +7549,17 @@ function drawWriteGuide(){
   if(pts.length > 6){
     const a = pts[3], b = pts[Math.min(pts.length - 1, 7)];
     const ux = (b[0] - a[0]) / (dist(a, b) || 1), uy = (b[1] - a[1]) / (dist(a, b) || 1);
-    const ox = -uy * 10, oy = ux * 10;
-    html += `<path d="M${(a[0] + ox).toFixed(1)} ${(a[1] + oy).toFixed(1)} L${(b[0] + ox).toFixed(1)} ${(b[1] + oy).toFixed(1)}" class="w-arrow" marker-end="url(#wArrow)"/>`;
+    // It goes on the side of the stroke with no other dot near it, so it is
+    // never read as belonging to the next stroke's dot (I's 2 sits on its left).
+    const side = s => {
+      const ox = -uy * 10 * s, oy = ux * 10 * s;
+      const along = [0, .5, 1].map(t => [a[0] + (b[0] - a[0]) * t + ox, a[1] + (b[1] - a[1]) * t + oy]);
+      return { ox, oy, near: Math.min(99, ...placed.slice(1).flatMap(q => along.map(m => dist(q, m)))) };
+    };
+    const L = side(1), R = side(-1), o = R.near > L.near && L.near < 18 ? R : L;
+    html += `<path d="M${(a[0] + o.ox).toFixed(1)} ${(a[1] + o.oy).toFixed(1)} L${(b[0] + o.ox).toFixed(1)} ${(b[1] + o.oy).toFixed(1)}" class="w-arrow" marker-end="url(#wArrow)"/>`;
   }
-  g.innerHTML = html;
+  marks.innerHTML = html;
 }
 
 function wireWritePad(){
