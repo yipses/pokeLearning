@@ -2957,7 +2957,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 123;
+const APP_BUILD = 124;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -7351,6 +7351,19 @@ const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const nearest = (p, pts) => pts.reduce((m, q) => Math.min(m, dist(p, q)), Infinity);
 const inkD = pts => pts.length ? "M" + pts.map(q => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L") + (pts.length === 1 ? " l0.1 0" : "") : "";
 
+/* Where a stroke turns back on itself: h, n, m, r, b and p go down the stem
+   and back up it without lifting. Only a real U-turn counts — V, W and Z turn
+   sharply but never go back. Returns indexes into pts. */
+function pathTurns(pts){
+  const out = [];
+  for(let k = 2; k < pts.length - 2; k++){
+    const p0 = pts[k - 2], p1 = pts[k], p2 = pts[k + 2];
+    const back = (p1[0] - p0[0]) * (p2[0] - p1[0]) + (p1[1] - p0[1]) * (p2[1] - p1[1]);
+    if(back < -0.9 * dist(p0, p1) * dist(p1, p2)){ out.push(k); k += 6; }
+  }
+  return out;
+}
+
 /* One traced stroke against its template. A dot (i, j) is any short touch near it. */
 const TRACE_START = 17, TRACE_NEAR = 13, TRACE_COVER = 0.75, TRACE_ON = 0.75;
 function checkTrace(ink, d){
@@ -7361,6 +7374,9 @@ function checkTrace(ink, d){
   }
   if(dist(ink[0], t[0]) > TRACE_START) return false;
   if(dist(ink[ink.length - 1], t[t.length - 1]) > TRACE_START + 4) return false;
+  // Going back up a stem only counts once he has been all the way down it,
+  // or an n drawn from halfway up the stem (or a p with no tail) would pass.
+  if(pathTurns(t).some(k => nearest(t[k], ink) > TRACE_NEAR)) return false;
   const covered = t.filter(q => nearest(q, ink) <= TRACE_NEAR).length / t.length;
   const onPath = ink.filter(q => nearest(q, t) <= TRACE_NEAR + 3).length / ink.length;
   return covered >= TRACE_COVER && onPath >= TRACE_ON;
@@ -7449,6 +7465,10 @@ function rankLetters(strokes, lower){
 /* How much ink a letter takes, so a tap or a short line is never read as one. */
 const writeLength = {};
 function letterLength(c){ return writeLength[c] ??= LETTER_STROKES[c].reduce((a, d) => a + pathPoints(d, 2).len, 0); }
+/* How many lifts he might make writing it: a stroke that goes back up its stem
+   (h, m, b…) is often written as two, so free writing waits for every piece. */
+const writePieces = {};
+function letterPieces(c){ return writePieces[c] ??= LETTER_STROKES[c].reduce((a, d) => a + 1 + pathTurns(pathPoints(d, 3).pts).length, 0); }
 function inkLength(strokes){ return strokes.reduce((a, s) => a + s.slice(1).reduce((b, q, i) => b + dist(q, s[i]), 0), 0); }
 function checkFree(strokes, target){
   const ratio = inkLength(strokes) / letterLength(target);
@@ -7558,6 +7578,16 @@ function drawWriteGuide(){
     };
     const L = side(1), R = side(-1), o = R.near > L.near && L.near < 18 ? R : L;
     html += `<path d="M${(a[0] + o.ox).toFixed(1)} ${(a[1] + o.oy).toFixed(1)} L${(b[0] + o.ox).toFixed(1)} ${(b[1] + o.oy).toFixed(1)}" class="w-arrow" marker-end="url(#wArrow)"/>`;
+    // h, n, m, r, b and p go back up their own stem without lifting: each turn
+    // gets an arrow up that leg. Turned round, the same side of the stroke
+    // puts it across the stem from the first arrow.
+    const s = o === L ? 1 : -1;
+    pathTurns(pts).filter(k => k < pts.length - 6).forEach(k => {
+      const c0 = pts[k + 2], c1 = pts[k + 6];
+      const vx = (c1[0] - c0[0]) / (dist(c0, c1) || 1), vy = (c1[1] - c0[1]) / (dist(c0, c1) || 1);
+      const ox = -vy * 10 * s, oy = vx * 10 * s;
+      html += `<path d="M${(c0[0] + ox).toFixed(1)} ${(c0[1] + oy).toFixed(1)} L${(c1[0] + ox).toFixed(1)} ${(c1[1] + oy).toFixed(1)}" class="w-arrow" marker-end="url(#wArrow)"/>`;
+    });
   }
   marks.innerHTML = html;
 }
@@ -7622,7 +7652,10 @@ function writeStroke(ink){
     else { const els = st.inkEls; st.inks = []; st.inkEls = []; writeMiss(els); }
   };
   clearTimeout(st.timer);
-  if(st.inks.length >= LETTER_STROKES[c].length) st.timer = setTimeout(judge, 350);
+  // Quick once the letter is all there, or already right in fewer pieces (a
+  // one-stroke h); otherwise give him time for the next piece.
+  const n = st.inks.length;
+  if(n >= letterPieces(c) || (n >= LETTER_STROKES[c].length && checkFree(st.inks, c))) st.timer = setTimeout(judge, 350);
   else st.timer = setTimeout(judge, 1100);
 }
 /* A miss: the ink fades, silently, and counts. Enough misses and the path

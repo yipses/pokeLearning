@@ -258,7 +258,7 @@ Tabs *Writing Level* and *Letter Strokes* in the design sheet.
 | `max_letters` | `word` tasks: the longest word asked for. Words come from his Reading level's pool |
 | `promote_5_pct`, `promote_10_pct` | As every other ladder |
 
-`letter_strokes.csv`, 101 rows — every capital and small letter, one row per stroke, in the order he should draw them:
+`letter_strokes.csv`, 94 rows — every capital and small letter, one row per stroke, in the order he should draw them:
 
 | Column | Notes |
 |---|---|
@@ -267,6 +267,8 @@ Tabs *Writing Level* and *Letter Strokes* in the design sheet.
 | `path` | SVG path data (`M`, `L`, `Q`…) on a 100×100 grid, in the stroke's direction. Capitals sit between lines at 12 and 88 (dashed middle at 50); small letters have their x-height from 45 to 78, ascenders up to 12 and descenders down to about 96 |
 
 **Traps.** A stroke's direction matters: tracing checks that it starts at the path's first point. A dot (the dot on i and j) is a path shorter than 3 units, e.g. `M50 30 L50 30.5`; any short touch near it counts. Changing a letter's shape also changes what free writing accepts, since the same paths are the templates his ink is matched against.
+
+A path may go back over itself. b, h, m, n, p and r are one stroke each, written the school way: down the stem, back up the same line, then over (`M32 12 L32 78 L32 58 Q…` for h). Every such U-turn gets an arrow up the way-back leg, and a trace only counts once the ink reaches the turn, so the whole stem has to be drawn. Free writing still accepts them written in two strokes, and waits for each piece before judging. Only a real U-turn counts: the corners of V, W and Z are not turns.
 
 ## `phonemes.csv` — what each chunk says out loud
 

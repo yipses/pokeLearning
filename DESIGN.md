@@ -154,7 +154,9 @@ a two-word name breaks only between words.
   never red. The path sits under his ink; the dots and the arrow sit over it,
   each dot ringed in white, so a finished stroke never hides where the next one
   starts. The arrow is amber like the dot it belongs to, and goes on the side
-  of its stroke with no other dot near it. The clear button sits in the pad's corner.
+  of its stroke with no other dot near it. A stroke that goes back up its own
+  stem (h, m, n, r, b, p) gets a second amber arrow up that leg, across the stem
+  from the first. The clear button sits in the pad's corner.
 - **Landscape phones have their own layouts** (landscape and under 500px
   tall): home splits like the desktop, a question card puts its picture or
   prompt on the left and its answers on the right, the meadow strip shrinks

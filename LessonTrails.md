@@ -164,6 +164,8 @@ Two rules keep a board fair, and both are checked as it is built: every word and
 
 **Producing the letter, not choosing it.** Every other English trail picks or arranges letters and words that are already drawn; this one asks him to make them. The ladder follows how handwriting is usually taught: **capitals first** (mostly straight lines, easier for small hands), starting with the six made of straight lines only (L T I E F H), then the rest in rough order of difficulty, with S G J Q last. Each case goes **trace with the full path → trace with only the start dots → write from memory**, so the support is taken away a piece at a time. Small letters come after the capitals; words come last and use his Reading level's words, so he writes words he can already read. Writing the first letter of a picture sits between letters and words: it joins the sound at the start of a word to the letter he now knows how to make.
 
+Stroke order follows the way schools teach print (Zaner-Bloser, D'Nealian, Handwriting Without Tears): b, h, m, n, p and r are one stroke with no lift, going down the stem, back up it, then over. That is the habit that later joins up, so the tracing teaches it.
+
 Checking is **guided on tracing, forgiving from memory**: stroke order and direction are taught where the dots show them, and not marked down where he writes on his own, where only the shape counts. A five-year-old's letters are wobbly, so the free-writing check was tuned on deliberately messy letters until nearly all were accepted while wrong letters almost never were.
 
 ### Why the frontiers are separate
