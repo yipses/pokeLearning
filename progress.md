@@ -1115,6 +1115,12 @@ The owner said h's stroke order "feels wrong". It was two strokes: down the stem
 
 **Checks.** The writing drive, smoke and transition checks pass; duplicate-function grep empty; no console errors. Build 124.
 
+## Phase 108 — a later dot waits off the stroke being traced
+
+The owner's "h feels wrong" was about the **capital** H. Phase 107 changed the small h by mistake, and the owner kept that change. H's order is the usual one (down, down, across). The problem was its 3: it starts halfway down stroke 1, so a big green 3 sat in the middle of the line he was tracing and read as a place to stop. Now a later dot within 8 units of the current stroke waits until that stroke is done. A dot within 10 units of the stroke's end stays, because that is where the next stroke picks up (E's 4, L's 2, the 2s in M and N, Y's 3). Measured over all 52 letters, this changes A, B, E, F, H, T (stroke 1), K, R and k (stroke 2). Dots keep their positions, so a held-back dot appears where it would have been.
+
+**Checks.** H and E screenshots; the writing drive, the one-stroke drive and smoke pass; duplicate-function grep empty; no console errors. Build 125.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
