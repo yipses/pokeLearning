@@ -153,7 +153,8 @@ a two-word name breaks only between words.
   amber) and an arrow; ink that works turns green, ink that doesn't fades —
   never red. The path sits under his ink; the dots and the arrow sit over it,
   each dot ringed in white, so a finished stroke never hides where the next one
-  starts. The arrow is amber like the dot it belongs to, and goes on the side
+  starts. A later dot that sits along the stroke being traced (H's 3, halfway
+  down its 1) waits until that stroke is done; one at the stroke's very end stays. The arrow is amber like the dot it belongs to, and goes on the side
   of its stroke with no other dot near it. A stroke that goes back up its own
   stem (h, m, n, r, b, p) gets a second amber arrow up that leg, across the stem
   from the first. The clear button sits in the pad's corner.
