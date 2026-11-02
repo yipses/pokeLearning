@@ -1097,6 +1097,24 @@ Two reports from tracing, both fixed in build 123:
 
 **Checks.** Screenshots of traced E and I, H, T and m; the writing drive (traces, misses, help path, words) gives the same results as build 122; smoke and transition pass; duplicate-function grep empty; no console errors.
 
+## Phase 107 — h, n, m, r, b and p in one stroke, the school way
+
+The owner said h's stroke order "feels wrong". It was two strokes: down the stem, then lift and start halfway up it. Schools teach it as one stroke: down, back up the same line, over and down. b, m, n, p and r were split the same way, and all six are now one stroke each (`letter_strokes.csv` 101 → 94 rows; the sheet tab matches).
+
+- **Arrow at the turn.** `pathTurns` finds a real U-turn, where the path doubles back within a few points. V, W and Z turn sharply but never go back, so they don't count. Each U-turn gets a second amber arrow up the stem. Measured over all 52 letters: b, h, n, p and r get 2 arrows, m gets 3, and every other letter is unchanged.
+- **The trace must reach the turn.** At first an n drawn from halfway up the stem, and a p with no tail, still passed, because they covered 75% of the longer path. Now the ink has to come within reach of every turn. Driven with a real pointer, for each of the six letters:
+  - one stroke going back up the stem: accepted, 0 mistakes;
+  - the stem and then a lift: a miss;
+  - backwards: rejected.
+- **Free writing waited for the wrong number of strokes.** The quick judge (0.35s) fired once his ink had as many strokes as the letter. With h now one stroke, an h written as stem-then-arch was judged on the stem alone. Measured with a 0.6s pause between strokes: h and n got 2 misses each and no "Yes!". It now waits for the letter's pieces (`letterPieces`: one per stroke, plus one per turn), and all six letters pass written either way. The first version of this made a one-stroke m wait the full 1.1s, which the writing drive caught: the next letter of "mug" was drawn while the pad was still moving on. So a letter is also judged at 0.35s once it has as many strokes as its path has and already matches.
+- **Recognizer** (520 messy small letters per run):
+  - before the change: 96.7% accepted, 0.64% wrong letters accepted;
+  - now, hands written the old two-stroke way: 97.5% and 0.75%;
+  - now, hands written in one stroke: 97.3% and 0.55%.
+  - The doubled-up stem in the templates needed no special handling.
+
+**Checks.** The writing drive, smoke and transition checks pass; duplicate-function grep empty; no console errors. Build 124.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
