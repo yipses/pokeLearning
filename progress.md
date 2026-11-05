@@ -1121,6 +1121,22 @@ The owner's "h feels wrong" was about the **capital** H. Phase 107 changed the s
 
 **Checks.** H and E screenshots; the writing drive, the one-stroke drive and smoke pass; duplicate-function grep empty; no console errors. Build 125.
 
+## Phase 109 — pinch-zoom no longer traps the iPad
+
+The owner reported that on the iPad (a Safari tab), a two-finger pinch still zoomed the page, and then it couldn't be zoomed back out. The zoom block from Phases 61–63 relied on Safari's own `gesture*` events for iOS, but a pinch can get past them. Once the page was zoomed, the same handler cancelled every later pinch, **including the one that zooms back out**. So the blocker itself left him stuck.
+
+Now:
+- A `touchmove` with two or more fingers is cancelled at normal scale. That is the earliest point a page can stop Safari starting a pinch. Taps, scrolling and the writing pad all use one finger, so they are unaffected.
+- If the page is zoomed anyway (`visualViewport.scale` > 1), neither blocker cancels anything, so a pinch out works.
+- `unzoomPage` rewrites the viewport tag after the viewport changes size, which makes Safari re-apply `maximum-scale=1`. This is best effort; letting the pinch out through is the guarantee.
+
+**Measured** (Chromium with touch):
+- At scale 1, a two-finger touchmove and a gesture event are cancelled; a one-finger touchmove is not.
+- With the scale stubbed to 2, nothing is cancelled.
+- Tapping English starts a round.
+
+Smoke, writing drive and transition checks pass; duplicate-function grep empty; no console errors. Safari's pinch can't be reproduced here, so the real test is on the iPad. Build 126.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
