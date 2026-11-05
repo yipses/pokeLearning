@@ -6,7 +6,7 @@
      stray two-finger touch that leaves the screen zoomed at 2.4x is not something
      they can undo. It takes three separate mechanisms, because no one of them
      covers every browser — see also `touch-action` on html,body and the
-     gesture handlers at the end of the script. -->
+     two-finger and gesture handlers at the end of the script. -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Poké Learning — Spelling &amp; Math</title>
 <!-- Pokéball favicon, inlined as an SVG data URI so it needs no extra file and
@@ -2957,7 +2957,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 125;
+const APP_BUILD = 126;
 const APP_BUILD_DATE = "25 Oct 2026";
 
 function renderAbout(){
@@ -9270,19 +9270,36 @@ $("#backSetupBtn").addEventListener("click", ()=> show("setup"));
 $("#setup").addEventListener("change", saveSettings);
 $("#settings").addEventListener("change", saveSettings);
 
-/* The third of the three ways zoom has to be turned off. iOS Safari deliberately
-   ignores user-scalable=no — it treats pinch-zoom as an accessibility guarantee —
-   and honours touch-action only partially, so the one thing that stops the gesture
-   there is cancelling Safari's own non-standard gesture events. Other browsers
-   never fire these, so this costs them nothing.
+/* The script's part in turning zoom off. iOS Safari deliberately ignores
+   user-scalable=no — it treats pinch-zoom as an accessibility guarantee — and
+   honours touch-action only partially, so on an iPad the pinch has to be stopped here:
+   - a touchmove with two or more fingers is cancelled before Safari starts a pinch
+     from it (a tap, a tile drag, a scroll and the writing pad all use one finger);
+   - Safari's own non-standard gesture events are cancelled too (other browsers never
+     fire them, so this costs them nothing).
+   A pinch could still slip past the gesture events alone, and then the same handler
+   cancelled every pinch after it, including the one that zooms back out: the iPad was
+   left stuck zoomed in. So once the page is zoomed, nothing is blocked, and the
+   viewport tag is rewritten, which makes Safari re-apply maximum-scale=1.
 
    Double-tap zoom is NOT handled here. The obvious version — preventDefault on any
    touchend within 300ms of the last — also cancels the click that follows, and this
    game is played by tapping letter tiles in quick succession, so it would eat real
    taps. `touch-action` above already turns double-tap zoom off everywhere it is
    supported, iOS included. */
+const zoomedIn = () => !!window.visualViewport && visualViewport.scale > 1.01;
+document.addEventListener("touchmove", e => {
+  if(e.touches.length > 1 && !zoomedIn()) e.preventDefault();
+}, { passive:false });
 ["gesturestart","gesturechange","gestureend"].forEach(type=>
-  document.addEventListener(type, e => e.preventDefault(), { passive:false }));
+  document.addEventListener(type, e => { if(!zoomedIn()) e.preventDefault(); }, { passive:false }));
+function unzoomPage(){
+  if(!zoomedIn()) return;
+  const tag = document.querySelector('meta[name="viewport"]'), content = tag.content;
+  tag.content = content + ", minimum-scale=1";
+  setTimeout(() => { tag.content = content; }, 60);
+}
+if(window.visualViewport) visualViewport.addEventListener("resize", () => setTimeout(unzoomPage, 300));
 </script>
 </body>
 </html>
