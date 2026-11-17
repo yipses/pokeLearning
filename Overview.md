@@ -337,11 +337,11 @@ A board needs as many words as it has pairs. **Below eight words the pool borrow
 
 **He writes the letters himself, with his finger.** A pad sized to the free space (200–460px; from 130 on a landscape phone) carries handwriting lines — for capitals a top line, a dashed middle and a baseline; for small letters an ascender line, a dashed x-height line and a baseline, with room for descenders. Above it, a Pokémon whose name starts with the letter (from the first 151 where there is one, else the first 251), or the word's own picture; its speaker says the letter or the word, and it is said once as the question arrives. A ↻ button in the pad's corner clears the letter to start again, at no cost.
 
-**Tracing** shows the letter as a pale path with a dotted centre line, numbered start dots (the next one amber, as the cursor; a later dot lying along the stroke being traced appears only once that stroke is done) and an arrow for the way the stroke goes; a later level keeps only the dots. Each stroke is checked as the finger lifts: it has to start near its dot, end near the stroke's end, and follow the path (75% of the path covered, 75% of the ink on it). b, h, m, n, p and r are one stroke each, going back up the stem without lifting. A second arrow points up the stem at the turn, and the ink has to reach the bottom of the stem before going back up. A right stroke turns green and the next dot lights; a wrong one fades away silently and counts. Stroke order is guided here and only here.
+**Tracing** shows the letter as a pale path with a dotted centre line, numbered start dots (the next one amber, as the cursor; a later dot lying along the stroke being traced appears only once that stroke is done) and an arrow for the way the stroke goes. The support is taken away in steps: the full path, then a faint path (much paler, no centre line), then the start dots only, then nothing. Each stroke is checked as the finger lifts: it has to start near its dot, end near the stroke's end, and follow the path (75% of the path covered, 75% of the ink on it). b, h, m, n, p and r are one stroke each, going back up the stem without lifting. A second arrow points up the stem at the turn, and the ink has to reach the bottom of the stem before going back up. A right stroke turns green and the next dot lights; a wrong one fades away silently and counts. Stroke order is guided here and only here.
 
 **Writing from memory** shows only the lines. His ink is compared, as a whole letter, with every letter of the same case: once by shape (a $P point-cloud match, so stroke order and direction don't matter) and once by where it sits on the lines, which is what tells *a* from *o* and *u* from *w*. The target has to be the best match, or a close second, and the ink has to be about a letter's length (a tap or a stray line is never a letter). It is judged 0.35s after the letter has as many pieces as it can be written in (b, h, m, n, p and r count a piece either side of each turn back up the stem, so writing them in two strokes is fine), or as soon as it already matches in fewer pieces; otherwise 1.1s after the last stroke. A miss fades. Measured on 2,080 deliberately messy letters (slanted, squashed, wobbly, any stroke order): 99.0% of capitals and 96.7% of small letters accepted, with a wrong letter accepted 0.5–0.6% of the time; taps and zigzags are never accepted, a single straight line 0.3–2.7% of the time (as *l* or *I*).
 
-**After `Show the answer after` misses the path comes back** and the letter is traced instead; that question no longer counts toward the round. Otherwise a word may take `Mistakes allowed` slips per letter and still count. Promotion stays spotless. A finished letter or word gets the same ✓ Yes! pill and chime as every mode, then the letter or word is said.
+**After `Show the answer after` misses the full path comes back**, lit, on every level that doesn't already show it (faint path, dots only and free writing), and the letter is traced instead; that question no longer counts toward the round. Otherwise a word may take `Mistakes allowed` slips per letter and still count. Promotion stays spotless. A finished letter or word gets the same ✓ Yes! pill and chime as every mode, then the letter or word is said.
 
 **Words** go one letter at a time in the same big pad (three small pads were too small for a finger on a phone): a row of tiles above shows the word's progress — done letters green, the current one the amber cursor; on traced levels the tiles show the letters, on free levels only the ones already written. Words come from his Reading level's pool, plain words of 2 to N letters, borrowing the next Reading level's words when the pool is thin.
 
@@ -349,14 +349,18 @@ A board needs as many words as it has pairs. **Below eight words the pool borrow
 |---|---|
 | 1 | Trace capitals L T I E F H |
 | 2 | Trace every capital (straight lines first: L T I E F H O C U B D P R J K M N V W X Y Z A S G Q) |
-| 3 | Trace capitals, start dots only |
-| 4 | Write capitals from memory |
-| 5 | Trace small letters |
-| 6 | Write small letters from memory |
-| 7 | Trace words of up to 4 letters |
-| 8 | Write the first letter of a picture |
-| 9 | Write words of up to 3 letters |
-| 10 | Write words of up to 4 letters |
+| 3 | Trace capitals on a faint path |
+| 4 | Trace capitals, start dots only |
+| 5 | Write capitals from memory |
+| 6 | Trace small letters |
+| 7 | Trace small letters on a faint path |
+| 8 | Trace small letters, start dots only |
+| 9 | Write small letters from memory |
+| 10 | Trace words of up to 4 letters |
+| 11 | Trace words of up to 4 letters on a faint path |
+| 12 | Write the first letter of a picture |
+| 13 | Write words of up to 3 letters |
+| 14 | Write words of up to 4 letters |
 
 The ladder is `data/writing_levels.csv`; the letters' strokes, in order, are `data/letter_strokes.csv` — SVG path data on a 100×100 grid, so a letter's shape is a sheet edit, not code.
 
@@ -634,7 +638,7 @@ All game data lives in **`data/*.csv`**, fetched and parsed at startup rather th
 | `data/math_levels.csv` | 57 | `track`, `level`, `visual`, `num1_min`, `num1_max`, `num2_min`, `num2_max`, `num3_min`, `num3_max`, `pattern` |
 | `data/math_promotion.csv` | 3 | `questions`, `percent` |
 | `data/unclear_pictures.csv` | 4 | `name`, `reason` |
-| `data/writing_levels.csv` | 10 | `level`, `task`, `case`, `guide`, `letters`, `max_letters`, `promote_5_pct`, `promote_10_pct` |
+| `data/writing_levels.csv` | 14 | `level`, `task`, `case`, `guide`, `letters`, `max_letters`, `promote_5_pct`, `promote_10_pct` |
 | `data/letter_strokes.csv` | 94 | `letter`, `stroke`, `path` |
 
 - **Pokémon roster**: the full National Dex, Gen 1–9, minus 4 species whose names don't fit the plain-letter spelling mechanic (Nidoran♀/♂, Farfetch'd, Mr. Mime). **1,020 of the 1,021 are spellable** — a name may contain a space or a hyphen, so Iron Hands and Ho-Oh both work; only Type: Null is excluded, for its colon. `rarity` marks **71 legendary** and **23 mythical** species.

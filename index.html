@@ -109,6 +109,11 @@
      part the standard covers, and it is what actually stops the gesture in
      Chrome and on Android. */
   html,body{ margin:0; padding:0; touch-action:pan-x pan-y; }
+  /* Only on /staging/ (see IS_STAGING): a strip along the bottom edge, never over
+     a control, so it can't be mistaken for the real site. */
+  .staging-tag{ position:fixed; left:50%; bottom:0; transform:translateX(-50%); z-index:9999;
+    padding:2px 10px; border-radius:8px 8px 0 0; background:#c62828; color:#fff;
+    font:800 11px/1.4 system-ui, sans-serif; letter-spacing:.08em; pointer-events:none; }
   body{
     font-family: var(--font-ui);
     color:var(--ink);
@@ -2555,6 +2560,7 @@
   .w-track.lit{ stroke:var(--leaf-300); animation:answer-lit-green-pulse 1.25s ease-in-out infinite; }
   .w-centre{ fill:none; stroke:#cdbf9f; stroke-width:1.6; stroke-linecap:round; stroke-dasharray:.1 4; }
   .w-track.gone, .w-centre.gone{ opacity:.5; }
+  .w-track.faint{ stroke:#f6f1e6; } /* the "faint" step: the path is still there, only just */
   .w-ink{ fill:none; stroke:var(--ink); stroke-width:7; stroke-linecap:round; stroke-linejoin:round; }
   .w-ink.ok{ stroke:var(--leaf-600); }
   .w-ink.miss{ transition:opacity .45s; opacity:0; }
@@ -2957,8 +2963,19 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 126;
-const APP_BUILD_DATE = "25 Oct 2026";
+const APP_BUILD = 127;
+const APP_BUILD_DATE = "17 Nov 2026";
+
+/* Staging is the same app served under /staging/ (main branch); the real site is
+   the production branch at the top. Both live on one origin, so they would share
+   localStorage — a build being tried out could rewrite his real levels, catches and
+   streak. Every saved key is prefixed on staging, and a tag says where you are. */
+const IS_STAGING = /\/staging(\/|$)/i.test(location.pathname);
+const STORE = IS_STAGING ? "staging:" : "";
+if(IS_STAGING) document.addEventListener("DOMContentLoaded", () => {
+  document.title = "STAGING · " + document.title;
+  document.body.insertAdjacentHTML("beforeend", `<div class="staging-tag" aria-hidden="true">STAGING · build ${APP_BUILD}</div>`);
+});
 
 function renderAbout(){
   $("#aboutBuild").textContent = String(APP_BUILD);
@@ -3356,7 +3373,7 @@ const randInt = (min,max) => min + rand(max-min+1);
    with its own frontier level. A level only counts toward promotion
    when it's a "clean" answer: right on the first try, no hints.
    ================================================================== */
-const PROGRESS_KEY = "pokeLearningProgress";
+const PROGRESS_KEY = STORE + "pokeLearningProgress";
 const MATH_TRACK_IDS = ["add","pattern_add","sub","pattern_sub","mul","pattern_mul","div","pattern_div"];
 const TRACK_IDS = ["spelling","reading","alphabet","sentences","riddles","wordpairs","writing","mathpairs", ...MATH_TRACK_IDS];
 
@@ -3381,6 +3398,7 @@ function loadProgress(){
     // it — every load then looked unstamped and re-ran the migration, which
     // rescaled a level you had just set in Settings on top of itself.
     if(typeof saved.ladderVersion === "number") base.ladderVersion = saved.ladderVersion;
+    if(typeof saved.writingLadder === "number") base.writingLadder = saved.writingLadder;
   }
   return base;
 }
@@ -4039,7 +4057,7 @@ function toVisual(p){
 }
 
 /* ---------------- settings persistence ---------------- */
-const SETTINGS_KEY = "pokeLearningSettings";
+const SETTINGS_KEY = STORE + "pokeLearningSettings";
 
 function saveSettings(){
   const settings = {
@@ -4083,7 +4101,7 @@ function loadSettings(){
 }
 
 /* ---------------- daily play streak ---------------- */
-const STREAK_KEY = "pokeLearningDailyStars";
+const STREAK_KEY = STORE + "pokeLearningDailyStars";
 const ROUNDS_GOAL_DEFAULT = 2;
 const MISTAKE_ALLOWANCE_DEFAULT = 1;
 function roundsGoal(){ return clampInt($("#roundsGoal")?.value, 1, 20, ROUNDS_GOAL_DEFAULT); }
@@ -4097,7 +4115,7 @@ function mistakeAllowance(){ return clampInt($("#mistakeAllowance")?.value, 0, 5
    what to play, and the day counts once that many rounds are done. (It was per
    subject for a while; a day that met that rule had at least that many rounds
    in all, so no streak is lost to the change.) */
-const SUBJECT_DAY_KEY = "pokeLearningDailySubjects";
+const SUBJECT_DAY_KEY = STORE + "pokeLearningDailySubjects";
 function loadSubjectDays(){
   try{ return JSON.parse(localStorage.getItem(SUBJECT_DAY_KEY)) || {}; }catch(e){ return {}; }
 }
@@ -4795,7 +4813,7 @@ function advanceQueue(){
 }
 
 /* ---------------- grass encounters & collection ---------------- */
-const COLLECTION_KEY = "pokeLearningCollection";
+const COLLECTION_KEY = STORE + "pokeLearningCollection";
 let grassEncounter = null;
 let roundCatches = [];   // caught during the current round, for the results screen
 
@@ -4820,7 +4838,7 @@ function addToCollection(id){
    there, so a kid can find what they picked up mid-session instead of hunting
    for it among a thousand entries. Stored separately from the collection so an
    existing save just starts with nothing flagged. */
-const UNSEEN_KEY = "pokeLearningUnseenCatches";
+const UNSEEN_KEY = STORE + "pokeLearningUnseenCatches";
 function loadUnseen(){
   try{ return JSON.parse(localStorage.getItem(UNSEEN_KEY)) || []; }catch(e){ return []; }
 }
@@ -7259,7 +7277,7 @@ let LETTER_STROKES = {};          // letter → [svg path d, …] in stroke orde
 let writeState = null;
 const WRITE_LETTER_ORDER = "LTIEFHOCUBDPRJKMNVWXYZASGQ";   // straight lines first, S G Q last
 const WRITE_TASKS = { letter:1, word:1, first_letter:1 };
-const WRITE_GUIDES = { path:1, dots:1, none:1 };
+const WRITE_GUIDES = { path:1, faint:1, dots:1, none:1 };
 
 function loadWritingData(levelRows, strokeRows){
   const n = v => (v === "" || v == null) ? null : Number(v);
@@ -7271,7 +7289,7 @@ function loadWritingData(levelRows, strokeRows){
   if(!WRITING_ROWS.length) throw new Error("data/writing_levels.csv is empty");
   WRITING_ROWS.forEach(r => {
     if(!WRITE_TASKS[r.task]) throw new Error(`data/writing_levels.csv level ${r.level}: task "${r.task}" is not letter, word or first_letter`);
-    if(!WRITE_GUIDES[r.guide]) throw new Error(`data/writing_levels.csv level ${r.level}: guide "${r.guide}" is not path, dots or none`);
+    if(!WRITE_GUIDES[r.guide]) throw new Error(`data/writing_levels.csv level ${r.level}: guide "${r.guide}" is not path, faint, dots or none`);
   });
   LETTER_STROKES = {};
   strokeRows.slice().sort((a, b) => Number(a.stroke) - Number(b.stroke))
@@ -7283,8 +7301,8 @@ function writingLabel(r){
   const what = r.task === "word" ? `words of up to ${r.maxLetters || 4} letters`
              : r.task === "first_letter" ? "the first letter of a picture"
              : `${r.lower ? "small letters" : "capitals"}${r.letters ? ` (${r.letters.split("").join(" ")})` : ""}`;
-  const how = r.task === "first_letter" ? "Write" : r.guide === "path" ? "Trace" : r.guide === "dots" ? "Trace" : "Write";
-  return `${how} ${what}${r.guide === "dots" ? ", start dots only" : ""}`;
+  const how = r.task === "first_letter" || r.guide === "none" ? "Write" : "Trace";
+  return `${how} ${what}${r.guide === "faint" ? ", faint path" : r.guide === "dots" ? ", start dots only" : ""}`;
 }
 function buildWritingLevels(){
   return WRITING_ROWS.map(row => ({ id: String(row.level), row, label: writingLabel(row), gen: ()=> mkWriting(row) }));
@@ -7548,9 +7566,11 @@ function drawWriteGuide(){
   // so a finished stroke never hides where the next one starts.
   const g = $("#writePad .w-guide"), marks = $("#writePad .w-marks");
   if(!writeTracing()){ g.innerHTML = ""; marks.innerHTML = ""; return; }
-  const path = st.p.guide === "path" || st.shown;
+  // "faint" is the step between the full path and dots only: the same path, much
+  // paler and without its dotted centre line. Help due brings the full path back.
+  const full = st.p.guide === "path" || st.shown, faint = !full && st.p.guide === "faint";
   let track = "", html = "";
-  if(path) strokes.forEach((d, i) => track += `<path d="${d}" class="w-track${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/><path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`);
+  if(full || faint) strokes.forEach((d, i) => track += `<path d="${d}" class="w-track${faint ? " faint" : ""}${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/>${faint ? "" : `<path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`}`);
   g.innerHTML = track;
   const placed = [], shown = [];
   // A later dot that sits along the stroke he is tracing (H's 3 is halfway
@@ -7671,8 +7691,11 @@ function writeMiss(els){
   bumpMistake(st.p);
   els.forEach(el => { el.classList.add("miss"); setTimeout(()=> el.remove(), 500); });
   noteStepMiss();
+  // Help brings the full path back on every level that doesn't already show it:
+  // free writing, and the faint and dots steps of tracing (where it used to only
+  // mark the letter helped, with nothing on the pad to help him).
   if(revealDue() && !writeTracing()){ st.shown = true; st.p._helped = true; st.inks = []; st.inkEls = []; }
-  else if(revealDue()) st.p._helped = true;
+  else if(revealDue()){ st.p._helped = true; if(st.p.guide !== "path") st.shown = true; }
   drawWriteGuide();
 }
 function clearWriteLetter(){
@@ -9164,6 +9187,21 @@ function migrateFrontiers(){
   saveProgress();
 }
 
+/* Writing went from 10 levels to 14 when the fade from tracing to writing was made
+   gentler (a faint path before dots only, and faint and dots steps for small
+   letters). Its frontier is an index, so it moves to the same step on the new
+   ladder — except dots-only capitals, where children got stuck, which lands on the
+   new faint step just before. History and trend are kept. Writing has its own stamp:
+   bumping LADDER_VERSION would re-run the maths reset. */
+const WRITING_LADDER = 2, WRITING_REMAP = [0, 1, 2, 4, 5, 8, 9, 11, 12, 13];
+function migrateWriting(){
+  if(progress.writingLadder === WRITING_LADDER) return;
+  const w = progress.writing;
+  if(w && w.frontier > 0 && w.frontier < WRITING_REMAP.length) w.frontier = WRITING_REMAP[w.frontier];
+  progress.writingLadder = WRITING_LADDER;
+  saveProgress();
+}
+
 (async function boot(){
   try{ await loadData(); }
   catch(err){ console.error(err); showDataError(err); return; }
@@ -9177,6 +9215,7 @@ function migrateFrontiers(){
   MATH_PAIR_LEVELS = buildMathPairLevels();
   buildMathTracks(MATH_TRACK_ROWS, MATH_LEVEL_ROWS, MATH_PROMO_ROWS);
   migrateFrontiers();
+  migrateWriting();
   loadSettings();
   renderHomeTiles();
   renderTrailSettings();

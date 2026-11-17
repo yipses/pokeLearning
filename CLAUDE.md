@@ -20,6 +20,19 @@ preference, and it has been broken more than once.
   app to reproduce something, and reporting what was found. Do as much of that
   as is useful. Then stop and report.
 
+# Staging and production
+
+| Site | Address | Branch |
+|---|---|---|
+| Production (the real one Tanner uses) | https://yipses.github.io/pokeLearning/ | `production` |
+| Staging | https://yipses.github.io/pokeLearning/staging/ | `main` |
+
+`.github/workflows/pages.yml` publishes both on every push to either branch, each as a full copy (pictures and fonts too).
+
+- **Once a change is agreed and its go is given, ship it to staging without asking again:** build, verify, then PR to `main` and squash-merge. The owner can only try a build once it is deployed, so staging is where it gets tested.
+- **Production only on an explicit "ship to prod".** That moves `production` up to `main` (a fast-forward), and nothing else.
+- **Staging keeps its own saved data.** Both sites share one origin, so every localStorage key is prefixed `staging:` there (`IS_STAGING`, `STORE` in index.html), and a red STAGING tag shows. Never save anything without going through those keys.
+
 # Where things live
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

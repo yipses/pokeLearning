@@ -1,0 +1,58 @@
+# Publishes two copies of the app to GitHub Pages:
+#   https://yipses.github.io/pokeLearning/          <- the `production` branch (the real site)
+#   https://yipses.github.io/pokeLearning/staging/  <- the `main` branch (staging: every merged build)
+# Each is a full, separate copy — pictures and fonts included — so any change can be
+# tried on staging first. "Ship to prod" = move `production` up to `main`.
+# Needs Settings → Pages → Source → "GitHub Actions".
+name: Publish site
+
+on:
+  push:
+    branches: [main, production]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out production (the real site)
+        uses: actions/checkout@v4
+        with:
+          ref: production
+          path: prod
+      - name: Check out main (staging)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: stg
+      - name: Assemble the site
+        run: |
+          mkdir site
+          rsync -a --exclude .git --exclude .github prod/ site/
+          mkdir site/staging
+          rsync -a --exclude .git --exclude .github stg/ site/staging/
+          echo "production: $(git -C prod rev-parse --short HEAD)  staging: $(git -C stg rev-parse --short HEAD)"
+          du -sh site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
