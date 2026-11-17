@@ -151,7 +151,9 @@ a two-word name breaks only between words.
   a row of tiles above for its progress (small pads side by side were too small
   for a finger). Tracing shows a pale path, numbered start dots (the next one
   amber) and an arrow; ink that works turns green, ink that doesn't fades —
-  never red. The path sits under his ink; the dots and the arrow sit over it,
+  never red. Support fades in steps — full path, faint path (paler, no centre
+  line), dots only, nothing — and when help is due the full path comes back lit.
+  The path sits under his ink; the dots and the arrow sit over it,
   each dot ringed in white, so a finished stroke never hides where the next one
   starts. A later dot that sits along the stroke being traced (H's 3, halfway
   down its 1) waits until that stroke is done; one at the stroke's very end stays. The arrow is amber like the dot it belongs to, and goes on the side

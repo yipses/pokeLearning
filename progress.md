@@ -1137,6 +1137,25 @@ Now:
 
 Smoke, writing drive and transition checks pass; duplicate-function grep empty; no console errors. Safari's pinch can't be reproduced here, so the real test is on the iPad. Build 126.
 
+## Phase 110 — the path fades in steps, and help shows on the dots level
+
+The owner wanted Writing to grow into words. The real problem was earlier: Tanner was stuck on the low levels because he struggled once the faint path disappeared, so he never reached the word levels. The code showed two causes.
+
+- **The fades were big jumps.** Capitals went from the full path straight to start dots only. Small letters went from the full path straight to nothing, with no dots step at all.
+- **On the dots level, help never appeared.** After 2 misses on a stroke, `writeMiss` marked the letter helped (so it no longer counted), but `drawWriteGuide` only drew the path for `guide === "path"`, so nothing came back on the pad. Struggling there lost the question and gave no help.
+
+Now:
+- A new `faint` guide: the same path, much paler, with no dotted centre line, plus the dots and arrows. The ladder is 14 levels: capitals path → path → faint → dots → free; small letters path → faint → dots → free; words path → faint, then first letters and free words as before.
+- When help is due on the faint or dots step, the full path comes back lit for that letter, as on free writing. He finishes the letter traced; the question still doesn't count.
+- His saved level moves with the new ladder (`migrateWriting`, own `writingLadder` stamp, so the maths reset under `LADDER_VERSION` doesn't re-run). Old level 3 (dots only), where he was stuck, lands on the new faint step. Every other level keeps its place: 4→5, 5→6, 6→9, 7→10, 8→12, 9→13, 10→14. History and trend are kept.
+
+**Staging.** The owner can only try a build once it is live, so builds now go to a staging copy first. `main` is published at `/staging/`, and a new `production` branch is published at the top. One GitHub Action (`pages.yml`) publishes both, each as a full copy. Both sites share the yipses.github.io origin, so staging prefixes every saved key with `staging:` and shows a red STAGING tag. Measured locally with the same layout: staging starts with its own empty save, writing there leaves the real save untouched, and the real site shows no tag. This build is the first to go through staging. CLAUDE.md has the new rule: agreed and given a go, a change ships to staging; production waits for "ship to prod".
+
+**Measured.**
+- Old saves at every level 1–10 land as the table says; maths is untouched; a second load changes nothing.
+- On the path, faint and dots steps, 2 misses bring the lit full path back; he finishes the letter ("Yes!"); the question doesn't count. A clean trace on the faint step counts.
+- Every level of every trail renders (smoke, 3 questions per level); the writing drive passes on traced, faint, dots, free, one-stroke h, the i dot, traced and faint words and a free word; no console errors. Build 127.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

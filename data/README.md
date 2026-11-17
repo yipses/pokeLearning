@@ -247,13 +247,13 @@ on its own. Removing a row is always safe.
 
 Tabs *Writing Level* and *Letter Strokes* in the design sheet.
 
-`writing_levels.csv`, 10 rows:
+`writing_levels.csv`, 14 rows:
 
 | Column | Notes |
 |---|---|
 | `task` | `letter` (one letter), `word` (a whole word, letter by letter) or `first_letter` (the first letter of a picture's word) |
 | `case` | `upper` or `lower`. Words and first letters are written in the case given |
-| `guide` | `path` (pale path, start dots, arrow), `dots` (start dots and arrow only) or `none` (lines only — written from memory and judged by shape) |
+| `guide` | `path` (pale path, start dots, arrow), `faint` (the path much paler, with no centre line, plus the dots and arrow), `dots` (start dots and arrow only) or `none` (lines only — written from memory and judged by shape). Keep them in that order up the ladder: each step takes one piece of support away |
 | `letters` | `letter` tasks only: the letters to draw from, e.g. `LTIEFH`. Blank means every letter of the case |
 | `max_letters` | `word` tasks: the longest word asked for. Words come from his Reading level's pool |
 | `promote_5_pct`, `promote_10_pct` | As every other ladder |
