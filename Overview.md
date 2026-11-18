@@ -526,23 +526,21 @@ A "round" is one full session; how many questions make up a round, and how many 
 
 ## 8c. Home Showcase
 
-**One of the child's own Pokémon stands on the meadow's hill**, as big as the screen allows, with a white **name card** tucked under the hill below it: name and Dex number, **type badges**, then a row for the Pokédex.
+**His target stands on the meadow's hill**: a Pokémon from his current generation that he hasn't caught yet, in full colour, as big as the screen allows, with a white **name card** tucked under the hill below it (name and Dex number, **type badges**, then a row for the Pokédex). A blue **"Find me!" sticker** with a grass mark sits over the top-right of what is drawn, tilted, not a speech bubble, because a Pokémon doesn't speak. It is sized to the screen (15–30px text), so it reads on a big view too.
+
+**The target is a game.** Tapping the Pokémon picks another uncaught one, as often as he likes, any rarity. The one showing is saved. When an English or Maths round starts, **that Pokémon is the round's first wild encounter**: it comes when the grass first rustles, or at the halfway question if nothing has appeared by then. Later encounters in the round are random, as before. He still has to earn the catch with a counting answer. A target he doesn't catch stays on home for next time; once caught, a new one is picked. Battle doesn't use it. Staging keeps its own target, like every other saved value.
 
 **Every Pokémon is sized by what is drawn, not by its picture.** Official artwork is a padded square shaped however the Pokémon is: Geodude covers 91% of its width but 34% of its height, Bulbasaur about 90% of both, so in one square box Geodude looked half the size. When the picture loads, its visible area is measured once on a small canvas, and the picture is scaled so that area matches a typical Pokémon's (√(width × height) = 0.81 of the box, the median over all 1,021 artworks) — at most 1.5×, never wider than the scene, never much taller than the box. Across the artwork, 13% are below 0.7 and are noticeably helped. The picture then stands by its lowest drawn point and is centred by what is drawn, so feet meet the ground and off-centre artwork sits on the mound. **A soft ground shadow** as wide as the Pokémon plants it on the hill; a flying one hovers just above its shadow. The same sizing and shadow apply on the catch screen (§8).
 
 The Pokémon is placed by position — centred, a set distance above the card — rather than by a flex row with a percentage-height picture, which left each browser to work out the picture's width. On a phone it stands 68px above the bottom of the meadow, so there is ground for the shadow between it and the card.
 
-**Types show whether or not it is caught.** On a caught Pokémon they are one more fact about it; on an uncaught one they are the only thing the card gives up besides the outline.
-
-**Two targets, so neither is itself a button inside a button.** Tapping the Pokémon re-rolls the pick, as does every return to the home screen; tapping the Pokédex row opens the Pokédex.
+**Two targets, so neither is itself a button inside a button.** Tapping the Pokémon picks a new target; tapping the Pokédex row opens the Pokédex.
 
 **The Pokédex row is the whole width of the card and at least 46px tall** — the Pokédex icon, `Generation 1 · 14 of 147`, a small bar in the Pokédex's colour, and `Pokédex ›`. It is the only way into the Pokédex from home, so it is a finger-sized target rather than a link at the end of a line. **It opens the Pokédex at that Pokémon**: its own generation, scrolled to its cell, which is ringed in amber for a moment. It used to open on whichever tab was last viewed, leaving you to hunt for the Pokémon you had tapped from. It does not open the Pokémon's card — you were just looking at it. Below 400px wide the small bar drops so the words stay on one line, and below 380 the word *Pokédex* goes too, leaving the `›`; at 360 the count and the word ran into each other. The bar is the level tiles' own `.level-bar`: `14 of 147` has exactly the problem the progress panel argues a bar solves.
 
-It names the generation of the Pokémon **on screen**, not the one being hunted. Those differ whenever a freshly opened generation is still empty and the shelf falls back to the last one, and a count from a different generation than the picture above it would be two subjects on one card.
+It names the generation of the Pokémon **on screen**, which is the one being hunted.
 
-It is a trophy shelf, not a teaser: it only ever shows a species already caught. It prefers the generation being worked on but falls back to the whole collection, so a freshly opened generation — where nothing is caught yet — still shows off the previous one's catches rather than going blank.
-
-**Before anything at all is caught** there is no trophy to show, so the hill holds a grey outline and the card shows its Dex number and **type badges** — an outline and one short word, no sentence (§14.1). The generation count still shows, at `0 of 147`, because a goal is a number rather than a sentence.
+**Once every generation is caught** there is no target, and the hill shows one of his own catches instead, picked at random (the trophy shelf the home screen used to be). That code is kept as the base for showing his catches on home again later.
 
 ## 8d. Home Levels
 
