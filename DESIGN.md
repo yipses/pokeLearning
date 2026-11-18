@@ -144,9 +144,10 @@ a two-word name breaks only between words.
   subject's page is a page with a ✕, never a pop-up.
 - **The home Pokémon is his target**, one not yet caught, always in full
   colour (never a see-through outline: the meadow showed through it). Its
-  label is a sticker over the drawn art's top-right corner, not a speech bubble
-  (a Pokémon doesn't speak), sized to the screen. Sky blue, because green means
-  right and amber means "you are here".
+  label is a flat sticker on the grass under it, with the Pokémon raised to
+  make room. It is not a speech bubble (a Pokémon doesn't speak) and never
+  sits over the art (that looked stuck on). It is sized to the screen. Sky blue,
+  because green means right and amber means "you are here".
 - **A matching board keeps its rows.** Pairs are laid out row by row, so a
   long word makes its row taller instead of putting the columns out of step;
   a matched pair stays in place, green and faded. A board keeps no empty

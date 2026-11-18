@@ -1042,16 +1042,17 @@
     transition: transform .06s;
   }
   .showcase-pick:active{ transform:translateY(2px); }
-  /* The home target's label: a sticker on the meadow, not a speech bubble (a
-     Pokémon doesn't speak). Sized to the screen so it reads on a big view too;
-     placed over the drawn art's top-right corner by placeFindChip. Sky blue, as
+  /* The home target's label: a flat sticker standing on the grass under the
+     Pokémon, like a sign in front of it — not a speech bubble (a Pokémon doesn't
+     speak), and not over the art (it covered it). Sized to the screen so it reads
+     on a big view too; the Pokémon is raised by --lift to make room. Sky blue, as
      green means right and amber means "you are here". */
-  .find-chip{ position:absolute; left:0; top:0; z-index:3; display:inline-flex; align-items:center; gap:.35em;
+  .find-chip{ position:absolute; left:50%; top:calc(100% + 14px); translate:-50% 0; z-index:3;
+    display:inline-flex; align-items:center; gap:.35em;
     padding:.35em .8em .35em .6em; border-radius:999px; background:#2f7fb5; color:#fff;
     font-weight:900; font-size:clamp(15px, 3.4vmin, 30px); line-height:1.15; white-space:nowrap;
-    border:.18em solid #fff; rotate:-8deg; pointer-events:none; opacity:0;
+    border:.18em solid #fff; pointer-events:none;
     box-shadow:0 .15em 0 rgba(0,0,0,.12), 0 .35em .8em rgba(30,70,35,.22); }
-  .find-chip.placed{ opacity:1; }
   .find-chip svg{ width:1.05em; height:1.05em; flex:none; }
   /* min-width:0 or a long name would shove the frame instead of staying in its
      own column — flex items refuse to shrink below their content otherwise. */
@@ -1507,9 +1508,13 @@
      distance above the card — rather than by a flex row with a percentage-height
      picture, which left it to each browser to work out the picture's width.
      fitShowcase() then sizes it by what is drawn (see fitArtwork). */
-  .home-stage{ position:relative; z-index:2; flex:1 1 auto; min-height:0; }
+  .home-stage{ position:relative; z-index:2; flex:1 1 auto; min-height:0; --lift:0px; }
+  /* With a target, the "Find me!" sticker stands on the grass under the Pokémon,
+     so the Pokémon (and its ground shadow) stands higher on the hill by the
+     sticker's height. Every layout's .showcase-pick adds --lift. */
+  .home-stage.has-target{ --lift:calc(2.3 * clamp(15px, 3.4vmin, 30px) + 14px); }
   .showcase-pick{
-    position:absolute; left:50%; bottom:68px; translate:-50% 0; height:calc(100% - 74px); max-height:260px;
+    position:absolute; left:50%; bottom:calc(68px + var(--lift)); translate:-50% 0; height:calc(100% - 74px - var(--lift)); max-height:260px;
     display:flex; align-items:flex-end; justify-content:center; border-radius:24px;
   }
   .showcase-pick img{
@@ -1600,7 +1605,7 @@
     /* The ground and the Pokémon scale with the window's height, as they do in
        effect on a phone; fixed, a tall window left it pressed against the card
        under a lot of sky. */
-    .showcase-pick{ bottom:calc(150px + 8vh); height:calc(100% - 150px - 8vh - 70px); }
+    .showcase-pick{ bottom:calc(150px + 8vh + var(--lift)); height:calc(100% - 150px - 8vh - 70px - var(--lift)); }
     .showcase-pick, .showcase-pick img{ max-height:min(50vh, 540px); }
     .showcase-pick img{ max-width:none; }
     /* The name card stands in the scene, on the mound under the Pokémon, as the
@@ -2431,7 +2436,7 @@
     }
     .home-scene{ grid-column:1; grid-row:1 / -1; margin:0; padding:0 16px; border-radius:0 var(--radius) var(--radius) 0; }
     .home-top{ padding-top:8px; }
-    .showcase-pick{ bottom:104px; height:calc(100% - 104px - 52px); max-height:none; }
+    .showcase-pick{ bottom:calc(104px + var(--lift)); height:calc(100% - 104px - 52px - var(--lift)); max-height:none; }
     .showcase-pick, .showcase-pick img{ max-height:calc(100dvh - 170px); }
     .showcase-pick img{ max-width:none; }
     #homeShowcase{ grid-column:1; grid-row:1 / -1; align-self:end; justify-self:center; z-index:3;
@@ -2974,7 +2979,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 128;
+const APP_BUILD = 129;
 const APP_BUILD_DATE = "18 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
@@ -3360,26 +3365,6 @@ function fitShowcase(){
   if(!img || !img.complete) return;
   const pick = img.closest(".showcase-pick");
   setArtShadow(pick, fitArtwork(img, pick.clientHeight, $("#homeStage").clientWidth - 24));
-  placeFindChip(pick, img);
-}
-/* The "Find me!" sticker sits over the top-right corner of what is drawn, not of
-   the picture's square (most art leaves a margin, so the square's corner can be
-   far from the Pokémon on a big screen), and is pulled back inside the meadow if
-   that corner is near its edge. */
-function placeFindChip(pick, img){
-  const chip = pick.querySelector(".find-chip");
-  const bb = chip && artBounds(img);
-  if(!bb) return;
-  const pr = pick.getBoundingClientRect(), ir = img.getBoundingClientRect(),
-        sr = $("#homeStage").getBoundingClientRect(),
-        cw = chip.offsetWidth, ch = chip.offsetHeight;
-  let x = ir.left + bb.r * ir.width - cw * 0.55;
-  let y = ir.top + bb.t * ir.height - ch * 0.45;
-  x = Math.max(sr.left + 8, Math.min(x, sr.right - cw - 8));
-  y = Math.max(sr.top + 8, y);
-  chip.style.left = (x - pr.left) + "px";
-  chip.style.top = (y - pr.top) + "px";
-  chip.classList.add("placed");
 }
 function fitCatchArt(){
   const img = $("#catchImg"), frame = img.closest(".catch-frame");
@@ -4246,6 +4231,7 @@ function renderShowcase(reroll){
   // card beneath. The picture re-rolls, the Pokédex row opens the Pokédex — two
   // targets, so neither the stage nor the card is itself a button.
   const stage = $("#homeStage");
+  stage.classList.toggle("has-target", !!target);   // raises the Pokémon over its sticker
   stage.innerHTML = `
     <button class="showcase-pick" type="button" aria-label="Show a different one">
       <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
