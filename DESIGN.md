@@ -142,6 +142,11 @@ a two-word name breaks only between words.
   buttons are one per subject and carry nothing but its name. Above both, one
   **GOAL** bar: today's rounds against the day's goal, any mix of subjects. A
   subject's page is a page with a ✕, never a pop-up.
+- **The home Pokémon is his target**, one not yet caught, always in full
+  colour (never a see-through outline: the meadow showed through it). Its
+  label is a sticker over the drawn art's top-right corner, not a speech bubble
+  (a Pokémon doesn't speak), sized to the screen. Sky blue, because green means
+  right and amber means "you are here".
 - **A matching board keeps its rows.** Pairs are laid out row by row, so a
   long word makes its row taller instead of putting the columns out of step;
   a matched pair stays in place, green and faded. A board keeps no empty

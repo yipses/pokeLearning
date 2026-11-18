@@ -1042,6 +1042,17 @@
     transition: transform .06s;
   }
   .showcase-pick:active{ transform:translateY(2px); }
+  /* The home target's label: a sticker on the meadow, not a speech bubble (a
+     Pokémon doesn't speak). Sized to the screen so it reads on a big view too;
+     placed over the drawn art's top-right corner by placeFindChip. Sky blue, as
+     green means right and amber means "you are here". */
+  .find-chip{ position:absolute; left:0; top:0; z-index:3; display:inline-flex; align-items:center; gap:.35em;
+    padding:.35em .8em .35em .6em; border-radius:999px; background:#2f7fb5; color:#fff;
+    font-weight:900; font-size:clamp(15px, 3.4vmin, 30px); line-height:1.15; white-space:nowrap;
+    border:.18em solid #fff; rotate:-8deg; pointer-events:none; opacity:0;
+    box-shadow:0 .15em 0 rgba(0,0,0,.12), 0 .35em .8em rgba(30,70,35,.22); }
+  .find-chip.placed{ opacity:1; }
+  .find-chip svg{ width:1.05em; height:1.05em; flex:none; }
   /* min-width:0 or a long name would shove the frame instead of staying in its
      own column — flex items refuse to shrink below their content otherwise. */
   .showcase-body{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:1px; }
@@ -2963,8 +2974,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 127;
-const APP_BUILD_DATE = "17 Nov 2026";
+const APP_BUILD = 128;
+const APP_BUILD_DATE = "18 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
    the production branch at the top. Both live on one origin, so they would share
@@ -3349,6 +3360,26 @@ function fitShowcase(){
   if(!img || !img.complete) return;
   const pick = img.closest(".showcase-pick");
   setArtShadow(pick, fitArtwork(img, pick.clientHeight, $("#homeStage").clientWidth - 24));
+  placeFindChip(pick, img);
+}
+/* The "Find me!" sticker sits over the top-right corner of what is drawn, not of
+   the picture's square (most art leaves a margin, so the square's corner can be
+   far from the Pokémon on a big screen), and is pulled back inside the meadow if
+   that corner is near its edge. */
+function placeFindChip(pick, img){
+  const chip = pick.querySelector(".find-chip");
+  const bb = chip && artBounds(img);
+  if(!bb) return;
+  const pr = pick.getBoundingClientRect(), ir = img.getBoundingClientRect(),
+        sr = $("#homeStage").getBoundingClientRect(),
+        cw = chip.offsetWidth, ch = chip.offsetHeight;
+  let x = ir.left + bb.r * ir.width - cw * 0.55;
+  let y = ir.top + bb.t * ir.height - ch * 0.45;
+  x = Math.max(sr.left + 8, Math.min(x, sr.right - cw - 8));
+  y = Math.max(sr.top + 8, y);
+  chip.style.left = (x - pr.left) + "px";
+  chip.style.top = (y - pr.top) + "px";
+  chip.classList.add("placed");
 }
 function fitCatchArt(){
   const img = $("#catchImg"), frame = img.closest(".catch-frame");
@@ -4168,9 +4199,13 @@ function renderHomeTiles(){ renderTiles($("#homeTiles"), { dex:false }); renderT
    to a silhouette and its type — an outline and one short word, no sentence. A
    five-year-old cannot read "Play a round to catch it!", and a mystery shape is
    the whole invitation anyway (§14.1 of Overview.md). */
-function renderShowcase(){
+function renderShowcase(reroll){
   const el = $("#homeShowcase");
   if(!el || !POKEMON.length) return;
+  // The home Pokémon is his target — one he hasn't caught (see findTarget). A tap
+  // (an Event) picks another. The trophy shelf below is kept for when every
+  // generation is caught, and as the base for showing his catches here later.
+  const target = findTarget(!!reroll);
   const collected = loadCollection();
   const g = currentGenRange(collected);
   const pool = g ? POKEMON.filter(p => p.id>=g.from && p.id<=g.to) : POKEMON;
@@ -4180,8 +4215,8 @@ function renderShowcase(){
   // there is no reason to hide the trophies earned in the last one.
   const shelf = caught.length ? caught : POKEMON.filter(p => collected.includes(p.id));
   const list = shelf.length ? shelf : pool.filter(p => !collected.includes(p.id));
-  const showCaught = shelf.length > 0;
-  const poke = list[Math.floor(Math.random()*list.length)];
+  const showCaught = !!target || shelf.length > 0;   // full colour either way
+  const poke = target || list[Math.floor(Math.random()*list.length)];
   if(!poke) return;
 
   // The generation of the Pokémon ON SCREEN, so the count under it is the count
@@ -4215,6 +4250,7 @@ function renderShowcase(){
     <button class="showcase-pick" type="button" aria-label="Show a different one">
       <img src="${artwork(poke.id)}" alt="${showCaught ? cap(poke.n) : "Not caught yet"}"
            class="${showCaught ? "" : "silhouette"}" decoding="async">
+      ${target ? `<span class="find-chip" aria-hidden="true">${UI_ICONS.grass}Find me!</span>` : ""}
     </button>`;
   el.innerHTML = `
     <div class="showcase-row">
@@ -4230,7 +4266,9 @@ function renderShowcase(){
   const dexBtn = el.querySelector(".showcase-dex");
   if(dexBtn) dexBtn.addEventListener("click", ()=> openDexAt(poke.id));
 
-  stage.querySelector(".showcase-pick").setAttribute("aria-label", showCaught
+  stage.querySelector(".showcase-pick").setAttribute("aria-label", target
+    ? `Find me: ${cap(poke.n)}, number ${poke.id}. Show a different one.`
+    : showCaught
     ? `${cap(poke.n)}, number ${poke.id}. Show a different one.`
     : "Not caught yet. Show a different one.");
 
@@ -4273,6 +4311,8 @@ const HUD_ICONS = {
    ink sits differently on every device and takes its colour from the font, not
    from the thing it belongs to. Drawn, each one takes `currentColor`. */
 const UI_ICONS = {
+  // Three blades of grass, for the home target's "Find me!" sticker.
+  grass: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 21c2-6 3-10 2-15 3 4 4 9 4 15M10 21c0-7 1-12 4-17 0 6 0 11-1 17M16 21c1-5 3-8 6-10-2 4-3 7-3 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   // Drawn to sit centred in its 24 grid (its ink spans 3–20.8), a cone and two
   // waves. The old mark filled only the left half — 12px of ink in a 48px
   // circle, 1.8px left of centre — so no amount of scaling fixed it.
@@ -4540,7 +4580,7 @@ function startGame(subject){
     $("#noModesModal p").textContent = `Every ${SUBJECT_BY_ID[roundSubject].label} trail is switched off. Turn at least one on in Settings.`;
     $("#noModesModal").classList.remove("hidden"); $("#noModesSettingsBtn").focus(); return;
   }
-  idx=0; correct=0; roundCredits=0; roundCatches=[]; sinceEncounter=0;
+  idx=0; correct=0; roundCredits=0; roundCatches=[]; sinceEncounter=0; targetMet=false;
   show("play");
   enterQuestion(false);
 }
@@ -4892,6 +4932,28 @@ function currentGenPool(collected){
   return uncaught.length>0 ? uncaught : null;
 }
 
+/* His target: the Pokémon on the home screen, one from his current generation that
+   he hasn't caught, shown in full under a "Find me!" sticker. Tapping it picks
+   another, as often as he likes — any rarity. The one showing when a round starts
+   is the round's first wild Pokémon, and comes by the halfway point if nothing has
+   appeared yet (maybeStartGrassEncounter). He still has to earn the catch; a target
+   he misses stays until he catches it, then a new one is picked. */
+const TARGET_KEY = STORE + "pokeLearningTarget";
+let targetMet = false;   // the target has appeared this round
+function findTarget(reroll){
+  const pool = currentGenPool(loadCollection());
+  if(!pool) return null;
+  let id = null;
+  try{ id = JSON.parse(localStorage.getItem(TARGET_KEY)); }catch(e){}
+  let poke = pool.find(p => p.id === id) || null;
+  if(!poke || reroll){
+    const others = poke && pool.length > 1 ? pool.filter(p => p !== poke) : pool;
+    poke = others[rand(others.length)];
+    try{ localStorage.setItem(TARGET_KEY, JSON.stringify(poke.id)); }catch(e){}
+  }
+  return poke;
+}
+
 /* Wild encounters: a per-question roll, plus a pity timer that guarantees one
    the moment a drought runs past the average wait.
 
@@ -4949,16 +5011,22 @@ function maybeStartGrassEncounter(){
   const pct = clampInt($("#grassRate").value, 0, 100, 10);
   if(pct <= 0) return;
 
+  // The home screen's target is this round's first wild Pokémon, and is brought in
+  // by the halfway point if the grass hasn't produced anything yet.
+  const target = targetMet ? null : findTarget(false);
+  const targetDue = !!target && idx >= Math.floor(roundTarget() / 2);
+
   const pityAt = grassPityAt(pct);
   sinceEncounter++;
-  const forced = sinceEncounter >= pityAt;
+  const forced = sinceEncounter >= pityAt || targetDue;
   if(!forced && Math.random() >= grassRoll(pct)) return;
 
   const collected = loadCollection();
   let pool = currentGenPool(collected);
   if(!pool || pool.length===0) pool = POKEMON;
   sinceEncounter = 0;
-  grassEncounter = { poke: pool[rand(pool.length)], caught:false };
+  if(target) targetMet = true;
+  grassEncounter = { poke: target || pool[rand(pool.length)], caught:false };
 
   if(strip) strip.classList.add("shaking");
 }
