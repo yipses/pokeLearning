@@ -1162,14 +1162,20 @@ On staging, with an empty save, the owner saw the home Pokémon drawn as a see-t
 
 - **The target.** Home shows a Pokémon from his current generation that he hasn't caught, in full colour, with its name, number and type, under a blue "Find me!" sticker. Tapping it picks another, any rarity, as often as he likes. It is saved (`TARGET_KEY`, prefixed on staging).
 - **It always shows up.** The round's first wild encounter is the target. If the grass hasn't rustled by the halfway question, it comes then (`targetMet`, `maybeStartGrassEncounter`). He still earns the catch. A missed target stays; a caught one is replaced.
-- **The sticker** was mocked three ways with the owner. A chip inside the card was "too far from the Pokémon". A speech bubble didn't fit, because "Pokémon don't speak English". The sticker was too small on a big view, so it now scales with the screen (15–30px). It is placed over the top-right of what is drawn (`placeFindChip`, using the same measured bounds as the art sizing), so it hugs any shape, and it is kept inside the meadow.
+- **The sticker** went through several mockups with the owner:
+  - a chip inside the card was "too far from the Pokémon";
+  - a speech bubble didn't fit, because "Pokémon don't speak English";
+  - a tilted sticker on the art's top-right corner was too small on a big view, and on staging it "feels ugly" stuck over the art;
+  - a flat sticker in the meadow's top-right corner (option A) was tried and not chosen.
+
+  It is now a flat sticker standing on the grass under the Pokémon (option B). The Pokémon is raised by `--lift`, about the sticker's height, in all three layouts: phone, wide and landscape. The sticker scales with the screen (15–30px). Placement is CSS only, so the earlier `placeFindChip` is gone.
 - **His catches leave home.** The trophy-shelf code stays for when every generation is caught, and as the base for a catches row later.
 
 **Measured.**
 - 2,000 simulated 10-question rounds: the target was the first encounter and appeared by the halfway question in all 2,000.
 - After a catch, a new target is picked. A re-render keeps the target; a tap changes it. It survives a reload.
 - With everything caught, there is no sticker and the Pokémon is in full colour.
-- The sticker stays inside the meadow and clear of the settings button for Primeape, Onix, Gyarados and Voltorb at 390×844, 360×640, 820×1180, 1280×800 and 844×390, with no page scroll.
+- The sticker stays inside the meadow, under the Pokémon and above the name card, for Primeape, Onix, Gyarados and Voltorb at 390×844, 360×640, 820×1180, 1280×800 and 844×390, with no page scroll (build 129).
 - Smoke and the writing drive pass; staging and the real site still keep separate saves; no console errors. Build 128.
 
 ## Doc roles
