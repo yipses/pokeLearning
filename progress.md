@@ -1223,6 +1223,25 @@ The owner wanted Tanner to learn to write 3–4 letter words with the letters ne
 - Fit: no scroll at 820×1180, 1180×820, 1024×768, 1280×800, 1440×900 and 600×960. On an iPad that's about 206px a letter for 3 letters and 155px for 4.
 - Smoke and the writing drive pass; no console errors. Build 130.
 
+## Phase 113 — the stroke he is on stands out
+
+The owner asked whether a letter with several strokes should highlight only the stroke being traced and fade the rest. Before this, every stroke was the same pale path with a dotted centre line, so only the amber dot and arrow said which stroke was current.
+
+- **The stroke being traced** (`.w-track.now`) is a little darker (`#e8dcc2`) and keeps its dotted centre line.
+- **Strokes still to come** (`.later`) drop to 45% with no centre line. Their numbered dots stay, because they show the order.
+- **Done strokes** are unchanged: under his green ink.
+- **The faint level** gets the same split.
+- **On the wide word pad**, each later letter is faded as one group. Faded per stroke, overlapping strokes inside "u" and "g" showed darker seams.
+- **The word's left edge** grew from 10 to 18 units, so the first letter's arrow isn't clipped.
+- **A trap caught on the way:** `.w-track.now:not(.faint)` outranked `.w-track.lit`, so the green help light would have been lost. The rule now also excludes `.lit`, and the light was checked to still render green.
+
+**Checks.**
+- Track classes and computed opacity were checked for I (stroke 1), E (stroke 3), faint E, and "mug" on the wide pad.
+- Smoke, the writing drive and the word drive pass.
+- The duplicate-function grep is empty, and there are no console errors.
+
+Build 131.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
