@@ -9,7 +9,7 @@ level,task,case,guide,letters,max_letters,promote_5_pct,promote_10_pct
 8,letter,lower,dots,,,100,80
 9,letter,lower,none,,,100,80
 10,word,lower,path,,4,100,80
-11,word,lower,faint,,4,100,80
+11,word,lower,boxes,,4,100,80
 12,first_letter,lower,none,,,100,80
-13,word,lower,none,,3,100,80
+13,word,lower,marks,,4,100,80
 14,word,lower,none,,4,100,80

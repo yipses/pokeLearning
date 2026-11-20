@@ -343,7 +343,15 @@ A board needs as many words as it has pairs. **Below eight words the pool borrow
 
 **After `Show the answer after` misses the full path comes back**, lit, on every level that doesn't already show it (faint path, dots only and free writing), and the letter is traced instead; that question no longer counts toward the round. Otherwise a word may take `Mistakes allowed` slips per letter and still count. Promotion stays spotless. A finished letter or word gets the same ✓ Yes! pill and chime as every mode, then the letter or word is said.
 
-**Words** go one letter at a time in the same big pad (three small pads were too small for a finger on a phone): a row of tiles above shows the word's progress — done letters green, the current one the amber cursor; on traced levels the tiles show the letters, on free levels only the ones already written. Words come from his Reading level's pool, plain words of 2 to N letters, borrowing the next Reading level's words when the pool is thin.
+**Words on a tablet or laptop** (600px wide and up) go on **one wide pad, letters side by side**, so spacing becomes part of writing a word. The pad is sized by the word: about 230px a letter for a 3-letter word on an iPad, 170px for 4. The ↻ sits just outside its right edge, so it never covers a descender. Letters are modelled about two-thirds of a small letter's height apart. The four word steps take one support away at a time:
+- **Trace the word:** the whole word's path, already spaced. He traces it letter by letter.
+- **Letter boxes:** a worksheet-style grid of equal boxes, edge to edge, one letter in each. The box he is on is amber, and each letter is checked in its box.
+- **Start marks:** a small tick under the baseline where each letter starts. He writes the whole word.
+- **Free:** only the lines.
+
+On the last two, his strokes are split into letters at the widest gaps between them. Each letter is checked as a single letter would be. **Spacing is never marked wrong.** Once the word is right, a soft green box appears round each letter he made, which shows him his spacing. A word that misses twice turns into tracing it, and that question no longer counts. The pad leaves a quarter more room on the right for children whose spacing runs wide.
+
+**On a phone** words still go one letter at a time in the same big pad, because three small pads were too small for a finger. The boxes step falls back to start dots, and the start-marks step to free writing. A row of tiles above shows the word's progress: done letters green, the current one the amber cursor. On traced levels the tiles show the letters; on free levels, only the ones already written. Words come from his Reading level's pool, plain words of 2 to N letters, borrowing the next Reading level's words when the pool is thin.
 
 | Level | What he does |
 |---|---|
@@ -357,9 +365,9 @@ A board needs as many words as it has pairs. **Below eight words the pool borrow
 | 8 | Trace small letters, start dots only |
 | 9 | Write small letters from memory |
 | 10 | Trace words of up to 4 letters |
-| 11 | Trace words of up to 4 letters on a faint path |
+| 11 | Write words of up to 4 letters, one box a letter |
 | 12 | Write the first letter of a picture |
-| 13 | Write words of up to 3 letters |
+| 13 | Write words of up to 4 letters, with start marks |
 | 14 | Write words of up to 4 letters |
 
 The ladder is `data/writing_levels.csv`; the letters' strokes, in order, are `data/letter_strokes.csv` — SVG path data on a 100×100 grid, so a letter's shape is a sheet edit, not code.

@@ -1178,6 +1178,51 @@ On staging, with an empty save, the owner saw the home Pokémon drawn as a see-t
 - The sticker stays inside the meadow, under the Pokémon and above the name card, for Primeape, Onix, Gyarados and Voltorb at 390×844, 360×640, 820×1180, 1280×800 and 844×390, with no page scroll (build 129).
 - Smoke and the writing drive pass; staging and the real site still keep separate saves; no console errors. Build 128.
 
+## Phase 112 — words written side by side
+
+The owner wanted Tanner to learn to write 3–4 letter words with the letters next to each other, which means learning letter spacing. Until now a word went one letter at a time on the single pad, so he never saw his letters together.
+
+**What was decided, from mockups on an iPad:**
+- On a tablet or laptop (600px wide and up), a word goes on **one wide pad**. Phones keep one letter at a time.
+- The model gap between letters is 22 units, about two-thirds of a small letter's height. The first mockup used 10, and the owner found it "too tight, almost none".
+- Four steps on levels 10, 11, 13 and 14:
+  - trace the word;
+  - **letter boxes** as a worksheet-style grid of equal boxes, edge to edge; the owner showed a school worksheet, and fitted boxes were tried first;
+  - start marks;
+  - free.
+- **Spacing is shown, never judged:** a soft green box round each letter once the word is right.
+
+**How it works:**
+- The pad works in word units, and each letter's slot has an x offset (`wordSlots`).
+- Ink is shifted back into the letter's own 100-grid, so `checkTrace` and `checkFree` are unchanged.
+- On the start-marks and free steps the whole word is written, then split into letters (`splitWord`) at the widest gaps between a stroke and everything left of it. A dot or crossbar over its own letter has a negative gap, so it is never cut off.
+- A whole word that misses twice turns into tracing it.
+- On a phone, boxes falls back to dots and marks to free.
+
+**Bugs found while building:**
+- The pad overflowed the card on an iPad. The pad's own CSS zoom (1.35) makes 624px draw as 842px. The card width is now divided by the pad's zoom, as the height already was.
+- A child writing wider than the model ran off the pad, so the whole-word steps get 25% more pad on the right.
+
+**Measured:**
+- Driven with a real pointer at 820×1180:
+  - all four steps accept a correct word;
+  - a wrong letter in a box is a miss;
+  - whole words are accepted at gaps of 8 and 34 units, and "kit" in reverse stroke order with its i dot;
+  - help switches to tracing after two misses;
+  - ↻ keeps the finished letters.
+- Phones fall back as designed.
+- Synthetic messy words (24 words × 15 hands × 3 spacing bands, any stroke order within a letter):
+
+| Spacing | Right word accepted | One wrong letter accepted |
+|---|---|---|
+| tight (4–10) | 90.0% | 0.3% |
+| model-ish (15–30) | 89.2% | 0.3% |
+| wide (30–45) | 89.7% | 0.6% |
+
+  That matches the single-letter rate (about 97%) over 3–4 letters, so splitting the word costs almost nothing.
+- Fit: no scroll at 820×1180, 1180×820, 1024×768, 1280×800, 1440×900 and 600×960. On an iPad that's about 206px a letter for 3 letters and 155px for 4.
+- Smoke and the writing drive pass; no console errors. Build 130.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

@@ -2596,6 +2596,14 @@
   .w-chip.now{ background:var(--surface); box-shadow:inset 0 0 0 3px var(--sun-700), 0 0 0 4px var(--sun-300); }
   .write-word + .write-pad{ margin-top:12px; }
   @media (prefers-reduced-motion: reduce){ .w-track.lit{ animation:none; } }
+  /* A word on a tablet: the whole word on one wide pad, sized by the word, with
+     the ↻ just outside its right edge so it never covers a descender. */
+  .write-pad.wide{ aspect-ratio:auto; max-width:none; translate:-30px 0; }
+  .write-pad.wide .w-clear{ right:-60px; bottom:0; }
+  .w-cell{ fill:none; stroke:#d8ccb4; stroke-width:1; }                      /* the worksheet grid, one box a letter */
+  .w-cell.now{ fill:#fff8e6; stroke:var(--sun-700); stroke-width:1.6; }     /* the box he is on: amber */
+  .w-tick{ stroke:#cfc3a6; stroke-width:1.6; stroke-linecap:round; }       /* where each letter starts */
+  .w-seg{ fill:rgba(76,160,90,.08); stroke:#8cc98c; stroke-width:1; }      /* after: the letters he made, one box each */
 
   /* The no-trails notice. */
   .notice-card{ max-width:380px; text-align:center; }
@@ -2979,7 +2987,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 129;
+const APP_BUILD = 130;
 const APP_BUILD_DATE = "18 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
@@ -7331,7 +7339,7 @@ let LETTER_STROKES = {};          // letter → [svg path d, …] in stroke orde
 let writeState = null;
 const WRITE_LETTER_ORDER = "LTIEFHOCUBDPRJKMNVWXYZASGQ";   // straight lines first, S G Q last
 const WRITE_TASKS = { letter:1, word:1, first_letter:1 };
-const WRITE_GUIDES = { path:1, faint:1, dots:1, none:1 };
+const WRITE_GUIDES = { path:1, faint:1, dots:1, boxes:1, marks:1, none:1 };
 
 function loadWritingData(levelRows, strokeRows){
   const n = v => (v === "" || v == null) ? null : Number(v);
@@ -7343,7 +7351,7 @@ function loadWritingData(levelRows, strokeRows){
   if(!WRITING_ROWS.length) throw new Error("data/writing_levels.csv is empty");
   WRITING_ROWS.forEach(r => {
     if(!WRITE_TASKS[r.task]) throw new Error(`data/writing_levels.csv level ${r.level}: task "${r.task}" is not letter, word or first_letter`);
-    if(!WRITE_GUIDES[r.guide]) throw new Error(`data/writing_levels.csv level ${r.level}: guide "${r.guide}" is not path, faint, dots or none`);
+    if(!WRITE_GUIDES[r.guide]) throw new Error(`data/writing_levels.csv level ${r.level}: guide "${r.guide}" is not path, faint, dots, boxes, marks or none`);
   });
   LETTER_STROKES = {};
   strokeRows.slice().sort((a, b) => Number(a.stroke) - Number(b.stroke))
@@ -7355,8 +7363,9 @@ function writingLabel(r){
   const what = r.task === "word" ? `words of up to ${r.maxLetters || 4} letters`
              : r.task === "first_letter" ? "the first letter of a picture"
              : `${r.lower ? "small letters" : "capitals"}${r.letters ? ` (${r.letters.split("").join(" ")})` : ""}`;
-  const how = r.task === "first_letter" || r.guide === "none" ? "Write" : "Trace";
-  return `${how} ${what}${r.guide === "faint" ? ", faint path" : r.guide === "dots" ? ", start dots only" : ""}`;
+  const how = r.task === "first_letter" || r.guide === "none" || r.guide === "boxes" || r.guide === "marks" ? "Write" : "Trace";
+  return `${how} ${what}${r.guide === "faint" ? ", faint path" : r.guide === "dots" ? ", start dots only"
+    : r.guide === "boxes" ? ", one box a letter" : r.guide === "marks" ? ", with start marks" : ""}`;
 }
 function buildWritingLevels(){
   return WRITING_ROWS.map(row => ({ id: String(row.level), row, label: writingLabel(row), gen: ()=> mkWriting(row) }));
@@ -7551,25 +7560,64 @@ function checkFree(strokes, target){
 }
 
 /* ---- the screen ---- */
+/* Words on a tablet go on one wide pad, letters side by side, so spacing is part
+   of writing a word (a phone keeps one letter at a time: three letters across
+   360px left about 110px a letter, too small for a finger). Letters sit WORD_GAP
+   apart, measured from what is drawn — about two-thirds of a small letter's
+   height — or in equal worksheet boxes on the "boxes" step. The pad works in
+   word units; each letter's slot has an x offset, and ink is shifted back into
+   the letter's own 100-grid before it is checked, so every letter check is the
+   same as on the single pad. */
+const WORD_GAP = 22, WORD_CELL = 74, WORD_EDGE = 10;
+function writeWide(p){ return p.letters.length > 1 && innerWidth >= 600; }
+function letterSpan(c){
+  const xs = LETTER_STROKES[c].flatMap(d => pathPoints(d, 2).pts.map(q => q[0]));
+  return [Math.min(...xs), Math.max(...xs)];
+}
+function wordSlots(letters, cells){
+  let x = WORD_EDGE;
+  const slots = letters.map((c, i) => {
+    const [l, r] = letterSpan(c);
+    if(cells){ const x0 = WORD_EDGE + i * WORD_CELL; return { c, l, r, ox: x0 + WORD_CELL / 2 - (l + r) / 2, x0, x1: x0 + WORD_CELL }; }
+    const s = { c, l, r, ox: x - l, x0: x, x1: x + r - l };
+    x = s.x1 + WORD_GAP;
+    return s;
+  });
+  return { slots, W: cells ? WORD_EDGE * 2 + WORD_CELL * letters.length : x - WORD_GAP + WORD_EDGE };
+}
+/* The guide a question really gets: on a phone the word steps that need the
+   wide pad fall back to one letter at a time (boxes → dots, marks → none). */
+function writeEffGuide(p, wide){
+  if(wide) return p.guide;
+  return p.guide === "boxes" ? "dots" : p.guide === "marks" ? "none" : p.guide;
+}
+
 function renderWriting(p){
   const stage = $("#stage");
-  const word = p.letters.length > 1;
+  const word = p.letters.length > 1, wide = writeWide(p), g = writeEffGuide(p, wide);
+  const lay = wide ? wordSlots(p.letters, g === "boxes") : null;
+  // Writing the whole word himself, a child's spacing usually runs wider than the
+  // model's: a quarter more pad on the right so the last letter still fits.
+  if(lay && (g === "marks" || g === "none")) lay.W *= 1.25;
   stage.innerHTML = `
     <div class="kind-tag kind-writing">Writing</div>
     <div class="frame-wrap">
       <div class="poke-frame reading-frame compact"><img alt="" src="${p.rec.img || artwork(p.rec.id)}"></div>
       <button class="frame-say" type="button" id="writeSay" aria-label="Say it">${UI_ICONS.speaker}</button>
     </div>
-    ${word ? `<div class="write-word" id="writeWord">${p.letters.map(() => `<span class="w-chip"></span>`).join("")}</div>` : ""}
-    <div class="write-pad" id="writePad">
-      <svg viewBox="0 0 100 100" aria-label="Writing space" role="img">
-        <g class="w-lines"></g><g class="w-guide"></g><g class="w-done"></g><path class="w-ink live" d=""/><g class="w-marks"></g>
+    ${word && !wide ? `<div class="write-word" id="writeWord">${p.letters.map(() => `<span class="w-chip"></span>`).join("")}</div>` : ""}
+    <div class="write-pad${wide ? " wide" : ""}" id="writePad">
+      <svg viewBox="${wide ? `0 4 ${lay.W.toFixed(1)} 96` : "0 0 100 100"}" aria-label="Writing space" role="img">
+        <g class="w-lines"></g><g class="w-word-guide"></g><g class="w-guide"></g><g class="w-done"></g><path class="w-ink live" d=""/><g class="w-marks"></g>
         <defs><marker id="wArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10z"/></marker></defs>
       </svg>
       <button class="w-clear" type="button" id="writeClear" aria-label="Start this letter again">${UI_ICONS.again}</button>
     </div>
     <div class="feedback" id="feedback"></div>`;
-  writeState = { p, at: 0, stroke: 0, inks: [], shown: false, timer: null, live: null, done: false };
+  writeState = { p, at: 0, stroke: 0, inks: [], shown: false, timer: null, live: null, done: false,
+    g, wide, slots: lay && lay.slots, W: lay && lay.W, curEls: [],
+    // marks / none on the wide pad: he writes the whole word, then it is split into letters
+    whole: wide && (g === "marks" || g === "none") };
   $("#writeSay").addEventListener("click", ()=> speak(writeSaying(p)));
   $("#writeClear").addEventListener("click", ()=> clearWriteLetter());
   wireWritePad();
@@ -7580,7 +7628,7 @@ function renderWriting(p){
 }
 function writeSaying(p){ return p.say; }
 function writeLetter(){ return writeState.p.letters[writeState.at]; }
-function writeTracing(){ return writeState.p.guide !== "none" || writeState.shown; }
+function writeTracing(){ const g = writeState.g; return g === "path" || g === "faint" || g === "dots" || writeState.shown; }
 
 /* The pad is as big as the space under the picture allows: 200 to 460px (from
    130 on a landscape phone). */
@@ -7588,28 +7636,43 @@ function layoutWritePad(){
   const pad = $("#writePad");
   if(!pad || $("#play").classList.contains("hidden")) return;
   pad.style.width = "";
+  pad.style.aspectRatio = "";
   const card = $("#stage"), cs = getComputedStyle(card);
   const zoom = pad.getBoundingClientRect().width / (pad.offsetWidth || 1) || 1;
   const wrapPad = parseFloat(getComputedStyle($(".wrap")).paddingBottom) || 0;
   const freeH = (innerHeight - pad.getBoundingClientRect().top - parseFloat(cs.paddingBottom) - wrapPad - 10) / zoom;
   const freeW = pad.parentElement.clientWidth / (parseFloat(getComputedStyle(pad.parentElement).zoom) || 1);
   const floor = innerHeight <= 500 ? 130 : 200;            // a landscape phone has little height
+  if(writeState && writeState.wide){
+    // As wide as the card (less room for the ↻ outside it), as tall as the word's shape allows.
+    const W = writeState.W, cs2 = getComputedStyle(pad.parentElement);
+    const cardW = pad.parentElement.clientWidth - parseFloat(cs2.paddingLeft) - parseFloat(cs2.paddingRight);
+    // The pad is drawn zoomed on tablets (see the question zoom), so the card's
+    // width is divided by that zoom, as the free height already is.
+    const w = Math.min((cardW - 70) / zoom, freeH * W / 96);
+    pad.style.aspectRatio = `${W.toFixed(1)} / 96`;
+    pad.style.width = Math.max(floor, w) + "px";
+    return;
+  }
   pad.style.width = Math.max(floor, Math.min(460, freeW, freeH)) + "px";
 }
 
 function openWriteLetter(){
   const st = writeState, c = writeLetter(), lower = c === c.toLowerCase();
-  st.stroke = 0; st.inks = [];
+  st.stroke = 0; st.inks = []; st.inkEls = []; st.curEls = [];
   const svg = $("#writePad svg");
   const lines = lower ? [[12, ""], [45, " mid"], [78, " base"]] : [[12, ""], [50, " mid"], [88, " base"]];
-  svg.querySelector(".w-lines").innerHTML = lines.map(([y, cls]) => `<line x1="4" x2="96" y1="${y}" y2="${y}" class="wg${cls}"/>`).join("");
-  svg.querySelector(".w-done").innerHTML = "";
+  const x2 = st.wide ? st.W - 2 : 96, x1 = st.wide ? 2 : 4;
+  svg.querySelector(".w-lines").innerHTML = lines.map(([y, cls]) => `<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" class="wg${cls}"/>`).join("");
+  // On the wide pad the letters already written stay; on the single pad each letter starts clean.
+  if(!st.wide) svg.querySelector(".w-done").innerHTML = "";
   svg.querySelector(".w-ink.live").setAttribute("d", "");
+  drawWordGuide();
   // Word progress: the letters already written show, the current one is the cursor.
   document.querySelectorAll("#writeWord .w-chip").forEach((chip, i) => {
     chip.classList.toggle("done", i < st.at);
     chip.classList.toggle("now", i === st.at);
-    chip.textContent = i < st.at || st.p.guide !== "none" ? st.p.letters[i] : "";
+    chip.textContent = i < st.at || st.g !== "none" ? st.p.letters[i] : "";
   });
   resetStepMisses();
   drawWriteGuide();
@@ -7619,10 +7682,13 @@ function drawWriteGuide(){
   // The path sits under his ink; the numbered dots and the arrow sit over it,
   // so a finished stroke never hides where the next one starts.
   const g = $("#writePad .w-guide"), marks = $("#writePad .w-marks");
-  if(!writeTracing()){ g.innerHTML = ""; marks.innerHTML = ""; return; }
+  // On the wide pad the current letter's guide is drawn in its own slot.
+  const shift = st.wide && !st.whole ? `translate(${st.slots[st.at].ox.toFixed(2)} 0)` : "";
+  g.setAttribute("transform", shift); marks.setAttribute("transform", shift);
+  if(!writeTracing() || st.whole){ g.innerHTML = ""; marks.innerHTML = ""; return; }
   // "faint" is the step between the full path and dots only: the same path, much
   // paler and without its dotted centre line. Help due brings the full path back.
-  const full = st.p.guide === "path" || st.shown, faint = !full && st.p.guide === "faint";
+  const full = st.g === "path" || st.shown, faint = !full && st.g === "faint";
   let track = "", html = "";
   if(full || faint) strokes.forEach((d, i) => track += `<path d="${d}" class="w-track${faint ? " faint" : ""}${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/>${faint ? "" : `<path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`}`);
   g.innerHTML = track;
@@ -7672,6 +7738,25 @@ function drawWriteGuide(){
   marks.innerHTML = html;
 }
 
+/* The wide pad's word-level guide: the rest of the word's path (tracing), the
+   worksheet grid (boxes) or a start tick under each letter (marks). */
+function drawWordGuide(){
+  const st = writeState, g = $("#writePad .w-word-guide");
+  if(!g) return;
+  if(!st.wide){ g.innerHTML = ""; return; }
+  let html = "";
+  if(st.g === "path" || st.g === "faint")
+    st.slots.forEach((s, i) => {
+      if(i === st.at) return;                       // the current letter is drawWriteGuide's
+      LETTER_STROKES[s.c].forEach(d => html += `<path d="${d}" class="w-track${st.g === "faint" ? " faint" : ""}${i < st.at ? " gone" : ""}" transform="translate(${s.ox.toFixed(2)} 0)"/>`);
+    });
+  if(st.g === "boxes")
+    st.slots.forEach((s, i) => html += `<rect x="${s.x0}" y="7" width="${WORD_CELL}" height="92" class="w-cell${i === st.at ? " now" : ""}"/>`);
+  if(st.g === "marks")
+    st.slots.forEach(s => html += `<path d="M${s.x0.toFixed(1)} 83 l0 5" class="w-tick"/>`);
+  g.innerHTML = html;
+}
+
 function wireWritePad(){
   const svg = $("#writePad svg"), live = svg.querySelector(".w-ink.live");
   const at = e => { const m = svg.getScreenCTM().inverse(); const q = new DOMPoint(e.clientX, e.clientY).matrixTransform(m); return [q.x, q.y]; };
@@ -7710,10 +7795,13 @@ function addInk(ink, cls){
 }
 function writeStroke(ink){
   const st = writeState, c = writeLetter();
+  if(st.whole) return writeWordStroke(ink);
+  // On the wide pad, check the ink in the current letter's own grid.
+  const own = st.wide ? ink.map(q => [q[0] - st.slots[st.at].ox, q[1]]) : ink;
   if(writeTracing()){
     const d = LETTER_STROKES[c][st.stroke];
-    if(checkTrace(ink, d)){
-      addInk(ink, "ok");
+    if(checkTrace(own, d)){
+      st.curEls.push(addInk(ink, "ok"));
       st.stroke++;
       if(st.stroke >= LETTER_STROKES[c].length) return writeLetterDone();
       resetStepMisses();
@@ -7724,7 +7812,7 @@ function writeStroke(ink){
     return;
   }
   // Free writing: wait for the letter, then judge it whole.
-  st.inks.push(ink);
+  st.inks.push(own);
   st.inkEls = (st.inkEls || []).concat(addInk(ink));
   const judge = () => {
     if(!writeState || writeState !== st || st.done) return;
@@ -7738,6 +7826,55 @@ function writeStroke(ink){
   if(n >= letterPieces(c) || (n >= LETTER_STROKES[c].length && checkFree(st.inks, c))) st.timer = setTimeout(judge, 350);
   else st.timer = setTimeout(judge, 1100);
 }
+/* A whole word written freely on the wide pad (marks / none): the strokes are
+   kept until he pauses, then split into letters and each letter judged as on the
+   single pad. Spacing is never judged — only shown, once the word is right. */
+function writeWordStroke(ink){
+  const st = writeState;
+  st.inks.push(ink);
+  st.inkEls = (st.inkEls || []).concat(addInk(ink));
+  clearTimeout(st.timer);
+  st.timer = setTimeout(judgeWord, st.inks.length >= st.p.letters.length ? 1400 : 3000);
+}
+/* Split a word's strokes into n letters: sorted by where each stroke starts, cut
+   at the n-1 widest gaps between one stroke and everything left of it. A dot or
+   a crossbar sits over its own letter, so its gap is negative and never chosen
+   before a real gap between letters. */
+function splitWord(inks, n){
+  if(inks.length < n) return null;
+  const items = inks.map(s => { const xs = s.map(q => q[0]); return { s, l: Math.min(...xs), r: Math.max(...xs) }; })
+    .sort((a, b) => a.l - b.l);
+  const gaps = [];
+  let right = items[0].r;
+  for(let k = 1; k < items.length; k++){ gaps.push({ k, g: items[k].l - right }); right = Math.max(right, items[k].r); }
+  const cuts = gaps.sort((a, b) => b.g - a.g).slice(0, n - 1).map(x => x.k).sort((a, b) => a - b);
+  const groups = []; let from = 0;
+  [...cuts, items.length].forEach(k => { groups.push(items.slice(from, k).map(x => x.s)); from = k; });
+  return groups;
+}
+function judgeWord(){
+  const st = writeState;
+  if(!st || st.done || !st.whole) return;
+  const groups = splitWord(st.inks, st.p.letters.length);
+  // Each letter is centred where the template letter is, its height kept (that
+  // is what tells a from o), then checked exactly as a single letter.
+  const ok = !!groups && groups.every((grp, i) => {
+    const c = st.p.letters[i], [l, r] = letterSpan(c), xs = grp.flat().map(q => q[0]);
+    const dx = (l + r) / 2 - (Math.min(...xs) + Math.max(...xs)) / 2;
+    return checkFree(grp.map(s => s.map(q => [q[0] + dx, q[1]])), c);
+  });
+  if(!ok){ const els = st.inkEls; st.inks = []; st.inkEls = []; return writeMiss(els); }
+  st.inkEls.forEach(el => el.classList.add("ok"));
+  // Show his spacing: a soft box round each letter he made.
+  $("#writePad .w-word-guide").innerHTML += groups.map(grp => {
+    const pts = grp.flat(), xs = pts.map(q => q[0]), ys = pts.map(q => q[1]);
+    const x = Math.min(...xs) - 6, y = Math.max(5, Math.min(...ys) - 6), y2 = Math.min(99, Math.max(...ys) + 6);
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(Math.max(...xs) - x + 6).toFixed(1)}" height="${(y2 - y).toFixed(1)}" rx="5" class="w-seg"/>`;
+  }).join("");
+  st.at = st.p.letters.length - 1;
+  writeLetterDone();
+}
+
 /* A miss: the ink fades, silently, and counts. Enough misses and the path
    comes back to trace. */
 function writeMiss(els){
@@ -7745,19 +7882,29 @@ function writeMiss(els){
   bumpMistake(st.p);
   els.forEach(el => { el.classList.add("miss"); setTimeout(()=> el.remove(), 500); });
   noteStepMiss();
+  // A whole word that keeps missing turns into tracing it, letter by letter.
+  if(st.whole && revealDue()){
+    st.p._helped = true; st.whole = false; st.g = "path"; st.at = 0; st.inks = []; st.inkEls = [];
+    resetStepMisses();
+    openWriteLetter();
+    return;
+  }
   // Help brings the full path back on every level that doesn't already show it:
   // free writing, and the faint and dots steps of tracing (where it used to only
   // mark the letter helped, with nothing on the pad to help him).
   if(revealDue() && !writeTracing()){ st.shown = true; st.p._helped = true; st.inks = []; st.inkEls = []; }
-  else if(revealDue()){ st.p._helped = true; if(st.p.guide !== "path") st.shown = true; }
+  else if(revealDue()){ st.p._helped = true; if(st.g !== "path") st.shown = true; }
   drawWriteGuide();
 }
 function clearWriteLetter(){
   const st = writeState;
   if(!st || st.done) return;
   clearTimeout(st.timer);
-  st.stroke = 0; st.inks = []; st.inkEls = [];
-  $("#writePad .w-done").innerHTML = "";
+  // The wide pad keeps the letters already finished; only this letter's ink goes
+  // (the whole word's, when he is writing it in one go).
+  if(st.wide) [...(st.curEls || []), ...(st.inkEls || [])].forEach(el => el.remove());
+  else $("#writePad .w-done").innerHTML = "";
+  st.stroke = 0; st.inks = []; st.inkEls = []; st.curEls = [];
   drawWriteGuide();
 }
 function writeLetterDone(){
