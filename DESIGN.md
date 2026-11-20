@@ -152,10 +152,14 @@ a two-word name breaks only between words.
   long word makes its row taller instead of putting the columns out of step;
   a matched pair stays in place, green and faded. A board keeps no empty
   line under it for the ✓, like every question.
-- **A writing pad is one letter, as big as the room allows.** Handwriting
-  lines, ink 7 units thick on a 100 grid; a word goes one letter at a time with
-  a row of tiles above for its progress (small pads side by side were too small
-  for a finger). Tracing shows a pale path, numbered start dots (the next one
+- **A writing pad is one letter, as big as the room allows**, with one exception:
+  a word on a tablet or laptop goes on one wide pad, letters side by side.
+  Handwriting lines, ink 7 units thick on a 100 grid. On a phone a word goes
+  one letter at a time with a row of tiles above for its progress (small pads
+  side by side were too small for a finger). The wide pad's boxes step is an
+  equal worksheet grid, edge to edge, with the current box amber. Spacing is
+  shown (a soft green box round each letter once the word is right), never
+  marked wrong. The ↻ sits outside the wide pad. Tracing shows a pale path, numbered start dots (the next one
   amber) and an arrow; ink that works turns green, ink that doesn't fades —
   never red. Support fades in steps — full path, faint path (paler, no centre
   line), dots only, nothing — and when help is due the full path comes back lit.

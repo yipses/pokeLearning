@@ -253,7 +253,7 @@ Tabs *Writing Level* and *Letter Strokes* in the design sheet.
 |---|---|
 | `task` | `letter` (one letter), `word` (a whole word, letter by letter) or `first_letter` (the first letter of a picture's word) |
 | `case` | `upper` or `lower`. Words and first letters are written in the case given |
-| `guide` | `path` (pale path, start dots, arrow), `faint` (the path much paler, with no centre line, plus the dots and arrow), `dots` (start dots and arrow only) or `none` (lines only — written from memory and judged by shape). Keep them in that order up the ladder: each step takes one piece of support away |
+| `guide` | `path` (pale path, start dots, arrow), `faint` (the path much paler, with no centre line, plus the dots and arrow), `dots` (start dots and arrow only) or `none` (lines only — written from memory and judged by shape). Keep them in that order up the ladder: each step takes one piece of support away. **Words only:** `boxes` (a worksheet grid, one letter a box) and `marks` (a tick where each letter starts; the whole word written in one go) need the wide pad on a tablet; on a phone they fall back to `dots` and `none` |
 | `letters` | `letter` tasks only: the letters to draw from, e.g. `LTIEFH`. Blank means every letter of the case |
 | `max_letters` | `word` tasks: the longest word asked for. Words come from his Reading level's pool |
 | `promote_5_pct`, `promote_10_pct` | As every other ladder |
