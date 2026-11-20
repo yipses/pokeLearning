@@ -159,7 +159,9 @@ a two-word name breaks only between words.
   side by side were too small for a finger). The wide pad's boxes step is an
   equal worksheet grid, edge to edge, with the current box amber. Spacing is
   shown (a soft green box round each letter once the word is right), never
-  marked wrong. The ↻ sits outside the wide pad. Tracing shows a pale path, numbered start dots (the next one
+  marked wrong. The ↻ sits outside the wide pad. Tracing shows a pale path (the
+  stroke being traced is the strongest, with its dotted centre line; strokes and
+  letters still to come fade to about half, without one), numbered start dots (the next one
   amber) and an arrow; ink that works turns green, ink that doesn't fades —
   never red. Support fades in steps — full path, faint path (paler, no centre
   line), dots only, nothing — and when help is due the full path comes back lit.

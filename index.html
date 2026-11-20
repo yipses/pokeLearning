@@ -2577,6 +2577,8 @@
   .w-centre{ fill:none; stroke:#cdbf9f; stroke-width:1.6; stroke-linecap:round; stroke-dasharray:.1 4; }
   .w-track.gone, .w-centre.gone{ opacity:.5; }
   .w-track.faint{ stroke:#f6f1e6; } /* the "faint" step: the path is still there, only just */
+  .w-track.now:not(.faint):not(.lit){ stroke:#e8dcc2; }  /* the stroke being traced: the strongest path (the help light still wins) */
+  .w-track.later{ opacity:.45; }               /* strokes still to come: the letter's shape, stepped back */
   .w-ink{ fill:none; stroke:var(--ink); stroke-width:7; stroke-linecap:round; stroke-linejoin:round; }
   .w-ink.ok{ stroke:var(--leaf-600); }
   .w-ink.miss{ transition:opacity .45s; opacity:0; }
@@ -2987,7 +2989,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 130;
+const APP_BUILD = 131;
 const APP_BUILD_DATE = "18 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
@@ -7568,7 +7570,7 @@ function checkFree(strokes, target){
    word units; each letter's slot has an x offset, and ink is shifted back into
    the letter's own 100-grid before it is checked, so every letter check is the
    same as on the single pad. */
-const WORD_GAP = 22, WORD_CELL = 74, WORD_EDGE = 10;
+const WORD_GAP = 22, WORD_CELL = 74, WORD_EDGE = 18;   // the edge leaves room for the first letter's arrow
 function writeWide(p){ return p.letters.length > 1 && innerWidth >= 600; }
 function letterSpan(c){
   const xs = LETTER_STROKES[c].flatMap(d => pathPoints(d, 2).pts.map(q => q[0]));
@@ -7690,7 +7692,14 @@ function drawWriteGuide(){
   // paler and without its dotted centre line. Help due brings the full path back.
   const full = st.g === "path" || st.shown, faint = !full && st.g === "faint";
   let track = "", html = "";
-  if(full || faint) strokes.forEach((d, i) => track += `<path d="${d}" class="w-track${faint ? " faint" : ""}${i < st.stroke ? " gone" : ""}${i === st.stroke && revealDue() ? " lit" : ""}"/>${faint ? "" : `<path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`}`);
+  // The stroke he is on is the strongest path, with its dotted centre line; the
+  // strokes still to come fade to about half, without one, so the path itself
+  // says where to go while the whole letter stays in view.
+  if(full || faint) strokes.forEach((d, i) => {
+    const when = i < st.stroke ? " gone" : i === st.stroke ? " now" : " later";
+    track += `<path d="${d}" class="w-track${faint ? " faint" : ""}${when}${i === st.stroke && revealDue() ? " lit" : ""}"/>`;
+    if(!faint && i <= st.stroke) track += `<path d="${d}" class="w-centre${i < st.stroke ? " gone" : ""}"/>`;
+  });
   g.innerHTML = track;
   const placed = [], shown = [];
   // A later dot that sits along the stroke he is tracing (H's 3 is halfway
@@ -7748,7 +7757,9 @@ function drawWordGuide(){
   if(st.g === "path" || st.g === "faint")
     st.slots.forEach((s, i) => {
       if(i === st.at) return;                       // the current letter is drawWriteGuide's
-      LETTER_STROKES[s.c].forEach(d => html += `<path d="${d}" class="w-track${st.g === "faint" ? " faint" : ""}${i < st.at ? " gone" : ""}" transform="translate(${s.ox.toFixed(2)} 0)"/>`);
+      // One group per letter, faded as a whole, so overlapping strokes don't show seams.
+      html += `<g transform="translate(${s.ox.toFixed(2)} 0)" opacity="${i < st.at ? .5 : .45}">`
+        + LETTER_STROKES[s.c].map(d => `<path d="${d}" class="w-track${st.g === "faint" ? " faint" : ""}"/>`).join("") + `</g>`;
     });
   if(st.g === "boxes")
     st.slots.forEach((s, i) => html += `<rect x="${s.x0}" y="7" width="${WORD_CELL}" height="92" class="w-cell${i === st.at ? " now" : ""}"/>`);
