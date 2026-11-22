@@ -125,7 +125,10 @@ a two-word name breaks only between words.
   pictures — never tap targets below 44px. On a question card the picture frame
   goes first (to 96px), then the answers together (to 0.8, which keeps a 56px
   tile at 44), then the picture again (to 72px). Measure the card's bottom edge,
-  not the page's scroll height, which is never less than the screen.
+  not the page's scroll height, which is never less than the screen. On a phone
+  (under 600px wide) it works the other way too: a question that leaves room
+  below grows its picture into it, up to 260px, while the answers keep their
+  size. A card that stopped halfway down the screen looked unfinished.
 - **Tiles have fixed shapes**: 5:4, flattening to 3:2 only if that fits; at
   most 200px wide. A short last row is centred.
 - **A box means one thing.** In Visual Maths a blue box is always five (or ten)
@@ -137,7 +140,7 @@ a two-word name breaks only between words.
 - **Highlights never touch.** Two coloured shapes (a ring and a highlight)
   keep at least ~10px apart, or they merge into one.
 - **Spacing is a 4px scale** (gaps of 4, 8, 12, 16, 20, 24).
-- **Home is two choices**, with Battle and Sheets as quiet white buttons under them. Sheets is in ink, not a colour: it is for a grown-up and leads off the page. The levels are a summary (English, Maths — each
+- **Home is two choices**, with Battle and Sheets as quiet white buttons side by side under them, on one row (a second full-width row took the meadow's room on a phone). Sheets is in ink, not a colour: it is for a grown-up and leads off the page. The levels are a summary (English, Maths — each
   the sum of its trails' levels) that opens the subject's own page; the play
   buttons are one per subject and carry nothing but its name. Above both, one
   **GOAL** bar: today's rounds against the day's goal, any mix of subjects. A

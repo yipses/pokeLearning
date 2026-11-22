@@ -1978,8 +1978,10 @@
   .subj-btn .s-title{ display:flex; align-items:center; gap:8px; font-size:20px; }
   .subj-btn .s-title .action-icon{ width:18px; height:18px; }
   /* Battle is the side game: a quiet white button in Battle's own berry, under
-     the two subjects, so the screen's forward actions stay the green ones. */
-  .home-actions .btn.battle-mini{ grid-column:1 / -1; min-height:48px; font-size:16px; color:var(--berry-700); }
+     the two subjects, so the screen's forward actions stay the green ones.
+     Battle and Sheets share one row: a second full-width row cost the meadow
+     56px, and on a phone in Safari the home Pokémon shrank to almost nothing. */
+  .home-actions .btn.battle-mini{ min-height:48px; font-size:16px; color:var(--berry-700); }
   @media (max-height:700px){
     .home-actions .btn.subj-btn{ min-height:64px; }
     .home-actions .btn.battle-mini{ min-height:44px; }
@@ -2129,6 +2131,10 @@
     background:radial-gradient(circle, #fff6c9 0, #ffe49e 42%, rgba(255,228,158,0) 70%); box-shadow:none;
   }
   .is-catch:has(.evo-row.branched) .catch-frame{ width:min(34vh, 70vw, 360px); height:min(34vh, 70vw, 360px); }
+  /* A relative looked at from a catch wasn't caught: no glow behind it. */
+  .is-catch.relative .catch-frame{ background:none; }
+  /* Solid grey, as in the Pokédex: a see-through shape let the meadow show through. */
+  .is-catch.relative .catch-frame img.silhouette{ filter:brightness(0) invert(.7); }
   .is-catch .catch-frame img{ max-width:86%; max-height:86%; position:relative; z-index:1; }
   /* fitCatchArt() sizes the picture by what is drawn and stands it on the
      frame's floor, over the ground shadow; a wide one may spill past the glow. */
@@ -3150,7 +3156,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 134;
+const APP_BUILD = 135;
 const APP_BUILD_DATE = "22 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
@@ -4479,6 +4485,8 @@ const UI_ICONS = {
   speaker: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M3 9.6h3.4L11 5.8v12.4l-4.6-3.8H3z"/><path d="M14.6 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
   play: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>`,
   bolt: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  // A left chevron, for "Back" on the catch screen.
+  back: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   // A sheet of paper coming out of a printer, for the worksheets.
   printer: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 3h10v5H7zM4.5 9h15A2.5 2.5 0 0 1 22 11.5V17h-4v-3H6v3H2v-5.5A2.5 2.5 0 0 1 4.5 9z"/><path fill="currentColor" d="M7 15.5h10V21H7z"/></svg>`,
   home: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3.2 2.6 11.1a1 1 0 0 0 1.3 1.5l.6-.5V20a1 1 0 0 0 1 1h4.3v-5.6h4.4V21h4.3a1 1 0 0 0 1-1v-7.9l.6.5a1 1 0 0 0 1.3-1.5z"/></svg>`,
@@ -4833,7 +4841,23 @@ function fitQuestionFrame(){
     size = Math.max(72, size - Math.max(8, over));
     frame.style.width = frame.style.height = (size / zoom) + "px";
   }
+  // On a phone the other way too: a question that leaves the screen half empty
+  // grows its picture into the room, up to 260px. The answers keep their size.
+  // Tablets and landscape phones already have their own sizes, and Writing
+  // sizes its pad itself.
+  if(innerWidth < 600 && $("#stage").dataset.kind !== "writing"){
+    for(let k = 0; k < 6; k++){
+      const room = -stageOverflow();
+      if(room < 8 || size >= PICTURE_GROW_MAX) break;
+      size = Math.min(PICTURE_GROW_MAX, size + room);
+      frame.style.width = frame.style.height = (size / zoom) + "px";
+    }
+    // A step can overshoot when the card reflows; give back what is over.
+    const over = stageOverflow();
+    if(over > 0){ size -= over; frame.style.width = frame.style.height = (size / zoom) + "px"; }
+  }
 }
+const PICTURE_GROW_MAX = 260;
 
 /* A Pokémon is a reward for ANSWERING, not for arriving. The encounter is rolled
    in renderProblem — before the question is even attempted — and used to pay out
@@ -5279,14 +5303,22 @@ function clearCelebration(){
 function renderPokeModal(poke, opts){
   modalCurrent = { poke, opts };
   const { caption = "Caught!", revealed = true, dismissOnBackdrop = false,
-          celebrate = false } = opts || {};
+          celebrate = false, backTo = null, quiet = false } = opts || {};
   // Walking to a relative re-renders this card; the previous burst goes with it.
   clearCelebration();
   // A catch says so on its one button; browsing the dex just closes with Okay.
+  // A relative looked at from a catch (`backTo`) keeps the catch's own screen,
+  // and its button goes back to the Pokémon just caught. It used to turn into
+  // the dex's small card with an "Okay" that landed under the finger and ended
+  // the catch, so one look at an evolution skipped straight to the next question.
   const okBtn = $("#catchOkBtn");
-  if(celebrate) okBtn.innerHTML = `<span class="ok-tick">${UI_ICONS.tick}</span>${caption}`;
+  if(backTo) okBtn.innerHTML = `<span class="ok-tick">${UI_ICONS.back}</span>Back`;
+  else if(celebrate) okBtn.innerHTML = `<span class="ok-tick">${UI_ICONS.tick}</span>${caption}`;
   else okBtn.textContent = "Okay";
   okBtn.classList.toggle("rare", !!RARITY_LABEL[poke.rarity] && !!celebrate);
+  // Green is the forward action; going back is the quiet white button.
+  okBtn.classList.toggle("green", !backTo);
+  okBtn.classList.toggle("ghost", !!backTo);
   $("#catchImg").src = artwork(poke.id);
   $("#catchImg").alt = revealed ? cap(poke.n) : "Not caught yet";
   $("#catchImg").classList.toggle("silhouette", !revealed);
@@ -5313,10 +5345,21 @@ function renderPokeModal(poke, opts){
   modal.classList.toggle("dismissable", dismissOnBackdrop);
   // A catch takes the whole screen as its own moment; browsing the Pokédex opens
   // the same card as a sheet over the grid, which is the place it was opened from.
-  modal.classList.toggle("is-catch", !!celebrate);
+  modal.classList.toggle("is-catch", !!celebrate || !!backTo);
+  modal.classList.toggle("relative", !!backTo);
   modal.classList.remove("hidden");
   fitCatchArt();
-  if(celebrate) celebrateCatch(poke.rarity);
+  if(celebrate && !quiet) celebrateCatch(poke.rarity);
+}
+/* The Pokémon this catch is for, whether it or a relative is on screen. */
+function catchInView(){
+  const o = modalCurrent && modalCurrent.opts;
+  return !o ? null : o.backTo || (o.celebrate ? modalCurrent.poke : null);
+}
+/* Back to the Pokémon just caught, without a second round of confetti. */
+function backToCatch(){
+  const caught = catchInView();
+  if(caught) renderPokeModal(caught, { caption: catchCaption(caught), celebrate: true, quiet: true });
 }
 const RARITY_LABEL = { legendary: "Legendary", mythical: "Mythical" };
 function catchCaption(poke){
@@ -5380,7 +5423,8 @@ function evoLine(poke){
 function renderEvoRow(poke){
   const row = $("#catchEvo");
   if(!poke){ row.classList.add("hidden"); row.innerHTML = ""; return; }
-  const catching = !!(modalCurrent && modalCurrent.opts && modalCurrent.opts.celebrate);
+  const caughtNow = catchInView();
+  const catching = !!caughtNow;
   const stages = catching ? evoLine(poke) : evoStages(poke);
   if(stages.reduce((n, st) => n + st.length, 0) < 2){
     row.classList.add("hidden"); row.innerHTML = ""; return;
@@ -5414,6 +5458,13 @@ function renderEvoRow(poke){
     btn.addEventListener("click", ()=>{
       const target = POKEMON.find(x => x.id === Number(btn.dataset.id));
       const got = loadCollection().includes(target.id);
+      // On a catch, the strip walks the family inside the catch screen.
+      if(caughtNow){
+        if(target.id === caughtNow.id){ backToCatch(); return; }
+        markSeen(target.id);
+        showPokeModal(target, { revealed: got, backTo: caughtNow });
+        return;
+      }
       markSeen(target.id);
       showPokeModal(target, {
         caption: "",
@@ -10240,6 +10291,7 @@ window.addEventListener("resize", ()=>{
   if(!$("#catchModal").classList.contains("hidden")) fitCatchArt();
 });
 $("#catchOkBtn").addEventListener("click", ()=>{
+  if(modalCurrent && modalCurrent.opts && modalCurrent.opts.backTo){ backToCatch(); return; }
   hideCatchModal();
   const cb = pendingCatchCallback;
   pendingCatchCallback = null;

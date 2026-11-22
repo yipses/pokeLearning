@@ -1299,6 +1299,28 @@ Build 133's half-inch margin made things worse in Safari, which was still 12 pag
 
 Build 134.
 
+## Phase 117 — three phone fixes from the owner's screenshots
+
+**Home: Battle and Sheets share a row.**
+- **Problem:** the full-width Sheets row (build 132) took 56px from the meadow. On a phone in Safari the home Pokémon shrank to nearly nothing; one test size measured 5px.
+- **Fix:** Battle and Sheets now sit side by side.
+- **Result:** the meadow is back to exactly its pre-Sheets height: 223px at 360×640, 184px at 375×600, 246px at 390×664 and 280px at 430×740. Home still fits without scrolling at every size in DESIGN.md.
+
+**Question card: the picture grows into spare room on phones.**
+- **Problem:** `fitQuestionFrame` only ever shrank the picture. A Read & Choose card on a phone stopped halfway down the screen.
+- **Fix:** under 600px wide, the picture now also grows into the room below, up to 260px. Writing is excluded, and tablets and landscape phones keep their own sizes.
+- **Result:** every question kind was driven at 390×664, 360×640, 375×600, 390×844, 430×740, 820×1180 and 844×390. Nothing scrolls, and phone pictures reach 244–260px where there is room.
+
+**Catch: looking at an evolution no longer ends the catch.**
+- **Problem:** tapping a relative turned the catch into the Pokédex's small card. Its only button, Okay, moved to where the finger was (they overlapped by about 50px), and Okay still ran the "carry on with the round" step. So one look at Ivysaur skipped to the next question.
+- **Fix:** a relative now opens inside the catch screen, with no glow and a solid grey shape if it isn't caught. Its button is a white "‹ Back" to the Pokémon just caught, which comes back without a second burst. Only "✓ Caught!" moves on.
+- **Tested:** catch Bulbasaur, tap Ivysaur, then Back, then Caught!. The round moved on once, at Caught!.
+- **Unchanged:** the Pokédex still opens a relative in its own popup, with Okay.
+
+**Checks.** Smoke, the writing drive and the word drive pass. The duplicate-function grep is empty, and there are no console errors.
+
+Build 135.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
