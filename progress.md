@@ -1283,6 +1283,22 @@ The owner printed build 132 from Safari on a Mac and got 12 pages for 6. Each sh
 
 Build 133.
 
+## Phase 116 — sheets print at 88%, so Safari's header and footer fit
+
+Build 133's half-inch margin made things worse in Safari, which was still 12 pages. Safari draws its own header (date, page title) and footer (address, page count) inside our margin and beyond it.
+- **Measured from the owner's Safari preview:** the sheet started about 1.2 in down and was cut at about 10.1 in, so about 8.9 in of height was left for a 9.8 in sheet.
+- **Cause confirmed:** with "Print headers and footers" unticked, the owner got 6 pages. That box is on by default.
+- **Owner's choice:** shrink in print rather than rely on the box being unticked.
+
+**Fix.** In print only, the sheet takes `zoom:.88`, centred. `zoom` scales the whole box, so nothing inside reflows, and the preview is unchanged.
+
+**Checks.**
+- In Chrome's PDF, each page's footer ends at 9.13 in from the top, making the sheet about 8.6 in tall. The side margins are equal at 0.95 in. There are 6 pages, each with its own footer.
+- 800 sets still break no rule and nothing overflows.
+- Safari with the box ticked is for the owner to confirm.
+
+Build 134.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
