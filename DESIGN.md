@@ -182,7 +182,7 @@ a two-word name breaks only between words.
   content (12-letter names, two-word names, five options, four catches).
 
 - **A printed sheet is a fixed page, not a screen.**
-  - **Size:** US Letter (816 × 1056 at 96 per inch), with a 48px margin.
+  - **Size:** US Letter. The sheet is the 7.5 × 10 in inside a 0.5 in page margin that the printer supplies; it never relies on a zero margin. It prints 0.2 in short of that, as a safety gap.
   - **Top to bottom:** the sky band with the two hills (136px), the name line with three outline stars to colour in, the content, and a footer with the set code and the page number.
   - **Cards:** white with a 2px `line` edge instead of a shadow, so they print.
   - **Answer boxes and writing lines** use `line-strong`.
