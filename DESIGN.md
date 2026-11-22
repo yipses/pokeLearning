@@ -137,7 +137,7 @@ a two-word name breaks only between words.
 - **Highlights never touch.** Two coloured shapes (a ring and a highlight)
   keep at least ~10px apart, or they merge into one.
 - **Spacing is a 4px scale** (gaps of 4, 8, 12, 16, 20, 24).
-- **Home is two choices.** The levels are a summary (English, Maths — each
+- **Home is two choices**, with Battle and Sheets as quiet white buttons under them. Sheets is in ink, not a colour: it is for a grown-up and leads off the page. The levels are a summary (English, Maths — each
   the sum of its trails' levels) that opens the subject's own page; the play
   buttons are one per subject and carry nothing but its name. Above both, one
   **GOAL** bar: today's rounds against the day's goal, any mix of subjects. A
@@ -180,6 +180,17 @@ a two-word name breaks only between words.
 - **Fit or it isn't done.** No vertical or horizontal scroll at 360×640,
   390×844, 470×830, 820×1180, 1024×768, 1280×800 and 1440×900, with the longest
   content (12-letter names, two-word names, five options, four catches).
+
+- **A printed sheet is a fixed page, not a screen.**
+  - **Size:** US Letter (816 × 1056 at 96 per inch), with a 48px margin.
+  - **Top to bottom:** the sky band with the two hills (136px), the name line with three outline stars to colour in, the content, and a footer with the set code and the page number.
+  - **Cards:** white with a 2px `line` edge instead of a shadow, so they print.
+  - **Answer boxes and writing lines** use `line-strong`.
+  - **Text** is never lighter than `ink-soft`, and every page reads in grayscale.
+  - **Trail colours:** Adding and Story problems are berry, Taking away and Pokémon names are sky, Missing words is violet. They appear only on the eyebrow, the round badge and the question numbers.
+  - **Names are traced in the Writing trail's letter shapes**, never in an outlined font.
+  - **The answer key** is plain white with no band.
+  - **Fit:** nothing may overflow its card, checked on 200 sets per sheet.
 
 ## Motion
 

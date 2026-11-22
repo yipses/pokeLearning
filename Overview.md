@@ -29,17 +29,18 @@ Difficulty is not a setting a parent picks and re-picks. Eleven **Lesson Trails*
 
 ## 4. App Structure
 
-Eight top-level screens, all within one `index.html`:
+Nine top-level screens, all within one `index.html`:
 
 | Screen | Purpose |
 |---|---|
-| **Start** | A meadow carrying the streak and the gear, with one of your Pokémon on its hill; a name card with the generation count; **Your levels** (English and Maths); then **English** and **Maths** play buttons, and Battle |
+| **Start** | A meadow carrying the streak and the gear, with one of your Pokémon on its hill; a name card with the generation count; **Your levels** (English and Maths); then **English** and **Maths** play buttons, Battle, and Sheets |
 | **Subject** | One subject's own page: its level, a row per trail, and its play button |
 | **Settings** | The chrome, then the round's own settings, then an **English** and a **Maths** group of trail switches and level controls, in plain words; file paths and the build under **Advanced** |
 | **Play** | One challenge at a time, progress bar, grass encounter strip, ✕ to quit (it asks first when something is at stake) |
 | **Results** | The HUD and "Round finished!" over the meadow, what was caught this round, replay controls |
 | **Battle** | Standalone Pokémon-vs-Pokémon prediction game, picked by tapping a Pokémon; its session record sits beside the screen name |
 | **Pokédex** | The HUD, a ✕ beside **POKÉDEX**, generation tabs, then one generation's grid — caught in colour, uncaught as grey silhouettes |
+| **Print sheets** | For a grown-up: a fresh set of paper worksheets to print (see §10b) |
 | **My progress** | The chrome, a 7-day chart with English and Maths bars, a card each for Spelling, Reading, Alphabet, Sentences, Riddles and Word Pairs, then one card per maths family and one for Maths Pairs |
 
 Settings, Lesson Trails progress, the Pokédex collection, and the play streak persist to `localStorage` and are restored on load.
@@ -599,6 +600,35 @@ A separate, unscored, replayable mini-game reached from the Start screen:
 4. The winner is decided by a **stat- and type-weighted random roll**: each Pokémon's real Base Stat Total represents its power level, a full 18-type effectiveness chart determines typing advantage, and `P(A wins) = powerA / (powerA + powerB)`. Both fighters' types are shown as colored badges.
 5. The result is announced out loud and shown with a green ✓ or a red ✗ for the prediction, then a berry **Battle again**. Battle is berry throughout, its home button included — a white button with berry words and its bolt, under the two green play buttons.
 6. A running **session record** is shown at the top of the screen and persists across replays until the page is reloaded.
+
+## 10b. Print sheets
+
+**Sheets**, under Battle on home, opens a page for a grown-up that makes a new set of US Letter worksheets on every visit. There is no gate.
+
+- **Five sheets.**
+  - **Adding:** 18 sums in 3 × 6, with an answer box.
+  - **Taking away:** the same grid.
+  - **Story problems:** 4 stories with an answer line and its unit.
+  - **Pokémon names:** 8 names traced on the left in the Writing trail's own letter shapes (dotted, a green start dot on each stroke), written on the right on three-line guides.
+  - **Missing words:** two boxes of four grade 1 sight words, with four sentences each.
+- **Each sheet can be switched off**, and each has its own choices:
+  - answers or starting numbers up to 10 or 20;
+  - doubles and make-10 pairs in or out;
+  - answers of 0 allowed or not;
+  - stories adding, taking away or both;
+  - names short, long, mixed, or from his Pokédex.
+- **The choices are remembered.**
+- **The answer key** is one plain page, printed last.
+- **The page shows the real pages, scaled down.** **Print** opens the browser's print dialog with one sheet per page.
+- **Every page's footer carries a 4-character set code.** Typing a code in rebuilds that set exactly, provided the same choices are set. **Make new sheets** draws a new code.
+
+**The rules each sheet keeps:**
+- **Maths sheets** run easy to hard. With a top of 20, the first two rows stay at 10 or under. A sheet has at most two facts with a 0, and those sit only in the easy rows. A fact never repeats, counting 3 + 5 and 5 + 3 as the same.
+- **Stories** use numbers of 2 or more and stay within 90 characters. No two stories on a page share a template or a Pokémon.
+- **Names** have 3 to 8 letters, shortest first, from his current generation.
+- **In Missing words**, no box holds a word that would also fit another of its blanks (the sentence file says which words those are). The two boxes share no word.
+
+Each sheet draws from its own seeded random stream (the code plus the sheet's id), so switching one sheet off leaves the others as they were. A generator checks its own page and tries again, up to 50 times. The stories and sentences come from `data/print_stories.csv` and `data/print_sentences.csv`.
 
 ## 11. Results Screen
 
