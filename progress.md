@@ -1270,6 +1270,19 @@ Safari's print can only be checked on the owner's iPad.
 
 Build 132.
 
+## Phase 115 — Safari printed a blank page after every sheet
+
+The owner printed build 132 from Safari on a Mac and got 12 pages for 6. Each sheet was cut inside its last row, and the next page held only that sheet's footer.
+- **Cause:** the sheets were a full 11 in on `@page { margin:0 }`. Safari keeps room for its own header and footer ("Print headers and footers", on by default), so the last inch spilled over.
+- **Fix:** the page margin is now an ordinary 0.5 in. The sheet is the 7.5 × 10 in inside it, with no padding of its own, so its content area is the same size as before and nothing inside moved. In print the sheet is 9.8 in tall, leaving a gap for a browser that takes a little more. A sheet can't break inside itself. On screen, the preview draws the margin as the page's own white border, so it looks as it did.
+
+**Checks.**
+- Chrome's print to PDF gives 6 pages, each with its own footer.
+- At the 9.8 in height, 800 sets break no rule and nothing overflows.
+- **Not reproduced here:** Chrome printed build 132 as 6 pages too, under every smaller-page simulation tried, so it can't stand in for Safari. The fix is reasoned from the owner's screenshot, and only a real Safari print confirms it.
+
+Build 133.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

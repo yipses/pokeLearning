@@ -2640,12 +2640,17 @@
   .pl-print-actions .btn{ display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 10px; font-size:1rem; }
   .pl-print-none{ text-align:center; color:var(--ink-soft); font-weight:700; }
   .pl-print-pages{ --pl-zoom:1; display:flex; flex-direction:column; align-items:center; gap:20px; }
-  .pl-page{ zoom:var(--pl-zoom); box-shadow:0 0 0 3px var(--paper-line); background:#fff; }
+  /* On screen a page is the whole sheet of paper: the 0.5in white border here is
+     the page margin that the printer supplies in print. */
+  .pl-page{ zoom:var(--pl-zoom); box-shadow:0 0 0 3px var(--paper-line); background:#fff; padding:.5in; }
 
-  /* One US Letter page. Everything inside is in CSS px at 96 per inch. */
+  /* What goes inside one US Letter page's 0.5in margins. Everything inside is in
+     CSS px at 96 per inch. The sheet never relies on a zero page margin: Safari
+     keeps its own header and footer room, and an 11in sheet spilled its last
+     inch onto a blank page of its own. */
   .pl-sheet{
     --pl-ink:var(--berry-700); --pl-fill:var(--berry-600);
-    width:8.5in; height:11in; box-sizing:border-box; padding:48px; overflow:hidden;
+    width:7.5in; height:10in; box-sizing:border-box; padding:0; overflow:hidden;
     display:flex; flex-direction:column; gap:12px; background:#fff; color:var(--ink);
     font-family:var(--font-ui); -webkit-print-color-adjust:exact; print-color-adjust:exact;
   }
@@ -2729,12 +2734,14 @@
   .pl-key-list{ margin:0; padding-left:22px; font-size:16px; font-weight:700; line-height:1.6; }
 
   @media print{
-    @page{ size:letter; margin:0; }
+    @page{ size:letter; margin:.5in; }
     html, body{ background:#fff !important; min-height:0 !important; }
     body > :not(.wrap), .wrap > :not(#sheets), #sheets > :not(#plPrintPages){ display:none !important; }
     .wrap{ max-width:none !important; margin:0 !important; padding:0 !important; }
     .pl-print-pages{ display:block !important; }
-    .pl-page{ zoom:1 !important; box-shadow:none !important; break-after:page; page-break-after:always; }
+    .pl-page{ zoom:1 !important; box-shadow:none !important; padding:0 !important; break-after:page; page-break-after:always; break-inside:avoid; }
+    /* A little short of the 10in the margins leave, for a browser that trims more. */
+    .pl-sheet{ height:9.8in; }
     .pl-page:last-child{ break-after:auto; page-break-after:auto; }
   }
 </style>
@@ -3140,7 +3147,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 132;
+const APP_BUILD = 133;
 const APP_BUILD_DATE = "22 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
