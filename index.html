@@ -2617,6 +2617,126 @@
   .quit-art img.silhouette{ filter:brightness(0) opacity(.28); }
   .quit-card .btn{ display:flex; align-items:center; justify-content:center; gap:10px; }
 
+
+  /* ===== Print sheets =====
+     The Sheets button is Battle's quiet twin, in ink rather than berry: it is
+     for a grown-up and leads off the page, not into a game. */
+  .home-actions .btn.sheets-mini{ color:var(--ink-soft); }
+  .pl-print-card .field:first-of-type{ border-top:none; }
+  .pl-print-opts{ display:flex; flex-wrap:wrap; gap:8px; padding:0 4px 14px; }
+  .pl-print-opts select{
+    min-height:44px; padding:0 30px 0 12px; border-radius:var(--radius-sm); border:2px solid var(--line-strong);
+    font:inherit; font-size:.8125rem; font-weight:800; color:var(--ink); background-color:var(--surface);
+    -webkit-appearance:none; appearance:none; max-width:100%;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232e2b24' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 11px center; background-size:12px 8px;
+  }
+  .pl-print-code{
+    width:96px; min-height:44px; box-sizing:border-box; padding:0 10px; border-radius:var(--radius-sm);
+    border:2px solid var(--line-strong); font:inherit; font-size:1.125rem; font-weight:900; letter-spacing:.12em;
+    text-align:center; text-transform:uppercase; color:var(--ink); background:var(--surface);
+  }
+  .pl-print-actions{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 0 24px; }
+  .pl-print-actions .btn{ display:flex; align-items:center; justify-content:center; gap:8px; padding:14px 10px; font-size:1rem; }
+  .pl-print-none{ text-align:center; color:var(--ink-soft); font-weight:700; }
+  .pl-print-pages{ --pl-zoom:1; display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .pl-page{ zoom:var(--pl-zoom); box-shadow:0 0 0 3px var(--paper-line); background:#fff; }
+
+  /* One US Letter page. Everything inside is in CSS px at 96 per inch. */
+  .pl-sheet{
+    --pl-ink:var(--berry-700); --pl-fill:var(--berry-600);
+    width:8.5in; height:11in; box-sizing:border-box; padding:48px; overflow:hidden;
+    display:flex; flex-direction:column; gap:12px; background:#fff; color:var(--ink);
+    font-family:var(--font-ui); -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .pl-sheet.pl-sky{ --pl-ink:var(--sky-700); --pl-fill:var(--sky-600); }
+  .pl-sheet.pl-violet{ --pl-ink:var(--violet-600); --pl-fill:var(--violet-600); }
+  .pl-head{
+    flex:0 0 136px; box-sizing:border-box; display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding:14px 22px 0; border-radius:24px; overflow:hidden;
+    background:var(--hills) center bottom / 100% 46px no-repeat, var(--sky-300);
+  }
+  .pl-head-text{ min-width:0; }
+  .pl-eyebrow{ font-size:14px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--pl-ink); }
+  .pl-title{ font-size:40px; font-weight:900; line-height:1.1; margin-top:2px; }
+  .pl-instr{ font-size:18px; font-weight:700; margin-top:4px; }
+  .pl-badge{
+    flex:0 0 76px; height:76px; margin-top:4px; border-radius:50%; background:var(--pl-fill); color:#fff;
+    display:grid; place-items:center; box-shadow:0 0 0 4px #fff;
+  }
+  .pl-badge svg{ width:44px; height:44px; display:block; }
+  .pl-nameline{ flex:0 0 40px; display:flex; align-items:flex-end; gap:12px; font-size:18px; font-weight:800; }
+  .pl-name-blank{ flex:1; border-bottom:2px solid var(--line-strong); margin-bottom:5px; }
+  .pl-stars{ display:flex; gap:6px; }
+  .pl-stars svg{ width:32px; height:32px; display:block; }
+  .pl-stars svg path{ fill:none; stroke:var(--line-strong); stroke-width:1.4; }
+  .pl-body{ flex:1; min-height:0; overflow:hidden; }
+  .pl-foot{ flex:0 0 16px; display:flex; justify-content:space-between; font-size:13px; font-weight:700; line-height:16px; color:var(--ink-soft); }
+  .pl-num{
+    display:inline-grid; place-items:center; width:32px; height:32px; margin-right:12px; border-radius:50%;
+    background:var(--pl-fill); color:#fff; font-size:18px; font-weight:900; vertical-align:2px; flex:0 0 auto;
+  }
+
+  /* Adding and Taking away: 3 × 6, a white card per fact. */
+  .pl-facts{ height:100%; display:grid; grid-template-columns:repeat(3, 1fr); grid-template-rows:repeat(6, 1fr); gap:12px; }
+  .pl-fact{
+    display:flex; align-items:center; justify-content:center; gap:10px; min-width:0; overflow:hidden;
+    border:2px solid var(--line); border-radius:16px; font-size:28px; font-weight:900; white-space:nowrap;
+  }
+  .pl-box{ flex:0 0 60px; height:54px; box-sizing:border-box; border:2.5px solid var(--line-strong); border-radius:12px; }
+
+  /* Story problems: four cards, the answer line at each card's foot. */
+  .pl-stories{ height:100%; display:grid; grid-template-rows:repeat(4, 1fr); gap:14px; }
+  .pl-story{
+    display:flex; flex-direction:column; min-height:0; overflow:hidden; padding:16px 20px;
+    border:2px solid var(--line); border-radius:20px;
+  }
+  .pl-story-text{ font-size:24px; font-weight:700; line-height:1.4; }
+  .pl-answer{ margin-top:auto; display:flex; align-items:flex-end; justify-content:flex-end; gap:10px; font-size:20px; font-weight:800; }
+  .pl-line{ width:120px; border-bottom:2.5px solid var(--line-strong); height:30px; }
+  .pl-unit{ min-width:0; }
+
+  /* Pokémon names: traced on the left, written on the right. */
+  .pl-names{ height:100%; display:grid; grid-template-rows:repeat(8, 1fr); gap:8px; }
+  .pl-name-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; min-height:0; }
+  .pl-name-row svg{ width:100%; height:100%; display:block; overflow:hidden; }
+  .pl-g{ stroke:var(--line-strong); stroke-width:1.5px; vector-effect:non-scaling-stroke; }
+  .pl-g.mid{ stroke:var(--sky-600); stroke-dasharray:6 5; }
+  .pl-trace{ fill:none; stroke:#8c8471; stroke-width:3.4; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:0 6.5; }
+  .pl-start{ fill:var(--leaf-600); }
+
+  /* Missing words: a box of four, then its four sentences. */
+  .pl-words{ height:100%; display:flex; flex-direction:column; gap:28px; }
+  .pl-word-box{
+    display:flex; justify-content:space-around; padding:12px 16px; margin-bottom:10px;
+    border:2.5px solid var(--line-strong); border-radius:16px; font-size:28px; font-weight:800;
+  }
+  .pl-sent{ display:flex; align-items:baseline; flex-wrap:nowrap; white-space:nowrap; padding:10px 4px; font-size:28px; font-weight:700; }
+  .pl-sent .pl-num{ align-self:center; }
+  .pl-blank{ display:inline-block; width:150px; height:1em; margin:0 8px; border-bottom:2.5px solid var(--line-strong); }
+  .pl-blank.tight{ margin-right:2px; }
+
+  /* The answer key: plain, no band, so it saves ink and doesn't pass for a sheet. */
+  .pl-key-head{ display:flex; justify-content:space-between; align-items:baseline; padding-bottom:10px; border-bottom:2px solid var(--line-strong); }
+  .pl-key-head span:first-child{ font-size:28px; font-weight:900; }
+  .pl-key-head span:last-child{ font-size:16px; font-weight:800; color:var(--ink-soft); }
+  .pl-key-grid{ flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr; align-content:start; gap:24px 32px; padding-top:12px; }
+  .pl-key-block{ min-width:0; }
+  .pl-key-block h3{ margin:0 0 8px; font-size:18px; font-weight:900; }
+  .pl-key-block h3 span{ font-size:14px; font-weight:800; color:var(--ink-soft); }
+  .pl-key-facts{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px 8px; font-size:15px; font-weight:700; }
+  .pl-key-facts span{ padding:4px 5px; border:1.5px solid var(--line); border-radius:8px; white-space:nowrap; }
+  .pl-key-list{ margin:0; padding-left:22px; font-size:16px; font-weight:700; line-height:1.6; }
+
+  @media print{
+    @page{ size:letter; margin:0; }
+    html, body{ background:#fff !important; min-height:0 !important; }
+    body > :not(.wrap), .wrap > :not(#sheets), #sheets > :not(#plPrintPages){ display:none !important; }
+    .wrap{ max-width:none !important; margin:0 !important; padding:0 !important; }
+    .pl-print-pages{ display:block !important; }
+    .pl-page{ zoom:1 !important; box-shadow:none !important; break-after:page; page-break-after:always; }
+    .pl-page:last-child{ break-after:auto; page-break-after:auto; }
+  }
 </style>
 </head>
 <body data-screen="setup">
@@ -2665,6 +2785,7 @@
       <button class="btn green subj-btn" id="playEnglish" type="button" data-subject="english"></button>
       <button class="btn green subj-btn" id="playMaths" type="button" data-subject="maths"></button>
       <button class="btn ghost battle-mini" id="battleBtn" type="button"><span class="action-icon" data-icon="bolt"></span>Battle</button>
+      <button class="btn ghost battle-mini sheets-mini" id="sheetsBtn" type="button"><span class="action-icon" data-icon="printer"></span>Sheets</button>
     </div>
 
   </section>
@@ -2942,6 +3063,36 @@
     <div id="dashboardGrid"></div>
   </section>
 
+  <!-- ============ PRINT SHEETS ============
+       For a grown-up: a fresh set of paper worksheets on every visit. Everything
+       here is built by plPrint* below; the pages are real US Letter size and are
+       only scaled down for the preview. -->
+  <section id="sheets" class="hidden">
+    <div class="chrome"></div>
+    <div class="card pl-print-card">
+      <h2>Print sheets</h2>
+      <p class="sub">A new set every time you open this page. Untick a sheet to leave it out.</p>
+      <div id="plPrintOptions"></div>
+      <div class="field">
+        <label for="plPrintKey">Answer key
+          <span class="hint">One extra page, printed last, with every answer</span>
+        </label>
+        <label class="switch"><input type="checkbox" id="plPrintKey" checked><span class="slider"></span></label>
+      </div>
+      <div class="field">
+        <label for="plPrintCode">Set code
+          <span class="hint">Printed at the foot of every page. Type an old one to make that set again.</span>
+        </label>
+        <input type="text" id="plPrintCode" class="pl-print-code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Set code">
+      </div>
+    </div>
+    <div class="pl-print-actions">
+      <button class="btn ghost" id="plPrintNew" type="button"><span class="action-icon" data-icon="again"></span>Make new sheets</button>
+      <button class="btn green" id="plPrintGo" type="button"><span class="action-icon" data-icon="printer"></span>Print</button>
+    </div>
+    <div class="pl-print-pages" id="plPrintPages"></div>
+  </section>
+
   <div class="modal-overlay hidden" id="catchModal">
     <div class="catch-card" id="catchCard">
       <div class="catch-sky">
@@ -2989,8 +3140,8 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 131;
-const APP_BUILD_DATE = "18 Nov 2026";
+const APP_BUILD = 132;
+const APP_BUILD_DATE = "22 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
    the production branch at the top. Both live on one origin, so they would share
@@ -3106,7 +3257,7 @@ async function loadData(){
   const [pokeRows, sayRows, itemRows, itemLevelRows, spellRows, readRows, alphaRows, phonemeRows,
          mathTrackRows, mathLevelRows, mathPromoRows,
          sentRows, factRows, sentWordRows, wordLevelRows, riddleRows, wordPairRows, mathPairRows, unclearRows,
-         writingRows, strokeRows] = await Promise.all([
+         writingRows, strokeRows, printStoryRows, printSentenceRows] = await Promise.all([
     fetchCsv("data/pokemon.csv"),
     fetchCsv("data/pronunciations.csv"),
     fetchCsv("data/items.csv"),
@@ -3128,6 +3279,8 @@ async function loadData(){
     fetchCsv("data/unclear_pictures.csv"),
     fetchCsv("data/writing_levels.csv"),
     fetchCsv("data/letter_strokes.csv"),
+    fetchCsv("data/print_stories.csv"),
+    fetchCsv("data/print_sentences.csv"),
   ]);
   POKEMON = pokeRows.map(r => ({
     n: r.name,
@@ -3239,6 +3392,7 @@ async function loadData(){
   loadRiddleData(riddleRows);
   loadPairData(wordPairRows, mathPairRows);
   loadWritingData(writingRows, strokeRows);
+  plPrintLoad(printStoryRows, printSentenceRows);
   UNCLEAR_PICTURES = new Set(unclearRows.map(r => String(r.name || "").trim().toLowerCase()).filter(Boolean));
 }
 
@@ -4315,6 +4469,8 @@ const UI_ICONS = {
   speaker: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M3 9.6h3.4L11 5.8v12.4l-4.6-3.8H3z"/><path d="M14.6 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
   play: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>`,
   bolt: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  // A sheet of paper coming out of a printer, for the worksheets.
+  printer: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 3h10v5H7zM4.5 9h15A2.5 2.5 0 0 1 22 11.5V17h-4v-3H6v3H2v-5.5A2.5 2.5 0 0 1 4.5 9z"/><path fill="currentColor" d="M7 15.5h10V21H7z"/></svg>`,
   home: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3.2 2.6 11.1a1 1 0 0 0 1.3 1.5l.6-.5V20a1 1 0 0 0 1 1h4.3v-5.6h4.4V21h4.3a1 1 0 0 0 1-1v-7.9l.6.5a1 1 0 0 0 1.3-1.5z"/></svg>`,
   again: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path fill="currentColor" d="M20.6 3.4v6.4h-6.4z"/></svg>`,
   tick: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -9247,12 +9403,581 @@ function layoutCatches(){
    pinned bar, so another generation is one tap from anywhere in the grid. The
    bar has to be a child of the section, not of .chrome: sticky only holds within
    its parent, and .chrome ends where the ✕ row does. */
+/* ---------------- Print sheets ----------------
+   Paper worksheets for a grown-up to print: Adding, Taking away, Story problems,
+   Pokémon names and Missing words. Every visit makes a new set. A set is one
+   4-character code; each sheet draws its own random stream from the code and its
+   id, so the same code (with the same choices) always rebuilds the same pages,
+   and switching one sheet off leaves the others as they were.
+
+   Each sheet in the registry generates plain items, checks them against its own
+   rules (try up to 50 times, then relax the softest rule and say so in the
+   console), and renders its body and its answer-key block. The page frame
+   (header band, name line, footer) is shared, so a generator never touches layout.
+   Pages are real US Letter (8.5 × 11 in); the preview only scales them down.
+
+   The stories and sentences live in data/print_stories.csv and
+   data/print_sentences.csv (see data/README.md). Names come from pokemon.csv. */
+let PL_PRINT_STORIES = [], PL_PRINT_SENTENCES = [];
+const PL_PRINT_CODE_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";   // no 0/O, no 1/I
+const PL_PRINT_SETTINGS_KEY = STORE + "pokeLearningPrintSheets";
+const PL_PRINT_STORY_MAX = 90;      // characters once the slots are filled: 3 lines at 24px
+const PL_PRINT_SENTENCE_MAX = 32;   // characters with the blank: one line at 28px
+const PL_PRINT_BLANK = "______";    // what a blank counts as when measuring a sentence
+const PL_PRINT_TRIES = 50;
+const PL_PRINT_DEFAULTS = {
+  on: { add:true, sub:true, story:true, names:true, words:true },
+  add: { max:20, doubles:true, make10:true },
+  sub: { max:20, zero:true },
+  story: { op:"mixed", max:20 },
+  names: { list:"mixed" },
+  withKey: true,
+};
+let plPrintSettings = null, plPrintCode = "", plPrintSet = null;
+
+function plPrintLoad(storyRows, sentenceRows){
+  const t = v => String(v == null ? "" : v).trim();
+  PL_PRINT_STORIES = storyRows.map(r => ({ id: t(r.id), op: t(r.op), text: t(r.text), unit: t(r.unit),
+    maxA: t(r.max_a) ? Number(r.max_a) : null, maxB: t(r.max_b) ? Number(r.max_b) : null }));
+  PL_PRINT_STORIES.forEach(s => {
+    const where = `data/print_stories.csv ${s.id}`;
+    if(s.op !== "add" && s.op !== "sub") throw new Error(`${where}: op "${s.op}" is not add or sub`);
+    if(!s.text.includes("{a}") || !s.text.includes("{b}")) throw new Error(`${where}: the text needs both {a} and {b}`);
+    const bad = (s.text.match(/\{[^}]*\}/g) || []).find(x => !["{a}", "{b}", "{P1}", "{P2}"].includes(x));
+    if(bad) throw new Error(`${where}: unknown slot ${bad} (use {a}, {b}, {P1}, {P2})`);
+    if(!s.unit) throw new Error(`${where}: no unit`);
+  });
+  PL_PRINT_SENTENCES = sentenceRows.map(r => ({ id: t(r.id), before: t(r.before), after: t(r.after), answer: t(r.answer),
+    also: t(r.also_fits).split(/\s+/).filter(Boolean) }));
+  PL_PRINT_SENTENCES.forEach(s => {
+    const where = `data/print_sentences.csv ${s.id}`;
+    if(!s.answer) throw new Error(`${where}: no answer`);
+    if(plPrintSentenceText(s, PL_PRINT_BLANK).length > PL_PRINT_SENTENCE_MAX)
+      throw new Error(`${where}: longer than ${PL_PRINT_SENTENCE_MAX} characters with the blank`);
+  });
+}
+/* "Come over" + "here" + "!" reads "Come over here!": no space before punctuation. */
+function plPrintSentenceText(s, fill){
+  return s.before + " " + fill + (/^[.,!?]/.test(s.after) ? "" : " ") + s.after;
+}
+
+/* ---- seeded random (mulberry32), never Math.random ---- */
+function plPrintRng(seed){
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function plPrintHash(str){
+  let h = 2166136261;
+  for(const ch of str){ h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+const plPrintInt = (rng, lo, hi) => lo + Math.floor(rng() * (hi - lo + 1));
+function plPrintShuffle(rng, arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+/* A new code is the one place randomness isn't seeded: it IS the seed. */
+function plPrintNewCode(){
+  const b = new Uint32Array(4);
+  crypto.getRandomValues(b);
+  return Array.from(b, x => PL_PRINT_CODE_CHARS[x % PL_PRINT_CODE_CHARS.length]).join("");
+}
+function plPrintCleanCode(v){
+  const c = String(v || "").trim().toUpperCase();
+  return c.length === 4 && [...c].every(ch => PL_PRINT_CODE_CHARS.includes(ch)) ? c : null;
+}
+const plPrintEsc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]);
+const plPrintCap = s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+/* ---- settings, remembered between visits ---- */
+function plPrintLoadSettings(){
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(PL_PRINT_SETTINGS_KEY)); }catch(e){}
+  const out = {};
+  for(const [k, v] of Object.entries(PL_PRINT_DEFAULTS))
+    out[k] = v && typeof v === "object" ? { ...v, ...((saved && saved[k]) || {}) } : (saved && k in saved ? saved[k] : v);
+  return out;
+}
+function plPrintSaveSettings(){
+  try{ localStorage.setItem(PL_PRINT_SETTINGS_KEY, JSON.stringify(plPrintSettings)); }catch(e){}
+}
+
+/* ---- Adding and Taking away ----
+   18 facts in 3 columns × 6 rows, easy to hard: with a top of 20, the first two
+   rows have answers (or starting numbers) up to 10 and the rest above it. With a
+   top of 10, the facts are sorted by size and shuffled within each row. At most
+   two facts with a 0, and a fact never appears twice — 3 + 5 and 5 + 3 count as
+   the same fact. */
+function plPrintFactRows(rng, picked, size){
+  const sorted = picked.slice().sort((x, y) => size(x) - size(y));
+  const out = [];
+  for(let r = 0; r < sorted.length; r += 3) out.push(...plPrintShuffle(rng, sorted.slice(r, r + 3)));
+  return out;
+}
+function plPrintPickFacts(rng, pools, ok){
+  const out = [], seen = new Set();
+  for(const [pool, n] of pools){
+    let got = 0;
+    for(const f of plPrintShuffle(rng, pool)){
+      if(got === n) break;
+      const key = Math.min(f.a, f.b) + "," + Math.max(f.a, f.b) + f.op;
+      if(seen.has(key) || !ok(f, out)) continue;
+      seen.add(key); out.push(f); got++;
+    }
+    if(got < n) return null;
+  }
+  return out;
+}
+function plPrintAddGenerate(rng, s, relax){
+  const all = [];
+  for(let a = 0; a <= s.max; a++) for(let b = 0; a + b <= s.max; b++){
+    if(!s.doubles && a === b) continue;
+    if(!s.make10 && a + b === 10) continue;
+    all.push({ op:"+", a, b, ans: a + b });
+  }
+  const zeros = f => f.a === 0 || f.b === 0;
+  // Doubles and make-10 pairs, when they are on, get a guaranteed two each by
+  // being drawn first; the rest come from everything.
+  const want = [];
+  // With a top of 20 they are drawn from the easy rows, which come first.
+  if(s.doubles && !relax) want.push([all.filter(f => f.a === f.b && f.a > 0 && f.ans <= 10), 2]);
+  if(s.make10 && !relax) want.push([all.filter(f => f.ans === 10 && f.a !== f.b && !zeros(f)), 2]);
+  const big = s.max > 10;
+  const easyN = big ? 6 : 18;
+  const wantN = want.reduce((n, w) => n + w[1], 0);
+  const pools = [...want, [all.filter(f => f.ans <= 10), easyN - wantN]];
+  // A 0 only in the easy rows: "0 + 17" is a reading trick, not an addition.
+  if(big) pools.push([all.filter(f => f.ans > 10 && !zeros(f)), 12]);
+  const picked = plPrintPickFacts(rng, pools, (f, out) => !zeros(f) || out.filter(zeros).length < 2);
+  if(!picked) return null;
+  if(!big) return plPrintFactRows(rng, picked, f => f.ans);
+  const easy = picked.filter(f => f.ans <= 10), hard = picked.filter(f => f.ans > 10);
+  return [...plPrintFactRows(rng, easy, f => f.ans), ...plPrintFactRows(rng, hard, f => f.ans)];
+}
+function plPrintSubGenerate(rng, s, relax){
+  const all = [];
+  for(let a = 1; a <= s.max; a++) for(let b = 0; b <= a; b++){
+    if(!s.zero && a === b) continue;
+    all.push({ op:"−", a, b, ans: a - b });
+  }
+  const zeroAns = f => f.ans === 0, zeroB = f => f.b === 0;
+  const big = s.max > 10;
+  const pools = big ? [[all.filter(f => f.a <= 10), 6], [all.filter(f => f.a > 10 && f.b > 0 && f.ans > 0), 12]] : [[all, 18]];
+  const picked = plPrintPickFacts(rng, pools,
+    (f, out) => (!zeroAns(f) || out.filter(zeroAns).length < 2) && (!zeroB(f) || out.filter(zeroB).length < 2));
+  if(!picked) return null;
+  if(!big) return plPrintFactRows(rng, picked, f => f.a);
+  return [...plPrintFactRows(rng, picked.filter(f => f.a <= 10), f => f.a),
+          ...plPrintFactRows(rng, picked.filter(f => f.a > 10), f => f.a)];
+}
+/* The rules, checked on the finished page. Shared by both fact sheets. */
+function plPrintFactCheck(items, s, relax, sub){
+  const bad = [];
+  if(!items || items.length !== 18) return ["not 18 facts"];
+  const keys = new Set();
+  items.forEach((f, i) => {
+    if(sub ? (f.ans !== f.a - f.b || f.ans < 0 || f.a > s.max) : (f.ans !== f.a + f.b || f.ans > s.max)) bad.push(`fact ${i + 1} out of range`);
+    if(f.a < 0 || f.b < 0) bad.push(`fact ${i + 1} below 0`);
+    const key = Math.min(f.a, f.b) + "," + Math.max(f.a, f.b);
+    if(keys.has(key)) bad.push(`fact ${i + 1} repeated`);
+    keys.add(key);
+  });
+  if(sub){
+    if(items.filter(f => f.ans === 0).length > (s.zero ? 2 : 0)) bad.push("too many answers of 0");
+    if(items.filter(f => f.b === 0).length > 2) bad.push("too many − 0");
+  } else {
+    if(items.filter(f => f.a === 0 || f.b === 0).length > 2) bad.push("too many facts with a 0");
+    if(!s.doubles && items.some(f => f.a === f.b)) bad.push("a double when doubles are off");
+    if(!s.make10 && items.some(f => f.ans === 10)) bad.push("a make-10 pair when they are off");
+    if(!relax && s.doubles && items.filter(f => f.a === f.b && f.a > 0).length < 2) bad.push("fewer than 2 doubles");
+    if(!relax && s.make10 && items.filter(f => f.ans === 10).length < 2) bad.push("fewer than 2 make-10 pairs");
+  }
+  if(!relax){
+    const size = sub ? (f => f.a) : (f => f.ans);
+    if(s.max > 10){
+      if(items.slice(0, 6).some(f => size(f) > 10) || items.slice(6).some(f => size(f) <= 10)) bad.push("not easy to hard");
+    } else {
+      for(let r = 3; r < 18; r += 3)
+        if(Math.max(...items.slice(r - 3, r).map(size)) > Math.min(...items.slice(r, r + 3).map(size))) bad.push("not easy to hard");
+    }
+  }
+  return bad;
+}
+function plPrintFactBody(items){
+  return `<div class="pl-facts">${items.map(f =>
+    `<div class="pl-fact"><span class="pl-sum">${f.a} ${f.op} ${f.b} =</span><span class="pl-box"></span></div>`).join("")}</div>`;
+}
+function plPrintFactKey(items){
+  return `<div class="pl-key-facts">${items.map(f => `<span>${f.a} ${f.op} ${f.b} = <b>${f.ans}</b></span>`).join("")}</div>`;
+}
+
+/* ---- Story problems ----
+   Templates from data/print_stories.csv with slots for two Pokémon and two
+   numbers. A filled story longer than 90 characters is drawn again. No two
+   stories on a page share a template or a Pokémon — including one a template
+   names itself (Magikarp, Pidgey). */
+function plPrintStoryNames(){
+  const fixed = new Set(PL_PRINT_STORIES.flatMap(t => t.text.match(/\b[A-Z][a-z]+\b/g) || []).map(w => w.toLowerCase()));
+  let pool = genGatedSpellablePokemon().filter(p => /^[a-z]{3,8}$/i.test(p.n) && !fixed.has(p.n.toLowerCase()));
+  if(pool.length < 12) pool = SPELLABLE_POKEMON.filter(p => /^[a-z]{3,8}$/i.test(p.n) && !fixed.has(p.n.toLowerCase()));
+  return pool.map(p => plPrintCap(p.n));
+}
+/* Pokémon a template names in its own words ("{a} Magikarp swim in a pond"). */
+function plPrintStoryFixed(t){
+  const known = new Set(POKEMON.map(p => p.n.toLowerCase()));
+  return (t.text.replace(/\{[^}]*\}/g, "").match(/[A-Za-z]+/g) || []).filter(w => known.has(w.toLowerCase()));
+}
+function plPrintStoryGenerate(rng, s){
+  const ops = s.op === "add" ? ["add","add","add","add"] : s.op === "sub" ? ["sub","sub","sub","sub"]
+            : plPrintShuffle(rng, ["add","add","sub","sub"]);
+  const names = plPrintShuffle(rng, plPrintStoryNames());
+  const used = new Set(), out = [];
+  let ni = 0;
+  for(const op of ops){
+    const temps = plPrintShuffle(rng, PL_PRINT_STORIES.filter(t => t.op === op && !used.has(t.id)));
+    let made = null;
+    for(const t of temps){
+      for(let k = 0; k < 8 && !made; k++){
+        const maxA = Math.min(s.max, t.maxA || s.max);
+        let a, b;
+        // Every number is 2 or more, so no story says "1 stars" or "1 more times".
+        if(op === "add"){ a = plPrintInt(rng, 2, maxA - 2); b = plPrintInt(rng, 2, Math.min(s.max - a, t.maxB || s.max)); }
+        else { a = plPrintInt(rng, 4, maxA); b = plPrintInt(rng, 2, Math.min(a - 2, t.maxB || s.max)); }
+        const p1 = names[ni % names.length], p2 = names[(ni + 1) % names.length];
+        const text = t.text.replace(/\{P1\}/g, p1).replace(/\{P2\}/g, p2).replace(/\{a\}/g, a).replace(/\{b\}/g, b);
+        if(text.length > PL_PRINT_STORY_MAX) { ni += 2; continue; }
+        const who = [t.text.includes("{P1}") && p1, t.text.includes("{P2}") && p2].filter(Boolean).concat(plPrintStoryFixed(t));
+        made = { id: t.id, op, a, b, ans: op === "add" ? a + b : a - b, unit: t.unit, text, who };
+        ni += 2;
+      }
+      if(made) break;
+    }
+    if(!made) return null;
+    used.add(made.id); out.push(made);
+  }
+  return out;
+}
+function plPrintStoryCheck(items, s){
+  const bad = [];
+  if(!items || items.length !== 4) return ["not 4 stories"];
+  const ids = new Set(), who = new Set();
+  items.forEach((x, i) => {
+    if(ids.has(x.id)) bad.push(`story ${i + 1} repeats a template`);
+    ids.add(x.id);
+    x.who.forEach(w => { if(who.has(w)) bad.push(`story ${i + 1} repeats ${w}`); who.add(w); });
+    if(x.text.length > PL_PRINT_STORY_MAX) bad.push(`story ${i + 1} too long`);
+    if(x.ans !== (x.op === "add" ? x.a + x.b : x.a - x.b)) bad.push(`story ${i + 1} wrong answer`);
+    if(Math.min(x.a, x.b, x.ans) < 2 || Math.max(x.a, x.b, x.ans) > s.max) bad.push(`story ${i + 1} out of range`);
+    if(s.op !== "mixed" && x.op !== s.op) bad.push(`story ${i + 1} is the wrong kind`);
+    if(/\{/.test(x.text)) bad.push(`story ${i + 1} has an empty slot`);
+  });
+  return bad;
+}
+function plPrintStoryBody(items){
+  return `<div class="pl-stories">${items.map((x, i) => `
+    <div class="pl-story">
+      <div class="pl-story-text"><span class="pl-num">${i + 1}</span>${plPrintEsc(x.text)}</div>
+      <div class="pl-answer"><span>Answer:</span><span class="pl-line"></span><span class="pl-unit">${plPrintEsc(x.unit)}</span></div>
+    </div>`).join("")}</div>`;
+}
+function plPrintStoryKey(items){
+  return `<ol class="pl-key-list">${items.map(x =>
+    `<li>${x.a} ${x.op === "add" ? "+" : "−"} ${x.b} = <b>${x.ans}</b> ${plPrintEsc(x.unit)}</li>`).join("")}</ol>`;
+}
+
+/* ---- Pokémon names ----
+   8 names of 3 to 8 letters, shortest first, traced on the left in the Writing
+   trail's own letter shapes (dotted, a green start dot on each stroke) and
+   written on the right. Names come from his current generation, like Spelling's;
+   "caught" uses his Pokédex and falls back to a mix if fewer than 8 qualify. */
+function plPrintNamePool(list){
+  const fits = p => /^[a-z]{3,8}$/i.test(p.n);
+  if(list === "caught"){
+    const mine = new Set(loadCollection());
+    const caught = POKEMON.filter(p => mine.has(p.id) && fits(p));
+    if(caught.length >= 8) return caught;
+    list = "mixed";
+  }
+  const len = p => p.n.length;
+  const tier = list === "easy" ? (p => len(p) <= 5) : list === "hard" ? (p => len(p) >= 6) : (() => true);
+  let pool = genGatedSpellablePokemon().filter(p => fits(p) && tier(p));
+  if(pool.length < 8) pool = SPELLABLE_POKEMON.filter(p => fits(p) && tier(p));
+  return pool;
+}
+function plPrintNamesGenerate(rng, s){
+  const pool = plPrintNamePool(s.list);
+  if(pool.length < 8) return null;
+  const pick = plPrintShuffle(rng, pool).slice(0, 8).map(p => plPrintCap(p.n));
+  return pick.map((n, i) => [n, i]).sort((x, y) => x[0].length - y[0].length || x[1] - y[1]).map(x => x[0]);
+}
+function plPrintNamesCheck(items){
+  const bad = [];
+  if(!items || items.length !== 8) return ["not 8 names"];
+  if(new Set(items).size !== 8) bad.push("a name repeats");
+  items.forEach((n, i) => {
+    if(!/^[A-Za-z]{3,8}$/.test(n)) bad.push(`name ${i + 1} is not 3 to 8 letters`);
+    if(i && n.length < items[i - 1].length) bad.push("not shortest first");
+  });
+  return bad;
+}
+/* A name laid out in letter-grid units. Small letters use the grid as the
+   Writing trail does (x-height 45–78, ascenders to 12); a capital is scaled from
+   its own 12–88 so it stands on the same baseline at ascender height. */
+const PL_PRINT_GAP = 16;
+function plPrintNameLayout(name){
+  let x = 0;
+  const glyphs = [...name].map(c => {
+    const k = c === c.toLowerCase() ? 1 : 66 / 76;
+    const [l, r] = letterSpan(c);
+    const g = { c, k, tx: x - l * k, ty: 12 - 12 * k };
+    x += (r - l) * k + PL_PRINT_GAP;
+    return g;
+  });
+  return { glyphs, W: x - PL_PRINT_GAP };
+}
+function plPrintGuides(W){
+  return `<line x1="0" x2="${W}" y1="12" y2="12" class="pl-g"/><line x1="0" x2="${W}" y1="45" y2="45" class="pl-g mid"/><line x1="0" x2="${W}" y1="78" y2="78" class="pl-g"/>`;
+}
+function plPrintNamesBody(items){
+  const lays = items.map(plPrintNameLayout);
+  const pad = 14, W = Math.max(...lays.map(l => l.W)) + pad * 2;
+  const svg = inner => `<svg viewBox="0 4 ${W.toFixed(1)} 96" preserveAspectRatio="xMinYMid meet" aria-hidden="true">${plPrintGuides(W)}${inner}</svg>`;
+  return `<div class="pl-names">${lays.map((lay, i) => {
+    const ink = lay.glyphs.map(g => {
+      const strokes = LETTER_STROKES[g.c];
+      const t = `translate(${(g.tx + pad).toFixed(2)} ${g.ty.toFixed(2)}) scale(${g.k.toFixed(4)})`;
+      const paths = strokes.map(d => `<path d="${d}" class="pl-trace"/>`).join("");
+      const dots = strokes.filter(d => pathPoints(d, 2).len >= 3)
+        .map(d => { const [x, y] = writeStart(d); return `<circle cx="${x}" cy="${y}" r="3.4" class="pl-start"/>`; }).join("");
+      return `<g transform="${t}">${paths}${dots}</g>`;
+    }).join("");
+    return `<div class="pl-name-row" aria-label="${plPrintEsc(items[i])}">${svg(ink)}${svg("")}</div>`;
+  }).join("")}</div>`;
+}
+
+/* ---- Missing words ----
+   Two word boxes of four, four sentences each, every word used once. Each
+   sentence in data/print_sentences.csv names its answer and any other words of
+   the list that would also make sense in its blank (also_fits); a box never
+   holds a word that would fit another of its sentences, so every blank has one
+   answer in its box. The two boxes share no word. */
+function plPrintWordsGenerate(rng){
+  const used = new Set(), boxes = [];
+  const sents = plPrintShuffle(rng, PL_PRINT_SENTENCES);
+  for(let b = 0; b < 2; b++){
+    const box = [];
+    for(const x of sents){
+      if(box.length === 4) break;
+      if(used.has(x.answer)) continue;
+      if(box.some(y => x.also.includes(y.answer) || y.also.includes(x.answer))) continue;
+      box.push(x); used.add(x.answer);
+    }
+    if(box.length < 4) return null;
+    boxes.push({ words: plPrintShuffle(rng, box.map(x => x.answer)), sentences: box });
+  }
+  return boxes;
+}
+function plPrintWordsCheck(items){
+  const bad = [];
+  if(!items || items.length !== 2) return ["not 2 boxes"];
+  const all = items.flatMap(b => b.words);
+  if(new Set(all).size !== 8) bad.push("a word repeats");
+  items.forEach((b, bi) => {
+    if(b.words.length !== 4 || b.sentences.length !== 4) bad.push(`box ${bi + 1} is not 4 and 4`);
+    b.sentences.forEach(x => {
+      if(!b.words.includes(x.answer)) bad.push(`box ${bi + 1}: "${x.answer}" not in its box`);
+      if(b.words.some(w => w !== x.answer && x.also.includes(w))) bad.push(`box ${bi + 1}: ${x.id} has two answers`);
+      if(plPrintSentenceText(x, PL_PRINT_BLANK).length > PL_PRINT_SENTENCE_MAX) bad.push(`${x.id} too long`);
+    });
+  });
+  return bad;
+}
+function plPrintWordsBody(items){
+  let n = 0;
+  return `<div class="pl-words">${items.map(b => `
+    <div class="pl-word-group">
+      <div class="pl-word-box">${b.words.map(w => `<span>${plPrintEsc(w)}</span>`).join("")}</div>
+      ${b.sentences.map(x => `<div class="pl-sent"><span class="pl-num">${++n}</span>${plPrintEsc(x.before)} <span class="pl-blank${/^[.,!?]/.test(x.after) ? " tight" : ""}"></span>${plPrintEsc(x.after)}</div>`).join("")}
+    </div>`).join("")}</div>`;
+}
+function plPrintWordsKey(items){
+  return `<ol class="pl-key-list">${items.flatMap(b => b.sentences).map(x =>
+    `<li>${plPrintEsc(x.before)} <b>${plPrintEsc(x.answer)}</b>${/^[.,!?]/.test(x.after) ? "" : " "}${plPrintEsc(x.after)}</li>`).join("")}</ol>`;
+}
+
+/* ---- the registry ---- */
+const plPrintSheets = [
+  { id:"add", title:"Adding", topic:"Maths", trail:"berry", icon:"addsub",
+    instruction:"Add the numbers. Write the answer in the box.",
+    generate: plPrintAddGenerate, check: (it, s, r) => plPrintFactCheck(it, s, r, false),
+    renderBody: plPrintFactBody, renderKey: plPrintFactKey },
+  { id:"sub", title:"Taking away", topic:"Maths", trail:"sky", icon:"addsub",
+    instruction:"Take away. Write the answer in the box.",
+    generate: plPrintSubGenerate, check: (it, s, r) => plPrintFactCheck(it, s, r, true),
+    renderBody: plPrintFactBody, renderKey: plPrintFactKey },
+  { id:"story", title:"Story problems", topic:"Maths", trail:"berry", icon:"riddles",
+    instruction:"Read each story. Write the answer on the line.",
+    generate: plPrintStoryGenerate, check: plPrintStoryCheck,
+    renderBody: plPrintStoryBody, renderKey: plPrintStoryKey },
+  { id:"names", title:"Pokémon names", topic:"Writing", trail:"sky", icon:"writing",
+    instruction:"Trace each name. Then write it on your own.",
+    generate: plPrintNamesGenerate, check: plPrintNamesCheck,
+    renderBody: plPrintNamesBody, renderKey: null },
+  { id:"words", title:"Missing words", topic:"Reading", trail:"violet", icon:"sentences",
+    instruction:"Pick a word from the box for each sentence. Use each word once.",
+    generate: plPrintWordsGenerate, check: plPrintWordsCheck,
+    renderBody: plPrintWordsBody, renderKey: plPrintWordsKey },
+];
+/* Try, check, retry: 50 strict tries, then 50 with the softest rule relaxed. */
+function plPrintMake(sheet, code, s){
+  const rng = plPrintRng(plPrintHash(code + "/" + sheet.id));
+  for(let i = 0; i < PL_PRINT_TRIES; i++){
+    const items = sheet.generate(rng, s, false);
+    if(items && !sheet.check(items, s, false).length) return items;
+  }
+  for(let i = 0; i < PL_PRINT_TRIES; i++){
+    const items = sheet.generate(rng, s, true);
+    if(items && !sheet.check(items, s, true).length){
+      console.warn(`Print sheets: ${sheet.title} (set ${code}) needed its softest rule relaxed`);
+      return items;
+    }
+  }
+  console.warn(`Print sheets: ${sheet.title} (set ${code}) could not be made`);
+  return null;
+}
+function plPrintBuildSet(code, settings){
+  const pages = plPrintSheets.filter(sh => settings.on[sh.id])
+    .map(sh => ({ sheetId: sh.id, items: plPrintMake(sh, code, settings[sh.id]) }))
+    .filter(p => p.items);
+  return { code, pages };
+}
+
+/* ---- the page frame and the answer key ---- */
+function plPrintFrame(sheet, body, n, page, total, code){
+  return `<div class="pl-sheet pl-${sheet.trail}" data-sheet="${sheet.id}">
+    <header class="pl-head">
+      <div class="pl-head-text">
+        <div class="pl-eyebrow">Trainer sheet ${n} · ${sheet.topic}</div>
+        <div class="pl-title">${sheet.title}</div>
+        <div class="pl-instr">${sheet.instruction}</div>
+      </div>
+      <div class="pl-badge">${LEVEL_ICONS[sheet.icon]}</div>
+    </header>
+    <div class="pl-nameline"><span>Name</span><span class="pl-name-blank"></span>
+      <span class="pl-stars">${UI_ICONS.star.repeat(3)}</span></div>
+    <div class="pl-body">${body}</div>
+    <footer class="pl-foot"><span>Poké Learning · Set ${code}</span><span>Page ${page} of ${total}</span></footer>
+  </div>`;
+}
+function plPrintRender(set, opts){
+  const keyed = set.pages.filter(p => plPrintSheets.find(s => s.id === p.sheetId).renderKey);
+  const withKey = opts.withKey && keyed.length > 0;
+  const total = set.pages.length + (withKey ? 1 : 0);
+  const out = set.pages.map((p, i) => {
+    const sh = plPrintSheets.find(s => s.id === p.sheetId);
+    return plPrintFrame(sh, sh.renderBody(p.items), i + 1, i + 1, total, set.code);
+  });
+  if(withKey) out.push(`<div class="pl-sheet pl-key">
+    <div class="pl-key-head"><span>Answer key</span><span>Set ${set.code}</span></div>
+    <div class="pl-key-grid">${keyed.map(p => {
+      const sh = plPrintSheets.find(s => s.id === p.sheetId);
+      return `<section class="pl-key-block pl-key-${sh.id}"><h3>${sh.title} <span>· ${set.code}</span></h3>${sh.renderKey(p.items)}</section>`;
+    }).join("")}</div>
+    <footer class="pl-foot"><span>Poké Learning · Set ${set.code}</span><span>Page ${total} of ${total}</span></footer>
+  </div>`);
+  return out;
+}
+
+/* ---- the screen ---- */
+const PL_PRINT_OPTIONS = {
+  add: [["max", "Answers", [[10, "Answers up to 10"], [20, "Answers up to 20"]]],
+        ["doubles", "Doubles", [[true, "With doubles"], [false, "No doubles"]]],
+        ["make10", "Make 10", [[true, "With make-10 pairs"], [false, "No make-10 pairs"]]]],
+  sub: [["max", "Starting number", [[10, "Starting from up to 10"], [20, "Starting from up to 20"]]],
+        ["zero", "Answers of 0", [[true, "Answers of 0 allowed"], [false, "No answers of 0"]]]],
+  story: [["op", "Kind", [["mixed", "Adding and taking away"], ["add", "Adding only"], ["sub", "Taking away only"]]],
+          ["max", "Numbers", [[10, "Numbers up to 10"], [20, "Numbers up to 20"]]]],
+  names: [["list", "Names", [["easy", "Short names"], ["mixed", "Short and long"], ["hard", "Long names"], ["caught", "Pokémon he has caught"]]]],
+  words: [],
+};
+const PL_PRINT_HINTS = {
+  add: "18 sums, easy to hard", sub: "18 take-aways, easy to hard", story: "4 stories with an answer line",
+  names: "8 names to trace, then write", words: "2 word boxes, 8 sentences, grade 1 sight words",
+};
+function plPrintRenderOptions(){
+  const s = plPrintSettings;
+  $("#plPrintOptions").innerHTML = plPrintSheets.map(sh => `
+    <div class="field pl-print-sheet">
+      <label for="plOn_${sh.id}">${sh.title}<span class="hint">${PL_PRINT_HINTS[sh.id]}</span></label>
+      <label class="switch"><input type="checkbox" id="plOn_${sh.id}" data-on="${sh.id}" ${s.on[sh.id] ? "checked" : ""}><span class="slider"></span></label>
+    </div>
+    ${PL_PRINT_OPTIONS[sh.id].length ? `<div class="pl-print-opts${s.on[sh.id] ? "" : " hidden"}" data-opts="${sh.id}">${PL_PRINT_OPTIONS[sh.id].map(([key, label, choices]) =>
+      `<select data-sheet="${sh.id}" data-key="${key}" aria-label="${sh.title}: ${label}">${choices.map(([v, t]) =>
+        `<option value="${v}"${String(s[sh.id][key]) === String(v) ? " selected" : ""}>${t}</option>`).join("")}</select>`).join("")}</div>` : ""}`).join("");
+  $("#plPrintKey").checked = !!s.withKey;
+}
+function plPrintRefresh(){
+  plPrintSet = plPrintBuildSet(plPrintCode, plPrintSettings);
+  const pages = plPrintRender(plPrintSet, { withKey: plPrintSettings.withKey });
+  $("#plPrintPages").innerHTML = pages.length ? pages.map(h => `<div class="pl-page">${h}</div>`).join("")
+    : `<p class="pl-print-none">Tick at least one sheet to make a set.</p>`;
+  $("#plPrintCode").value = plPrintCode;
+  $("#plPrintGo").disabled = !plPrintSet.pages.length;
+  plPrintFit();
+}
+/* The preview is the printed pages themselves, zoomed to the column's width. */
+function plPrintFit(){
+  const host = $("#plPrintPages");
+  if(!host || !host.clientWidth) return;
+  host.style.setProperty("--pl-zoom", Math.min(1, host.clientWidth / 816).toFixed(4));
+}
+function plPrintOpen(code){
+  plPrintSettings = plPrintLoadSettings();
+  plPrintCode = code || plPrintNewCode();
+  plPrintRenderOptions();
+  plPrintRefresh();
+}
+$("#plPrintOptions").addEventListener("change", e => {
+  const el = e.target;
+  if(el.dataset.on){
+    plPrintSettings.on[el.dataset.on] = el.checked;
+    const opts = document.querySelector(`[data-opts="${el.dataset.on}"]`);
+    if(opts) opts.classList.toggle("hidden", !el.checked);
+  } else if(el.dataset.sheet){
+    const cur = PL_PRINT_DEFAULTS[el.dataset.sheet][el.dataset.key];
+    plPrintSettings[el.dataset.sheet][el.dataset.key] =
+      typeof cur === "number" ? Number(el.value) : typeof cur === "boolean" ? el.value === "true" : el.value;
+  } else return;
+  plPrintSaveSettings();
+  plPrintRefresh();
+});
+$("#plPrintKey").addEventListener("change", e => { plPrintSettings.withKey = e.target.checked; plPrintSaveSettings(); plPrintRefresh(); });
+$("#plPrintNew").addEventListener("click", () => { plPrintCode = plPrintNewCode(); plPrintRefresh(); });
+$("#plPrintCode").addEventListener("input", e => {
+  const c = plPrintCleanCode(e.target.value);
+  if(c && c !== plPrintCode){ plPrintCode = c; plPrintRefresh(); }
+});
+$("#plPrintCode").addEventListener("blur", e => { e.target.value = plPrintCode; });
+/* Fonts first, or the browser can lay out the printed pages in a fallback face. */
+$("#plPrintGo").addEventListener("click", () => {
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => window.print());
+});
+window.addEventListener("resize", () => { if(document.body.dataset.screen === "sheets") plPrintFit(); });
+
 const SCREEN_CHROME = {
   settings:  { title: "Settings" },
   battle:    { title: "Battle", extra: () => `<span class="count-badge won" aria-label="${battleWins} right">${UI_ICONS.tick}${battleWins}</span><span class="count-badge lost" aria-label="${battleLosses} wrong">${UI_ICONS.cross}${battleLosses}</span>` },
   pokedex:   { title: "Pokédex" },
   dashboard: { title: "My progress" },
   subject:   { title: "English" },
+  sheets:    { title: "Print sheets" },
 };
 function renderChrome(which){
   const spec = SCREEN_CHROME[which];
@@ -9290,7 +10015,7 @@ function syncScreenBars(){
 window.addEventListener("scroll", syncScreenBars, { passive:true });
 
 function show(which){
-  ["setup","settings","play","results","battle","pokedex","dashboard","subject"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
+  ["setup","settings","play","results","battle","pokedex","dashboard","subject","sheets"].forEach(id=> $("#"+id).classList.toggle("hidden", id!==which));
   document.body.dataset.screen = which;
   // The HUD sits above the logo, which is outside #setup — so it is hidden by
   // hand everywhere but home. A round has its own progress bar and a Quit
@@ -9450,6 +10175,7 @@ $("#grassStrip").addEventListener("animationiteration", hopBang);
 $("#playEnglish").addEventListener("click", ()=> startGame("english"));
 $("#playMaths").addEventListener("click", ()=> startGame("maths"));
 $("#battleBtn").addEventListener("click", ()=>{ show("battle"); newBattle(); });
+$("#sheetsBtn").addEventListener("click", ()=>{ show("sheets"); plPrintOpen(); });
 $("#settingsBtn").innerHTML = HUD_ICONS.gear;
 // Static markup that names a drawn icon rather than carrying an emoji.
 document.querySelectorAll("[data-icon]").forEach(el => { el.innerHTML = UI_ICONS[el.dataset.icon] || ""; });

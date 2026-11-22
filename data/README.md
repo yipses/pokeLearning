@@ -270,6 +270,36 @@ Tabs *Writing Level* and *Letter Strokes* in the design sheet.
 
 A path may go back over itself. b, h, m, n, p and r are one stroke each, written the school way: down the stem, back up the same line, then over (`M32 12 L32 78 L32 58 Q…` for h). Every such U-turn gets an arrow up the way-back leg, and a trace only counts once the ink reaches the turn, so the whole stem has to be drawn. Free writing still accepts them written in two strokes, and waits for each piece before judging. Only a real U-turn counts: the corners of V, W and Z are not turns.
 
+## `print_stories.csv` and `print_sentences.csv` — the Print sheets
+
+Tabs *Print Stories* and *Print Sentences* in the design sheet. They are content for the paper worksheets (Sheets on home), not a lesson ladder.
+
+`print_stories.csv`, 20 rows (10 adding, 10 taking away):
+
+| Column | Notes |
+|---|---|
+| `id` | Unique, e.g. `add3` |
+| `op` | `add` or `sub` |
+| `text` | The story, with slots `{P1}` and `{P2}` (two different Pokémon) and `{a}` and `{b}` (the numbers). Adding: the answer is a + b. Taking away: a − b |
+| `unit` | The word after the answer line: `berries`, `Magikarp`, `Pokémon` |
+| `max_a`, `max_b` | Optional caps on the two numbers. Blank means the sheet's own top (10 or 20) |
+
+`print_sentences.csv`, 40 rows (20 words, 2 sentences each):
+
+| Column | Notes |
+|---|---|
+| `id` | Unique |
+| `before`, `after` | The sentence either side of the blank. An `after` that starts with `.`, `!` or `?` goes straight after the blank with no space |
+| `answer` | The one word that goes in the blank |
+| `also_fits` | Other answer words from this file that would make sense in the blank too, separated by spaces. The sheet never puts any of them in the same box as this sentence |
+
+**Traps.**
+- A story must still read right with any numbers from 2 to 20, because they are drawn at random. Avoid "a" or "one".
+- Filled in with the longest names, a story is at most 90 characters. A longer one is quietly drawn again, so a template that is always too long never appears.
+- A sentence is at most 32 characters, counting the blank as six. The app refuses to start otherwise.
+- `also_fits` is what keeps every blank to one answer. When a sentence is added, check it against every other answer word, not only the obvious ones.
+- A Pokémon named in a story's own words (Magikarp, Pidgey) is never also used to fill a slot on the same page.
+
 ## `phonemes.csv` — what each chunk says out loud
 
 Spoken when a child places a letter or chunk correctly. Keyed on `chunk` **and** `context`, because a letter's sound depends on the word it's in.

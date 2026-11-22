@@ -1242,6 +1242,34 @@ The owner asked whether a letter with several strokes should highlight only the 
 
 Build 131.
 
+## Phase 114 — printable worksheets
+
+From Derek's spec ("PokeLearning Printable Worksheets Spec"), milestones 1–4: five sheets, the answer key and set codes. The owner's answers changed four things from the spec:
+- **Entry:** a **Sheets** button under Battle on home, not behind a gate. The app has no grown-up gate; the spec assumed one.
+- **Content:** "written live" means built in the app from patterns and word banks, new on every visit. There is no API. The stories and sentences are CSVs (`data/print_stories.csv`, `data/print_sentences.csv`) and sheet tabs, not lists in `index.html`, keeping the rule that `index.html` holds no copy of any content.
+- **Tracing:** names are traced in the Writing trail's school letters, not an outlined font. Capitals are scaled from their own 12–88 grid to the small letters' ascender height, so a name stands on one baseline.
+- **Tokens:** `ink-muted` is not a token here; `ink-soft` is used.
+
+Left for a later build: match my child's level, the recent-repeats memory and the picture slots (milestones 5 and 6), and the spec's open question of a reward code.
+
+**What it took to get right.**
+- **The first render** had "0 + 20" in the hard rows. Zeros now sit only in the easy rows.
+- **It also had stories saying "1 stars" and "1 more times".** Every story number is now 2 or more.
+- **Name rows measured as overflowing:** their SVGs had visible overflow, so the measure counted outside the box. They are now clipped; a 3× zoom showed no descender is cut.
+- **The key's take-away grid** was 10px too wide at "20 − 13 = 7". It is tighter now.
+
+**Measured.**
+- **Rules:** 800 sets (200 codes × 4 mixes of settings, all five sheets) break no rule. Nothing overflows its card (sampled 80 sets rendered). No sheet ever needed its rule relaxed.
+- **Codes:** every code rebuilds its set exactly, and switching Taking away off leaves the other four sheets unchanged in all 800.
+- **Story length:** the longest story drawn was 81 characters.
+- **Print:** a PDF printed through Chrome's print path, with Letter page size, has 6 pages for 5 sheets plus the key, with no blank page. The grayscale pages read fully.
+- **Home:** home still fits without scrolling at every size in DESIGN.md. On phones the second quiet button costs the home Pokémon room: 94 → 55px at 360×640 and 274 → 179px at 390×844. On the iPad (820×1180), the size he uses, it stays 472px. Landscape phones are unchanged.
+- **Regressions:** smoke, the writing drive and the word drive pass. The duplicate-function grep is empty, and there are no console errors.
+
+Safari's print can only be checked on the owner's iPad.
+
+Build 132.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
