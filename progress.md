@@ -1331,6 +1331,14 @@ The owner asked why some sentences weren't about Pokémon, and wants many more r
 
 Build 136.
 
+## Phase 119 — everyday sentences mixed in, 60/40
+
+The owner changed their mind: Missing words should be about 60% Pokémon and 40% everyday. 126 everyday sentences were added ("The soup is so ___.", "Close ___ door."), in the same word groups, next to the 197 Pokémon ones, making 323 in all. A sheet draws from the whole list, so the mix follows the counts (61% Pokémon).
+- **New ambiguity caught from a printed page:** "Come ___, Pikachu!" also takes "eat". A blank right after "come" now also lists every action word in `also_fits`, and one after "be" lists every place word ("Do not be here").
+- **Checks:** all 323 pass length, and the Pokémon or everyday checks. 800 sets break no rule and nothing overflows.
+
+Build 137.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

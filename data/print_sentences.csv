@@ -116,7 +116,7 @@ green2,Caterpie is a,bug.,green,big little red blue hot happy funny good yellow 
 green3,Look at the,Oddish!,green,big little red blue hot happy funny good yellow sad cold one two three
 sad1,Cubone is very,.,sad,big little red blue hot happy funny good yellow green cold
 sad2,Psyduck looks so,.,sad,big little red blue hot happy funny good yellow green cold
-sad3,Do not be,", Eevee.",sad,big little red blue hot happy funny good yellow green cold
+sad3,Do not be,", Eevee.",sad,big little red blue hot happy funny good yellow green cold up down in out here away
 cold1,Articuno is very,.,cold,big little red blue hot happy funny good yellow green sad
 cold2,Seel likes the,sea.,cold,big little red blue hot happy funny good yellow green sad
 cold3,Lapras is not,.,cold,big little red blue hot happy funny good yellow green sad
@@ -127,14 +127,14 @@ down1,Diglett went,the hole.,down,up in out here away
 down2,Sit,", Growlithe!",down,up in out here away
 down3,Onix looks,at us.,down,up in out here away
 in1,Squirtle hops,the pond.,in,up down out here away
-in2,Come,", Pikachu!",in,up down out here away
+in2,Come,", Pikachu!",in,up down out here away run jump go play eat see look help swim fly sleep sing dig like
 in3,Psyduck jumps,the lake.,in,up down out here away
 out1,Diglett pops,!,out,up down in here away
-out2,Come,", Eevee!",out,up down in here away
+out2,Come,", Eevee!",out,up down in here away run jump go play eat see look help swim fly sleep sing dig like
 out3,Diglett came,of the hole.,out,up down in here away
 here1,Come over,", Eevee!",here,up down in out away
 here2,"Pikachu, sit",.,here,up down in out away
-here3,"Snorlax, come",!,here,up down in out away
+here3,"Snorlax, come",!,here,up down in out away run jump go play eat see look help swim fly sleep sing dig like
 away1,Zubat flew,.,away,up down in out here
 away2,Magikarp swam,.,away,up down in out here
 away3,Ekans went,.,away,up down in out here
@@ -196,3 +196,129 @@ and1,Pikachu,Eevee play.,and,
 and2,Psyduck,Goldeen swim.,and,
 and3,Squirtle,Psyduck swim.,and,
 and4,Oddish,Gloom grow.,and,
+can9,The dog,run fast.,can,will
+can10,The bird,fly away.,can,will
+can11,Dad,help me.,can,will said
+can12,The fish,swim.,can,will
+can13,You,play with me.,can,will
+will8,Mom,make lunch.,will,can
+will9,We,go to school.,will,can
+will10,The cat,sleep on the bed.,will,can
+will11,She,read a book.,will,can
+will12,The baby,eat soon.,will,can
+run6,The dog can,fast.,run,jump go play eat see look help swim fly sleep sing dig like
+run7,Let's,to the park.,run,jump go play eat see look help swim fly sleep sing dig like
+run8,My cat likes to,.,run,jump go play eat see look help swim fly sleep sing dig like
+jump6,The frog can,high.,jump,run go play eat see look help swim fly sleep sing dig like
+jump7,Let's,in the pool.,jump,run go play eat see look help swim fly sleep sing dig like
+jump8,Kids like to,rope.,jump,run go play eat see look help swim fly sleep sing dig like
+go6,Let's,to bed.,go,run jump play eat see look help swim fly sleep sing dig like
+go7,We will,to school.,go,run jump play eat see look help swim fly sleep sing dig like
+go8,Can I,outside?,go,run jump play eat see look help swim fly sleep sing dig like
+play6,Let's,a game.,play,run jump go eat see look help swim fly sleep sing dig like
+play7,Can you,with me?,play,run jump go eat see look help swim fly sleep sing dig like
+play8,We like to,ball.,play,run jump go eat see look help swim fly sleep sing dig like
+eat6,Let's,lunch.,eat,run jump go play see look help swim fly sleep sing dig like
+eat7,The cat will,fish.,eat,run jump go play see look help swim fly sleep sing dig like
+eat8,I like to,apples.,eat,run jump go play see look help swim fly sleep sing dig like
+see6,Can you,the moon?,see,run jump go play eat look help swim fly sleep sing dig like
+see7,I can,a bird.,see,run jump go play eat look help swim fly sleep sing dig like
+see8,Let's,a movie.,see,run jump go play eat look help swim fly sleep sing dig like
+look6,Come and,at this!,look,run jump go play eat see help swim fly sleep sing dig like
+look7,Let's,for my hat.,look,run jump go play eat see help swim fly sleep sing dig like
+look8,Can you,at me?,look,run jump go play eat see help swim fly sleep sing dig like
+help6,Can you,me?,help,run jump go play eat see look swim fly sleep sing dig like
+help7,Mom will,us.,help,run jump go play eat see look swim fly sleep sing dig like
+help8,I like to,Dad.,help,run jump go play eat see look swim fly sleep sing dig like
+swim6,Fish can,.,swim,run jump go play eat see look help fly sleep sing dig like
+swim7,Let's,in the lake.,swim,run jump go play eat see look help fly sleep sing dig like
+swim8,Ducks like to,.,swim,run jump go play eat see look help fly sleep sing dig like
+fly6,Birds can,.,fly,run jump go play eat see look help swim sleep sing dig like
+fly7,The kite will,high.,fly,run jump go play eat see look help swim sleep sing dig like
+fly8,Let's,a kite.,fly,run jump go play eat see look help swim sleep sing dig like
+sleep6,The baby will,now.,sleep,run jump go play eat see look help swim fly sing dig like
+sleep7,Cats like to,.,sleep,run jump go play eat see look help swim fly sing dig like
+sleep8,It is time to,.,sleep,run jump go play eat see look help swim fly sing dig like
+sing6,Let's,a song.,sing,run jump go play eat see look help swim fly sleep dig like
+sing7,Birds like to,.,sing,run jump go play eat see look help swim fly sleep dig like
+sing8,Can you,for us?,sing,run jump go play eat see look help swim fly sleep dig like
+dig6,Dogs like to,.,dig,run jump go play eat see look help swim fly sleep sing like
+dig7,Let's,in the sand.,dig,run jump go play eat see look help swim fly sleep sing like
+dig8,We can,a hole.,dig,run jump go play eat see look help swim fly sleep sing like
+like6,I,ice cream.,like,run jump go play eat see look help swim fly sleep sing dig
+like7,Do you,cats?,like,run jump go play eat see look help swim fly sleep sing dig
+like8,We,our teacher.,like,run jump go play eat see look help swim fly sleep sing dig
+big4,The elephant is very,.,big,little red blue hot happy funny good yellow green sad cold
+big5,That is a,truck.,big,little red blue hot happy funny good yellow green sad cold
+little4,The mouse is so,.,little,big red blue hot happy funny good yellow green sad cold
+little5,I have a,sister.,little,big red blue hot happy funny good yellow green sad cold
+red4,I have a,hat.,red,big little blue hot happy funny good yellow green sad cold
+red5,Stop at the,light.,red,big little blue hot happy funny good yellow green sad cold
+blue4,The sky is so,.,blue,big little red hot happy funny good yellow green sad cold
+blue5,I have a,cup.,blue,big little red hot happy funny good yellow green sad cold
+hot4,The sun is very,.,hot,big little red blue happy funny good yellow green sad cold
+hot5,The soup is so,.,hot,big little red blue happy funny good yellow green sad cold
+happy4,I am so,.,happy,big little red blue hot funny good yellow green sad cold
+happy5,Have a,day!,happy,big little red blue hot funny good yellow green sad cold
+funny4,The clown is very,.,funny,big little red blue hot happy good yellow green sad cold
+funny5,That is a,joke.,funny,big little red blue hot happy good yellow green sad cold
+good4,This cake is so,.,good,big little red blue hot happy funny yellow green sad cold
+good5,You are a,friend.,good,big little red blue hot happy funny yellow green sad cold
+yellow4,A banana is so,.,yellow,big little red blue hot happy funny good green sad cold
+yellow5,I have a,duck.,yellow,big little red blue hot happy funny good green sad cold
+green4,The grass is so,.,green,big little red blue hot happy funny good yellow sad cold
+green5,The frog is very,.,green,big little red blue hot happy funny good yellow sad cold
+sad4,The puppy is so,.,sad,big little red blue hot happy funny good yellow green cold
+sad5,Why are you so,?,sad,big little red blue hot happy funny good yellow green cold
+cold4,Ice is very,.,cold,big little red blue hot happy funny good yellow green sad
+cold5,The snow is so,.,cold,big little red blue hot happy funny good yellow green sad
+up4,Look,at the sky.,up,down in out here away
+up5,The balloon went,.,up,down in out here away
+down4,Sit,", please.",down,up in out here away
+down5,The ball rolled,the hill.,down,up in out here away
+in4,Come,", it is cold.",in,up down out here away run jump go play eat see look help swim fly sleep sing dig like
+in5,Put it,the box.,in,up down out here away
+out4,Get,of the car.,out,up down in here away
+out5,Take,the trash.,out,up down in here away
+here4,Come,", please.",here,up down in out away run jump go play eat see look help swim fly sleep sing dig like
+here5,Put the box,.,here,up down in out away
+away4,The bird flew,.,away,up down in out here
+away5,The car drove,.,away,up down in out here
+my4,This is,cat.,my,your the this one
+my5,I love,mom.,my,your the this one
+your4,Is this,hat?,your,my the this one
+your5,Wash,hands.,your,my the this one two three
+the4,Look at,sky.,the,my your this one
+the5,Close,door.,the,my your this one
+this4,I like,book.,this,my your the one
+this5,Can I have,cookie?,this,my your the one
+we4,Can,go now?,we,they you
+we5,Will,come too?,we,they you
+they4,Do,like cats?,they,we you
+they5,Can,see us?,they,we you
+you4,Do,like dogs?,you,we they
+you5,Will,help me?,you,we they
+is4,The sky,blue.,is,was are
+is5,My dog,big.,is,was are
+was4,It,cold last night.,was,is are
+was5,The cake,good.,was,is are
+are4,The cats,asleep.,are,is was
+are5,My shoes,red.,are,is was
+has6,My dog,a ball.,has,is was
+has7,The cat,four legs.,has,
+has8,Dad,a red car.,has,is was
+not6,I am,sleepy.,not,
+not7,Do,touch that!,not,you we they
+not8,The dog is,big.,not,
+said6,Mom,yes.,said,
+said7,Dad,good night.,said,
+said8,My teacher,hello.,said,
+one4,I have,cat.,one,two three the my your this
+one5,There is,cookie left.,one,two three the my your this
+two4,I see,birds.,two,one three the my your
+two5,We have,dogs.,two,one three the my your
+three4,I am,years old.,three,one two
+three5,Count to,.,three,one two
+and5,Mom,Dad sing.,and,
+and6,Cats,dogs play.,and,
+and7,I like bread,jam.,and,
