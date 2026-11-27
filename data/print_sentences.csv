@@ -1,41 +1,198 @@
 id,before,after,answer,also_fits
-can1,Pikachu,run fast.,can,
-can2,I,jump high.,can,
-see1,I,a big Snorlax.,see,like
-see2,Can you,the moon?,see,like
-is1,Snorlax,very big.,is,
-is2,The sun,hot.,is,
-my1,This is,hat.,my,
-my2,I love,Eevee.,my,big little
-go1,We,to the park.,go,run jump
-go2,Let's,home now.,go,run
-like1,I,to play ball.,like,go run
-like2,"Pikachu, do you",me?,like,see
-big1,Onix is very,.,big,red little
-big2,Look at that,Wailord!,big,red little
-run1,Ponyta can,fast.,run,go jump
-run2,We,in the race.,run,jump
-up1,Pidgey flies,high.,up,
-up2,The ball went,.,up,
-has1,Squirtle,a shell.,has,is
-has2,Eevee,a long tail.,has,is
-look1,Come and,at me.,look,
-look2,We,at the stars.,look,
-play1,Let's,a game.,play,see
-play2,Can Jigglypuff,with us?,play,go run jump eat
-here1,Come over,!,here,
-here2,The ball is,.,here,red big up little
+can1,Pikachu,run fast.,can,will
+can2,Pidgey,fly high.,can,will
+can3,Squirtle,swim well.,can,will
+can4,Diglett,dig a hole.,can,will
+can5,Jigglypuff,sing a song.,can,will
+can6,Abra,go far.,can,will
+can7,Mankey,jump on a box.,can,will
+can8,Psyduck,see a fish.,can,will
+will1,Snorlax,sleep all day.,will,can
+will2,Eevee,play with me.,will,can
+will3,Charmander,help us.,will,can
+will4,Bulbasaur,eat a berry.,will,can
+will5,Meowth,look for coins.,will,can
+will6,Vulpix,run home.,will,can
+will7,Magikarp,jump up.,will,can
+run1,Ponyta can,fast.,run,jump go play eat see look help swim fly sleep sing dig like
+run2,Rapidash will,in a race.,run,jump go play eat see look help swim fly sleep sing dig like
+run3,Let's,with Growlithe.,run,jump go play eat see look help swim fly sleep sing dig like
+run4,Rattata likes to,a lot.,run,jump go play eat see look help swim fly sleep sing dig like
+run5,Rattata can,to the tree.,run,jump go play eat see look help swim fly sleep sing dig like
+jump1,Poliwag can,high.,jump,run go play eat see look help swim fly sleep sing dig like
+jump2,Mankey will,over a log.,jump,run go play eat see look help swim fly sleep sing dig like
+jump3,Let's,like Hitmonlee!,jump,run go play eat see look help swim fly sleep sing dig like
+jump4,Pikachu can,on the bed.,jump,run go play eat see look help swim fly sleep sing dig like
+jump5,Seel likes to,in snow.,jump,run go play eat see look help swim fly sleep sing dig like
+go1,Let's,"home, Oddish.",go,run jump play eat see look help swim fly sleep sing dig like
+go2,Vulpix will,to the park.,go,run jump play eat see look help swim fly sleep sing dig like
+go3,Can Clefairy,to the moon?,go,run jump play eat see look help swim fly sleep sing dig like
+go4,Lapras will,on the sea.,go,run jump play eat see look help swim fly sleep sing dig like
+go5,Abra can,far away.,go,run jump play eat see look help swim fly sleep sing dig like
+play1,Let's,"a game, Abra.",play,run jump go eat see look help swim fly sleep sing dig like
+play2,Can Jigglypuff,with us?,play,run jump go eat see look help swim fly sleep sing dig like
+play3,Eevee likes to,ball.,play,run jump go eat see look help swim fly sleep sing dig like
+play4,Pikachu will,with Eevee.,play,run jump go eat see look help swim fly sleep sing dig like
+play5,Let's,"tag, Clefairy!",play,run jump go eat see look help swim fly sleep sing dig like
+eat1,Snorlax will,lunch.,eat,run jump go play see look help swim fly sleep sing dig like
+eat2,Bulbasaur can,seeds.,eat,run jump go play see look help swim fly sleep sing dig like
+eat3,Let's,with Snorlax.,eat,run jump go play see look help swim fly sleep sing dig like
+eat4,Psyduck likes to,fish.,eat,run jump go play see look help swim fly sleep sing dig like
+eat5,Can Clefairy,a cake?,eat,run jump go play see look help swim fly sleep sing dig like
+see1,Can Psyduck,the moon?,see,run jump go play eat look help swim fly sleep sing dig like
+see2,Meowth can,in the dark.,see,run jump go play eat look help swim fly sleep sing dig like
+see3,Let's,Mew!,see,run jump go play eat look help swim fly sleep sing dig like
+see4,I can,Dragonite.,see,run jump go play eat look help swim fly sleep sing dig like
+see5,Can you,Pidgey?,see,run jump go play eat look help swim fly sleep sing dig like
+look1,Come and,at Mew!,look,run jump go play eat see help swim fly sleep sing dig like
+look2,Let's,for Pikachu.,look,run jump go play eat see help swim fly sleep sing dig like
+look3,Ditto will,like you.,look,run jump go play eat see help swim fly sleep sing dig like
+look4,Staryu likes to,at you.,look,run jump go play eat see help swim fly sleep sing dig like
+look5,Can we,at Onix?,look,run jump go play eat see help swim fly sleep sing dig like
+help1,Chansey will,you.,help,run jump go play eat see look swim fly sleep sing dig like
+help2,Can Machop,me?,help,run jump go play eat see look swim fly sleep sing dig like
+help3,Let's,Slowpoke!,help,run jump go play eat see look swim fly sleep sing dig like
+help4,Squirtle can,us.,help,run jump go play eat see look swim fly sleep sing dig like
+help5,Kadabra likes to,us.,help,run jump go play eat see look swim fly sleep sing dig like
+swim1,Squirtle can,fast.,swim,run jump go play eat see look help fly sleep sing dig like
+swim2,Magikarp will,away.,swim,run jump go play eat see look help fly sleep sing dig like
+swim3,Let's,with Lapras.,swim,run jump go play eat see look help fly sleep sing dig like
+swim4,Goldeen likes to,a lot.,swim,run jump go play eat see look help fly sleep sing dig like
+swim5,Can Psyduck,well?,swim,run jump go play eat see look help fly sleep sing dig like
+fly1,Pidgey can,high.,fly,run jump go play eat see look help swim sleep sing dig like
+fly2,Charizard will,away.,fly,run jump go play eat see look help swim sleep sing dig like
+fly3,Let's,on Dragonite!,fly,run jump go play eat see look help swim sleep sing dig like
+fly4,Zubat likes to,at night.,fly,run jump go play eat see look help swim sleep sing dig like
+fly5,Can Butterfree,to me?,fly,run jump go play eat see look help swim sleep sing dig like
+sleep1,Snorlax will,all day.,sleep,run jump go play eat see look help swim fly sing dig like
+sleep2,Let's,"now, Drowzee.",sleep,run jump go play eat see look help swim fly sing dig like
+sleep3,Slowpoke likes to,a lot.,sleep,run jump go play eat see look help swim fly sing dig like
+sleep4,Can Jigglypuff,now?,sleep,run jump go play eat see look help swim fly sing dig like
+sleep5,Eevee can,in my bed.,sleep,run jump go play eat see look help swim fly sing dig like
+sing1,Jigglypuff will,a song.,sing,run jump go play eat see look help swim fly sleep dig like
+sing2,Let's,with Lapras.,sing,run jump go play eat see look help swim fly sleep dig like
+sing3,Can Clefairy,too?,sing,run jump go play eat see look help swim fly sleep dig like
+sing4,Pikachu likes to,for us.,sing,run jump go play eat see look help swim fly sleep dig like
+sing5,Chansey can,to us.,sing,run jump go play eat see look help swim fly sleep dig like
+dig1,Diglett can,a hole.,dig,run jump go play eat see look help swim fly sleep sing like
+dig2,Sandshrew will,in sand.,dig,run jump go play eat see look help swim fly sleep sing like
+dig3,Let's,with Dugtrio!,dig,run jump go play eat see look help swim fly sleep sing like
+dig4,Cubone likes to,holes.,dig,run jump go play eat see look help swim fly sleep sing like
+dig5,Can Onix,deep?,dig,run jump go play eat see look help swim fly sleep sing like
+like1,I,Pikachu.,like,run jump go play eat see look help swim fly sleep sing dig
+like2,"Pikachu, do you",me?,like,run jump go play eat see look help swim fly sleep sing dig
+like3,We,Eevee a lot.,like,run jump go play eat see look help swim fly sleep sing dig
+like4,"Jigglypuff, I",you.,like,run jump go play eat see look help swim fly sleep sing dig
+like5,Do you,Snorlax?,like,run jump go play eat see look help swim fly sleep sing dig
+big1,Onix is very,.,big,little red blue hot happy funny good yellow green sad cold
+big2,Look at that,Gyarados!,big,little red blue hot happy funny good yellow green sad cold
+big3,Snorlax is so,.,big,little red blue hot happy funny good yellow green sad cold
+little1,Caterpie is very,.,little,big red blue hot happy funny good yellow green sad cold
+little2,Weedle is a,bug.,little,big red blue hot happy funny good yellow green sad cold
+little3,Pikachu is so,.,little,big red blue hot happy funny good yellow green sad cold
+red1,Charmander is very,.,red,big little blue hot happy funny good yellow green sad cold
+red2,Krabby has,claws.,red,big little blue hot happy funny good yellow green sad cold one two three the my your
+red3,Look at the,Magikarp!,red,big little blue hot happy funny good yellow green sad cold one two three
+blue1,Squirtle is so,.,blue,big little red hot happy funny good yellow green sad cold
+blue2,Lapras swims in the,sea.,blue,big little red hot happy funny good yellow green sad cold
+blue3,Look at the,Poliwag!,blue,big little red hot happy funny good yellow green sad cold one two three
+hot1,Charmander is so,.,hot,big little red blue happy funny good yellow green sad cold
+hot2,Magmar is very,.,hot,big little red blue happy funny good yellow green sad cold
+hot3,Ponyta has a,mane.,hot,big little red blue happy funny good yellow green sad cold
+happy1,Pikachu is so,.,happy,big little red blue hot funny good yellow green sad cold
+happy2,Clefairy is very,.,happy,big little red blue hot funny good yellow green sad cold
+happy3,Eevee is a,pal.,happy,big little red blue hot funny good yellow green sad cold
+funny1,Psyduck is so,.,funny,big little red blue hot happy good yellow green sad cold
+funny2,Slowbro is very,.,funny,big little red blue hot happy good yellow green sad cold
+funny3,Slowpoke is a,pal.,funny,big little red blue hot happy good yellow green sad cold
+good1,Chansey is very,.,good,big little red blue hot happy funny yellow green sad cold
+good2,Growlithe is a,pup.,good,big little red blue hot happy funny yellow green sad cold
+good3,Squirtle is so,.,good,big little red blue hot happy funny yellow green sad cold
+yellow1,Pikachu is very,.,yellow,big little red blue hot happy funny good green sad cold
+yellow2,Psyduck is so,.,yellow,big little red blue hot happy funny good green sad cold
+yellow3,Look at the,Abra!,yellow,big little red blue hot happy funny good green sad cold one two three
+green1,Bulbasaur is so,.,green,big little red blue hot happy funny good yellow sad cold
+green2,Caterpie is a,bug.,green,big little red blue hot happy funny good yellow sad cold
+green3,Look at the,Oddish!,green,big little red blue hot happy funny good yellow sad cold one two three
+sad1,Cubone is very,.,sad,big little red blue hot happy funny good yellow green cold
+sad2,Psyduck looks so,.,sad,big little red blue hot happy funny good yellow green cold
+sad3,Do not be,", Eevee.",sad,big little red blue hot happy funny good yellow green cold
+cold1,Articuno is very,.,cold,big little red blue hot happy funny good yellow green sad
+cold2,Seel likes the,sea.,cold,big little red blue hot happy funny good yellow green sad
+cold3,Lapras is not,.,cold,big little red blue hot happy funny good yellow green sad
+up1,Pidgey flies,high.,up,down in out here away
+up2,Butterfree flew,!,up,down in out here away
+up3,"Abra, look",!,up,down in out here away
+down1,Diglett went,the hole.,down,up in out here away
+down2,Sit,", Growlithe!",down,up in out here away
+down3,Onix looks,at us.,down,up in out here away
+in1,Squirtle hops,the pond.,in,up down out here away
+in2,Come,", Pikachu!",in,up down out here away
+in3,Psyduck jumps,the lake.,in,up down out here away
+out1,Diglett pops,!,out,up down in here away
+out2,Come,", Eevee!",out,up down in here away
+out3,Diglett came,of the hole.,out,up down in here away
+here1,Come over,", Eevee!",here,up down in out away
+here2,"Pikachu, sit",.,here,up down in out away
+here3,"Snorlax, come",!,here,up down in out away
+away1,Zubat flew,.,away,up down in out here
+away2,Magikarp swam,.,away,up down in out here
+away3,Ekans went,.,away,up down in out here
+my1,Squirtle is,friend.,my,your the this one
+my2,I love,Eevee.,my,your the this one
+my3,Pikachu sits on,hat.,my,your the this one
+your1,Is Psyduck,pal?,your,my the this
+your2,Meowth took,coin!,your,my the this one
+your3,Can Pikachu ride in,bag?,your,my the this one
+the1,Ash and Pikachu saw,moon.,the,my your this one
+the2,Lapras swims in,sea.,the,my your this one
+the3,Look at,big Onix!,the,my your this one
+this1,Is,Mew?,this,my your the
+this2,Pikachu likes,toy.,this,my your the one
+this3,Is,Pikachu's ball?,this,my your the
+we1,Can,see Mew now?,we,they you
+we2,Can,play with Eevee?,we,they you
+we3,Will,see Eevee?,we,they you
+they1,Will,find Mew?,they,we you
+they2,Can,see Onix?,they,we you
+they3,Do,like Pikachu?,they,we you
+you1,Can,see Psyduck?,you,we they
+you2,Do,like Snorlax?,you,we they
+you3,"Pikachu, I see",!,you,we they
+is1,Snorlax,very big.,is,was are
+is2,Charmander,hot.,is,was are
+is3,Pikachu,yellow.,is,was are
+was1,Pidgey,up high.,was,is are
+was2,Eevee,in my bed.,was,is are
+was3,Eevee,so happy.,was,is are
+are1,Pidgey and Spearow,birds.,are,is was
+are2,Oddish and Gloom,green.,are,is was
+are3,Ekans and Arbok,long.,are,is was
+has1,Squirtle,a shell.,has,is was
+has2,Eevee,a long tail.,has,is was
+has3,Pikachu,red cheeks.,has,
+has4,Rhyhorn,one horn.,has,
+has5,Vulpix,six tails.,has,
 not1,Snorlax is,fast.,not,
-not2,I can,see you.,not,
-said1,Ash,hello.,said,
-said2,Mom,it is time.,said,
-eat1,Let's,lunch.,eat,
-eat2,Bunnies,carrots.,eat,like see
-red1,Charmander is,.,red,big little
-red2,An apple can be,.,red,big little
-jump1,Frogs can,high.,jump,go
-jump2,I can,over the log.,jump,run go
-we1,Can,go now?,we,
-we2,Can,play too?,we,
-little1,Pichu is,.,little,big red here
-little2,It is a,bug.,little,big red
+not2,"Gastly, I can",see you.,not,
+not3,Magikarp can,fly.,not,
+not4,Slowpoke is,quick.,not,
+not5,Onix is,little.,not,
+said1,Ash,hi to Pikachu.,said,
+said2,Meowth,it is time.,said,
+said3,Pikachu,"""Pika!""",said,
+said4,Misty,hi to Psyduck.,said,
+said5,Brock,Onix is big.,said,
+one1,Rhyhorn has,horn.,one,two three the my your this
+one2,Magikarp is just,fish.,one,two three the my your this
+one3,I see,Pidgey.,one,two three the my your this
+two1,Doduo has,heads.,two,one three the my your
+two2,Pikachu has,red cheeks.,two,one three the my your
+two3,Magnemite has,magnets.,two,one three the my your
+three1,Dodrio has,heads.,three,one two the my your
+three2,Dugtrio is,Diglett.,three,one two
+three3,Count to,", Pikachu!",three,one two
+and1,Pikachu,Eevee play.,and,
+and2,Psyduck,Goldeen swim.,and,
+and3,Squirtle,Psyduck swim.,and,
+and4,Oddish,Gloom grow.,and,

@@ -1321,6 +1321,16 @@ Build 134.
 
 Build 135.
 
+## Phase 118 — 197 Missing words sentences, all Gen 1 Pokémon
+
+The owner asked why some sentences weren't about Pokémon, and wants many more ready, since the family prints a sheet a day.
+- **Why they weren't:** the first 40 were written around the sight words. Only 15 named a Pokémon, two of them not from Gen 1.
+- **Now:** there are 197 sentences across 51 answer words, and every one names a Gen 1 Pokémon.
+- **Keeping one answer per blank at this size:** the answer words are grouped by the job they do (helpers, actions, describing words, place words, my/your/the/this, we/they/you, is/was/are, numbers, and singles). Each sentence is written so only its own group fits its blank. The script fills `also_fits` with the rest of the group, plus hand-noted words from other groups that would also fit (e.g. "Krabby has ___ claws" also takes "two").
+- **Checks:** the script checks every sentence's length and that it names a Gen 1 Pokémon. 800 sets break no rule and nothing overflows. A Missing words page was read by eye.
+
+Build 136.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
