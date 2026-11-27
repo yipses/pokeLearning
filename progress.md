@@ -1345,6 +1345,12 @@ At a sheet a day, the 20 story templates came round within about 5 days. There a
 
 Build 138.
 
+## Phase 121 — the answer key is gone
+
+The owner doesn't need the answer key, so it was removed: the switch on the Sheets screen, the key page, the key layouts for each sheet, and their styles. A full set is now 5 pages, one per sheet ("Page 5 of 5"). 800 sets still break no rule, and Chrome's print gives 5 pages.
+
+Build 139.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.

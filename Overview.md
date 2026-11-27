@@ -619,7 +619,7 @@ A separate, unscored, replayable mini-game reached from the Start screen:
   - stories adding, taking away or both;
   - names short, long, mixed, or from his Pokédex.
 - **The choices are remembered.**
-- **The answer key** is one plain page, printed last.
+- **There is no answer key.** It was built and then taken out, as the family didn't need it.
 - **The page shows the real pages, scaled down.** **Print** opens the browser's print dialog with one sheet per page.
 - **Every page's footer carries a 4-character set code.** Typing a code in rebuilds that set exactly, provided the same choices are set. **Make new sheets** draws a new code.
 

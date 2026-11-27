@@ -2727,17 +2727,6 @@
   .pl-blank{ display:inline-block; width:150px; height:1em; margin:0 8px; border-bottom:2.5px solid var(--line-strong); }
   .pl-blank.tight{ margin-right:2px; }
 
-  /* The answer key: plain, no band, so it saves ink and doesn't pass for a sheet. */
-  .pl-key-head{ display:flex; justify-content:space-between; align-items:baseline; padding-bottom:10px; border-bottom:2px solid var(--line-strong); }
-  .pl-key-head span:first-child{ font-size:28px; font-weight:900; }
-  .pl-key-head span:last-child{ font-size:16px; font-weight:800; color:var(--ink-soft); }
-  .pl-key-grid{ flex:1; min-height:0; display:grid; grid-template-columns:1fr 1fr; align-content:start; gap:24px 32px; padding-top:12px; }
-  .pl-key-block{ min-width:0; }
-  .pl-key-block h3{ margin:0 0 8px; font-size:18px; font-weight:900; }
-  .pl-key-block h3 span{ font-size:14px; font-weight:800; color:var(--ink-soft); }
-  .pl-key-facts{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px 8px; font-size:15px; font-weight:700; }
-  .pl-key-facts span{ padding:4px 5px; border:1.5px solid var(--line); border-radius:8px; white-space:nowrap; }
-  .pl-key-list{ margin:0; padding-left:22px; font-size:16px; font-weight:700; line-height:1.6; }
 
   @media print{
     @page{ size:letter; margin:.5in; }
@@ -3090,12 +3079,6 @@
       <p class="sub">A new set every time you open this page. Untick a sheet to leave it out.</p>
       <div id="plPrintOptions"></div>
       <div class="field">
-        <label for="plPrintKey">Answer key
-          <span class="hint">One extra page, printed last, with every answer</span>
-        </label>
-        <label class="switch"><input type="checkbox" id="plPrintKey" checked><span class="slider"></span></label>
-      </div>
-      <div class="field">
         <label for="plPrintCode">Set code
           <span class="hint">Printed at the foot of every page. Type an old one to make that set again.</span>
         </label>
@@ -3156,7 +3139,7 @@
    BUMP APP_BUILD (and the date) ON EVERY CHANGE THAT SHIPS — a stale number is
    worse than none, because the whole point is telling a cached copy apart from
    a fresh one. Build 1 was PR #1, build 2 was PR #2, build 3 added this card. */
-const APP_BUILD = 138;
+const APP_BUILD = 139;
 const APP_BUILD_DATE = "22 Nov 2026";
 
 /* Staging is the same app served under /staging/ (main branch); the real site is
@@ -9492,7 +9475,6 @@ const PL_PRINT_DEFAULTS = {
   sub: { max:20, zero:true },
   story: { op:"mixed", max:20 },
   names: { list:"mixed" },
-  withKey: true,
 };
 let plPrintSettings = null, plPrintCode = "", plPrintSet = null;
 
@@ -9675,9 +9657,6 @@ function plPrintFactBody(items){
   return `<div class="pl-facts">${items.map(f =>
     `<div class="pl-fact"><span class="pl-sum">${f.a} ${f.op} ${f.b} =</span><span class="pl-box"></span></div>`).join("")}</div>`;
 }
-function plPrintFactKey(items){
-  return `<div class="pl-key-facts">${items.map(f => `<span>${f.a} ${f.op} ${f.b} = <b>${f.ans}</b></span>`).join("")}</div>`;
-}
 
 /* ---- Story problems ----
    Templates from data/print_stories.csv with slots for two Pokémon and two
@@ -9747,10 +9726,6 @@ function plPrintStoryBody(items){
       <div class="pl-story-text"><span class="pl-num">${i + 1}</span>${plPrintEsc(x.text)}</div>
       <div class="pl-answer"><span>Answer:</span><span class="pl-line"></span><span class="pl-unit">${plPrintEsc(x.unit)}</span></div>
     </div>`).join("")}</div>`;
-}
-function plPrintStoryKey(items){
-  return `<ol class="pl-key-list">${items.map(x =>
-    `<li>${x.a} ${x.op === "add" ? "+" : "−"} ${x.b} = <b>${x.ans}</b> ${plPrintEsc(x.unit)}</li>`).join("")}</ol>`;
 }
 
 /* ---- Pokémon names ----
@@ -9868,33 +9843,29 @@ function plPrintWordsBody(items){
       ${b.sentences.map(x => `<div class="pl-sent"><span class="pl-num">${++n}</span>${plPrintEsc(x.before)} <span class="pl-blank${/^[.,!?]/.test(x.after) ? " tight" : ""}"></span>${plPrintEsc(x.after)}</div>`).join("")}
     </div>`).join("")}</div>`;
 }
-function plPrintWordsKey(items){
-  return `<ol class="pl-key-list">${items.flatMap(b => b.sentences).map(x =>
-    `<li>${plPrintEsc(x.before)} <b>${plPrintEsc(x.answer)}</b>${/^[.,!?]/.test(x.after) ? "" : " "}${plPrintEsc(x.after)}</li>`).join("")}</ol>`;
-}
 
 /* ---- the registry ---- */
 const plPrintSheets = [
   { id:"add", title:"Adding", topic:"Maths", trail:"berry", icon:"addsub",
     instruction:"Add the numbers. Write the answer in the box.",
     generate: plPrintAddGenerate, check: (it, s, r) => plPrintFactCheck(it, s, r, false),
-    renderBody: plPrintFactBody, renderKey: plPrintFactKey },
+    renderBody: plPrintFactBody },
   { id:"sub", title:"Taking away", topic:"Maths", trail:"sky", icon:"addsub",
     instruction:"Take away. Write the answer in the box.",
     generate: plPrintSubGenerate, check: (it, s, r) => plPrintFactCheck(it, s, r, true),
-    renderBody: plPrintFactBody, renderKey: plPrintFactKey },
+    renderBody: plPrintFactBody },
   { id:"story", title:"Story problems", topic:"Maths", trail:"berry", icon:"riddles",
     instruction:"Read each story. Write the answer on the line.",
     generate: plPrintStoryGenerate, check: plPrintStoryCheck,
-    renderBody: plPrintStoryBody, renderKey: plPrintStoryKey },
+    renderBody: plPrintStoryBody },
   { id:"names", title:"Pokémon names", topic:"Writing", trail:"sky", icon:"writing",
     instruction:"Trace each name. Then write it on your own.",
     generate: plPrintNamesGenerate, check: plPrintNamesCheck,
-    renderBody: plPrintNamesBody, renderKey: null },
+    renderBody: plPrintNamesBody },
   { id:"words", title:"Missing words", topic:"Reading", trail:"violet", icon:"sentences",
     instruction:"Pick a word from the box for each sentence. Use each word once.",
     generate: plPrintWordsGenerate, check: plPrintWordsCheck,
-    renderBody: plPrintWordsBody, renderKey: plPrintWordsKey },
+    renderBody: plPrintWordsBody },
 ];
 /* Try, check, retry: 50 strict tries, then 50 with the softest rule relaxed. */
 function plPrintMake(sheet, code, s){
@@ -9920,7 +9891,7 @@ function plPrintBuildSet(code, settings){
   return { code, pages };
 }
 
-/* ---- the page frame and the answer key ---- */
+/* ---- the page frame ---- */
 function plPrintFrame(sheet, body, n, page, total, code){
   return `<div class="pl-sheet pl-${sheet.trail}" data-sheet="${sheet.id}">
     <header class="pl-head">
@@ -9937,23 +9908,13 @@ function plPrintFrame(sheet, body, n, page, total, code){
     <footer class="pl-foot"><span>Poké Learning · Set ${code}</span><span>Page ${page} of ${total}</span></footer>
   </div>`;
 }
-function plPrintRender(set, opts){
-  const keyed = set.pages.filter(p => plPrintSheets.find(s => s.id === p.sheetId).renderKey);
-  const withKey = opts.withKey && keyed.length > 0;
-  const total = set.pages.length + (withKey ? 1 : 0);
-  const out = set.pages.map((p, i) => {
+/* One page per sheet. There is no answer key: the owner found it wasn't needed. */
+function plPrintRender(set){
+  const total = set.pages.length;
+  return set.pages.map((p, i) => {
     const sh = plPrintSheets.find(s => s.id === p.sheetId);
     return plPrintFrame(sh, sh.renderBody(p.items), i + 1, i + 1, total, set.code);
   });
-  if(withKey) out.push(`<div class="pl-sheet pl-key">
-    <div class="pl-key-head"><span>Answer key</span><span>Set ${set.code}</span></div>
-    <div class="pl-key-grid">${keyed.map(p => {
-      const sh = plPrintSheets.find(s => s.id === p.sheetId);
-      return `<section class="pl-key-block pl-key-${sh.id}"><h3>${sh.title} <span>· ${set.code}</span></h3>${sh.renderKey(p.items)}</section>`;
-    }).join("")}</div>
-    <footer class="pl-foot"><span>Poké Learning · Set ${set.code}</span><span>Page ${total} of ${total}</span></footer>
-  </div>`);
-  return out;
 }
 
 /* ---- the screen ---- */
@@ -9982,11 +9943,10 @@ function plPrintRenderOptions(){
     ${PL_PRINT_OPTIONS[sh.id].length ? `<div class="pl-print-opts${s.on[sh.id] ? "" : " hidden"}" data-opts="${sh.id}">${PL_PRINT_OPTIONS[sh.id].map(([key, label, choices]) =>
       `<select data-sheet="${sh.id}" data-key="${key}" aria-label="${sh.title}: ${label}">${choices.map(([v, t]) =>
         `<option value="${v}"${String(s[sh.id][key]) === String(v) ? " selected" : ""}>${t}</option>`).join("")}</select>`).join("")}</div>` : ""}`).join("");
-  $("#plPrintKey").checked = !!s.withKey;
 }
 function plPrintRefresh(){
   plPrintSet = plPrintBuildSet(plPrintCode, plPrintSettings);
-  const pages = plPrintRender(plPrintSet, { withKey: plPrintSettings.withKey });
+  const pages = plPrintRender(plPrintSet);
   $("#plPrintPages").innerHTML = pages.length ? pages.map(h => `<div class="pl-page">${h}</div>`).join("")
     : `<p class="pl-print-none">Tick at least one sheet to make a set.</p>`;
   $("#plPrintCode").value = plPrintCode;
@@ -10019,7 +9979,6 @@ $("#plPrintOptions").addEventListener("change", e => {
   plPrintSaveSettings();
   plPrintRefresh();
 });
-$("#plPrintKey").addEventListener("change", e => { plPrintSettings.withKey = e.target.checked; plPrintSaveSettings(); plPrintRefresh(); });
 $("#plPrintNew").addEventListener("click", () => { plPrintCode = plPrintNewCode(); plPrintRefresh(); });
 $("#plPrintCode").addEventListener("input", e => {
   const c = plPrintCleanCode(e.target.value);

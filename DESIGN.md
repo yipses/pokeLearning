@@ -192,7 +192,6 @@ a two-word name breaks only between words.
   - **Text** is never lighter than `ink-soft`, and every page reads in grayscale.
   - **Trail colours:** Adding and Story problems are berry, Taking away and Pokémon names are sky, Missing words is violet. They appear only on the eyebrow, the round badge and the question numbers.
   - **Names are traced in the Writing trail's letter shapes**, never in an outlined font.
-  - **The answer key** is plain white with no band.
   - **Fit:** nothing may overflow its card, checked on 200 sets per sheet.
 
 ## Motion
