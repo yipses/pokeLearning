@@ -284,7 +284,7 @@ Tabs *Print Stories* and *Print Sentences* in the design sheet. They are content
 | `unit` | The word after the answer line: `berries`, `Magikarp`, `Pokémon` |
 | `max_a`, `max_b` | Optional caps on the two numbers. Blank means the sheet's own top (10 or 20) |
 
-`print_sentences.csv`, 197 rows (51 answer words), every sentence naming a Gen 1 Pokémon. The answer words fall into groups by the job they do: helpers (can, will), actions (run, jump…), describing words (big, red…), place words (up, in…), my/your/the/this, we/they/you, is/was/are, numbers, and single words (has, not, said, and). Each sentence is written so only its own group fits the blank, and `also_fits` lists the rest of that group, plus any other word that would also make sense:
+`print_sentences.csv`, 323 rows (51 answer words): 197 name a Gen 1 Pokémon and 126 are everyday sentences, about 60/40. A sheet draws from all of them alike, so the mix on a page follows those counts; keep it near 60/40 when adding rows. The answer words fall into groups by the job they do: helpers (can, will), actions (run, jump…), describing words (big, red…), place words (up, in…), my/your/the/this, we/they/you, is/was/are, numbers, and single words (has, not, said, and). Each sentence is written so only its own group fits the blank, and `also_fits` lists the rest of that group, plus any other word that would also make sense. Two traps the groups miss: a blank right after "come" also takes an action ("Come eat!"), and one after "be" also takes a place ("be here"):
 
 | Column | Notes |
 |---|---|
