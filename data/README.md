@@ -274,7 +274,7 @@ A path may go back over itself. b, h, m, n, p and r are one stroke each, written
 
 Tabs *Print Stories* and *Print Sentences* in the design sheet. They are content for the paper worksheets (Sheets on home), not a lesson ladder.
 
-`print_stories.csv`, 20 rows (10 adding, 10 taking away):
+`print_stories.csv`, 100 rows (50 adding, 50 taking away), 60 with Pokémon and 40 everyday, like Missing words:
 
 | Column | Notes |
 |---|---|

@@ -1339,6 +1339,12 @@ The owner changed their mind: Missing words should be about 60% Pokémon and 40%
 
 Build 137.
 
+## Phase 120 — 100 story problems
+
+At a sheet a day, the 20 story templates came round within about 5 days. There are now 100: 50 adding, 50 taking away, 60 with Pokémon and 40 everyday ("Mom buys {a} eggs…"), lasting about 25 days. Every template fits 90 characters with the longest names and two-digit numbers, and reads right with any numbers from 2 to 20. 800 sets break no rule; the longest story drawn was 84 characters.
+
+Build 138.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
