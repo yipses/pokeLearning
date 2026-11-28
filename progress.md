@@ -1351,6 +1351,18 @@ The owner doesn't need the answer key, so it was removed: the switch on the Shee
 
 Build 139.
 
+## Phase 122 — Missing words sentences that didn't fit their Pokémon
+
+The owner saw "Cubone is very sad" and found it didn't fit the character and was confusing. The describing-word sentences were re-read against their Pokémon, and four were replaced:
+- "Cubone is very ___" became "Eevee misses Ash. It is ___."
+- "Psyduck looks so ___" became "Pikachu cries. It is so ___."
+- "Lapras is not ___ (cold)" became "Seel lives where it is ___." Lapras is an Ice type.
+- "Look at the ___ (green) Oddish!" became "… Bulbasaur!" Oddish is blue.
+
+A first draft, "Jigglypuff is ___ when we nap.", was 33 characters; the length check caught it before shipping. The sheet tab was updated, and 800 sets still pass.
+
+Build 140.
+
 ## Doc roles
 
 - `Overview.md` — what the app does today. No history, no status, no plans.
